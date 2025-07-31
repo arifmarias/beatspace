@@ -1401,24 +1401,32 @@ const MarketplacePage = () => {
                   </div>
                 )}
                 
-                {/* Always show Request Best Offer button for debugging */}
-                <div className="space-y-2">
-                  <div className="text-xs text-gray-500">
-                    Debug: Status = {selectedAsset.status}, User = {currentUser ? 'Logged In' : 'Not Logged In'}
-                  </div>
-                  <Button 
-                    variant="outline"
-                    className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
-                    onClick={() => {
-                      setSelectedAssetForOffer(selectedAsset);
-                      fetchExistingCampaigns(); // Fetch campaigns for dropdown
-                      setShowOfferDialog(true);
-                    }}
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Request Best Offer
-                  </Button>
-                </div>
+                {/* Request Best Offer Button - Available for Available assets */}
+                <Button 
+                  variant="outline"
+                  className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
+                  onClick={() => {
+                    if (!currentUser) {
+                      alert('Please sign in to request offers.');
+                      // Optionally redirect to login page
+                      // navigate('/login');
+                      return;
+                    }
+                    setSelectedAssetForOffer(selectedAsset);
+                    fetchExistingCampaigns(); // Fetch campaigns for dropdown
+                    setShowOfferDialog(true);
+                  }}
+                  disabled={selectedAsset.status !== 'Available'}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  {selectedAsset.status === 'Available' ? 'Request Best Offer' : `${selectedAsset.status} - Not Available`}
+                </Button>
+                
+                {!currentUser && selectedAsset.status === 'Available' && (
+                  <p className="text-xs text-gray-600 mt-2 text-center">
+                    Sign in to request offers for this asset
+                  </p>
+                )}
 
                 {selectedAsset.next_available_date && (
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
