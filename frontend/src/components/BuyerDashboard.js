@@ -251,7 +251,18 @@ const BuyerDashboard = () => {
   };
 
   const editOfferRequest = (offer) => {
-    setEditingOffer(offer);
+    console.log('Editing offer:', offer); // Debug log to see the data structure
+    
+    // Process the offer data to ensure proper date handling
+    const processedOffer = {
+      ...offer,
+      // Ensure timeline is in the correct format for date parsing
+      timeline: offer.timeline || '',
+    };
+    
+    console.log('Processed offer timeline:', processedOffer.timeline); // Debug log
+    
+    setEditingOffer(processedOffer);
     setShowEditOfferDialog(true);
   };
 
