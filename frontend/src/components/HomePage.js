@@ -180,7 +180,7 @@ const HomePage = () => {
               onClick={() => navigate('/register?type=seller')}
             >
               <Users className="w-5 h-5 mr-2" />
-              I'm an Advertising Agency
+              I'm an Outdoor Agency
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
