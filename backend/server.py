@@ -784,6 +784,125 @@ async def init_bangladesh_sample_data():
             existing_campaign = await db.campaigns.find_one({"id": campaign["id"]})
             if not existing_campaign:
                 await db.campaigns.insert_one(campaign)
+    
+    # Create sample offer requests with realistic data
+    existing_offers = await db.offer_requests.count_documents({})
+    if existing_offers == 0:
+        sample_offers = [
+            {
+                "id": str(uuid.uuid4()),
+                "buyer_id": "buyer_bd_001",
+                "buyer_name": "Grameenphone Ltd.",
+                "asset_id": bangladesh_assets[2]["id"],  # New Market Billboard
+                "asset_name": "New Market Billboard",
+                "campaign_name": "Winter Sale Campaign 2025",
+                "campaign_type": "existing",
+                "existing_campaign_id": campaign_1_id,
+                "contract_duration": "3_months",
+                "estimated_budget": 85000,
+                "service_bundles": {
+                    "printing": True,
+                    "setup": True,
+                    "monitoring": False
+                },
+                "timeline": f"Asset starts from {(datetime.utcnow() + timedelta(days=14)).strftime('%m/%d/%Y')}",
+                "special_requirements": "Need high-resolution printing with weather-resistant material",
+                "notes": "Priority asset for winter campaign launch",
+                "status": "Pending",
+                "created_at": datetime.utcnow() - timedelta(days=3)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "buyer_id": "buyer_bd_001",
+                "buyer_name": "Grameenphone Ltd.",
+                "asset_id": bangladesh_assets[5]["id"],  # Rajshahi University
+                "asset_name": "Rajshahi University Area Billboard",
+                "campaign_name": "Student Internet Package 2025",
+                "campaign_type": "existing", 
+                "existing_campaign_id": campaign_2_id,
+                "contract_duration": "6_months",
+                "estimated_budget": 125000,
+                "service_bundles": {
+                    "printing": True,
+                    "setup": False,
+                    "monitoring": True
+                },
+                "timeline": f"Asset starts from {(datetime.utcnow() + timedelta(days=7)).strftime('%m/%d/%Y')}",
+                "special_requirements": "Youth-focused design with vibrant colors and university theme",
+                "notes": "Target university students and faculty members",
+                "status": "Processing",
+                "created_at": datetime.utcnow() - timedelta(days=5)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "buyer_id": "buyer_bd_001",
+                "buyer_name": "Grameenphone Ltd.",
+                "asset_id": bangladesh_assets[6]["id"],  # Khulna Bridge
+                "asset_name": "Khulna Shipyard Bridge Banner",
+                "campaign_name": "Eid Special Offer 2025",
+                "campaign_type": "existing",
+                "existing_campaign_id": campaign_3_id,
+                "contract_duration": "12_months",
+                "estimated_budget": 190000,
+                "service_bundles": {
+                    "printing": True,
+                    "setup": True,
+                    "monitoring": True
+                },
+                "timeline": f"Asset starts from {(datetime.utcnow() + timedelta(days=21)).strftime('%m/%d/%Y')}",
+                "special_requirements": "Heavy-duty materials for bridge installation, safety compliance required",
+                "notes": "Long-term strategic placement for regional market penetration",
+                "status": "Pending",
+                "created_at": datetime.utcnow() - timedelta(days=1)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "buyer_id": "buyer_bd_001",
+                "buyer_name": "Grameenphone Ltd.",
+                "asset_id": bangladesh_assets[0]["id"],  # Dhanmondi Lake
+                "asset_name": "Dhanmondi Lake LED Display",
+                "campaign_name": "Digital Banking Launch",
+                "campaign_type": "existing",
+                "existing_campaign_id": campaign_1_id,
+                "contract_duration": "3_months", 
+                "estimated_budget": 150000,
+                "service_bundles": {
+                    "printing": False,
+                    "setup": True,
+                    "monitoring": True
+                },
+                "timeline": f"Asset starts from {(datetime.utcnow() + timedelta(days=10)).strftime('%m/%d/%Y')}",
+                "special_requirements": "Digital content creation and scheduling, prime time slots preferred",
+                "notes": "High-visibility location for digital banking services promotion",
+                "status": "Quoted",
+                "created_at": datetime.utcnow() - timedelta(days=8)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "buyer_id": "buyer_bd_001",
+                "buyer_name": "Grameenphone Ltd.",
+                "asset_id": bangladesh_assets[1]["id"],  # Farmgate Metro
+                "asset_name": "Farmgate Metro Station Display",
+                "campaign_name": "Weekend Data Pack Promotion",
+                "campaign_type": "existing",
+                "existing_campaign_id": campaign_2_id,
+                "contract_duration": "6_months",
+                "estimated_budget": 180000,
+                "service_bundles": {
+                    "printing": True,
+                    "setup": True,
+                    "monitoring": False
+                },
+                "timeline": f"Asset starts from {(datetime.utcnow() + timedelta(days=5)).strftime('%m/%d/%Y')}",
+                "special_requirements": "Metro-compliant materials, rush hour visibility optimization",
+                "notes": "Target commuters during peak hours for data pack promotions",
+                "status": "Pending",
+                "created_at": datetime.utcnow() - timedelta(hours=12)
+            }
+        ]
+        
+        for offer in sample_offers:
+            await db.offer_requests.insert_one(offer)
 
 # Initialize sample data on startup
 @app.on_event("startup")
