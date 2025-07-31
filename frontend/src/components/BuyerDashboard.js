@@ -681,6 +681,112 @@ const BuyerDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Requested Offers Tab */}
+          <TabsContent value="requested-offers" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <FileText className="w-5 h-5" />
+                  <span>Requested Offers</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(requestedOffers || []).length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Offer Requests Yet</h3>
+                    <p className="text-gray-500 mb-4">
+                      You haven't submitted any "Request Best Offer" requests yet.
+                    </p>
+                    <Button onClick={() => navigate('/marketplace')} className="bg-orange-600 hover:bg-orange-700">
+                      Explore Marketplace
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {(requestedOffers || []).map((offer) => (
+                      <Card key={offer.id} className="border-l-4 border-l-orange-500">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900">{offer.asset_name}</h3>
+                              <p className="text-sm text-gray-600">Campaign: {offer.campaign_name}</p>
+                            </div>
+                            <Badge 
+                              variant={
+                                offer.status === 'Pending' ? 'secondary' :
+                                offer.status === 'Processing' ? 'default' :
+                                offer.status === 'Quoted' ? 'success' :
+                                offer.status === 'Accepted' ? 'success' :
+                                'destructive'
+                              }
+                            >
+                              {offer.status}
+                            </Badge>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Budget</p>
+                              <p className="font-medium">৳{offer.estimated_budget?.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Duration</p>
+                              <p className="font-medium">{offer.contract_duration?.replace('_', ' ')}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Type</p>
+                              <p className="font-medium capitalize">{offer.campaign_type}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Submitted</p>
+                              <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+
+                          {offer.timeline && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Timeline</p>
+                              <p className="text-sm">{offer.timeline}</p>
+                            </div>
+                          )}
+
+                          {offer.special_requirements && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Special Requirements</p>
+                              <p className="text-sm">{offer.special_requirements}</p>
+                            </div>
+                          )}
+
+                          {offer.notes && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Notes</p>
+                              <p className="text-sm">{offer.notes}</p>
+                            </div>
+                          )}
+
+                          {offer.admin_response && (
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                              <p className="text-sm text-gray-500 mb-1">Admin Response</p>
+                              <p className="text-sm">{offer.admin_response}</p>
+                            </div>
+                          )}
+
+                          {offer.final_offer && (
+                            <div className="bg-green-50 p-4 rounded-lg">
+                              <p className="text-sm text-gray-500 mb-1">Final Offer Details</p>
+                              <pre className="text-sm">{JSON.stringify(offer.final_offer, null, 2)}</pre>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
