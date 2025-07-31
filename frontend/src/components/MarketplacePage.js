@@ -93,6 +93,10 @@ const MarketplacePage = () => {
   ];
 
   useEffect(() => {
+    // Check authentication status
+    const user = getUser();
+    setCurrentUser(user);
+    
     initializeMap();
     fetchAssets();
     fetchStats();
