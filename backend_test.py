@@ -246,24 +246,37 @@ class BeatSpaceAPITester:
             token=self.admin_token
         )
 
-    # Public Endpoints Tests
+    # Critical Public Endpoints Tests
+    def test_public_stats(self):
+        """Test getting public statistics - CRITICAL for homepage"""
+        success, response = self.run_test("Get Public Stats", "GET", "stats/public", 200)
+        if success:
+            expected_keys = ['total_assets', 'available_assets', 'total_users', 'active_campaigns']
+            missing_keys = [key for key in expected_keys if key not in response]
+            if missing_keys:
+                print(f"   ⚠️  Missing keys in stats: {missing_keys}")
+            else:
+                print(f"   ✅ Stats structure looks good")
+            print(f"   Total assets: {response.get('total_assets', 'N/A')}")
+            print(f"   Available assets: {response.get('available_assets', 'N/A')}")
+            print(f"   Total users: {response.get('total_users', 'N/A')}")
+            print(f"   Active campaigns: {response.get('active_campaigns', 'N/A')}")
+        return success, response
+
     def test_public_assets(self):
-        """Test getting public assets"""
+        """Test getting public assets - CRITICAL for marketplace"""
         success, response = self.run_test("Get Public Assets", "GET", "assets/public", 200)
         if success:
             print(f"   Found {len(response)} public assets")
             if response:
                 asset = response[0]
+                required_fields = ['id', 'name', 'type', 'address', 'location', 'pricing', 'status']
+                missing_fields = [field for field in required_fields if field not in asset]
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in asset: {missing_fields}")
+                else:
+                    print(f"   ✅ Asset structure looks good")
                 print(f"   Sample asset: {asset.get('name')} - {asset.get('status')}")
-        return success, response
-
-    def test_public_stats(self):
-        """Test getting public statistics"""
-        success, response = self.run_test("Get Public Stats", "GET", "stats/public", 200)
-        if success:
-            print(f"   Total assets: {response.get('total_assets', 'N/A')}")
-            print(f"   Available assets: {response.get('available_assets', 'N/A')}")
-            print(f"   Total users: {response.get('total_users', 'N/A')}")
         return success, response
 
     # Protected Routes Tests (should fail without proper tokens)
