@@ -1066,7 +1066,17 @@ def main():
     tester.test_campaign_status_change_to_live()
     tester.test_campaign_status_change_to_draft()
     
-    # Test 7: Authorization Tests
+    # Test 7: REQUEST BEST OFFER WORKFLOW
+    print("\n💰 REQUEST BEST OFFER WORKFLOW")
+    print("Testing Request Best Offer functionality with new campaign_type and existing_campaign_id fields")
+    tester.test_submit_offer_request_new_campaign()
+    tester.test_submit_offer_request_existing_campaign()
+    tester.test_get_offer_requests_buyer()
+    tester.test_get_offer_requests_admin()
+    tester.test_offer_request_authentication()
+    tester.test_offer_request_data_validation()
+    
+    # Test 8: Authorization Tests
     print("\n🔒 AUTHORIZATION TESTS")
     print("Testing that protected routes require proper authentication")
     
