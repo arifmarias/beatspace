@@ -934,6 +934,62 @@ const BuyerDashboard = () => {
               />
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Campaign Start Date *</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {campaignForm.startDate 
+                        ? campaignForm.startDate.toLocaleDateString()
+                        : "Select start date"
+                      }
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <CalendarComponent
+                      mode="single"
+                      selected={campaignForm.startDate}
+                      onSelect={(date) => setCampaignForm({...campaignForm, startDate: date})}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Campaign End Date *</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {campaignForm.endDate 
+                        ? campaignForm.endDate.toLocaleDateString()
+                        : "Select end date"
+                      }
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <CalendarComponent
+                      mode="single"
+                      selected={campaignForm.endDate}
+                      onSelect={(date) => setCampaignForm({...campaignForm, endDate: date})}
+                      disabled={(date) => !campaignForm.startDate || date <= campaignForm.startDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">Notes</label>
               <Textarea
