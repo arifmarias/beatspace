@@ -565,11 +565,11 @@ const MarketplacePage = () => {
                         </div>
                       )}
                       
-                      {existingCampaigns.length > 0 && (
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            Add to Existing Campaign
-                          </label>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Add to Existing Campaign
+                        </label>
+                        {existingCampaigns.length > 0 ? (
                           <div className="space-y-2 max-h-40 overflow-y-auto">
                             {existingCampaigns.map((camp) => (
                               <div
@@ -587,8 +587,12 @@ const MarketplacePage = () => {
                               </div>
                             ))}
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="p-3 text-center text-gray-500 text-sm border border-dashed rounded-lg">
+                            No existing campaigns found. Create a new campaign below.
+                          </div>
+                        )}
+                      </div>
                       
                       <div className="border-t pt-4">
                         <label className="block text-sm font-medium mb-2">
