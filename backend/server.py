@@ -1031,6 +1031,166 @@ async def get_payment_invoice(
         headers={"Content-Disposition": f"attachment; filename=invoice-{payment_id}.pdf"}
     )
 
+# Request Best Offer Workflow Endpoints
+@api_router.post("/offers/request", response_model=OfferRequest)
+async def create_offer_request(
+    offer_data: OfferRequestCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """Submit a Request Best Offer"""
+    if current_user.role != UserRole.BUYER:
+        raise HTTPException(status_code=403, detail="Only buyers can request offers")
+    
+    # Get asset details
+    asset = await db.assets.find_one({"id": offer_data.asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    # Create offer request
+    offer_request = OfferRequest(
+        **offer_data.dict(),
+        buyer_id=current_user.id,
+        buyer_name=current_user.company_name,
+        asset_name=asset["name"]
+    )
+    
+    # Insert into database
+    await db.offer_requests.insert_one(offer_request.dict())
+    
+    # Update asset status to Pending Offer
+    await db.assets.update_one(
+        {"id": offer_data.asset_id},
+        {"$set": {"status": AssetStatus.PENDING_OFFER}}
+    )
+    
+    # Send notification email to admin (placeholder)
+    logger.info(f"New offer request submitted: {offer_request.id} by {current_user.company_name}")
+    
+    return offer_request
+
+@api_router.get("/offers/requests", response_model=List[OfferRequest])
+async def get_offer_requests(current_user: User = Depends(get_current_user)):
+    """Get offer requests based on user role"""
+    query = {}
+    
+    if current_user.role == UserRole.BUYER:
+        query["buyer_id"] = current_user.id
+    elif current_user.role == UserRole.ADMIN:
+        # Admin can see all requests
+        pass
+    else:
+        # Sellers can see requests for their assets
+        user_assets = await db.assets.find({"seller_id": current_user.id}).to_list(1000)
+        asset_ids = [asset["id"] for asset in user_assets]
+        query["asset_id"] = {"$in": asset_ids}
+    
+    requests = await db.offer_requests.find(query).sort("created_at", -1).to_list(1000)
+    return [OfferRequest(**request) for request in requests]
+
+@api_router.get("/offers/requests/{request_id}", response_model=OfferRequest)
+async def get_offer_request(
+    request_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get single offer request"""
+    request = await db.offer_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    # Check permissions
+    if (current_user.role == UserRole.BUYER and request["buyer_id"] != current_user.id) or \
+       (current_user.role == UserRole.SELLER):
+        # For sellers, check if they own the asset
+        asset = await db.assets.find_one({"id": request["asset_id"]})
+        if not asset or asset["seller_id"] != current_user.id:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    return OfferRequest(**request)
+
+@api_router.put("/admin/offers/{request_id}/quote")
+async def update_offer_quote(
+    request_id: str,
+    quote_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Admin: Add quote to offer request"""
+    request = await db.offer_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    # Update offer request with quote
+    await db.offer_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": "Quoted",
+            "final_offer": quote_data.get("final_offer"),
+            "admin_response": quote_data.get("admin_response"),
+            "quoted_at": datetime.utcnow()
+        }}
+    )
+    
+    # Update asset status to Negotiating
+    await db.assets.update_one(
+        {"id": request["asset_id"]},
+        {"$set": {"status": AssetStatus.NEGOTIATING}}
+    )
+    
+    # Send notification to buyer (placeholder)
+    logger.info(f"Quote provided for offer request: {request_id}")
+    
+    return {"message": "Quote added successfully"}
+
+@api_router.put("/offers/{request_id}/respond")
+async def respond_to_offer(
+    request_id: str,
+    response_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Buyer: Respond to offer quote"""
+    if current_user.role != UserRole.BUYER:
+        raise HTTPException(status_code=403, detail="Only buyers can respond to offers")
+    
+    request = await db.offer_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    if request["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only respond to your own requests")
+    
+    response_action = response_data.get("action")  # "accept", "reject", "modify"
+    
+    if response_action == "accept":
+        # Update request status
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": "Accepted"}}
+        )
+        
+        # Update asset status to Booked
+        await db.assets.update_one(
+            {"id": request["asset_id"]},
+            {"$set": {"status": AssetStatus.BOOKED}}
+        )
+        
+        logger.info(f"Offer accepted: {request_id}")
+        
+    elif response_action == "reject":
+        # Update request status
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": "Rejected"}}
+        )
+        
+        # Return asset to Available status
+        await db.assets.update_one(
+            {"id": request["asset_id"]},
+            {"$set": {"status": AssetStatus.AVAILABLE}}
+        )
+        
+        logger.info(f"Offer rejected: {request_id}")
+    
+    return {"message": f"Offer {response_action}ed successfully"}
+
 # Enhanced Asset Routes
 @api_router.get("/assets/batch")
 async def get_assets_batch(
