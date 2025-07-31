@@ -105,6 +105,41 @@ class PaymentStatus(str, Enum):
     REFUNDED = "refunded"
 
 # Models (Enhanced with Phase 3 features)
+# Enhanced Models for Request Best Offer Workflow
+class ServiceBundles(BaseModel):
+    printing: bool = False
+    setup: bool = False
+    monitoring: bool = False
+
+class OfferRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    buyer_id: str
+    buyer_name: str
+    asset_id: str
+    asset_name: str
+    campaign_name: str
+    contract_duration: str
+    estimated_budget: Optional[float] = None
+    service_bundles: ServiceBundles
+    timeline: Optional[str] = None
+    special_requirements: Optional[str] = None
+    notes: Optional[str] = None
+    status: str = "Pending"  # Pending, Processing, Quoted, Accepted, Rejected
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    admin_response: Optional[str] = None
+    final_offer: Optional[dict] = None
+    quoted_at: Optional[datetime] = None
+
+class OfferRequestCreate(BaseModel):
+    asset_id: str
+    campaign_name: str
+    contract_duration: str
+    estimated_budget: Optional[float] = None
+    service_bundles: ServiceBundles
+    timeline: Optional[str] = None
+    special_requirements: Optional[str] = None
+    notes: Optional[str] = None
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
