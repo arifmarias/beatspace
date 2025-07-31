@@ -459,12 +459,28 @@ const MarketplacePage = () => {
                   </DialogContent>
                 </Dialog>
               )}
-              <Button
-                variant="outline"
-                onClick={() => navigate('/login')}
-              >
-                Sign In
-              </Button>
+              {currentUser ? (
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-600">
+                    Welcome, {currentUser.company_name || currentUser.contact_name}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={logout}
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/login')}
+                >
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
