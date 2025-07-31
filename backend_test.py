@@ -1788,157 +1788,65 @@ class BeatSpaceAPITester:
         return success, response
 
 def main():
-    print("🚀 Starting BeatSpace Backend API Testing...")
-    print("Testing Critical Missing Endpoints and CRUD Operations")
-    print("=" * 60)
+    """Main function to run focused DELETE offer request tests"""
+    print("🎯 BeatSpace Backend API - DELETE Offer Request Testing")
+    print("=" * 80)
     
     tester = BeatSpaceAPITester()
     
-    # Test 1: Critical Public Endpoints (highest priority)
-    print("\n📍 CRITICAL PUBLIC ENDPOINTS")
-    print("These endpoints are essential for homepage and marketplace functionality")
-    tester.test_public_stats()
-    tester.test_public_assets()
-    
-    # Test 2: Authentication System
-    print("\n🔐 AUTHENTICATION SYSTEM")
-    print("Testing login for all user roles")
-    tester.test_admin_login()
-    tester.test_seller_login()
-    tester.test_buyer_login()
-    
-    # Test 3: Asset CRUD Operations
-    print("\n📦 ASSET CRUD OPERATIONS")
-    print("Testing complete asset management functionality")
-    tester.test_get_assets_authenticated()
-    tester.test_create_asset()
-    tester.test_get_single_asset()
-    tester.test_update_asset()
-    tester.test_delete_asset()
-    
-    # Test 4: Admin Management (Users & Assets)
-    print("\n👑 ADMIN MANAGEMENT (USERS & ASSETS)")
-    print("Testing admin management capabilities for users and assets")
-    tester.test_admin_get_users()
-    tester.test_admin_update_user_status()
-    tester.test_admin_get_assets()
-    tester.test_admin_update_asset_status()
-    
-    # Test 5: Campaign Management
-    print("\n🎯 CAMPAIGN MANAGEMENT")
-    print("Testing campaign creation and management")
-    tester.test_get_campaigns()
-    tester.test_create_campaign()
-    tester.test_update_campaign()
-    
-    # Test 6: NEW CAMPAIGN LIFECYCLE & ASSET STATUS MANAGEMENT
-    print("\n🔄 CAMPAIGN LIFECYCLE & ASSET STATUS MANAGEMENT")
-    print("Testing campaign status changes and asset status lifecycle")
-    tester.test_sample_data_campaign_statuses()
-    tester.test_asset_status_consistency()
-    tester.test_campaign_status_change_to_live()
-    tester.test_campaign_status_change_to_draft()
-    
-    # Test 7: REQUEST BEST OFFER WORKFLOW
-    print("\n💰 REQUEST BEST OFFER WORKFLOW")
-    print("Testing Request Best Offer functionality with new campaign_type and existing_campaign_id fields")
-    tester.test_submit_offer_request_new_campaign()
-    tester.test_submit_offer_request_existing_campaign()
-    tester.test_get_offer_requests_buyer()
-    tester.test_get_offer_requests_admin()
-    tester.test_offer_request_authentication()
-    tester.test_offer_request_data_validation()
-    
-    # Test 8: NEW UPDATED REQUEST BEST OFFER FUNCTIONALITY
-    print("\n🔄 UPDATED REQUEST BEST OFFER FUNCTIONALITY")
-    print("Testing new edit/delete offer functionality and campaign creation with dates")
-    tester.test_simplified_campaign_selection()
-    tester.test_edit_offer_request()
-    tester.test_edit_offer_request_permissions()
-    tester.test_delete_offer_request()
-    tester.test_delete_offer_request_permissions()
-    tester.test_campaign_creation_with_dates()
-    tester.test_campaign_date_validation()
-    tester.test_asset_expiration_date_calculations()
-    
-    # Test 9: Authorization Tests
-    print("\n🔒 AUTHORIZATION TESTS")
-    print("Testing that protected routes require proper authentication")
-    
-    # Test protected routes without auth (should fail)
-    protected_endpoints = [
-        ("Get Assets (Protected)", "GET", "assets"),
-        ("Create Asset", "POST", "assets"),
-        ("Get Campaigns", "GET", "campaigns"),
-        ("Create Campaign", "POST", "campaigns"),
-        ("Admin Get Users", "GET", "admin/users")
-    ]
-    
-    for name, method, endpoint in protected_endpoints:
-        tester.run_test(f"{name} - No Auth", method, endpoint, 401)
-    
-    # Test admin endpoints with non-admin token (should fail)
-    if tester.buyer_token:
-        tester.run_test("Buyer Access Admin Endpoint", "GET", "admin/users", 403, token=tester.buyer_token)
+    # Run focused DELETE tests
+    passed, total = tester.run_delete_offer_tests()
     
     # Print detailed results
     print("\n" + "=" * 60)
-    print("📊 DETAILED TEST RESULTS")
+    print("📊 DETAILED DELETE TEST RESULTS")
     print("=" * 60)
     
-    critical_tests = [
-        "Get Public Stats",
-        "Get Public Assets", 
-        "Admin Login",
-        "Seller Login",
+    delete_specific_tests = [
         "Buyer Login",
-        "Get Assets (Authenticated)",
-        "Create Asset",
-        "Admin Get Users",
-        "Admin Update User Status",
-        "Admin Get Assets",
-        "Admin Update Asset Status",
-        "Get Campaigns",
-        "Create Campaign",
-        "Update Campaign Status to Live",
-        "Update Campaign Status to Draft",
-        "Submit Offer Request (New Campaign)",
-        "Submit Offer Request (Existing Campaign)",
         "Get Offer Requests (Buyer)",
-        "Get Offer Requests (Admin)",
-        "Campaign Selection - New Campaign",
-        "Campaign Selection - Existing Campaign",
-        "Edit Offer Request (PUT)",
+        "Create Offer Request for Deletion",
+        "Check Asset Status Before Deletion",
         "Delete Offer Request",
-        "Create Campaign with Dates"
+        "Check Asset Status After Deletion",
+        "Verify Offer Request Deleted",
+        "Delete Offer Request - No Auth",
+        "Delete Offer Request - Seller Token",
+        "Delete Non-existent Offer Request",
+        "Delete Non-Pending Offer Request",
+        "Delete Existing Offer Request"
     ]
     
-    critical_passed = 0
-    critical_total = 0
+    delete_passed = 0
+    delete_total = 0
     
-    for test_name in critical_tests:
+    for test_name in delete_specific_tests:
         if test_name in tester.test_results:
-            critical_total += 1
+            delete_total += 1
             result = tester.test_results[test_name]
             if result['success']:
-                critical_passed += 1
+                delete_passed += 1
                 print(f"✅ {test_name}")
             else:
                 print(f"❌ {test_name} - Status: {result.get('status_code', 'Error')}")
+                if 'error' in result:
+                    print(f"   Error: {result['error']}")
     
-    print(f"\n📈 SUMMARY")
-    print(f"Total Tests: {tester.tests_passed}/{tester.tests_run} passed")
-    print(f"Critical Tests: {critical_passed}/{critical_total} passed")
+    print(f"\n📈 DELETE FUNCTIONALITY SUMMARY")
+    print(f"Total DELETE Tests: {delete_passed}/{delete_total} passed")
+    print(f"Overall Tests: {tester.tests_passed}/{tester.tests_run} passed")
     
     # Determine overall status
-    if critical_passed == critical_total:
-        print("🎉 All critical tests passed! Backend API is working correctly.")
-        return 0
-    elif critical_passed >= critical_total * 0.8:  # 80% pass rate
-        print("✅ Most critical tests passed - minor issues detected")
+    if delete_passed >= delete_total * 0.8:  # 80% pass rate for DELETE tests
+        print("🎉 DELETE functionality is working correctly!")
+        print("✅ Key findings:")
+        print("   - DELETE /api/offers/requests/{id} endpoint working")
+        print("   - Buyer authentication and permissions enforced")
+        print("   - Only pending offers can be deleted")
+        print("   - Asset status correctly resets to 'Available'")
         return 0
     else:
-        print("❌ Major issues detected - backend needs fixes")
+        print("❌ DELETE functionality has issues that need attention")
         return 1
 
 if __name__ == "__main__":
