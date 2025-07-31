@@ -4,6 +4,8 @@ import {
   ShoppingBag, 
   Plus, 
   Eye, 
+  Edit,
+  X,
   MapPin, 
   Calendar,
   DollarSign,
