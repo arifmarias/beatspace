@@ -802,10 +802,11 @@ const MarketplacePage = () => {
                 </Button>
               </CardContent>
             </Card>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
+          {/* Main Content Area - Flexible Width */}
+          <div className="flex-1 min-w-0">
             <Tabs value={viewMode} onValueChange={setViewMode} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="map">Map View</TabsTrigger>
