@@ -1191,6 +1191,63 @@ async def get_offer_request(
     
     return OfferRequest(**request)
 
+@api_router.put("/offers/requests/{request_id}", response_model=OfferRequest)
+async def update_offer_request(
+    request_id: str,
+    offer_data: OfferRequestCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """Update an offer request (buyer only, and only if status is Pending)"""
+    request = await db.offer_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    if current_user.role != UserRole.BUYER or request["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    if request["status"] != "Pending":
+        raise HTTPException(status_code=400, detail="Can only edit pending offer requests")
+    
+    # Update the offer request
+    update_data = offer_data.dict()
+    update_data["updated_at"] = datetime.utcnow()
+    
+    await db.offer_requests.update_one(
+        {"id": request_id},
+        {"$set": update_data}
+    )
+    
+    # Get updated request
+    updated_request = await db.offer_requests.find_one({"id": request_id})
+    return OfferRequest(**updated_request)
+
+@api_router.delete("/offers/requests/{request_id}")
+async def delete_offer_request(
+    request_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete an offer request (buyer only, and only if status is Pending)"""
+    request = await db.offer_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    if current_user.role != UserRole.BUYER or request["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    if request["status"] != "Pending":
+        raise HTTPException(status_code=400, detail="Can only delete pending offer requests")
+    
+    # Reset asset status to Available
+    await db.assets.update_one(
+        {"id": request["asset_id"]},
+        {"$set": {"status": AssetStatus.AVAILABLE}}
+    )
+    
+    # Delete the offer request
+    await db.offer_requests.delete_one({"id": request_id})
+    
+    return {"message": "Offer request deleted successfully"}
+
 @api_router.put("/admin/offers/{request_id}/quote")
 async def update_offer_quote(
     request_id: str,
