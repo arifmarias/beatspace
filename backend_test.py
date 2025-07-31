@@ -1723,7 +1723,12 @@ def main():
         "Submit Offer Request (New Campaign)",
         "Submit Offer Request (Existing Campaign)",
         "Get Offer Requests (Buyer)",
-        "Get Offer Requests (Admin)"
+        "Get Offer Requests (Admin)",
+        "Campaign Selection - New Campaign",
+        "Campaign Selection - Existing Campaign",
+        "Edit Offer Request (PUT)",
+        "Delete Offer Request",
+        "Create Campaign with Dates"
     ]
     
     critical_passed = 0
