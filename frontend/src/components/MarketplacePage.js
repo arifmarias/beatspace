@@ -119,6 +119,11 @@ const MarketplacePage = () => {
   }, [filteredAssets]);
 
   const initializeMap = async () => {
+    if (!mapRef.current || !GOOGLE_MAPS_API_KEY) {
+      console.error('Map container or API key not available');
+      return;
+    }
+
     const loader = new Loader({
       apiKey: GOOGLE_MAPS_API_KEY,
       version: 'weekly',
@@ -127,6 +132,11 @@ const MarketplacePage = () => {
 
     try {
       await loader.load();
+      
+      // Clear existing map instance
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current = null;
+      }
       
       const map = new window.google.maps.Map(mapRef.current, {
         center: { lat: 23.8103, lng: 90.4125 }, // Dhaka, Bangladesh
@@ -141,6 +151,11 @@ const MarketplacePage = () => {
       });
 
       mapInstanceRef.current = map;
+      
+      // Update markers if assets are available
+      if (filteredAssets.length > 0) {
+        updateMapMarkers();
+      }
     } catch (error) {
       console.error('Error loading Google Maps:', error);
     }
