@@ -678,6 +678,21 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Offer Mediation Tab */}
+          <TabsContent value="offers" className="space-y-6">
+            <OfferMediationPanel />
+          </TabsContent>
+
+          {/* Monitoring Tab */}
+          <TabsContent value="monitoring" className="space-y-6">
+            <AssetMonitoringSystem />
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <AdvancedAnalytics />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
