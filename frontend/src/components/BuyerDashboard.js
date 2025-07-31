@@ -540,7 +540,7 @@ const BuyerDashboard = () => {
                                                               ৳{asset.pricing?.['3_months']?.toLocaleString()}/3mo
                                                             </span>
                                                             <Badge variant="outline" className="text-xs">
-                                                              {asset.status}
+                                                              {selectedCampaign.status === 'Live' ? 'Live' : asset.status}
                                                             </Badge>
                                                           </div>
                                                         </div>
