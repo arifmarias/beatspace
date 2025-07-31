@@ -559,7 +559,7 @@ const MarketplacePage = () => {
       setShowOfferDialog(false);
       setSelectedAssetForOffer(null);
       setOfferDetails({
-        campaignType: 'new',
+        campaignType: 'existing',
         campaignName: '',
         existingCampaignId: '',
         assetId: '',
