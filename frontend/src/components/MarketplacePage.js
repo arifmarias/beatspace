@@ -332,7 +332,7 @@ const MarketplacePage = () => {
             assets: updatedAssets
           }, { headers });
           
-          // Add to temporary campaign for UI
+          // Add to temporary campaign for UI (fixed the bug here)
           if (!campaign.find(item => item.id === selectedCampaignForAsset.id)) {
             setCampaign([...campaign, selectedCampaignForAsset]);
           }
@@ -346,7 +346,7 @@ const MarketplacePage = () => {
       }
     } catch (error) {
       console.error('Error adding asset to campaign:', error);
-      alert('Failed to add asset to campaign');
+      alert('Failed to add asset to campaign. Error: ' + (error.response?.data?.detail || error.message));
     }
   };
 
