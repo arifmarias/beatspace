@@ -61,7 +61,7 @@ const BuyerDashboard = () => {
       
       // Fetch buyer's campaigns
       const campaignsRes = await axios.get(`${API}/campaigns`, { headers });
-      setCampaigns(campaignsRes.data);
+      setCampaigns(campaignsRes.data || []);
 
       // Calculate stats with null safety
       const campaignData = campaignsRes.data || [];
