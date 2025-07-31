@@ -1137,23 +1137,48 @@ const BuyerDashboard = () => {
                       className="w-full justify-start text-left font-normal"
                     >
                       <Calendar className="mr-2 h-4 w-4" />
-                      {editingOffer.timeline && editingOffer.timeline.includes('from') 
-                        ? editingOffer.timeline.replace('Asset starts from ', '')
-                        : "Select asset start date"
-                      }
+                      {(() => {
+                        // Parse the date correctly from timeline
+                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                          try {
+                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            const parsedDate = new Date(dateStr);
+                            if (!isNaN(parsedDate)) {
+                              return parsedDate.toLocaleDateString();
+                            }
+                          } catch (e) {
+                            console.error('Date parsing error:', e);
+                          }
+                        }
+                        return "Select asset start date";
+                      })()}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <CalendarComponent
                       mode="single"
-                      selected={editingOffer.timeline && editingOffer.timeline.includes('from') 
-                        ? new Date(editingOffer.timeline.replace('Asset starts from ', ''))
-                        : null
-                      }
-                      onSelect={(date) => setEditingOffer({
-                        ...editingOffer, 
-                        timeline: date ? `Asset starts from ${date.toLocaleDateString()}` : ''
-                      })}
+                      selected={(() => {
+                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                          try {
+                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            const parsedDate = new Date(dateStr);
+                            if (!isNaN(parsedDate)) {
+                              return parsedDate;
+                            }
+                          } catch (e) {
+                            console.error('Date parsing error:', e);
+                          }
+                        }
+                        return null;
+                      })()}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEditingOffer({
+                            ...editingOffer, 
+                            timeline: `Asset starts from ${date.toLocaleDateString('en-US')}`
+                          });
+                        }
+                      }}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
                     />
@@ -1168,29 +1193,41 @@ const BuyerDashboard = () => {
                   <div className="p-3 bg-gray-50 rounded-lg border">
                     <p className="text-sm font-medium text-gray-900">
                       {(() => {
-                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
-                          const startDate = new Date(editingOffer.timeline.replace('Asset starts from ', ''));
-                          const expirationDate = new Date(startDate);
-                          
-                          switch (editingOffer.contract_duration) {
-                            case '3_months':
-                              expirationDate.setMonth(startDate.getMonth() + 3);
-                              break;
-                            case '6_months':
-                              expirationDate.setMonth(startDate.getMonth() + 6);
-                              break;
-                            case '12_months':
-                              expirationDate.setFullYear(startDate.getFullYear() + 1);
-                              break;
+                        try {
+                          if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            const startDate = new Date(dateStr);
+                            
+                            if (!isNaN(startDate)) {
+                              const expirationDate = new Date(startDate);
+                              
+                              switch (editingOffer.contract_duration) {
+                                case '3_months':
+                                  expirationDate.setMonth(startDate.getMonth() + 3);
+                                  break;
+                                case '6_months':
+                                  expirationDate.setMonth(startDate.getMonth() + 6);
+                                  break;
+                                case '12_months':
+                                  expirationDate.setFullYear(startDate.getFullYear() + 1);
+                                  break;
+                                default:
+                                  expirationDate.setMonth(startDate.getMonth() + 3);
+                                  break;
+                              }
+                              
+                              return expirationDate.toLocaleDateString('en-US');
+                            }
                           }
-                          
-                          return expirationDate.toLocaleDateString();
+                          return 'Invalid start date';
+                        } catch (error) {
+                          console.error('Expiration date calculation error:', error);
+                          return 'Error calculating date';
                         }
-                        return 'Select start date first';
                       })()}
                     </p>
                     <p className="text-xs text-gray-600 mt-1">
-                      Calculated based on start date + {editingOffer.contract_duration?.replace('_', ' ')}
+                      Calculated based on start date + {editingOffer.contract_duration?.replace('_', ' ') || 'contract duration'}
                     </p>
                   </div>
                 </div>
