@@ -1274,6 +1274,19 @@ class CampaignCreate(BaseModel):
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
 
+@api_router.get("/campaigns/{campaign_id}", response_model=Campaign)
+async def get_campaign(campaign_id: str, current_user: User = Depends(get_current_user)):
+    """Get single campaign by ID"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Check permissions
+    if current_user.role == UserRole.BUYER and campaign["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only view your own campaigns")
+    
+    return Campaign(**campaign)
+
 @api_router.get("/campaigns", response_model=List[Campaign])
 async def get_campaigns(current_user: User = Depends(get_current_user)):
     """Get campaigns for current user"""
