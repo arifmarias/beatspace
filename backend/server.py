@@ -1156,6 +1156,94 @@ async def delete_asset(
     await db.assets.delete_one({"id": asset_id})
     return {"message": "Asset deleted successfully"}
 
+# Admin-specific routes
+@api_router.get("/admin/users", response_model=List[User])
+async def get_all_users(admin_user: User = Depends(require_admin)):
+    """Get all users for admin management"""
+    users = await db.users.find({}).to_list(1000)
+    return [User(**user) for user in users]
+
+@api_router.get("/admin/assets", response_model=List[Asset])
+async def get_all_assets_admin(admin_user: User = Depends(require_admin)):
+    """Get all assets for admin management"""
+    assets = await db.assets.find({}).to_list(1000)
+    return [Asset(**asset) for asset in assets]
+
+@api_router.patch("/admin/users/{user_id}/status")
+async def update_user_status(
+    user_id: str,
+    status_update: UserStatusUpdate,
+    admin_user: User = Depends(require_admin)
+):
+    """Update user status (approve/reject/suspend)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {"status": status_update.status}
+    if status_update.status == UserStatus.APPROVED:
+        update_data["verified_at"] = datetime.utcnow()
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    # Send notification email
+    user_obj = User(**user)
+    if status_update.status == UserStatus.APPROVED:
+        send_notification_email(
+            user_obj.email,
+            "Account Approved - Welcome to BeatSpace!",
+            f"Great news! Your BeatSpace account has been approved. You can now access all platform features."
+        )
+    elif status_update.status == UserStatus.REJECTED:
+        reason = status_update.reason or "Please contact support for more information."
+        send_notification_email(
+            user_obj.email,
+            "Account Status Update",
+            f"Your BeatSpace account application has been reviewed. Reason: {reason}"
+        )
+    
+    return {"message": f"User status updated to {status_update.status}"}
+
+@api_router.patch("/admin/assets/{asset_id}/status")
+async def update_asset_status(
+    asset_id: str,
+    status_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update asset status (approve/reject)"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    new_status = status_data.get("status")
+    if new_status not in [s.value for s in AssetStatus]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    update_data = {"status": new_status}
+    if new_status == AssetStatus.AVAILABLE:
+        update_data["approved_at"] = datetime.utcnow()
+    
+    await db.assets.update_one(
+        {"id": asset_id},
+        {"$set": update_data}
+    )
+    
+    # Notify seller
+    seller = await db.users.find_one({"id": asset["seller_id"]})
+    if seller:
+        asset_obj = Asset(**asset)
+        if new_status == AssetStatus.AVAILABLE:
+            send_notification_email(
+                seller["email"],
+                "Asset Approved!",
+                f"Your asset '{asset_obj.name}' has been approved and is now live on BeatSpace."
+            )
+    
+    return {"message": f"Asset status updated to {new_status}"}
+
 # Enhanced User Management Routes
 @api_router.get("/admin/users", response_model=List[User])
 async def get_all_users(admin_user: User = Depends(require_admin)):
