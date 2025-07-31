@@ -78,6 +78,14 @@ const BuyerDashboard = () => {
       });
     } catch (error) {
       console.error('Error fetching buyer data:', error);
+      // Set default empty states on error
+      setCampaigns([]);
+      setStats({
+        totalCampaigns: 0,
+        activeCampaigns: 0,
+        pendingCampaigns: 0,
+        totalBudget: 0
+      });
       if (error.response?.status === 401) {
         logout();
       }
