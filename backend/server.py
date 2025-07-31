@@ -102,6 +102,30 @@ class PaymentStatus(str, Enum):
     REFUNDED = "refunded"
 
 # Models (Enhanced with Phase 3 features)
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    company_name: str
+    contact_name: str
+    phone: str
+    role: UserRole
+    address: Optional[str] = None
+    website: Optional[str] = None
+    business_license: Optional[str] = None
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserStatusUpdate(BaseModel):
+    status: UserStatus
+    reason: Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: User
+
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
