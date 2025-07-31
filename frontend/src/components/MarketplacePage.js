@@ -299,7 +299,23 @@ const MarketplacePage = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/')}
+                onClick={() => {
+                  const user = getUser();
+                  if (user) {
+                    // Redirect to appropriate dashboard based on user role
+                    if (user.role === 'admin') {
+                      navigate('/admin/dashboard');
+                    } else if (user.role === 'seller') {
+                      navigate('/seller/dashboard');
+                    } else if (user.role === 'buyer') {
+                      navigate('/buyer/dashboard');
+                    } else {
+                      navigate('/');
+                    }
+                  } else {
+                    navigate('/');
+                  }
+                }}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
