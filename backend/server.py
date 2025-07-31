@@ -121,11 +121,6 @@ class UserStatusUpdate(BaseModel):
     status: UserStatus
     reason: Optional[str] = None
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    user: User
-
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
@@ -141,6 +136,11 @@ class User(BaseModel):
     business_license: Optional[str] = None
     last_login: Optional[datetime] = None
     subscription_plan: Optional[str] = "basic"
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: User
 
 class Asset(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
