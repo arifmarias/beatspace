@@ -272,7 +272,7 @@ const BuyerDashboard = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -314,6 +314,21 @@ const BuyerDashboard = () => {
               </div>
               <div className="mt-2 text-sm text-gray-500">
                 In negotiation
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Offer Requests</p>
+                  <p className="text-3xl font-bold text-orange-600">{stats.totalOfferRequests}</p>
+                </div>
+                <FileText className="w-8 h-8 text-orange-500" />
+              </div>
+              <div className="mt-2 text-sm text-gray-500">
+                Best offer requests
               </div>
             </CardContent>
           </Card>
