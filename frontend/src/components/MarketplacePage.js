@@ -296,9 +296,11 @@ const MarketplacePage = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Home
               </Button>
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                alt="BeatSpace Logo" 
+                className="w-8 h-8"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">BeatSpace</h1>
                 <p className="text-xs text-gray-500">Bangladesh Marketplace</p>
