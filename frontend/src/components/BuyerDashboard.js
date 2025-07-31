@@ -341,7 +341,8 @@ const BuyerDashboard = () => {
                                     fetchCampaignAssets(campaign);
                                   }}
                                 >
-                                  <Eye className="w-4 h-4" />
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  View
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-2xl">
