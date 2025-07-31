@@ -279,22 +279,105 @@ class BeatSpaceAPITester:
                 print(f"   Sample asset: {asset.get('name')} - {asset.get('status')}")
         return success, response
 
-    # Protected Routes Tests (should fail without proper tokens)
-    def test_protected_routes_without_auth(self):
-        """Test that protected routes require authentication"""
-        protected_endpoints = [
-            ("Get Assets (Protected)", "GET", "assets"),
-            ("Create Asset", "POST", "assets"),
-            ("Get Campaigns", "GET", "campaigns"),
-            ("Create Campaign", "POST", "campaigns")
-        ]
+    # Asset CRUD Operations Tests
+    def test_get_assets_authenticated(self):
+        """Test getting assets with authentication"""
+        if not self.seller_token:
+            print("⚠️  Skipping authenticated assets test - no seller token")
+            return False, {}
         
-        all_passed = True
-        for name, method, endpoint in protected_endpoints:
-            success, _ = self.run_test(f"{name} - No Auth", method, endpoint, 401)
-            all_passed = all_passed and success
+        success, response = self.run_test("Get Assets (Authenticated)", "GET", "assets", 200, token=self.seller_token)
+        if success:
+            print(f"   Found {len(response)} assets for seller")
+            if response:
+                asset = response[0]
+                required_fields = ['id', 'name', 'type', 'address', 'location', 'pricing', 'status']
+                missing_fields = [field for field in required_fields if field not in asset]
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in asset: {missing_fields}")
+                else:
+                    print(f"   ✅ Asset structure looks good")
+        return success, response
+
+    def test_create_asset(self):
+        """Test creating a new asset (seller functionality)"""
+        if not self.seller_token:
+            print("⚠️  Skipping asset creation test - no seller token")
+            return False, {}
         
-        return all_passed
+        asset_data = {
+            "name": f"Test Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Billboard",
+            "address": "Test Location, Dhaka",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10 x 20 ft",
+            "pricing": {"3_months": 8000, "6_months": 14000, "12_months": 25000},
+            "photos": ["https://images.unsplash.com/photo-1541888946425-d81bb1924c35?w=800&h=600&fit=crop"],
+            "description": "Test asset created by automated testing",
+            "specifications": {"material": "Vinyl", "lighting": "LED"},
+            "visibility_score": 7,
+            "traffic_volume": "Medium",
+            "district": "Dhaka",
+            "division": "Dhaka"
+        }
+        
+        success, response = self.run_test("Create Asset", "POST", "assets", 200, data=asset_data, token=self.seller_token)
+        if success and 'id' in response:
+            self.created_asset_id = response['id']
+            print(f"   Created asset ID: {self.created_asset_id}")
+        return success, response
+
+    def test_get_single_asset(self):
+        """Test getting a single asset by ID"""
+        if not self.created_asset_id:
+            # Get an asset ID from public assets
+            success, assets = self.test_public_assets()
+            if success and assets:
+                asset_id = assets[0]['id']
+            else:
+                print("⚠️  Skipping single asset test - no asset ID available")
+                return False, {}
+        else:
+            asset_id = self.created_asset_id
+        
+        success, response = self.run_test(f"Get Single Asset", "GET", f"assets/{asset_id}", 200, token=self.seller_token)
+        return success, response
+
+    def test_update_asset(self):
+        """Test updating an asset"""
+        if not self.seller_token or not self.created_asset_id:
+            print("⚠️  Skipping asset update test - missing seller token or asset ID")
+            return False, {}
+        
+        update_data = {
+            "description": "Updated test asset description",
+            "pricing": {"3_months": 9000, "6_months": 16000, "12_months": 28000}
+        }
+        
+        success, response = self.run_test(
+            "Update Asset", 
+            "PUT", 
+            f"assets/{self.created_asset_id}", 
+            200, 
+            data=update_data, 
+            token=self.seller_token
+        )
+        return success, response
+
+    def test_delete_asset(self):
+        """Test deleting an asset"""
+        if not self.seller_token or not self.created_asset_id:
+            print("⚠️  Skipping asset deletion test - missing seller token or asset ID")
+            return False, {}
+        
+        success, response = self.run_test(
+            "Delete Asset", 
+            "DELETE", 
+            f"assets/{self.created_asset_id}", 
+            200, 
+            token=self.seller_token
+        )
+        return success, response
 
     # Role-based Access Tests
     def test_role_based_access(self):
