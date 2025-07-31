@@ -190,7 +190,9 @@ const BuyerDashboard = () => {
         buyer_id: currentUser.id,
         buyer_name: currentUser.company_name,
         asset_ids: [], // Will be populated when assets are selected
-        budget: parseFloat(campaignForm.budget) || 0
+        budget: parseFloat(campaignForm.budget) || 0,
+        start_date: campaignForm.startDate ? campaignForm.startDate.toISOString() : null,
+        end_date: campaignForm.endDate ? campaignForm.endDate.toISOString() : null
       };
 
       await axios.post(`${API}/campaigns`, campaignData, { headers });
