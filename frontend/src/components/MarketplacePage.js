@@ -63,6 +63,7 @@ const MarketplacePage = () => {
   const [showCampaignDialog, setShowCampaignDialog] = useState(false);
   const [existingCampaigns, setExistingCampaigns] = useState([]);
   const [selectedCampaignForAsset, setSelectedCampaignForAsset] = useState(null);
+  const [selectedAssetForOffer, setSelectedAssetForOffer] = useState(null);
   const [offerDetails, setOfferDetails] = useState({
     campaignName: '',
     budget: '',
