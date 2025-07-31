@@ -498,13 +498,14 @@ const MarketplacePage = () => {
       }
 
       // Validation for campaign selection
-      if (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) {
-        alert('Please enter a campaign name for the new campaign.');
+      if (!offerDetails.existingCampaignId) {
+        alert('Please select an existing campaign.');
         return;
       }
-      
-      if (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) {
-        alert('Please select an existing campaign.');
+
+      // Asset start date validation
+      if (!offerDetails.tentativeStartDate) {
+        alert('Please select an asset starting date.');
         return;
       }
 
