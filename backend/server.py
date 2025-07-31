@@ -349,9 +349,67 @@ async def init_bangladesh_sample_data():
         }
         await db.users.insert_one(admin_user)
     
-    # Sample assets (same as before but enhanced)
+    # Create sample seller users
+    sample_sellers = [
+        {
+            "id": "seller_bd_001",
+            "email": "dhaka.media@example.com",
+            "password_hash": hash_password("seller123"),
+            "company_name": "Dhaka Outdoor Media Ltd.",
+            "contact_name": "Rahman Ahmed",
+            "phone": "+8801712345678",
+            "role": "seller",
+            "status": "approved",
+            "created_at": datetime.utcnow(),
+            "verified_at": datetime.utcnow(),
+            "address": "Dhanmondi, Dhaka",
+            "subscription_plan": "premium"
+        },
+        {
+            "id": "seller_bd_002", 
+            "email": "ctg.ads@example.com",
+            "password_hash": hash_password("seller123"),
+            "company_name": "Chittagong Advertising Solutions",
+            "contact_name": "Fatima Khan",
+            "phone": "+8801812345678",
+            "role": "seller",
+            "status": "approved",
+            "created_at": datetime.utcnow(),
+            "verified_at": datetime.utcnow(),
+            "address": "Chittagong City",
+            "subscription_plan": "basic"
+        }
+    ]
+    
+    for seller in sample_sellers:
+        existing_seller = await db.users.find_one({"id": seller["id"]})
+        if not existing_seller:
+            await db.users.insert_one(seller)
+    
+    # Create sample buyer user
+    sample_buyer = {
+        "id": "buyer_bd_001",
+        "email": "marketing@grameenphone.com",
+        "password_hash": hash_password("buyer123"),
+        "company_name": "Grameenphone Ltd.",
+        "contact_name": "Sarah Rahman",
+        "phone": "+8801912345678",
+        "role": "buyer",
+        "status": "approved",
+        "created_at": datetime.utcnow(),
+        "verified_at": datetime.utcnow(),
+        "address": "Gulshan, Dhaka",
+        "subscription_plan": "enterprise"
+    }
+    
+    existing_buyer = await db.users.find_one({"id": sample_buyer["id"]})
+    if not existing_buyer:
+        await db.users.insert_one(sample_buyer)
+    
+    # Sample assets (Enhanced with complete data)
     bangladesh_assets = [
         {
+            "id": str(uuid.uuid4()),
             "name": "Dhanmondi Lake Billboard",
             "type": "Billboard",
             "address": "Dhanmondi Lake, Road 32, Dhaka 1209",
@@ -371,6 +429,8 @@ async def init_bangladesh_sample_data():
             },
             "seller_id": "seller_bd_001",
             "seller_name": "Dhaka Outdoor Media Ltd.",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
             "visibility_score": 9,
             "traffic_volume": "Very High",
             "district": "Dhaka",
@@ -378,13 +438,223 @@ async def init_bangladesh_sample_data():
             "total_bookings": 12,
             "total_revenue": 1800000
         },
-        # Add other assets with enhanced data...
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Farmgate Metro Station Display",
+            "type": "Railway Station",
+            "address": "Farmgate Metro Station, Tejgaon, Dhaka",
+            "location": {"lat": 23.7558, "lng": 90.3897},
+            "dimensions": "15 x 30 ft",
+            "pricing": {"3_months": 120000, "6_months": 220000, "12_months": 400000},
+            "status": "Available",
+            "photos": [
+                "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=600&fit=crop"
+            ],
+            "description": "High-traffic digital display at Farmgate Metro Station, perfect for reaching daily commuters.",
+            "specifications": {
+                "lighting": "Digital LED screen",
+                "material": "Weatherproof digital display",
+                "installation": "Mounted installation included"
+            },
+            "seller_id": "seller_bd_001",
+            "seller_name": "Dhaka Outdoor Media Ltd.",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "visibility_score": 8,
+            "traffic_volume": "Very High",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "total_bookings": 8,
+            "total_revenue": 960000
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Gulshan Circle Wall Advertisement",
+            "type": "Wall",
+            "address": "Gulshan Circle 1, Dhaka 1212",
+            "location": {"lat": 23.7808, "lng": 90.4134},
+            "dimensions": "25 x 35 ft",
+            "pricing": {"3_months": 180000, "6_months": 330000, "12_months": 600000},
+            "status": "Booked",
+            "photos": [
+                "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=600&fit=crop"
+            ],
+            "description": "Premium wall space at Gulshan Circle, one of Dhaka's most prestigious commercial areas.",
+            "specifications": {
+                "lighting": "Spotlit during evening hours",
+                "material": "Vinyl with UV protection",
+                "installation": "Professional mounting included"
+            },
+            "seller_id": "seller_bd_001",
+            "seller_name": "Dhaka Outdoor Media Ltd.",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "next_available_date": datetime.utcnow() + timedelta(days=90),
+            "visibility_score": 10,
+            "traffic_volume": "Very High",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "total_bookings": 15,
+            "total_revenue": 2700000
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Chittagong Port Road Billboard",
+            "type": "Billboard",
+            "address": "Port Access Road, Chittagong",
+            "location": {"lat": 22.3569, "lng": 91.7832},
+            "dimensions": "18 x 36 ft",
+            "pricing": {"3_months": 100000, "6_months": 180000, "12_months": 320000},
+            "status": "Available",
+            "photos": [
+                "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+            ],
+            "description": "Strategic billboard location on the main route to Chittagong Port, high commercial vehicle traffic.",
+            "specifications": {
+                "lighting": "Solar-powered LED lighting",
+                "material": "Weather-resistant vinyl",
+                "installation": "Steel structure with concrete foundation"
+            },
+            "seller_id": "seller_bd_002",
+            "seller_name": "Chittagong Advertising Solutions",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "visibility_score": 7,
+            "traffic_volume": "High",
+            "district": "Chittagong",
+            "division": "Chittagong",
+            "total_bookings": 6,
+            "total_revenue": 600000
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Sylhet Airport Entrance Display",
+            "type": "Billboard",
+            "address": "Osmani International Airport, Sylhet",
+            "location": {"lat": 24.9633, "lng": 91.8679},
+            "dimensions": "12 x 24 ft",
+            "pricing": {"3_months": 80000, "6_months": 145000, "12_months": 260000},
+            "status": "Available",
+            "photos": [
+                "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&h=600&fit=crop"
+            ],
+            "description": "Airport entrance billboard targeting business travelers and tourists visiting Sylhet.",
+            "specifications": {
+                "lighting": "LED backlit panel",
+                "material": "Aluminum composite with vinyl wrap",
+                "installation": "Professional installation and maintenance"
+            },
+            "seller_id": "seller_bd_002",
+            "seller_name": "Chittagong Advertising Solutions",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "visibility_score": 6,
+            "traffic_volume": "Medium",
+            "district": "Sylhet",
+            "division": "Sylhet",
+            "total_bookings": 4,
+            "total_revenue": 320000
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Rajshahi University Area Billboard",
+            "type": "Billboard", 
+            "address": "University Road, Rajshahi",
+            "location": {"lat": 24.3745, "lng": 88.6042},
+            "dimensions": "16 x 32 ft",
+            "pricing": {"3_months": 70000, "6_months": 125000, "12_months": 220000},
+            "status": "Work in Progress",
+            "photos": [
+                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop"
+            ],
+            "description": "University area billboard targeting students, faculty, and young professionals in Rajshahi.",
+            "specifications": {
+                "lighting": "Standard evening illumination", 
+                "material": "Vinyl banner with steel frame",
+                "installation": "Currently under construction"
+            },
+            "seller_id": "seller_bd_002",
+            "seller_name": "Chittagong Advertising Solutions",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "next_available_date": datetime.utcnow() + timedelta(days=30),
+            "visibility_score": 5,
+            "traffic_volume": "Medium",
+            "district": "Rajshahi",
+            "division": "Rajshahi",
+            "total_bookings": 2,
+            "total_revenue": 140000
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Khulna Shipyard Bridge Banner",
+            "type": "Bridge",
+            "address": "Rupsha Bridge, Khulna",
+            "location": {"lat": 22.8456, "lng": 89.5403},
+            "dimensions": "30 x 10 ft",
+            "pricing": {"3_months": 60000, "6_months": 110000, "12_months": 190000},
+            "status": "Available",
+            "photos": [
+                "https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800&h=600&fit=crop"
+            ],
+            "description": "Bridge banner over major river crossing in Khulna, visible to all vehicle and pedestrian traffic.",
+            "specifications": {
+                "lighting": "No artificial lighting",
+                "material": "Heavy-duty mesh banner",
+                "installation": "Bridge-mounted with safety harness access"
+            },
+            "seller_id": "seller_bd_002",
+            "seller_name": "Chittagong Advertising Solutions",
+            "created_at": datetime.utcnow(),
+            "approved_at": datetime.utcnow(),
+            "visibility_score": 6,
+            "traffic_volume": "High",
+            "district": "Khulna",
+            "division": "Khulna",
+            "total_bookings": 3,
+            "total_revenue": 180000
+        }
     ]
     
     # Insert enhanced assets
     for asset_data in bangladesh_assets:
         asset = Asset(**asset_data)
         await db.assets.insert_one(asset.dict())
+    
+    # Create sample campaigns
+    sample_campaigns = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Grameenphone 5G Launch Campaign",
+            "buyer_id": "buyer_bd_001",
+            "buyer_name": "Grameenphone Ltd.",
+            "description": "National campaign to promote new 5G services across major cities",
+            "assets": [bangladesh_assets[0]["id"], bangladesh_assets[1]["id"]],
+            "status": "Live",
+            "budget": 500000,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "start_date": datetime.utcnow() - timedelta(days=15),
+            "end_date": datetime.utcnow() + timedelta(days=75)
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Summer Fashion Collection 2025",
+            "buyer_id": "buyer_bd_001", 
+            "buyer_name": "Grameenphone Ltd.",
+            "description": "Seasonal fashion promotion targeting urban youth",
+            "assets": [bangladesh_assets[3]["id"], bangladesh_assets[4]["id"]],
+            "status": "Draft",
+            "budget": 300000,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+    ]
+    
+    for campaign in sample_campaigns:
+        existing_campaign = await db.campaigns.find_one({"id": campaign["id"]})
+        if not existing_campaign:
+            await db.campaigns.insert_one(campaign)
 
 # Initialize sample data on startup
 @app.on_event("startup")
