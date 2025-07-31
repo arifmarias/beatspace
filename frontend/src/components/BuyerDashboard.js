@@ -1158,6 +1158,41 @@ const BuyerDashboard = () => {
                 </Popover>
               </div>
 
+              {/* Asset Expiration Date */}
+              {editingOffer.timeline && editingOffer.contract_duration && (
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Asset Expiration Date</label>
+                  <div className="p-3 bg-gray-50 rounded-lg border">
+                    <p className="text-sm font-medium text-gray-900">
+                      {(() => {
+                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                          const startDate = new Date(editingOffer.timeline.replace('Asset starts from ', ''));
+                          const expirationDate = new Date(startDate);
+                          
+                          switch (editingOffer.contract_duration) {
+                            case '3_months':
+                              expirationDate.setMonth(startDate.getMonth() + 3);
+                              break;
+                            case '6_months':
+                              expirationDate.setMonth(startDate.getMonth() + 6);
+                              break;
+                            case '12_months':
+                              expirationDate.setFullYear(startDate.getFullYear() + 1);
+                              break;
+                          }
+                          
+                          return expirationDate.toLocaleDateString();
+                        }
+                        return 'Select start date first';
+                      })()}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Calculated based on start date + {editingOffer.contract_duration?.replace('_', ' ')}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Additional Services */}
               <div>
                 <label className="block text-sm font-semibold mb-3">Additional Services</label>
