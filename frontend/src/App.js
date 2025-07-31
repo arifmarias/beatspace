@@ -515,8 +515,8 @@ const BeatSpace = () => {
                   className="w-full"
                   onClick={() => {
                     setFilters({
-                      type: '',
-                      status: '',
+                      type: 'all',
+                      status: 'all',
                       minPrice: '',
                       maxPrice: '',
                       duration: '3_months'
