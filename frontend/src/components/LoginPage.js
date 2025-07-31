@@ -99,8 +99,12 @@ const LoginPage = () => {
         {/* Login Card */}
         <Card className="bg-black/40 backdrop-blur-xl border-white/20 shadow-2xl">
           <CardHeader className="text-center pb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <MapPin className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                alt="BeatSpace Logo" 
+                className="w-16 h-16"
+              />
             </div>
             <CardTitle className="text-2xl font-bold text-white">
               Welcome Back
