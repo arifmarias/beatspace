@@ -21,7 +21,12 @@ import {
   Mail,
   Phone,
   Globe,
-  Calendar
+  Calendar,
+  Camera,
+  MessageSquare,
+  TrendingUp,
+  DollarSign,
+  Activity
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -35,6 +40,9 @@ import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { getAuthHeaders, logout } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
+import OfferMediationPanel from './OfferMediationPanel';
+import AssetMonitoringSystem from './AssetMonitoringSystem';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
