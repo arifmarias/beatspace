@@ -722,37 +722,69 @@ async def init_bangladesh_sample_data():
             asset = Asset(**asset_data)
             await db.assets.insert_one(asset.dict())
     
-    # Create sample campaigns - only if none exist
+    # Create sample campaigns with realistic statuses - only if none exist
     existing_campaigns = await db.campaigns.count_documents({})
     if existing_campaigns == 0:
+        campaign_1_id = str(uuid.uuid4())
+        campaign_2_id = str(uuid.uuid4())
+        campaign_3_id = str(uuid.uuid4())
+        
         sample_campaigns = [
         {
-            "id": str(uuid.uuid4()),
+            "id": campaign_1_id,
             "name": "Grameenphone 5G Launch Campaign",
             "buyer_id": "buyer_bd_001",
             "buyer_name": "Grameenphone Ltd.",
             "description": "National campaign to promote new 5G services across major cities",
-            "assets": [bangladesh_assets[0]["id"], bangladesh_assets[1]["id"]],
+            "assets": [bangladesh_assets[0]["id"], bangladesh_assets[1]["id"]],  # Dhanmondi Lake + Farmgate Metro
             "status": "Live",
             "budget": 500000,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": datetime.utcnow() - timedelta(days=30),
+            "updated_at": datetime.utcnow() - timedelta(days=15),
             "start_date": datetime.utcnow() - timedelta(days=15),
             "end_date": datetime.utcnow() + timedelta(days=75)
         },
         {
-            "id": str(uuid.uuid4()),
+            "id": campaign_2_id,
             "name": "Summer Fashion Collection 2025",
             "buyer_id": "buyer_bd_001", 
             "buyer_name": "Grameenphone Ltd.",
             "description": "Seasonal fashion promotion targeting urban youth",
-            "assets": [bangladesh_assets[3]["id"], bangladesh_assets[4]["id"]],
+            "assets": [bangladesh_assets[3]["id"], bangladesh_assets[4]["id"]],  # Chittagong Port + Sylhet Airport
             "status": "Draft",
             "budget": 300000,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": datetime.utcnow() - timedelta(days=7),
+            "updated_at": datetime.utcnow() - timedelta(days=2)
+        },
+        {
+            "id": campaign_3_id,
+            "name": "Bank Asia Digital Banking",
+            "buyer_id": "buyer_bd_001",
+            "buyer_name": "Grameenphone Ltd.",
+            "description": "Promoting digital banking services across Bangladesh",
+            "assets": [bangladesh_assets[2]["id"]],  # Gulshan Circle (already set to Booked)
+            "status": "Live",
+            "budget": 600000,
+            "created_at": datetime.utcnow() - timedelta(days=45),
+            "updated_at": datetime.utcnow() - timedelta(days=30),
+            "start_date": datetime.utcnow() - timedelta(days=30),
+            "end_date": datetime.utcnow() + timedelta(days=60)
         }
         ]
+        
+        # Update asset statuses to match campaign statuses
+        # Assets in Live campaigns should be "Live"
+        bangladesh_assets[0]["status"] = "Live"  # Dhanmondi Lake - Live campaign
+        bangladesh_assets[1]["status"] = "Live"  # Farmgate Metro - Live campaign
+        bangladesh_assets[2]["status"] = "Live"  # Gulshan Circle - Live campaign
+        
+        # Assets in Draft campaigns remain "Available"
+        bangladesh_assets[3]["status"] = "Available"  # Chittagong Port - Draft campaign
+        bangladesh_assets[4]["status"] = "Available"  # Sylhet Airport - Draft campaign
+        
+        # Some assets not in any campaign
+        bangladesh_assets[5]["status"] = "Work in Progress"  # Rajshahi University
+        bangladesh_assets[6]["status"] = "Available"  # Khulna Bridge
         
         for campaign in sample_campaigns:
             existing_campaign = await db.campaigns.find_one({"id": campaign["id"]})
