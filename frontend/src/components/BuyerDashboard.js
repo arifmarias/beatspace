@@ -31,7 +31,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Calendar as CalendarComponent } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { getAuthHeaders, logout, getUser } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
