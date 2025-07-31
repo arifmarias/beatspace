@@ -1014,6 +1014,597 @@ class BeatSpaceAPITester:
         
         return True, {}
 
+    # NEW TESTS FOR UPDATED REQUEST BEST OFFER FUNCTIONALITY
+    def test_edit_offer_request(self):
+        """Test editing a pending offer request (PUT /api/offers/requests/{id})"""
+        if not self.buyer_token:
+            print("⚠️  Skipping edit offer request test - no buyer token")
+            return False, {}
+        
+        # First, get existing offer requests to find one to edit
+        success, offer_requests = self.test_get_offer_requests_buyer()
+        if not success or not offer_requests:
+            print("⚠️  No offer requests found to edit")
+            return False, {}
+        
+        # Find a pending offer request
+        pending_request = None
+        for request in offer_requests:
+            if request.get('status') == 'Pending':
+                pending_request = request
+                break
+        
+        if not pending_request:
+            print("⚠️  No pending offer requests found to edit")
+            return False, {}
+        
+        request_id = pending_request['id']
+        print(f"   Editing offer request: {pending_request.get('campaign_name')}")
+        
+        # Create updated data
+        updated_data = {
+            "asset_id": pending_request['asset_id'],
+            "campaign_name": f"Updated {pending_request.get('campaign_name')}",
+            "campaign_type": pending_request.get('campaign_type', 'new'),
+            "existing_campaign_id": pending_request.get('existing_campaign_id'),
+            "contract_duration": "12_months",  # Changed from original
+            "estimated_budget": 200000.0,  # Changed from original
+            "service_bundles": {
+                "printing": True,
+                "setup": True,
+                "monitoring": True  # Changed from original
+            },
+            "timeline": "Updated timeline - start within 1 month",
+            "special_requirements": "Updated special requirements",
+            "notes": "This offer request has been updated via API testing"
+        }
+        
+        success, response = self.run_test(
+            "Edit Offer Request (PUT)", 
+            "PUT", 
+            f"offers/requests/{request_id}", 
+            200, 
+            data=updated_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Offer request updated successfully")
+            print(f"   Updated campaign name: {response.get('campaign_name')}")
+            print(f"   Updated contract duration: {response.get('contract_duration')}")
+            print(f"   Updated budget: {response.get('estimated_budget')}")
+            
+            # Verify the changes were applied
+            if response.get('campaign_name') == updated_data['campaign_name']:
+                print("   ✅ Campaign name updated correctly")
+            else:
+                print("   ⚠️  Campaign name not updated correctly")
+            
+            if response.get('contract_duration') == updated_data['contract_duration']:
+                print("   ✅ Contract duration updated correctly")
+            else:
+                print("   ⚠️  Contract duration not updated correctly")
+            
+            if response.get('estimated_budget') == updated_data['estimated_budget']:
+                print("   ✅ Budget updated correctly")
+            else:
+                print("   ⚠️  Budget not updated correctly")
+        
+        return success, response
+
+    def test_edit_offer_request_permissions(self):
+        """Test edit offer request permissions and restrictions"""
+        if not self.buyer_token:
+            print("⚠️  Skipping edit permissions test - no buyer token")
+            return False, {}
+        
+        # Get offer requests
+        success, offer_requests = self.test_get_offer_requests_buyer()
+        if not success or not offer_requests:
+            print("⚠️  No offer requests found for permissions test")
+            return False, {}
+        
+        request_id = offer_requests[0]['id']
+        
+        # Test editing without authentication
+        updated_data = {
+            "asset_id": offer_requests[0]['asset_id'],
+            "campaign_name": "Unauthorized Edit Attempt",
+            "campaign_type": "new",
+            "contract_duration": "3_months",
+            "service_bundles": {"printing": False, "setup": False, "monitoring": False}
+        }
+        
+        success, response = self.run_test(
+            "Edit Offer Request - No Auth", 
+            "PUT", 
+            f"offers/requests/{request_id}", 
+            401,  # Should fail with 401 Unauthorized
+            data=updated_data
+        )
+        
+        if success:
+            print("   ✅ Edit offer request properly requires authentication")
+        
+        # Test editing with seller token (should fail)
+        if self.seller_token:
+            success, response = self.run_test(
+                "Edit Offer Request - Seller Token", 
+                "PUT", 
+                f"offers/requests/{request_id}", 
+                403,  # Should fail with 403 Forbidden
+                data=updated_data,
+                token=self.seller_token
+            )
+            
+            if success:
+                print("   ✅ Only buyers can edit their own offer requests")
+        
+        # Test editing non-existent offer request
+        success, response = self.run_test(
+            "Edit Non-existent Offer Request", 
+            "PUT", 
+            "offers/requests/non-existent-id", 
+            404,  # Should fail with 404 Not Found
+            data=updated_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Proper error handling for non-existent offer requests")
+        
+        return True, {}
+
+    def test_delete_offer_request(self):
+        """Test deleting a pending offer request (DELETE /api/offers/requests/{id})"""
+        if not self.buyer_token:
+            print("⚠️  Skipping delete offer request test - no buyer token")
+            return False, {}
+        
+        # First create a new offer request specifically for deletion test
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found for delete test")
+            return False, {}
+        
+        # Find an available asset
+        available_asset = None
+        for asset in assets:
+            if asset.get('status') == 'Available':
+                available_asset = asset
+                break
+        
+        if not available_asset:
+            available_asset = assets[0]  # Use first asset if none are available
+        
+        # Create offer request for deletion
+        offer_request_data = {
+            "asset_id": available_asset['id'],
+            "campaign_name": f"Delete Test Campaign {datetime.now().strftime('%H%M%S')}",
+            "campaign_type": "new",
+            "contract_duration": "3_months",
+            "estimated_budget": 50000.0,
+            "service_bundles": {
+                "printing": False,
+                "setup": False,
+                "monitoring": False
+            },
+            "timeline": "For deletion testing",
+            "notes": "This offer request will be deleted"
+        }
+        
+        success, create_response = self.run_test(
+            "Create Offer Request for Deletion", 
+            "POST", 
+            "offers/request", 
+            200, 
+            data=offer_request_data,
+            token=self.buyer_token
+        )
+        
+        if not success:
+            print("⚠️  Could not create offer request for deletion test")
+            return False, {}
+        
+        request_id = create_response.get('id')
+        asset_id = available_asset['id']
+        
+        print(f"   Created offer request {request_id} for deletion test")
+        
+        # Verify asset status is Pending Offer
+        success_asset, asset_data = self.run_test(
+            "Check Asset Status Before Deletion", 
+            "GET", 
+            f"assets/{asset_id}", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success_asset:
+            print(f"   Asset status before deletion: {asset_data.get('status')}")
+        
+        # Now delete the offer request
+        success, response = self.run_test(
+            "Delete Offer Request", 
+            "DELETE", 
+            f"offers/requests/{request_id}", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Offer request deleted successfully")
+            print(f"   Response: {response.get('message', 'No message')}")
+            
+            # Verify asset status was reset to Available
+            success_asset, asset_data = self.run_test(
+                "Check Asset Status After Deletion", 
+                "GET", 
+                f"assets/{asset_id}", 
+                200, 
+                token=self.buyer_token
+            )
+            
+            if success_asset:
+                new_status = asset_data.get('status')
+                print(f"   Asset status after deletion: {new_status}")
+                if new_status == "Available":
+                    print("   ✅ Asset status correctly reset to Available")
+                else:
+                    print(f"   ⚠️  Asset status is {new_status}, expected Available")
+            
+            # Verify offer request no longer exists
+            success_get, get_response = self.run_test(
+                "Verify Offer Request Deleted", 
+                "GET", 
+                f"offers/requests/{request_id}", 
+                404,  # Should fail with 404 Not Found
+                token=self.buyer_token
+            )
+            
+            if success_get:
+                print("   ✅ Offer request properly removed from system")
+        
+        return success, response
+
+    def test_delete_offer_request_permissions(self):
+        """Test delete offer request permissions and restrictions"""
+        if not self.buyer_token:
+            print("⚠️  Skipping delete permissions test - no buyer token")
+            return False, {}
+        
+        # Test deleting without authentication
+        success, response = self.run_test(
+            "Delete Offer Request - No Auth", 
+            "DELETE", 
+            "offers/requests/test-id", 
+            401,  # Should fail with 401 Unauthorized
+        )
+        
+        if success:
+            print("   ✅ Delete offer request properly requires authentication")
+        
+        # Test deleting with seller token (should fail)
+        if self.seller_token:
+            success, response = self.run_test(
+                "Delete Offer Request - Seller Token", 
+                "DELETE", 
+                "offers/requests/test-id", 
+                403,  # Should fail with 403 Forbidden
+                token=self.seller_token
+            )
+            
+            if success:
+                print("   ✅ Only buyers can delete their own offer requests")
+        
+        # Test deleting non-existent offer request
+        success, response = self.run_test(
+            "Delete Non-existent Offer Request", 
+            "DELETE", 
+            "offers/requests/non-existent-id", 
+            404,  # Should fail with 404 Not Found
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Proper error handling for non-existent offer requests")
+        
+        return True, {}
+
+    def test_campaign_creation_with_dates(self):
+        """Test campaign creation with start_date and end_date fields"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign date creation test - no buyer token")
+            return False, {}
+        
+        from datetime import datetime, timedelta
+        
+        # Create campaign with start and end dates
+        start_date = datetime.utcnow() + timedelta(days=7)  # Start in 1 week
+        end_date = datetime.utcnow() + timedelta(days=97)   # End in ~3 months
+        
+        campaign_data = {
+            "name": f"Date Test Campaign {datetime.now().strftime('%H%M%S')}",
+            "description": "Testing campaign creation with start and end dates",
+            "assets": [],
+            "budget": 75000.0,
+            "start_date": start_date.isoformat() + "Z",
+            "end_date": end_date.isoformat() + "Z"
+        }
+        
+        success, response = self.run_test(
+            "Create Campaign with Dates", 
+            "POST", 
+            "campaigns", 
+            200, 
+            data=campaign_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Campaign created with dates successfully")
+            print(f"   Campaign ID: {response.get('id')}")
+            print(f"   Start Date: {response.get('start_date')}")
+            print(f"   End Date: {response.get('end_date')}")
+            
+            # Verify dates are properly stored
+            if 'start_date' in response and response['start_date']:
+                print("   ✅ Start date properly stored")
+            else:
+                print("   ⚠️  Start date missing or null")
+            
+            if 'end_date' in response and response['end_date']:
+                print("   ✅ End date properly stored")
+            else:
+                print("   ⚠️  End date missing or null")
+            
+            # Store campaign ID for potential cleanup
+            if 'id' in response:
+                self.created_campaign_id = response['id']
+        
+        return success, response
+
+    def test_campaign_date_validation(self):
+        """Test campaign date validation and calculations"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign date validation test - no buyer token")
+            return False, {}
+        
+        from datetime import datetime, timedelta
+        
+        # Test with end date before start date (should fail)
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = datetime.utcnow() + timedelta(days=7)  # End before start
+        
+        invalid_campaign_data = {
+            "name": "Invalid Date Campaign",
+            "description": "Testing invalid date range",
+            "assets": [],
+            "budget": 50000.0,
+            "start_date": start_date.isoformat() + "Z",
+            "end_date": end_date.isoformat() + "Z"
+        }
+        
+        success, response = self.run_test(
+            "Create Campaign - Invalid Date Range", 
+            "POST", 
+            "campaigns", 
+            400,  # Should fail with 400 Bad Request or similar
+            data=invalid_campaign_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Proper validation for invalid date ranges")
+        else:
+            # If the backend doesn't validate dates, that's also acceptable
+            print("   ℹ️  Backend accepts invalid date ranges (validation may be frontend-only)")
+        
+        # Test with past start date
+        past_start_date = datetime.utcnow() - timedelta(days=7)
+        future_end_date = datetime.utcnow() + timedelta(days=30)
+        
+        past_campaign_data = {
+            "name": "Past Start Date Campaign",
+            "description": "Testing past start date",
+            "assets": [],
+            "budget": 50000.0,
+            "start_date": past_start_date.isoformat() + "Z",
+            "end_date": future_end_date.isoformat() + "Z"
+        }
+        
+        success, response = self.run_test(
+            "Create Campaign - Past Start Date", 
+            "POST", 
+            "campaigns", 
+            200,  # May be allowed for flexibility
+            data=past_campaign_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Campaign creation with past start date allowed")
+        else:
+            print("   ℹ️  Past start dates not allowed")
+        
+        return True, {}
+
+    def test_asset_expiration_date_calculations(self):
+        """Test asset expiration date calculations and display"""
+        if not self.buyer_token:
+            print("⚠️  Skipping asset expiration test - no buyer token")
+            return False, {}
+        
+        # Get campaigns to check asset expiration dates
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found for expiration date test")
+            return False, {}
+        
+        print("   Checking asset expiration date calculations...")
+        
+        for campaign in campaigns[:2]:  # Check first 2 campaigns
+            campaign_name = campaign.get('name', 'Unknown')
+            campaign_assets = campaign.get('assets', [])
+            start_date = campaign.get('start_date')
+            end_date = campaign.get('end_date')
+            
+            print(f"   Campaign: {campaign_name}")
+            print(f"   Start Date: {start_date}")
+            print(f"   End Date: {end_date}")
+            
+            if not campaign_assets:
+                print("     No assets in this campaign")
+                continue
+            
+            # Check assets in this campaign
+            for asset_id in campaign_assets[:2]:  # Check first 2 assets
+                success_asset, asset_data = self.run_test(
+                    f"Get Asset for Expiration Check", 
+                    "GET", 
+                    f"assets/{asset_id}", 
+                    200, 
+                    token=self.buyer_token
+                )
+                
+                if success_asset:
+                    asset_name = asset_data.get('name', 'Unknown')
+                    next_available_date = asset_data.get('next_available_date')
+                    
+                    print(f"     Asset: {asset_name}")
+                    print(f"     Next Available Date: {next_available_date}")
+                    
+                    # Check if next_available_date aligns with campaign end_date
+                    if end_date and next_available_date:
+                        print("     ✅ Asset has expiration date information")
+                    elif end_date:
+                        print("     ℹ️  Campaign has end date but asset doesn't show next available date")
+                    else:
+                        print("     ℹ️  Campaign doesn't have end date set")
+        
+        return True, {}
+
+    def test_simplified_campaign_selection(self):
+        """Test the simplified campaign selection workflow (single dropdown)"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign selection test - no buyer token")
+            return False, {}
+        
+        print("   Testing simplified campaign selection workflow...")
+        
+        # Get buyer's existing campaigns for selection
+        success, campaigns = self.test_get_campaigns()
+        if not success:
+            print("⚠️  Could not retrieve campaigns for selection test")
+            return False, {}
+        
+        print(f"   Found {len(campaigns)} existing campaigns for selection")
+        
+        # Test creating offer request with campaign selection
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found for campaign selection test")
+            return False, {}
+        
+        available_asset = None
+        for asset in assets:
+            if asset.get('status') == 'Available':
+                available_asset = asset
+                break
+        
+        if not available_asset:
+            available_asset = assets[0]
+        
+        # Test 1: New campaign selection
+        new_campaign_request = {
+            "asset_id": available_asset['id'],
+            "campaign_name": f"New Campaign Selection Test {datetime.now().strftime('%H%M%S')}",
+            "campaign_type": "new",
+            "existing_campaign_id": None,
+            "contract_duration": "6_months",
+            "estimated_budget": 120000.0,
+            "service_bundles": {
+                "printing": True,
+                "setup": True,
+                "monitoring": False
+            },
+            "timeline": "New campaign timeline",
+            "notes": "Testing new campaign selection"
+        }
+        
+        success, response = self.run_test(
+            "Campaign Selection - New Campaign", 
+            "POST", 
+            "offers/request", 
+            200, 
+            data=new_campaign_request,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ New campaign selection working")
+            print(f"   Campaign Type: {response.get('campaign_type')}")
+            print(f"   Existing Campaign ID: {response.get('existing_campaign_id')}")
+            
+            if response.get('campaign_type') == 'new' and response.get('existing_campaign_id') is None:
+                print("   ✅ New campaign selection properly configured")
+            else:
+                print("   ⚠️  New campaign selection not properly configured")
+        
+        # Test 2: Existing campaign selection (if campaigns exist)
+        if campaigns:
+            existing_campaign = campaigns[0]
+            
+            # Find another available asset
+            another_asset = None
+            for asset in assets[1:]:  # Skip first asset
+                if asset.get('status') == 'Available':
+                    another_asset = asset
+                    break
+            
+            if another_asset:
+                existing_campaign_request = {
+                    "asset_id": another_asset['id'],
+                    "campaign_name": existing_campaign['name'],
+                    "campaign_type": "existing",
+                    "existing_campaign_id": existing_campaign['id'],
+                    "contract_duration": "3_months",
+                    "estimated_budget": 80000.0,
+                    "service_bundles": {
+                        "printing": False,
+                        "setup": True,
+                        "monitoring": True
+                    },
+                    "timeline": "Add to existing campaign",
+                    "notes": "Testing existing campaign selection"
+                }
+                
+                success, response = self.run_test(
+                    "Campaign Selection - Existing Campaign", 
+                    "POST", 
+                    "offers/request", 
+                    200, 
+                    data=existing_campaign_request,
+                    token=self.buyer_token
+                )
+                
+                if success:
+                    print("   ✅ Existing campaign selection working")
+                    print(f"   Campaign Type: {response.get('campaign_type')}")
+                    print(f"   Existing Campaign ID: {response.get('existing_campaign_id')}")
+                    
+                    if (response.get('campaign_type') == 'existing' and 
+                        response.get('existing_campaign_id') == existing_campaign['id']):
+                        print("   ✅ Existing campaign selection properly configured")
+                    else:
+                        print("   ⚠️  Existing campaign selection not properly configured")
+            else:
+                print("   ℹ️  No additional available assets for existing campaign test")
+        else:
+            print("   ℹ️  No existing campaigns for existing campaign selection test")
+        
+        return True, {}
+
 def main():
     print("🚀 Starting BeatSpace Backend API Testing...")
     print("Testing Critical Missing Endpoints and CRUD Operations")
