@@ -402,8 +402,10 @@ async def init_bangladesh_sample_data():
     if not existing_buyer:
         await db.users.insert_one(sample_buyer)
     
-    # Sample assets (Enhanced with complete data)
-    bangladesh_assets = [
+    # Sample assets (Enhanced with complete data) - only create if none exist
+    existing_assets = await db.assets.count_documents({})
+    if existing_assets == 0:
+        bangladesh_assets = [
         {
             "id": str(uuid.uuid4()),
             "name": "Dhanmondi Lake Billboard",
