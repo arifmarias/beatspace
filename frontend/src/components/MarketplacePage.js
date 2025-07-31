@@ -571,18 +571,68 @@ const MarketplacePage = () => {
                         </div>
                       )}
 
-                      {/* Campaign Information */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-semibold mb-2">Campaign Name *</label>
-                          <Input
-                            value={offerDetails.campaignName}
-                            onChange={(e) => setOfferDetails({...offerDetails, campaignName: e.target.value})}
-                            placeholder="Enter campaign name"
-                            required
-                          />
+                      {/* Campaign Selection */}
+                      <div>
+                        <label className="block text-sm font-semibold mb-3">Campaign Selection *</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Campaign Type</label>
+                            <Select 
+                              value={offerDetails.campaignType} 
+                              onValueChange={(value) => setOfferDetails({...offerDetails, campaignType: value, campaignName: '', existingCampaignId: ''})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="new">🆕 Create New Campaign</SelectItem>
+                                <SelectItem value="existing">📁 Add to Existing Campaign</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {offerDetails.campaignType === 'new' ? (
+                            <div>
+                              <label className="block text-sm font-medium mb-2">New Campaign Name *</label>
+                              <Input
+                                value={offerDetails.campaignName}
+                                onChange={(e) => setOfferDetails({...offerDetails, campaignName: e.target.value})}
+                                placeholder="Enter new campaign name"
+                                required
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Select Existing Campaign *</label>
+                              <Select 
+                                value={offerDetails.existingCampaignId} 
+                                onValueChange={(value) => {
+                                  const selectedCampaign = existingCampaigns.find(c => c.id === value);
+                                  setOfferDetails({
+                                    ...offerDetails, 
+                                    existingCampaignId: value,
+                                    campaignName: selectedCampaign ? selectedCampaign.name : ''
+                                  });
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select campaign" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {existingCampaigns.map(campaign => (
+                                    <SelectItem key={campaign.id} value={campaign.id}>
+                                      {campaign.name} ({(campaign.assets || []).length} assets)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                         </div>
-                        
+                      </div>
+
+                      {/* Contract Duration and Budget */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
                           <Select 
@@ -600,27 +650,18 @@ const MarketplacePage = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                      </div>
-
-                      {/* Budget and Timeline */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
                         <div>
-                          <label className="block text-sm font-semibold mb-2">Estimated Budget (৳)</label>
+                          <label className="block text-sm font-semibold mb-2">Estimated Budget (৳) *</label>
                           <Input
                             type="number"
                             value={offerDetails.estimatedBudget}
                             onChange={(e) => setOfferDetails({...offerDetails, estimatedBudget: e.target.value})}
-                            placeholder="Your budget range"
+                            placeholder="Enter your budget (required)"
+                            required
+                            className="border-2 border-orange-200 focus:border-orange-400"
                           />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-semibold mb-2">Timeline Preferences</label>
-                          <Input
-                            value={offerDetails.timeline}
-                            onChange={(e) => setOfferDetails({...offerDetails, timeline: e.target.value})}
-                            placeholder="e.g., Start in 2 weeks"
-                          />
+                          <p className="text-xs text-orange-600 mt-1">* Budget is required for offer processing</p>
                         </div>
                       </div>
 
