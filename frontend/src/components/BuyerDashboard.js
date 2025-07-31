@@ -97,6 +97,25 @@ const BuyerDashboard = () => {
     }
   };
 
+  const updateCampaignStatus = async (campaignId, newStatus) => {
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.put(`${API}/campaigns/${campaignId}/status`, {
+        status: newStatus
+      }, { headers });
+      
+      // Refresh data
+      fetchBuyerData();
+      
+      alert(`Campaign status updated to ${newStatus} successfully!`);
+      
+    } catch (error) {
+      console.error('Error updating campaign status:', error);
+      alert('Failed to update campaign status. Please try again.');
+    }
+  };
+
   const removeAssetFromCampaign = async (assetId) => {
     if (!selectedCampaign) return;
     
