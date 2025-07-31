@@ -690,7 +690,15 @@ def main():
     tester.test_create_campaign()
     tester.test_update_campaign()
     
-    # Test 6: Authorization Tests
+    # Test 6: NEW CAMPAIGN LIFECYCLE & ASSET STATUS MANAGEMENT
+    print("\n🔄 CAMPAIGN LIFECYCLE & ASSET STATUS MANAGEMENT")
+    print("Testing campaign status changes and asset status lifecycle")
+    tester.test_sample_data_campaign_statuses()
+    tester.test_asset_status_consistency()
+    tester.test_campaign_status_change_to_live()
+    tester.test_campaign_status_change_to_draft()
+    
+    # Test 7: Authorization Tests
     print("\n🔒 AUTHORIZATION TESTS")
     print("Testing that protected routes require proper authentication")
     
