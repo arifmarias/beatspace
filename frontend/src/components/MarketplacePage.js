@@ -542,14 +542,12 @@ const MarketplacePage = () => {
       const offerRequestData = {
         asset_id: selectedAssetForOffer.id,
         campaign_name: offerDetails.campaignName.trim(),
-        campaign_type: offerDetails.campaignType,
-        existing_campaign_id: offerDetails.campaignType === 'existing' ? offerDetails.existingCampaignId : null,
+        campaign_type: 'existing',
+        existing_campaign_id: offerDetails.existingCampaignId,
         contract_duration: offerDetails.contractDuration,
         estimated_budget: parseFloat(offerDetails.estimatedBudget),
         service_bundles: offerDetails.serviceBundles,
-        timeline: offerDetails.campaignType === 'new' && offerDetails.tentativeStartDate 
-          ? `Start from ${offerDetails.tentativeStartDate.toLocaleDateString()}`
-          : (offerDetails.timeline || null),
+        timeline: `Asset starts from ${offerDetails.tentativeStartDate.toLocaleDateString()}`,
         special_requirements: offerDetails.specialRequirements || null,
         notes: offerDetails.notes || null
       };
