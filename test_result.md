@@ -229,15 +229,18 @@ backend:
 frontend:
   - task: "Remove Add to Campaign buttons from list view"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/MarketplacePage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Removed Add to Campaign button from marketplace list view, keeping only View Details button as per product requirements"
+        - working: true
+          agent: "main"
+          comment: "✅ VERIFIED - Screenshot confirmed Add to Campaign buttons completely removed from list view, only View Details buttons remain. Change implemented correctly."
 
   - task: "Campaign management restrictions in Buyer Dashboard"
     implemented: true
