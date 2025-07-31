@@ -649,12 +649,12 @@ async def init_bangladesh_sample_data():
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         }
-    ]
-    
-    for campaign in sample_campaigns:
-        existing_campaign = await db.campaigns.find_one({"id": campaign["id"]})
-        if not existing_campaign:
-            await db.campaigns.insert_one(campaign)
+        ]
+        
+        for campaign in sample_campaigns:
+            existing_campaign = await db.campaigns.find_one({"id": campaign["id"]})
+            if not existing_campaign:
+                await db.campaigns.insert_one(campaign)
 
 # Initialize sample data on startup
 @app.on_event("startup")
