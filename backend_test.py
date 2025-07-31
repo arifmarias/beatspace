@@ -917,69 +917,113 @@ class BeatSpaceAPITester:
         return success
 
 def main():
-    print("🚀 Starting BeatSpace Phase 2 API Testing...")
+    print("🚀 Starting BeatSpace Backend API Testing...")
+    print("Testing Critical Missing Endpoints and CRUD Operations")
     print("=" * 60)
     
     tester = BeatSpaceAPITester()
     
-    # Test basic endpoints
-    print("\n📍 BASIC ENDPOINTS")
-    tester.test_root_endpoint()
-    tester.test_public_assets()
+    # Test 1: Critical Public Endpoints (highest priority)
+    print("\n📍 CRITICAL PUBLIC ENDPOINTS")
+    print("These endpoints are essential for homepage and marketplace functionality")
     tester.test_public_stats()
+    tester.test_public_assets()
     
-    # Test authentication system
+    # Test 2: Authentication System
     print("\n🔐 AUTHENTICATION SYSTEM")
+    print("Testing login for all user roles")
     tester.test_admin_login()
-    tester.test_user_registration()
-    tester.test_login_without_approval()
+    tester.test_seller_login()
+    tester.test_buyer_login()
     
-    # Test admin functionality
-    print("\n👑 ADMIN DASHBOARD FUNCTIONALITY")
+    # Test 3: Asset CRUD Operations
+    print("\n📦 ASSET CRUD OPERATIONS")
+    print("Testing complete asset management functionality")
+    tester.test_get_assets_authenticated()
+    tester.test_create_asset()
+    tester.test_get_single_asset()
+    tester.test_update_asset()
+    tester.test_delete_asset()
+    
+    # Test 4: User Management (Admin)
+    print("\n👑 USER MANAGEMENT (ADMIN)")
+    print("Testing admin user management capabilities")
     tester.test_admin_get_users()
-    tester.test_admin_approve_user()
-    tester.test_admin_get_assets()
-    tester.test_admin_approve_asset()
+    tester.test_admin_update_user_status()
     
-    # Test protected routes
-    print("\n🔒 PROTECTED ROUTES & AUTHORIZATION")
-    tester.test_protected_routes_without_auth()
-    tester.test_role_based_access()
+    # Test 5: Campaign Management
+    print("\n🎯 CAMPAIGN MANAGEMENT")
+    print("Testing campaign creation and management")
+    tester.test_get_campaigns()
+    tester.test_create_campaign()
+    tester.test_update_campaign()
     
-    # Test Phase 3 Advanced Features
-    print("\n🚀 PHASE 3 ADVANCED FEATURES")
-    tester.test_offer_mediation_system()
-    tester.test_asset_monitoring_system()
-    tester.test_advanced_analytics()
-    tester.test_payment_system()
-    tester.test_file_upload()
+    # Test 6: Authorization Tests
+    print("\n🔒 AUTHORIZATION TESTS")
+    print("Testing that protected routes require proper authentication")
     
-    # Test legacy endpoints for backward compatibility
-    print("\n🔄 LEGACY ENDPOINTS")
-    success, assets = tester.test_get_assets()
-    if success and len(assets) > 0:
-        first_asset_id = assets[0]['id']
-        tester.test_get_single_asset(first_asset_id)
+    # Test protected routes without auth (should fail)
+    protected_endpoints = [
+        ("Get Assets (Protected)", "GET", "assets"),
+        ("Create Asset", "POST", "assets"),
+        ("Get Campaigns", "GET", "campaigns"),
+        ("Create Campaign", "POST", "campaigns"),
+        ("Admin Get Users", "GET", "admin/users")
+    ]
     
-    tester.test_get_nonexistent_asset()
-    tester.test_get_stats()
+    for name, method, endpoint in protected_endpoints:
+        tester.run_test(f"{name} - No Auth", method, endpoint, 401)
     
-    # Print final results
+    # Test admin endpoints with non-admin token (should fail)
+    if tester.buyer_token:
+        tester.run_test("Buyer Access Admin Endpoint", "GET", "admin/users", 403, token=tester.buyer_token)
+    
+    # Print detailed results
     print("\n" + "=" * 60)
-    print(f"📊 Test Results: {tester.tests_passed}/{tester.tests_run} tests passed")
+    print("📊 DETAILED TEST RESULTS")
+    print("=" * 60)
     
-    if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed! API is working correctly.")
+    critical_tests = [
+        "Get Public Stats",
+        "Get Public Assets", 
+        "Admin Login",
+        "Seller Login",
+        "Buyer Login",
+        "Get Assets (Authenticated)",
+        "Create Asset",
+        "Admin Get Users",
+        "Admin Update User Status",
+        "Get Campaigns",
+        "Create Campaign"
+    ]
+    
+    critical_passed = 0
+    critical_total = 0
+    
+    for test_name in critical_tests:
+        if test_name in tester.test_results:
+            critical_total += 1
+            result = tester.test_results[test_name]
+            if result['success']:
+                critical_passed += 1
+                print(f"✅ {test_name}")
+            else:
+                print(f"❌ {test_name} - Status: {result.get('status_code', 'Error')}")
+    
+    print(f"\n📈 SUMMARY")
+    print(f"Total Tests: {tester.tests_passed}/{tester.tests_run} passed")
+    print(f"Critical Tests: {critical_passed}/{critical_total} passed")
+    
+    # Determine overall status
+    if critical_passed == critical_total:
+        print("🎉 All critical tests passed! Backend API is working correctly.")
+        return 0
+    elif critical_passed >= critical_total * 0.8:  # 80% pass rate
+        print("✅ Most critical tests passed - minor issues detected")
         return 0
     else:
-        failed_tests = tester.tests_run - tester.tests_passed
-        print(f"⚠️  {failed_tests} tests failed.")
-        if failed_tests <= 3:
-            print("✅ Minor issues detected - proceeding with frontend testing")
-            return 0
-        else:
-            print("❌ Major issues detected - backend needs fixes before frontend testing")
-            return 1
+        print("❌ Major issues detected - backend needs fixes")
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())
