@@ -419,6 +419,70 @@ const MarketplacePage = () => {
     }, 0);
   };
 
+  const calculateAssetExpirationDate = (startDate, contractDuration) => {
+    if (!startDate) return null;
+    
+    const start = new Date(startDate);
+    let expirationDate = new Date(start);
+    
+    switch (contractDuration) {
+      case '3_months':
+        expirationDate.setMonth(start.getMonth() + 3);
+        break;
+      case '6_months':
+        expirationDate.setMonth(start.getMonth() + 6);
+        break;
+      case '12_months':
+        expirationDate.setFullYear(start.getFullYear() + 1);
+        break;
+      default:
+        expirationDate.setMonth(start.getMonth() + 3);
+        break;
+    }
+    
+    return expirationDate;
+  };
+
+  const updateAssetExpirationDate = () => {
+    let startDate = null;
+    let campaignEndDate = null;
+    
+    if (offerDetails.campaignType === 'new' && offerDetails.tentativeStartDate) {
+      startDate = offerDetails.tentativeStartDate;
+    } else if (offerDetails.campaignType === 'existing' && offerDetails.selectedCampaignEndDate) {
+      const selectedCampaign = existingCampaigns.find(c => c.id === offerDetails.existingCampaignId);
+      if (selectedCampaign && selectedCampaign.start_date) {
+        startDate = new Date(selectedCampaign.start_date);
+      }
+      campaignEndDate = new Date(offerDetails.selectedCampaignEndDate);
+    }
+    
+    if (startDate) {
+      const assetExpiration = calculateAssetExpirationDate(startDate, offerDetails.contractDuration);
+      
+      // Check if asset expiration exceeds campaign end date
+      if (campaignEndDate && assetExpiration > campaignEndDate) {
+        // Asset expiration cannot exceed campaign end date
+        setOfferDetails(prev => ({
+          ...prev,
+          assetExpirationDate: campaignEndDate,
+          expirationWarning: `Asset expiration adjusted to campaign end date (${campaignEndDate.toLocaleDateString()})`
+        }));
+      } else {
+        setOfferDetails(prev => ({
+          ...prev,
+          assetExpirationDate: assetExpiration,
+          expirationWarning: null
+        }));
+      }
+    }
+  };
+
+  // Update asset expiration whenever relevant fields change
+  React.useEffect(() => {
+    updateAssetExpirationDate();
+  }, [offerDetails.tentativeStartDate, offerDetails.contractDuration, offerDetails.existingCampaignId, offerDetails.selectedCampaignEndDate]);
+
   const handleOfferSubmit = async () => {
     try {
       if (!currentUser) {
