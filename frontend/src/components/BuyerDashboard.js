@@ -377,43 +377,104 @@ const BuyerDashboard = () => {
                                       <div className="mt-6">
                                         <div className="flex items-center justify-between mb-3">
                                           <h5 className="font-medium">Campaign Assets ({campaignAssets.length})</h5>
-                                          <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => navigate('/marketplace')}
-                                          >
-                                            <Plus className="w-4 h-4 mr-1" />
-                                            Add Assets
-                                          </Button>
+                                          <div className="flex items-center space-x-2">
+                                            {selectedCampaign.status === 'Live' && (
+                                              <Badge variant="destructive" className="text-xs">
+                                                Live Campaign - Limited Editing
+                                              </Badge>
+                                            )}
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              onClick={() => navigate('/marketplace')}
+                                            >
+                                              <Plus className="w-4 h-4 mr-1" />
+                                              {selectedCampaign.status === 'Live' ? 'Add New Assets' : 'Add Assets'}
+                                            </Button>
+                                          </div>
                                         </div>
                                         
                                         {campaignAssets.length > 0 ? (
                                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
-                                            {campaignAssets.map((asset) => (
-                                              <div key={asset.id} className="border rounded-lg p-3 hover:shadow-sm">
-                                                <div className="flex items-start space-x-3">
-                                                  {asset.photos && asset.photos[0] && (
-                                                    <img 
-                                                      src={asset.photos[0]} 
-                                                      alt={asset.name}
-                                                      className="w-12 h-12 object-cover rounded"
-                                                    />
-                                                  )}
-                                                  <div className="flex-1 min-w-0">
-                                                    <h6 className="font-medium text-sm truncate">{asset.name}</h6>
-                                                    <p className="text-xs text-gray-500 truncate">{asset.address}</p>
-                                                    <div className="flex items-center justify-between mt-1">
-                                                      <span className="text-xs font-medium text-blue-600">
-                                                        ৳{asset.pricing?.['3_months']?.toLocaleString()}/3mo
-                                                      </span>
-                                                      <Badge variant="outline" className="text-xs">
-                                                        {asset.status}
-                                                      </Badge>
+                                            {campaignAssets.map((asset, index) => {
+                                              // For live campaigns, only newly added assets (after campaign went live) can be edited
+                                              const isEditableInLiveCampaign = selectedCampaign.status !== 'Live' || 
+                                                (selectedCampaign.assets_added_after_live && 
+                                                 selectedCampaign.assets_added_after_live.includes(asset.id));
+                                              
+                                              return (
+                                                <div key={asset.id} className="border rounded-lg p-3 hover:shadow-sm">
+                                                  <div className="flex items-start space-x-3">
+                                                    {asset.photos && asset.photos[0] && (
+                                                      <img 
+                                                        src={asset.photos[0]} 
+                                                        alt={asset.name}
+                                                        className="w-12 h-12 object-cover rounded"
+                                                      />
+                                                    )}
+                                                    <div className="flex-1 min-w-0">
+                                                      <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                          <h6 className="font-medium text-sm truncate">{asset.name}</h6>
+                                                          <p className="text-xs text-gray-500 truncate">{asset.address}</p>
+                                                          <div className="flex items-center justify-between mt-1">
+                                                            <span className="text-xs font-medium text-blue-600">
+                                                              ৳{asset.pricing?.['3_months']?.toLocaleString()}/3mo
+                                                            </span>
+                                                            <Badge variant="outline" className="text-xs">
+                                                              {asset.status}
+                                                            </Badge>
+                                                          </div>
+                                                        </div>
+                                                        
+                                                        {/* Action buttons based on campaign status */}
+                                                        <div className="flex items-center space-x-1 ml-2">
+                                                          {selectedCampaign.status === 'Draft' && (
+                                                            <>
+                                                              <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
+                                                                title="Edit asset"
+                                                              >
+                                                                <Edit className="w-3 h-3" />
+                                                              </Button>
+                                                              <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+                                                                title="Remove from campaign"
+                                                                onClick={() => removeAssetFromCampaign(asset.id)}
+                                                              >
+                                                                <X className="w-3 h-3" />
+                                                              </Button>
+                                                            </>
+                                                          )}
+                                                          
+                                                          {selectedCampaign.status === 'Live' && isEditableInLiveCampaign && (
+                                                            <Button
+                                                              size="sm"
+                                                              variant="ghost"
+                                                              className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+                                                              title="Remove newly added asset"
+                                                              onClick={() => removeAssetFromCampaign(asset.id)}
+                                                            >
+                                                              <X className="w-3 h-3" />
+                                                            </Button>
+                                                          )}
+                                                          
+                                                          {selectedCampaign.status === 'Live' && !isEditableInLiveCampaign && (
+                                                            <Badge variant="secondary" className="text-xs">
+                                                              🔒 Protected
+                                                            </Badge>
+                                                          )}
+                                                        </div>
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </div>
-                                              </div>
-                                            ))}
+                                              );
+                                            })}
                                           </div>
                                         ) : (
                                           <div className="text-center py-8 border border-dashed rounded-lg">
