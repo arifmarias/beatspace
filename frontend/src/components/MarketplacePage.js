@@ -474,7 +474,9 @@ const MarketplacePage = () => {
         contract_duration: offerDetails.contractDuration,
         estimated_budget: parseFloat(offerDetails.estimatedBudget),
         service_bundles: offerDetails.serviceBundles,
-        timeline: offerDetails.timeline || null,
+        timeline: offerDetails.campaignType === 'new' && offerDetails.tentativeStartDate 
+          ? `Start from ${offerDetails.tentativeStartDate.toLocaleDateString()}`
+          : (offerDetails.timeline || null),
         special_requirements: offerDetails.specialRequirements || null,
         notes: offerDetails.notes || null
       };
