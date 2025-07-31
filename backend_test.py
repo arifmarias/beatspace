@@ -1667,7 +1667,19 @@ def main():
     tester.test_offer_request_authentication()
     tester.test_offer_request_data_validation()
     
-    # Test 8: Authorization Tests
+    # Test 8: NEW UPDATED REQUEST BEST OFFER FUNCTIONALITY
+    print("\n🔄 UPDATED REQUEST BEST OFFER FUNCTIONALITY")
+    print("Testing new edit/delete offer functionality and campaign creation with dates")
+    tester.test_simplified_campaign_selection()
+    tester.test_edit_offer_request()
+    tester.test_edit_offer_request_permissions()
+    tester.test_delete_offer_request()
+    tester.test_delete_offer_request_permissions()
+    tester.test_campaign_creation_with_dates()
+    tester.test_campaign_date_validation()
+    tester.test_asset_expiration_date_calculations()
+    
+    # Test 9: Authorization Tests
     print("\n🔒 AUTHORIZATION TESTS")
     print("Testing that protected routes require proper authentication")
     
