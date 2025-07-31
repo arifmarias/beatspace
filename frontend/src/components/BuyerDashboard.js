@@ -1036,25 +1036,23 @@ const BuyerDashboard = () => {
 
       {/* Edit Offer Dialog */}
       <Dialog open={showEditOfferDialog} onOpenChange={setShowEditOfferDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Offer Request</DialogTitle>
           </DialogHeader>
           
           {editingOffer && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Campaign Name</label>
-                <Input
-                  value={editingOffer.campaign_name}
-                  onChange={(e) => setEditingOffer({...editingOffer, campaign_name: e.target.value})}
-                  placeholder="Campaign name"
-                />
+            <div className="space-y-6">
+              {/* Campaign Information */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Campaign: {editingOffer.campaign_name}</h4>
+                <p className="text-sm text-blue-800">Asset: {editingOffer.asset_name}</p>
               </div>
 
+              {/* Contract Duration and Budget */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Contract Duration</label>
+                  <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
                   <Select 
                     value={editingOffer.contract_duration} 
                     onValueChange={(value) => setEditingOffer({...editingOffer, contract_duration: value})}
@@ -1066,54 +1064,118 @@ const BuyerDashboard = () => {
                       <SelectItem value="3_months">3 Months</SelectItem>
                       <SelectItem value="6_months">6 Months</SelectItem>
                       <SelectItem value="12_months">12 Months</SelectItem>
+                      <SelectItem value="custom">Custom Duration</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Budget (৳)</label>
+                  <label className="block text-sm font-semibold mb-2">Estimated Budget (৳) *</label>
                   <Input
                     type="number"
                     value={editingOffer.estimated_budget}
                     onChange={(e) => setEditingOffer({...editingOffer, estimated_budget: parseFloat(e.target.value)})}
-                    placeholder="Budget"
+                    placeholder="Enter your budget"
+                    className="border-2 border-orange-200 focus:border-orange-400"
                   />
                 </div>
               </div>
 
+              {/* Service Bundles */}
               <div>
-                <label className="block text-sm font-medium mb-2">Timeline</label>
+                <label className="block text-sm font-semibold mb-3">Service Bundles</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="printing"
+                      checked={editingOffer.service_bundles?.printing || false}
+                      onChange={(e) => setEditingOffer({
+                        ...editingOffer, 
+                        service_bundles: {
+                          ...editingOffer.service_bundles,
+                          printing: e.target.checked
+                        }
+                      })}
+                      className="rounded"
+                    />
+                    <label htmlFor="printing" className="text-sm font-medium">🖨️ Design & Printing</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="setup"
+                      checked={editingOffer.service_bundles?.setup || false}
+                      onChange={(e) => setEditingOffer({
+                        ...editingOffer, 
+                        service_bundles: {
+                          ...editingOffer.service_bundles,
+                          setup: e.target.checked
+                        }
+                      })}
+                      className="rounded"
+                    />
+                    <label htmlFor="setup" className="text-sm font-medium">🔧 Installation & Setup</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="monitoring"
+                      checked={editingOffer.service_bundles?.monitoring || false}
+                      onChange={(e) => setEditingOffer({
+                        ...editingOffer, 
+                        service_bundles: {
+                          ...editingOffer.service_bundles,
+                          monitoring: e.target.checked
+                        }
+                      })}
+                      className="rounded"
+                    />
+                    <label htmlFor="monitoring" className="text-sm font-medium">📊 Performance Monitoring</label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Timeline</label>
                 <Input
                   value={editingOffer.timeline || ''}
                   onChange={(e) => setEditingOffer({...editingOffer, timeline: e.target.value})}
-                  placeholder="Timeline preferences"
+                  placeholder="Timeline preferences (e.g., Start from specific date)"
                 />
               </div>
 
+              {/* Special Requirements */}
               <div>
-                <label className="block text-sm font-medium mb-2">Special Requirements</label>
+                <label className="block text-sm font-semibold mb-2">Special Requirements</label>
                 <Textarea
                   value={editingOffer.special_requirements || ''}
                   onChange={(e) => setEditingOffer({...editingOffer, special_requirements: e.target.value})}
-                  placeholder="Any special requirements..."
+                  placeholder="Any special requirements for this asset..."
                   rows={3}
                 />
               </div>
 
+              {/* Notes */}
               <div>
-                <label className="block text-sm font-medium mb-2">Notes</label>
+                <label className="block text-sm font-semibold mb-2">Additional Notes</label>
                 <Textarea
                   value={editingOffer.notes || ''}
                   onChange={(e) => setEditingOffer({...editingOffer, notes: e.target.value})}
-                  placeholder="Additional notes..."
+                  placeholder="Any additional notes or preferences..."
                   rows={2}
                 />
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4">
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-3 pt-4 border-t">
                 <Button
                   variant="outline"
-                  onClick={() => setShowEditOfferDialog(false)}
+                  onClick={() => {
+                    setShowEditOfferDialog(false);
+                    setEditingOffer(null);
+                  }}
                 >
                   Cancel
                 </Button>
@@ -1121,7 +1183,7 @@ const BuyerDashboard = () => {
                   onClick={() => updateOfferRequest(editingOffer)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  Update Offer
+                  Update Offer Request
                 </Button>
               </div>
             </div>
