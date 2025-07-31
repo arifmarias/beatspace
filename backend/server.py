@@ -222,16 +222,6 @@ class MonitoringRecord(BaseModel):
     inspector: str = ""
     gps_location: Optional[Dict[str, float]] = None
 
-class OfferRequest(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    campaign_id: str
-    asset_requirements: Dict[str, Dict[str, Any]]
-    timeline: str = ""
-    special_requirements: str = ""
-    status: str = "Pending"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
-
 class FinalOffer(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     request_id: str
