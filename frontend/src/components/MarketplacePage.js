@@ -337,15 +337,19 @@ const MarketplacePage = () => {
             setCampaign([...campaign, selectedCampaignForAsset]);
           }
           
-          alert('Asset added to campaign successfully!');
+          // Better UI feedback instead of alert
           setShowCampaignDialog(false);
           fetchExistingCampaigns(); // Refresh campaigns
+          
+          // Show success message in console for now
+          console.log('Asset added to campaign successfully!');
         } else {
-          alert('Asset is already in this campaign');
+          console.log('Asset is already in this campaign');
         }
       }
     } catch (error) {
       console.error('Error adding asset to campaign:', error);
+      // Keep alert for errors since they're important
       alert('Failed to add asset to campaign. Error: ' + (error.response?.data?.detail || error.message));
     }
   };
