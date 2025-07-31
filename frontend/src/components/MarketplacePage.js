@@ -80,6 +80,8 @@ const MarketplacePage = () => {
     },
     timeline: '',
     tentativeStartDate: null, // For new campaigns
+    selectedCampaignEndDate: null, // For existing campaigns
+    assetExpirationDate: null, // Auto-calculated
     specialRequirements: '',
     notes: ''
   });
