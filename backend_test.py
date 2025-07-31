@@ -340,6 +340,10 @@ class BeatSpaceAPITester:
         else:
             asset_id = self.created_asset_id
         
+        if not self.seller_token:
+            print("⚠️  Skipping single asset test - no seller token")
+            return False, {}
+        
         success, response = self.run_test(f"Get Single Asset", "GET", f"assets/{asset_id}", 200, token=self.seller_token)
         return success, response
 
