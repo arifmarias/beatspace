@@ -412,7 +412,7 @@ const MarketplacePage = () => {
     }, 0);
   };
 
-  const submitBestOfferRequest = async () => {
+  const handleOfferSubmit = async () => {
     try {
       alert('Please sign in to submit a campaign request. This feature requires authentication.');
       navigate('/login');
