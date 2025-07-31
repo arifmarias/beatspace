@@ -758,40 +758,49 @@ const MarketplacePage = () => {
                   </Select>
                 </div>
 
+                <Separator />
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">Contract Duration</label>
+                  <label className="block text-sm font-semibold mb-3 text-gray-700">Contract Duration</label>
                   <Select value={filters.duration} onValueChange={(value) => setFilters({...filters, duration: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="3_months">3 Months</SelectItem>
-                      <SelectItem value="6_months">6 Months</SelectItem>
-                      <SelectItem value="12_months">12 Months</SelectItem>
+                      <SelectItem value="3_months">📅 3 Months</SelectItem>
+                      <SelectItem value="6_months">📅 6 Months</SelectItem>
+                      <SelectItem value="12_months">📅 12 Months</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Min Price (৳)</label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={filters.minPrice}
-                      onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Max Price (৳)</label>
-                    <Input
-                      type="number"
-                      placeholder="∞"
-                      value={filters.maxPrice}
-                      onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
-                    />
+                <Separator />
+
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-gray-700">Price Range (BDT)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium mb-2 text-gray-500">Min Price (৳)</label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={filters.minPrice}
+                        onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-2 text-gray-500">Max Price (৳)</label>
+                      <Input
+                        type="number"
+                        placeholder="∞"
+                        value={filters.maxPrice}
+                        onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
+                      />
+                    </div>
                   </div>
                 </div>
+
+                <Separator />
 
                 <Button 
                   variant="outline" 
