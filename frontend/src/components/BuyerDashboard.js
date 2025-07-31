@@ -372,6 +372,63 @@ const BuyerDashboard = () => {
                                         </div>
                                       </div>
 
+                                      {/* Campaign Assets Section */}
+                                      <div className="mt-6">
+                                        <div className="flex items-center justify-between mb-3">
+                                          <h5 className="font-medium">Campaign Assets ({campaignAssets.length})</h5>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => navigate('/marketplace')}
+                                          >
+                                            <Plus className="w-4 h-4 mr-1" />
+                                            Add Assets
+                                          </Button>
+                                        </div>
+                                        
+                                        {campaignAssets.length > 0 ? (
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                                            {campaignAssets.map((asset) => (
+                                              <div key={asset.id} className="border rounded-lg p-3 hover:shadow-sm">
+                                                <div className="flex items-start space-x-3">
+                                                  {asset.photos && asset.photos[0] && (
+                                                    <img 
+                                                      src={asset.photos[0]} 
+                                                      alt={asset.name}
+                                                      className="w-12 h-12 object-cover rounded"
+                                                    />
+                                                  )}
+                                                  <div className="flex-1 min-w-0">
+                                                    <h6 className="font-medium text-sm truncate">{asset.name}</h6>
+                                                    <p className="text-xs text-gray-500 truncate">{asset.address}</p>
+                                                    <div className="flex items-center justify-between mt-1">
+                                                      <span className="text-xs font-medium text-blue-600">
+                                                        ৳{asset.pricing?.['3_months']?.toLocaleString()}/3mo
+                                                      </span>
+                                                      <Badge variant="outline" className="text-xs">
+                                                        {asset.status}
+                                                      </Badge>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <div className="text-center py-8 border border-dashed rounded-lg">
+                                            <Building className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                            <p className="text-sm text-gray-500">No assets added to this campaign yet</p>
+                                            <Button
+                                              size="sm"
+                                              className="mt-2"
+                                              onClick={() => navigate('/marketplace')}
+                                            >
+                                              Browse Assets
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </div>
+
                                       {selectedCampaign.notes && (
                                         <div className="mt-4">
                                           <strong>Notes:</strong>
