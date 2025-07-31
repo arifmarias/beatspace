@@ -319,18 +319,29 @@ const MarketplacePage = () => {
   };
 
   const addAssetToExistingCampaign = async (campaignId) => {
+    console.log('addAssetToExistingCampaign called with campaignId:', campaignId);
+    console.log('selectedCampaignForAsset:', selectedCampaignForAsset);
+    console.log('existingCampaigns:', existingCampaigns);
+    
     try {
       const headers = getAuthHeaders();
       const selectedCampaign = existingCampaigns.find(c => c.id === campaignId);
+      console.log('Found selectedCampaign:', selectedCampaign);
       
       if (selectedCampaign) {
         const updatedAssets = [...(selectedCampaign.assets || [])];
+        console.log('Current assets in campaign:', updatedAssets);
+        console.log('Asset to add:', selectedCampaignForAsset.id);
+        
         if (!updatedAssets.includes(selectedCampaignForAsset.id)) {
           updatedAssets.push(selectedCampaignForAsset.id);
+          console.log('Updated assets array:', updatedAssets);
           
-          await axios.put(`${API}/campaigns/${campaignId}`, {
+          console.log('Making API call to update campaign...');
+          const response = await axios.put(`${API}/campaigns/${campaignId}`, {
             assets: updatedAssets
           }, { headers });
+          console.log('API response:', response.data);
           
           // Add to temporary campaign for UI
           if (!campaign.find(item => item.id === selectedCampaignForAsset.id)) {
@@ -341,7 +352,6 @@ const MarketplacePage = () => {
           setShowCampaignDialog(false);
           fetchExistingCampaigns(); // Refresh campaigns
           
-          // Show success message in console for now
           console.log('Asset added to campaign successfully!');
         } else {
           console.log('Asset is already in this campaign');
@@ -349,6 +359,7 @@ const MarketplacePage = () => {
       }
     } catch (error) {
       console.error('Error adding asset to campaign:', error);
+      console.error('Error details:', error.response?.data);
       // Keep alert for errors since they're important
       alert('Failed to add asset to campaign. Error: ' + (error.response?.data?.detail || error.message));
     }
