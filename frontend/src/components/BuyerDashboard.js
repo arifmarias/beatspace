@@ -420,6 +420,49 @@ const BuyerDashboard = () => {
                                         </div>
                                       </div>
 
+                                      {/* Campaign Status Management */}
+                                      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                                        <h5 className="font-medium mb-2">Campaign Management</h5>
+                                        <div className="flex items-center space-x-2">
+                                          {selectedCampaign.status === 'Draft' && (
+                                            <>
+                                              <Button
+                                                size="sm"
+                                                onClick={() => updateCampaignStatus(selectedCampaign.id, 'Live')}
+                                                className="bg-green-600 hover:bg-green-700"
+                                              >
+                                                🚀 Launch Campaign
+                                              </Button>
+                                              <p className="text-xs text-gray-600">
+                                                Once live, existing assets cannot be edited or removed
+                                              </p>
+                                            </>
+                                          )}
+                                          
+                                          {selectedCampaign.status === 'Live' && (
+                                            <>
+                                              <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => updateCampaignStatus(selectedCampaign.id, 'Paused')}
+                                              >
+                                                ⏸️ Pause Campaign
+                                              </Button>
+                                              <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => updateCampaignStatus(selectedCampaign.id, 'Completed')}
+                                              >
+                                                ✅ Mark Complete
+                                              </Button>
+                                              <p className="text-xs text-gray-600">
+                                                Campaign is live - assets are protected
+                                              </p>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+
                                       {/* Campaign Assets Section */}
                                       <div className="mt-6">
                                         <div className="flex items-center justify-between mb-3">
