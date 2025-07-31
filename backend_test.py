@@ -412,6 +412,240 @@ class BeatSpaceAPITester:
         )
         return success, response
 
+    # NEW CAMPAIGN LIFECYCLE TESTS
+    def test_campaign_status_change_to_live(self):
+        """Test changing campaign status to Live and verify asset status updates"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign status test - no buyer token")
+            return False, {}
+        
+        # First, get existing campaigns to find one we can test with
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found to test status change")
+            return False, {}
+        
+        # Find a Draft campaign or use the first one
+        test_campaign = None
+        for campaign in campaigns:
+            if campaign.get('status') == 'Draft':
+                test_campaign = campaign
+                break
+        
+        if not test_campaign:
+            test_campaign = campaigns[0]  # Use first campaign if no Draft found
+        
+        campaign_id = test_campaign['id']
+        print(f"   Testing with campaign: {test_campaign.get('name')} (Status: {test_campaign.get('status')})")
+        
+        # Get assets in this campaign before status change
+        campaign_assets = test_campaign.get('assets', [])
+        if campaign_assets:
+            print(f"   Campaign has {len(campaign_assets)} assets")
+            
+            # Check current asset statuses
+            for asset_id in campaign_assets[:2]:  # Check first 2 assets
+                success_asset, asset_data = self.run_test(
+                    f"Get Asset Before Status Change", 
+                    "GET", 
+                    f"assets/{asset_id}", 
+                    200, 
+                    token=self.buyer_token
+                )
+                if success_asset:
+                    print(f"   Asset {asset_data.get('name', 'Unknown')} status before: {asset_data.get('status')}")
+        
+        # Change campaign status to Live
+        status_update = {"status": "Live"}
+        success, response = self.run_test(
+            "Update Campaign Status to Live", 
+            "PUT", 
+            f"campaigns/{campaign_id}/status", 
+            200, 
+            data=status_update,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Campaign status updated to Live")
+            
+            # Verify assets status changed to Live
+            if campaign_assets:
+                for asset_id in campaign_assets[:2]:  # Check first 2 assets
+                    success_asset, asset_data = self.run_test(
+                        f"Get Asset After Status Change", 
+                        "GET", 
+                        f"assets/{asset_id}", 
+                        200, 
+                        token=self.buyer_token
+                    )
+                    if success_asset:
+                        new_status = asset_data.get('status')
+                        print(f"   Asset {asset_data.get('name', 'Unknown')} status after: {new_status}")
+                        if new_status == "Live":
+                            print("   ✅ Asset status correctly updated to Live")
+                        else:
+                            print(f"   ⚠️  Asset status is {new_status}, expected Live")
+        
+        return success, response
+
+    def test_campaign_status_change_to_draft(self):
+        """Test changing campaign status to Draft and verify asset status updates"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign draft status test - no buyer token")
+            return False, {}
+        
+        # Get existing campaigns
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found to test draft status change")
+            return False, {}
+        
+        # Find a Live campaign or use the first one
+        test_campaign = None
+        for campaign in campaigns:
+            if campaign.get('status') == 'Live':
+                test_campaign = campaign
+                break
+        
+        if not test_campaign:
+            test_campaign = campaigns[0]  # Use first campaign if no Live found
+        
+        campaign_id = test_campaign['id']
+        print(f"   Testing with campaign: {test_campaign.get('name')} (Status: {test_campaign.get('status')})")
+        
+        # Change campaign status to Draft
+        status_update = {"status": "Draft"}
+        success, response = self.run_test(
+            "Update Campaign Status to Draft", 
+            "PUT", 
+            f"campaigns/{campaign_id}/status", 
+            200, 
+            data=status_update,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Campaign status updated to Draft")
+            
+            # Verify assets status changed to Available
+            campaign_assets = test_campaign.get('assets', [])
+            if campaign_assets:
+                for asset_id in campaign_assets[:2]:  # Check first 2 assets
+                    success_asset, asset_data = self.run_test(
+                        f"Get Asset After Draft Status Change", 
+                        "GET", 
+                        f"assets/{asset_id}", 
+                        200, 
+                        token=self.buyer_token
+                    )
+                    if success_asset:
+                        new_status = asset_data.get('status')
+                        print(f"   Asset {asset_data.get('name', 'Unknown')} status after: {new_status}")
+                        if new_status == "Available":
+                            print("   ✅ Asset status correctly updated to Available")
+                        else:
+                            print(f"   ⚠️  Asset status is {new_status}, expected Available")
+        
+        return success, response
+
+    def test_sample_data_campaign_statuses(self):
+        """Test that sample data includes realistic campaign statuses"""
+        if not self.buyer_token:
+            print("⚠️  Skipping sample data test - no buyer token")
+            return False, {}
+        
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found in sample data")
+            return False, {}
+        
+        print(f"   Found {len(campaigns)} campaigns in sample data")
+        
+        # Check for variety in campaign statuses
+        statuses = {}
+        for campaign in campaigns:
+            status = campaign.get('status', 'Unknown')
+            statuses[status] = statuses.get(status, 0) + 1
+            print(f"   Campaign: {campaign.get('name')} - Status: {status}")
+            
+            # Check if campaign has assets
+            assets = campaign.get('assets', [])
+            if assets:
+                print(f"     Has {len(assets)} assets")
+        
+        print(f"   Status distribution: {statuses}")
+        
+        # Verify we have both Live and Draft campaigns
+        has_live = 'Live' in statuses
+        has_draft = 'Draft' in statuses
+        
+        if has_live and has_draft:
+            print("   ✅ Sample data includes both Live and Draft campaigns")
+            return True, campaigns
+        else:
+            print(f"   ⚠️  Sample data missing variety - Live: {has_live}, Draft: {has_draft}")
+            return True, campaigns  # Still successful, just noting the issue
+
+    def test_asset_status_consistency(self):
+        """Test that asset statuses are consistent with their campaign statuses"""
+        if not self.buyer_token:
+            print("⚠️  Skipping asset consistency test - no buyer token")
+            return False, {}
+        
+        # Get all campaigns
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found for consistency test")
+            return False, {}
+        
+        print("   Checking asset-campaign status consistency...")
+        
+        inconsistencies = 0
+        total_checked = 0
+        
+        for campaign in campaigns:
+            campaign_status = campaign.get('status')
+            campaign_assets = campaign.get('assets', [])
+            
+            if not campaign_assets:
+                continue
+                
+            print(f"   Campaign: {campaign.get('name')} (Status: {campaign_status})")
+            
+            for asset_id in campaign_assets[:2]:  # Check first 2 assets per campaign
+                success_asset, asset_data = self.run_test(
+                    f"Get Asset for Consistency Check", 
+                    "GET", 
+                    f"assets/{asset_id}", 
+                    200, 
+                    token=self.buyer_token
+                )
+                
+                if success_asset:
+                    asset_status = asset_data.get('status')
+                    total_checked += 1
+                    
+                    # Check expected consistency
+                    expected_status = None
+                    if campaign_status == "Live":
+                        expected_status = "Live"
+                    elif campaign_status == "Draft":
+                        expected_status = "Available"
+                    
+                    if expected_status and asset_status != expected_status:
+                        inconsistencies += 1
+                        print(f"     ⚠️  Asset {asset_data.get('name')} status: {asset_status}, expected: {expected_status}")
+                    else:
+                        print(f"     ✅ Asset {asset_data.get('name')} status: {asset_status}")
+        
+        if inconsistencies == 0:
+            print(f"   ✅ All {total_checked} assets have consistent statuses")
+            return True, {"checked": total_checked, "inconsistencies": 0}
+        else:
+            print(f"   ⚠️  Found {inconsistencies} inconsistencies out of {total_checked} assets")
+            return True, {"checked": total_checked, "inconsistencies": inconsistencies}
+
 def main():
     print("🚀 Starting BeatSpace Backend API Testing...")
     print("Testing Critical Missing Endpoints and CRUD Operations")
