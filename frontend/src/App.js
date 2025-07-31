@@ -42,8 +42,8 @@ const BeatSpace = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [campaign, setCampaign] = useState([]);
   const [filters, setFilters] = useState({
-    type: '',
-    status: '',
+    type: 'all',
+    status: 'all',
     minPrice: '',
     maxPrice: '',
     duration: '3_months'
