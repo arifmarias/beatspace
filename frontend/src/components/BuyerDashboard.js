@@ -817,6 +817,30 @@ const BuyerDashboard = () => {
                               <pre className="text-sm">{JSON.stringify(offer.final_offer, null, 2)}</pre>
                             </div>
                           )}
+
+                          {/* Edit/Delete Actions - Only for Pending offers */}
+                          {offer.status === 'Pending' && (
+                            <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => editOfferRequest(offer)}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => deleteOfferRequest(offer.id)}
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                <X className="w-4 h-4 mr-1" />
+                                Delete
+                              </Button>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}
