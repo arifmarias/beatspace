@@ -227,18 +227,25 @@ const BuyerDashboard = () => {
   };
 
   const deleteOfferRequest = async (offerId) => {
-    if (!confirm('Are you sure you want to delete this offer request?')) {
+    console.log('Delete offer request called with ID:', offerId);
+    
+    if (!window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.')) {
       return;
     }
 
     try {
       const headers = getAuthHeaders();
-      await axios.delete(`${API}/offers/requests/${offerId}`, { headers });
+      console.log('Attempting to delete offer with headers:', headers);
+      
+      const response = await axios.delete(`${API}/offers/requests/${offerId}`, { headers });
+      console.log('Delete response:', response);
+      
       alert('Offer request deleted successfully!');
       fetchBuyerData(); // Refresh the data
     } catch (error) {
       console.error('Error deleting offer request:', error);
-      alert('Failed to delete offer request. Please try again.');
+      console.error('Error response:', error.response);
+      alert('Failed to delete offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
 
