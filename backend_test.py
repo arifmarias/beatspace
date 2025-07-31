@@ -30,15 +30,15 @@ class BeatSpaceAPITester:
         
         try:
             if method == 'GET':
-                response = requests.get(url, headers=headers, params=params)
+                response = requests.get(url, headers=headers, params=params, timeout=30)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers)
+                response = requests.post(url, json=data, headers=headers, timeout=30)
             elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers)
+                response = requests.put(url, json=data, headers=headers, timeout=30)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=headers)
+                response = requests.delete(url, headers=headers, timeout=30)
             elif method == 'PATCH':
-                response = requests.patch(url, json=data, headers=headers)
+                response = requests.patch(url, json=data, headers=headers, timeout=30)
 
             success = response.status_code == expected_status
             if success:
@@ -56,10 +56,22 @@ class BeatSpaceAPITester:
                 print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
                 print(f"   Response: {response.text[:200]}...")
 
+            # Store test result
+            self.test_results[name] = {
+                'success': success,
+                'status_code': response.status_code,
+                'expected_status': expected_status,
+                'response_data': response.json() if response.text and success else {}
+            }
+
             return success, response.json() if response.text and success else {}
 
         except Exception as e:
             print(f"❌ Failed - Error: {str(e)}")
+            self.test_results[name] = {
+                'success': False,
+                'error': str(e)
+            }
             return False, {}
 
     def test_root_endpoint(self):
