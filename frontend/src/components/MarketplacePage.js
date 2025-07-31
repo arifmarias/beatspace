@@ -720,31 +720,40 @@ const MarketplacePage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Status</label>
+                  <label className="block text-sm font-semibold mb-3 text-gray-700">Availability Status</label>
                   <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="All Status" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="Available">Available</SelectItem>
-                      <SelectItem value="Booked">Booked</SelectItem>
-                      <SelectItem value="Live">Live</SelectItem>
+                      <SelectItem value="Available">🟢 Available</SelectItem>
+                      <SelectItem value="Booked">🔴 Booked</SelectItem>
+                      <SelectItem value="Live">🟡 Live</SelectItem>
+                      <SelectItem value="Work in Progress">🔨 Work in Progress</SelectItem>
+                      <SelectItem value="Pending Approval">⏳ Pending Approval</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
+                <Separator />
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">Division</label>
+                  <label className="block text-sm font-semibold mb-3 text-gray-700">Location - Division</label>
                   <Select value={filters.division} onValueChange={(value) => setFilters({...filters, division: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="All Divisions" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Divisions</SelectItem>
-                      {bangladeshDivisions.map(division => (
-                        <SelectItem key={division} value={division}>{division}</SelectItem>
-                      ))}
+                      <SelectItem value="Dhaka">🏢 Dhaka</SelectItem>
+                      <SelectItem value="Chittagong">🚢 Chittagong</SelectItem>
+                      <SelectItem value="Sylhet">🌿 Sylhet</SelectItem>
+                      <SelectItem value="Rajshahi">🏛️ Rajshahi</SelectItem>
+                      <SelectItem value="Khulna">🌊 Khulna</SelectItem>
+                      <SelectItem value="Rangpur">🌾 Rangpur</SelectItem>
+                      <SelectItem value="Mymensingh">🌱 Mymensingh</SelectItem>
+                      <SelectItem value="Barisal">🏞️ Barisal</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
