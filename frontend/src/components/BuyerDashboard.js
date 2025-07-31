@@ -330,10 +330,10 @@ const BuyerDashboard = () => {
                                           </Badge>
                                         </div>
                                         <div>
-                                          <strong>Assets:</strong> {selectedCampaign.asset_ids.length} selected
+                                          <strong>Assets:</strong> {(selectedCampaign.asset_ids || selectedCampaign.assets || []).length} selected
                                         </div>
                                         <div>
-                                          <strong>Created:</strong> {new Date(selectedCampaign.created_at).toLocaleDateString()}
+                                          <strong>Created:</strong> {selectedCampaign.created_at ? new Date(selectedCampaign.created_at).toLocaleDateString() : 'N/A'}
                                         </div>
                                       </div>
 
