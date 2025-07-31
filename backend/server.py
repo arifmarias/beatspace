@@ -327,11 +327,7 @@ def generate_invoice_pdf(payment: Payment, campaign_data: dict) -> bytes:
 # Enhanced sample data initialization
 async def init_bangladesh_sample_data():
     """Initialize comprehensive sample data"""
-    existing_count = await db.assets.count_documents({})
-    if existing_count > 0:
-        return
-    
-    # Create admin user
+    # Always ensure admin user exists
     admin_exists = await db.users.find_one({"role": "admin"})
     if not admin_exists:
         admin_user = {
