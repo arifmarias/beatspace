@@ -15,10 +15,13 @@ class BeatSpaceAPITester:
         self.created_asset_id = None
         self.created_campaign_id = None
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, params=None, token=None):
         """Run a single API test"""
         url = f"{self.base_url}/{endpoint}" if endpoint else self.base_url
         headers = {'Content-Type': 'application/json'}
+        
+        if token:
+            headers['Authorization'] = f'Bearer {token}'
 
         self.tests_run += 1
         print(f"\n🔍 Testing {name}...")
@@ -33,6 +36,8 @@ class BeatSpaceAPITester:
                 response = requests.put(url, json=data, headers=headers)
             elif method == 'DELETE':
                 response = requests.delete(url, headers=headers)
+            elif method == 'PATCH':
+                response = requests.patch(url, json=data, headers=headers)
 
             success = response.status_code == expected_status
             if success:
