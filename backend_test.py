@@ -502,6 +502,14 @@ def main():
     tester.test_protected_routes_without_auth()
     tester.test_role_based_access()
     
+    # Test Phase 3 Advanced Features
+    print("\n🚀 PHASE 3 ADVANCED FEATURES")
+    tester.test_offer_mediation_system()
+    tester.test_asset_monitoring_system()
+    tester.test_advanced_analytics()
+    tester.test_payment_system()
+    tester.test_file_upload()
+    
     # Test legacy endpoints for backward compatibility
     print("\n🔄 LEGACY ENDPOINTS")
     success, assets = tester.test_get_assets()
