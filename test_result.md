@@ -342,7 +342,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Asset status management for campaign lifecycle"
+    - "Campaign edit restrictions based on status"
+    - "Remove Add to Campaign buttons from list view"
+    - "Campaign management restrictions in Buyer Dashboard"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
