@@ -635,7 +635,7 @@ const AdminDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {campaigns.length > 0 ? (
+                {(campaigns || []).length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -648,15 +648,15 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {campaigns.map((campaign) => (
+                      {(campaigns || []).map((campaign) => (
                         <TableRow key={campaign.id}>
                           <TableCell>
                             <div className="font-medium">{campaign.name}</div>
                             <div className="text-sm text-gray-500">{campaign.description}</div>
                           </TableCell>
                           <TableCell>{campaign.buyer_name}</TableCell>
-                          <TableCell>{campaign.asset_ids.length} assets</TableCell>
-                          <TableCell>৳{campaign.budget.toLocaleString()}</TableCell>
+                          <TableCell>{(campaign.assets || []).length} assets</TableCell>
+                          <TableCell>৳{(campaign.budget || 0).toLocaleString()}</TableCell>
                           <TableCell>
                             <Badge className={getStatusColor(campaign.status)}>
                               {campaign.status}
