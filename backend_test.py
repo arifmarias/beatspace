@@ -1116,7 +1116,11 @@ def main():
         "Get Campaigns",
         "Create Campaign",
         "Update Campaign Status to Live",
-        "Update Campaign Status to Draft"
+        "Update Campaign Status to Draft",
+        "Submit Offer Request (New Campaign)",
+        "Submit Offer Request (Existing Campaign)",
+        "Get Offer Requests (Buyer)",
+        "Get Offer Requests (Admin)"
     ]
     
     critical_passed = 0
