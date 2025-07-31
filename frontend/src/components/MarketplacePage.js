@@ -79,6 +79,7 @@ const MarketplacePage = () => {
       monitoring: false
     },
     timeline: '',
+    tentativeStartDate: null, // For new campaigns
     specialRequirements: '',
     notes: ''
   });
