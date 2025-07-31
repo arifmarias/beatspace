@@ -8,6 +8,11 @@ class BeatSpaceAPITester:
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.admin_token = None
+        self.buyer_token = None
+        self.seller_token = None
+        self.created_user_id = None
+        self.created_asset_id = None
         self.created_campaign_id = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
