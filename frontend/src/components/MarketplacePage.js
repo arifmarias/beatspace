@@ -612,19 +612,41 @@ const MarketplacePage = () => {
                       {/* Campaign Selection */}
                       <div>
                         <label className="block text-sm font-semibold mb-3">Campaign Selection *</label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium mb-2">Campaign Type</label>
                             <Select 
-                              value={offerDetails.campaignType} 
-                              onValueChange={(value) => setOfferDetails({...offerDetails, campaignType: value, campaignName: '', existingCampaignId: ''})}
+                              value={offerDetails.existingCampaignId || 'new'} 
+                              onValueChange={(value) => {
+                                if (value === 'new') {
+                                  setOfferDetails({
+                                    ...offerDetails, 
+                                    campaignType: 'new',
+                                    existingCampaignId: '',
+                                    campaignName: '',
+                                    selectedCampaignEndDate: null
+                                  });
+                                } else {
+                                  const selectedCampaign = existingCampaigns.find(c => c.id === value);
+                                  setOfferDetails({
+                                    ...offerDetails, 
+                                    campaignType: 'existing',
+                                    existingCampaignId: value,
+                                    campaignName: selectedCampaign ? selectedCampaign.name : '',
+                                    selectedCampaignEndDate: selectedCampaign ? selectedCampaign.end_date : null
+                                  });
+                                }
+                              }}
                             >
                               <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Select campaign or create new" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="new">🆕 Create New Campaign</SelectItem>
-                                <SelectItem value="existing">📁 Add to Existing Campaign</SelectItem>
+                                {existingCampaigns.map(campaign => (
+                                  <SelectItem key={campaign.id} value={campaign.id}>
+                                    📁 {campaign.name} ({(campaign.assets || []).length} assets)
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           </div>
@@ -639,31 +661,11 @@ const MarketplacePage = () => {
                                 required
                               />
                             </div>
-                          ) : (
-                            <div>
-                              <label className="block text-sm font-medium mb-2">Select Existing Campaign *</label>
-                              <Select 
-                                value={offerDetails.existingCampaignId} 
-                                onValueChange={(value) => {
-                                  const selectedCampaign = existingCampaigns.find(c => c.id === value);
-                                  setOfferDetails({
-                                    ...offerDetails, 
-                                    existingCampaignId: value,
-                                    campaignName: selectedCampaign ? selectedCampaign.name : ''
-                                  });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select campaign" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {existingCampaigns.map(campaign => (
-                                    <SelectItem key={campaign.id} value={campaign.id}>
-                                      {campaign.name} ({(campaign.assets || []).length} assets)
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                          ) : offerDetails.selectedCampaignEndDate && (
+                            <div className="bg-blue-50 p-3 rounded-lg">
+                              <p className="text-sm text-blue-800">
+                                <strong>Campaign End Date:</strong> {new Date(offerDetails.selectedCampaignEndDate).toLocaleDateString()}
+                              </p>
                             </div>
                           )}
                         </div>
