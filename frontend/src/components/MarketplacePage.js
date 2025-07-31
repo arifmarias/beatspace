@@ -553,7 +553,7 @@ const MarketplacePage = () => {
                       
                       <div className="flex space-x-2">
                         <Button 
-                          onClick={submitBestOfferRequest} 
+                          onClick={handleOfferSubmit} 
                           className="flex-1 bg-blue-600 hover:bg-blue-700"
                           disabled={!offerDetails.campaignName || campaign.length === 0}
                         >
