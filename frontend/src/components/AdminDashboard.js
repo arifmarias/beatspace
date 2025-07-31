@@ -125,20 +125,20 @@ const AdminDashboard = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = (users || []).filter(user => {
     const matchesFilter = userFilter === 'all' || user.status === userFilter;
     const matchesSearch = !searchTerm || 
-      user.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.contact_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.contact_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
-  const filteredAssets = assets.filter(asset => {
+  const filteredAssets = (assets || []).filter(asset => {
     const matchesFilter = assetFilter === 'all' || asset.status === assetFilter;
     const matchesSearch = !searchTerm ||
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.address.toLowerCase().includes(searchTerm.toLowerCase());
+      asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.address?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
