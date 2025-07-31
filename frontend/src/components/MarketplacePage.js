@@ -474,33 +474,64 @@ const MarketplacePage = () => {
                 <Eye className="w-4 h-4" />
                 <span>{stats.available_assets} Available</span>
               </div>
-              {campaign.length > 0 && (
+              {/* Enhanced Request Best Offer Dialog */}
+              {showOfferDialog && (
                 <Dialog open={showOfferDialog} onOpenChange={setShowOfferDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      Campaign ({campaign.length}) - Request Offer
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Request Best Offer</DialogTitle>
+                      <DialogTitle className="flex items-center space-x-2">
+                        <MessageSquare className="w-5 h-5 text-orange-600" />
+                        <span>Request Best Offer</span>
+                      </DialogTitle>
+                      <p className="text-sm text-gray-600">
+                        Submit a detailed request to get the best pricing for your selected asset(s)
+                      </p>
                     </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">Campaign Name</label>
-                        <Input
-                          value={offerDetails.campaignName}
-                          onChange={(e) => setOfferDetails({...offerDetails, campaignName: e.target.value})}
-                          placeholder="Enter campaign name"
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
+                    
+                    <div className="space-y-6">
+                      {/* Asset Summary */}
+                      {selectedAssetForOffer && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Selected Asset</h4>
+                          <div className="flex items-start space-x-3">
+                            {selectedAssetForOffer.photos && selectedAssetForOffer.photos[0] && (
+                              <img 
+                                src={selectedAssetForOffer.photos[0]} 
+                                alt={selectedAssetForOffer.name}
+                                className="w-16 h-16 object-cover rounded"
+                              />
+                            )}
+                            <div>
+                              <h5 className="font-medium">{selectedAssetForOffer.name}</h5>
+                              <p className="text-sm text-gray-600">{selectedAssetForOffer.address}</p>
+                              <div className="flex items-center space-x-4 mt-1">
+                                <span className="text-sm font-medium">{selectedAssetForOffer.type}</span>
+                                <span className="text-sm text-blue-600">
+                                  ৳{selectedAssetForOffer.pricing?.['3_months']?.toLocaleString()}/3mo
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Campaign Information */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">Contract Duration</label>
+                          <label className="block text-sm font-semibold mb-2">Campaign Name *</label>
+                          <Input
+                            value={offerDetails.campaignName}
+                            onChange={(e) => setOfferDetails({...offerDetails, campaignName: e.target.value})}
+                            placeholder="Enter campaign name"
+                            required
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
                           <Select 
-                            value={offerDetails.duration} 
-                            onValueChange={(value) => setOfferDetails({...offerDetails, duration: value})}
+                            value={offerDetails.contractDuration} 
+                            onValueChange={(value) => setOfferDetails({...offerDetails, contractDuration: value})}
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -509,61 +540,136 @@ const MarketplacePage = () => {
                               <SelectItem value="3_months">3 Months</SelectItem>
                               <SelectItem value="6_months">6 Months</SelectItem>
                               <SelectItem value="12_months">12 Months</SelectItem>
+                              <SelectItem value="custom">Custom Duration</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                        
+                      </div>
+
+                      {/* Budget and Timeline */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">Estimated Budget (৳)</label>
+                          <label className="block text-sm font-semibold mb-2">Estimated Budget (৳)</label>
                           <Input
                             type="number"
-                            value={offerDetails.budget}
-                            onChange={(e) => setOfferDetails({...offerDetails, budget: e.target.value})}
-                            placeholder={`${calculateCampaignTotal().toLocaleString()}`}
+                            value={offerDetails.estimatedBudget}
+                            onChange={(e) => setOfferDetails({...offerDetails, estimatedBudget: e.target.value})}
+                            placeholder="Your budget range"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Timeline Preferences</label>
+                          <Input
+                            value={offerDetails.timeline}
+                            onChange={(e) => setOfferDetails({...offerDetails, timeline: e.target.value})}
+                            placeholder="e.g., Start in 2 weeks"
                           />
                         </div>
                       </div>
-                      
+
+                      {/* Service Bundles */}
                       <div>
-                        <label className="block text-sm font-medium mb-2">Special Requirements & Notes</label>
+                        <label className="block text-sm font-semibold mb-3">Additional Services</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="printing"
+                              checked={offerDetails.serviceBundles.printing}
+                              onChange={(e) => setOfferDetails({
+                                ...offerDetails, 
+                                serviceBundles: {...offerDetails.serviceBundles, printing: e.target.checked}
+                              })}
+                              className="w-4 h-4 text-blue-600"
+                            />
+                            <label htmlFor="printing" className="text-sm">
+                              🖨️ Printing & Design
+                            </label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="setup"
+                              checked={offerDetails.serviceBundles.setup}
+                              onChange={(e) => setOfferDetails({
+                                ...offerDetails, 
+                                serviceBundles: {...offerDetails.serviceBundles, setup: e.target.checked}
+                              })}
+                              className="w-4 h-4 text-blue-600"
+                            />
+                            <label htmlFor="setup" className="text-sm">
+                              🔧 Installation & Setup
+                            </label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="monitoring"
+                              checked={offerDetails.serviceBundles.monitoring}
+                              onChange={(e) => setOfferDetails({
+                                ...offerDetails, 
+                                serviceBundles: {...offerDetails.serviceBundles, monitoring: e.target.checked}
+                              })}
+                              className="w-4 h-4 text-blue-600"
+                            />
+                            <label htmlFor="monitoring" className="text-sm">
+                              📊 Monitoring & Reports
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Special Requirements */}
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Special Requirements</label>
                         <Textarea
-                          value={offerDetails.notes}
-                          onChange={(e) => setOfferDetails({...offerDetails, notes: e.target.value})}
-                          placeholder="Any special requirements, preferred timeline, or additional services needed..."
+                          value={offerDetails.specialRequirements}
+                          onChange={(e) => setOfferDetails({...offerDetails, specialRequirements: e.target.value})}
+                          placeholder="Any specific requirements, constraints, or special considerations..."
                           rows={3}
                         />
                       </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-medium mb-2">Selected Assets ({campaign.length})</h4>
-                        <div className="space-y-2 max-h-40 overflow-y-auto">
-                          {campaign.map(asset => (
-                            <div key={asset.id} className="flex justify-between items-center text-sm bg-white p-2 rounded">
-                              <span>{asset.name}</span>
-                              <span className="font-medium">৳{(asset.pricing[offerDetails.duration] || Object.values(asset.pricing)[0]).toLocaleString()}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <Separator className="my-2" />
-                        <div className="flex justify-between items-center font-semibold">
-                          <span>Total Estimate:</span>
-                          <span>৳{calculateCampaignTotal().toLocaleString()}</span>
+
+                      {/* Campaign Notes */}
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Campaign Notes & Instructions</label>
+                        <Textarea
+                          value={offerDetails.notes}
+                          onChange={(e) => setOfferDetails({...offerDetails, notes: e.target.value})}
+                          placeholder="Additional notes, campaign objectives, target audience, etc..."
+                          rows={3}
+                        />
+                      </div>
+
+                      {/* Summary Section */}
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <h4 className="font-medium text-blue-900 mb-2">📋 Request Summary</h4>
+                        <div className="text-sm text-blue-700 space-y-1">
+                          <p><strong>Asset:</strong> {selectedAssetForOffer?.name || 'Selected asset'}</p>
+                          <p><strong>Duration:</strong> {offerDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
+                          <p><strong>Budget:</strong> {offerDetails.estimatedBudget ? `৳${parseInt(offerDetails.estimatedBudget).toLocaleString()}` : 'Not specified'}</p>
+                          <p><strong>Services:</strong> {Object.entries(offerDetails.serviceBundles).filter(([_, selected]) => selected).map(([service, _]) => service).join(', ') || 'None selected'}</p>
                         </div>
                       </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button 
-                          onClick={handleOfferSubmit} 
-                          className="flex-1 bg-blue-600 hover:bg-blue-700"
-                          disabled={!offerDetails.campaignName || campaign.length === 0}
-                        >
-                          Submit Request for Best Offer
-                        </Button>
+
+                      {/* Action Buttons */}
+                      <div className="flex justify-end space-x-3 pt-4 border-t">
                         <Button 
                           variant="outline" 
                           onClick={() => setShowOfferDialog(false)}
                         >
                           Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleOfferSubmit}
+                          className="bg-orange-600 hover:bg-orange-700"
+                          disabled={!offerDetails.campaignName.trim()}
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Submit Request
                         </Button>
                       </div>
                     </div>
