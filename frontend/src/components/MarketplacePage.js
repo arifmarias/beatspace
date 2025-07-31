@@ -66,9 +66,17 @@ const MarketplacePage = () => {
   const [selectedAssetForOffer, setSelectedAssetForOffer] = useState(null);
   const [offerDetails, setOfferDetails] = useState({
     campaignName: '',
-    budget: '',
-    notes: '',
-    duration: '3_months'
+    assetId: '',
+    contractDuration: '3_months',
+    estimatedBudget: '',
+    serviceBundles: {
+      printing: false,
+      setup: false,
+      monitoring: false
+    },
+    timeline: '',
+    specialRequirements: '',
+    notes: ''
   });
 
   const assetTypeIcons = {
