@@ -447,13 +447,13 @@ const MarketplacePage = () => {
     let startDate = null;
     let campaignEndDate = null;
     
-    if (offerDetails.campaignType === 'new' && offerDetails.tentativeStartDate) {
+    // Always use tentativeStartDate as the asset start date
+    if (offerDetails.tentativeStartDate) {
       startDate = offerDetails.tentativeStartDate;
-    } else if (offerDetails.campaignType === 'existing' && offerDetails.selectedCampaignEndDate) {
-      const selectedCampaign = existingCampaigns.find(c => c.id === offerDetails.existingCampaignId);
-      if (selectedCampaign && selectedCampaign.start_date) {
-        startDate = new Date(selectedCampaign.start_date);
-      }
+    }
+    
+    // Check campaign end date for existing campaigns
+    if (offerDetails.existingCampaignId && offerDetails.selectedCampaignEndDate) {
       campaignEndDate = new Date(offerDetails.selectedCampaignEndDate);
     }
     
@@ -475,6 +475,12 @@ const MarketplacePage = () => {
           expirationWarning: null
         }));
       }
+    } else {
+      setOfferDetails(prev => ({
+        ...prev,
+        assetExpirationDate: null,
+        expirationWarning: null
+      }));
     }
   };
 
