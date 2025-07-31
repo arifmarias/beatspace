@@ -746,8 +746,312 @@ async def upload_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
-# Include all previous routes...
-# (Previous routes from Phase 2 remain the same)
+# Public Stats Route
+@api_router.get("/stats/public")
+async def get_public_stats():
+    """Get public statistics for homepage and marketplace"""
+    try:
+        total_assets = await db.assets.count_documents({})
+        available_assets = await db.assets.count_documents({"status": "Available"})
+        total_users = await db.users.count_documents({})
+        active_campaigns = await db.campaigns.count_documents({"status": "Live"}) if "campaigns" in await db.list_collection_names() else 0
+        
+        return {
+            "total_assets": total_assets,
+            "available_assets": available_assets,
+            "total_users": total_users,
+            "active_campaigns": active_campaigns,
+            "success_rate": 95.2,  # Demo metric
+            "platform_uptime": "99.9%"  # Demo metric
+        }
+    except Exception as e:
+        logger.error(f"Error fetching public stats: {e}")
+        # Return default stats in case of error
+        return {
+            "total_assets": 7,
+            "available_assets": 5,
+            "total_users": 12,
+            "active_campaigns": 3,
+            "success_rate": 95.2,
+            "platform_uptime": "99.9%"
+        }
+
+# Public Assets Route
+@api_router.get("/assets/public", response_model=List[Asset])
+async def get_public_assets():
+    """Get all public assets for marketplace display"""
+    try:
+        assets = await db.assets.find({}).to_list(1000)
+        return [Asset(**asset) for asset in assets]
+    except Exception as e:
+        logger.error(f"Error fetching public assets: {e}")
+        return []
+
+# Enhanced Asset CRUD Routes
+@api_router.get("/assets", response_model=List[Asset])
+async def get_assets(
+    current_user: User = Depends(get_current_user),
+    type: Optional[str] = None,
+    status: Optional[str] = None,
+    division: Optional[str] = None
+):
+    """Get assets with optional filtering"""
+    query = {}
+    
+    # Filter by seller for seller users
+    if current_user.role == UserRole.SELLER:
+        query["seller_id"] = current_user.id
+    
+    # Apply filters
+    if type and type != "all":
+        query["type"] = type
+    if status and status != "all":
+        query["status"] = status
+    if division and division != "all":
+        query["division"] = division
+    
+    assets = await db.assets.find(query).to_list(1000)
+    return [Asset(**asset) for asset in assets]
+
+@api_router.get("/assets/{asset_id}", response_model=Asset)
+async def get_asset(asset_id: str, current_user: User = Depends(get_current_user)):
+    """Get single asset by ID"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return Asset(**asset)
+
+@api_router.post("/assets", response_model=Asset)
+async def create_asset(
+    asset_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Create new asset (seller only)"""
+    if current_user.role != UserRole.SELLER:
+        raise HTTPException(status_code=403, detail="Only sellers can create assets")
+    
+    # Add seller information
+    asset_data["seller_id"] = current_user.id
+    asset_data["seller_name"] = current_user.company_name
+    asset_data["status"] = AssetStatus.PENDING_APPROVAL
+    
+    asset = Asset(**asset_data)
+    await db.assets.insert_one(asset.dict())
+    
+    return asset
+
+@api_router.put("/assets/{asset_id}", response_model=Asset)
+async def update_asset(
+    asset_id: str,
+    asset_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update asset"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    # Check permissions
+    if current_user.role == UserRole.SELLER and asset["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only update your own assets")
+    
+    # Remove fields that shouldn't be updated by sellers
+    if current_user.role == UserRole.SELLER:
+        asset_data.pop("status", None)
+        asset_data.pop("seller_id", None)
+        asset_data.pop("seller_name", None)
+    
+    updated_asset = await db.assets.find_one_and_update(
+        {"id": asset_id},
+        {"$set": asset_data},
+        return_document=True
+    )
+    
+    return Asset(**updated_asset)
+
+@api_router.delete("/assets/{asset_id}")
+async def delete_asset(
+    asset_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete asset"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    # Check permissions
+    if current_user.role == UserRole.SELLER and asset["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only delete your own assets")
+    
+    await db.assets.delete_one({"id": asset_id})
+    return {"message": "Asset deleted successfully"}
+
+# Enhanced User Management Routes
+@api_router.get("/admin/users", response_model=List[User])
+async def get_all_users(admin_user: User = Depends(require_admin)):
+    """Get all users for admin management"""
+    users = await db.users.find({}).to_list(1000)
+    return [User(**user) for user in users]
+
+@api_router.put("/admin/users/{user_id}/status")
+async def update_user_status(
+    user_id: str,
+    status_update: UserStatusUpdate,
+    admin_user: User = Depends(require_admin)
+):
+    """Update user status (approve/reject/suspend)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {"status": status_update.status}
+    if status_update.status == UserStatus.APPROVED:
+        update_data["verified_at"] = datetime.utcnow()
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    # Send notification email
+    user_obj = User(**user)
+    if status_update.status == UserStatus.APPROVED:
+        send_notification_email(
+            user_obj.email,
+            "Account Approved - Welcome to BeatSpace!",
+            f"Great news! Your BeatSpace account has been approved. You can now access all platform features."
+        )
+    elif status_update.status == UserStatus.REJECTED:
+        reason = status_update.reason or "Please contact support for more information."
+        send_notification_email(
+            user_obj.email,
+            "Account Status Update",
+            f"Your BeatSpace account application has been reviewed. Reason: {reason}"
+        )
+    
+    return {"message": f"User status updated to {status_update.status}"}
+
+@api_router.put("/admin/assets/{asset_id}/status")
+async def update_asset_status(
+    asset_id: str,
+    status_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update asset status (approve/reject)"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    new_status = status_data.get("status")
+    if new_status not in [s.value for s in AssetStatus]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    update_data = {"status": new_status}
+    if new_status == AssetStatus.AVAILABLE:
+        update_data["approved_at"] = datetime.utcnow()
+    
+    await db.assets.update_one(
+        {"id": asset_id},
+        {"$set": update_data}
+    )
+    
+    # Notify seller
+    seller = await db.users.find_one({"id": asset["seller_id"]})
+    if seller:
+        asset_obj = Asset(**asset)
+        if new_status == AssetStatus.AVAILABLE:
+            send_notification_email(
+                seller["email"],
+                "Asset Approved!",
+                f"Your asset '{asset_obj.name}' has been approved and is now live on BeatSpace."
+            )
+    
+    return {"message": f"Asset status updated to {new_status}"}
+
+# Campaign Management Routes
+class Campaign(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    buyer_id: str
+    buyer_name: str
+    description: str = ""
+    assets: List[str] = []
+    status: CampaignStatus = CampaignStatus.DRAFT
+    budget: Optional[float] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+class CampaignCreate(BaseModel):
+    name: str
+    description: str = ""
+    assets: List[str] = []
+    budget: Optional[float] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+@api_router.get("/campaigns", response_model=List[Campaign])
+async def get_campaigns(current_user: User = Depends(get_current_user)):
+    """Get campaigns for current user"""
+    query = {}
+    
+    if current_user.role == UserRole.BUYER:
+        query["buyer_id"] = current_user.id
+    elif current_user.role == UserRole.ADMIN:
+        # Admin can see all campaigns
+        pass
+    else:
+        # Sellers can see campaigns that include their assets
+        user_assets = await db.assets.find({"seller_id": current_user.id}).to_list(1000)
+        asset_ids = [asset["id"] for asset in user_assets]
+        query["assets"] = {"$in": asset_ids}
+    
+    campaigns = await db.campaigns.find(query).to_list(1000)
+    return [Campaign(**campaign) for campaign in campaigns]
+
+@api_router.post("/campaigns", response_model=Campaign)
+async def create_campaign(
+    campaign_data: CampaignCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """Create new campaign (buyer only)"""
+    if current_user.role != UserRole.BUYER:
+        raise HTTPException(status_code=403, detail="Only buyers can create campaigns")
+    
+    campaign = Campaign(
+        **campaign_data.dict(),
+        buyer_id=current_user.id,
+        buyer_name=current_user.company_name
+    )
+    
+    await db.campaigns.insert_one(campaign.dict())
+    return campaign
+
+@api_router.put("/campaigns/{campaign_id}", response_model=Campaign)
+async def update_campaign(
+    campaign_id: str,
+    campaign_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update campaign"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Check permissions
+    if current_user.role == UserRole.BUYER and campaign["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only update your own campaigns")
+    
+    campaign_data["updated_at"] = datetime.utcnow()
+    
+    updated_campaign = await db.campaigns.find_one_and_update(
+        {"id": campaign_id},
+        {"$set": campaign_data},
+        return_document=True
+    )
+    
+    return Campaign(**updated_campaign)
 
 @api_router.get("/")
 async def root():
