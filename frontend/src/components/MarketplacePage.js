@@ -422,8 +422,20 @@ const MarketplacePage = () => {
         return;
       }
 
-      if (!offerDetails.campaignName.trim()) {
-        alert('Please enter a campaign name.');
+      // Validation for campaign selection
+      if (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) {
+        alert('Please enter a campaign name for the new campaign.');
+        return;
+      }
+      
+      if (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) {
+        alert('Please select an existing campaign.');
+        return;
+      }
+
+      // Mandatory budget validation
+      if (!offerDetails.estimatedBudget || !offerDetails.estimatedBudget.trim()) {
+        alert('Estimated budget is required to process your offer request.');
         return;
       }
 
@@ -438,8 +450,10 @@ const MarketplacePage = () => {
       const offerRequestData = {
         asset_id: selectedAssetForOffer.id,
         campaign_name: offerDetails.campaignName.trim(),
+        campaign_type: offerDetails.campaignType,
+        existing_campaign_id: offerDetails.campaignType === 'existing' ? offerDetails.existingCampaignId : null,
         contract_duration: offerDetails.contractDuration,
-        estimated_budget: offerDetails.estimatedBudget ? parseFloat(offerDetails.estimatedBudget) : null,
+        estimated_budget: parseFloat(offerDetails.estimatedBudget),
         service_bundles: offerDetails.serviceBundles,
         timeline: offerDetails.timeline || null,
         special_requirements: offerDetails.specialRequirements || null,
@@ -453,7 +467,9 @@ const MarketplacePage = () => {
       setShowOfferDialog(false);
       setSelectedAssetForOffer(null);
       setOfferDetails({
+        campaignType: 'new',
         campaignName: '',
+        existingCampaignId: '',
         assetId: '',
         contractDuration: '3_months',
         estimatedBudget: '',
