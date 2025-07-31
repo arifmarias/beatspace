@@ -262,10 +262,12 @@ const BuyerDashboard = () => {
       alert('Offer request updated successfully!');
       setShowEditOfferDialog(false);
       setEditingOffer(null);
+      setActiveTab('requested-offers'); // Navigate back to Requested Offers tab
       fetchBuyerData(); // Refresh the data
     } catch (error) {
       console.error('Error updating offer request:', error);
-      alert('Failed to update offer request. Please try again.');
+      console.error('Error response:', error.response);
+      alert('Failed to update offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
 
