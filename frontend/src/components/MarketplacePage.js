@@ -65,7 +65,9 @@ const MarketplacePage = () => {
   const [selectedCampaignForAsset, setSelectedCampaignForAsset] = useState(null);
   const [selectedAssetForOffer, setSelectedAssetForOffer] = useState(null);
   const [offerDetails, setOfferDetails] = useState({
+    campaignType: 'new', // 'new' or 'existing'
     campaignName: '',
+    existingCampaignId: '',
     assetId: '',
     contractDuration: '3_months',
     estimatedBudget: '',
