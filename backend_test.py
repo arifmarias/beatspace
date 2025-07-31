@@ -65,6 +65,232 @@ class BeatSpaceAPITester:
         """Test API root endpoint"""
         return self.run_test("API Root", "GET", "", 200)
 
+    # Authentication Tests
+    def test_admin_login(self):
+        """Test admin login"""
+        login_data = {
+            "email": "admin@beatspace.com",
+            "password": "admin123"
+        }
+        success, response = self.run_test("Admin Login", "POST", "auth/login", 200, data=login_data)
+        if success and 'access_token' in response:
+            self.admin_token = response['access_token']
+            print(f"   Admin token obtained: {self.admin_token[:20]}...")
+            print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
+        return success, response
+
+    def test_user_registration(self):
+        """Test user registration for buyer and seller"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        
+        # Test buyer registration
+        buyer_data = {
+            "email": f"testbuyer{timestamp}@example.com",
+            "password": "TestPass123!",
+            "company_name": "Test Buyer Company",
+            "contact_name": "Test Buyer",
+            "phone": "+8801234567890",
+            "role": "buyer",
+            "address": "Test Address, Dhaka"
+        }
+        
+        success_buyer, response_buyer = self.run_test("Register Buyer", "POST", "auth/register", 200, data=buyer_data)
+        if success_buyer:
+            self.created_user_id = response_buyer.get('user_id')
+            print(f"   Created buyer ID: {self.created_user_id}")
+        
+        # Test seller registration
+        seller_data = {
+            "email": f"testseller{timestamp}@example.com",
+            "password": "TestPass123!",
+            "company_name": "Test Seller Company",
+            "contact_name": "Test Seller",
+            "phone": "+8801234567891",
+            "role": "seller",
+            "address": "Test Address, Dhaka"
+        }
+        
+        success_seller, response_seller = self.run_test("Register Seller", "POST", "auth/register", 200, data=seller_data)
+        
+        return success_buyer and success_seller
+
+    def test_login_without_approval(self):
+        """Test login attempt before admin approval"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        login_data = {
+            "email": f"testbuyer{timestamp}@example.com",
+            "password": "TestPass123!"
+        }
+        # Should fail with 403 because user is not approved yet
+        return self.run_test("Login Without Approval", "POST", "auth/login", 403, data=login_data)
+
+    # Admin Dashboard Tests
+    def test_admin_get_users(self):
+        """Test admin getting all users"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin users test - no admin token")
+            return False, {}
+        
+        success, response = self.run_test("Admin Get Users", "GET", "admin/users", 200, token=self.admin_token)
+        if success:
+            print(f"   Found {len(response)} users in system")
+            for user in response[:3]:  # Show first 3 users
+                print(f"   User: {user.get('email')} - {user.get('role')} - {user.get('status')}")
+        return success, response
+
+    def test_admin_approve_user(self):
+        """Test admin approving a user"""
+        if not self.admin_token or not self.created_user_id:
+            print("⚠️  Skipping user approval test - missing admin token or user ID")
+            return False, {}
+        
+        approval_data = {
+            "status": "approved",
+            "reason": "Test approval"
+        }
+        
+        return self.run_test(
+            "Admin Approve User", 
+            "PATCH", 
+            f"admin/users/{self.created_user_id}/status", 
+            200, 
+            data=approval_data,
+            token=self.admin_token
+        )
+
+    def test_admin_get_assets(self):
+        """Test admin getting all assets"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin assets test - no admin token")
+            return False, {}
+        
+        success, response = self.run_test("Admin Get Assets", "GET", "admin/assets", 200, token=self.admin_token)
+        if success:
+            print(f"   Found {len(response)} assets in system")
+            for asset in response[:3]:  # Show first 3 assets
+                print(f"   Asset: {asset.get('name')} - {asset.get('type')} - {asset.get('status')}")
+        return success, response
+
+    def test_admin_approve_asset(self):
+        """Test admin approving an asset"""
+        if not self.admin_token:
+            print("⚠️  Skipping asset approval test - no admin token")
+            return False, {}
+        
+        # First get assets to find one to approve
+        success, assets = self.test_admin_get_assets()
+        if not success or not assets:
+            print("⚠️  No assets found to approve")
+            return False, {}
+        
+        # Find a pending asset or use the first one
+        asset_to_approve = None
+        for asset in assets:
+            if asset.get('status') == 'Pending Approval':
+                asset_to_approve = asset
+                break
+        
+        if not asset_to_approve:
+            asset_to_approve = assets[0]  # Use first asset
+        
+        approval_data = {
+            "status": "Available",
+            "reason": "Test approval"
+        }
+        
+        return self.run_test(
+            "Admin Approve Asset", 
+            "PATCH", 
+            f"admin/assets/{asset_to_approve['id']}/status", 
+            200, 
+            data=approval_data,
+            token=self.admin_token
+        )
+
+    # Public Endpoints Tests
+    def test_public_assets(self):
+        """Test getting public assets"""
+        success, response = self.run_test("Get Public Assets", "GET", "assets/public", 200)
+        if success:
+            print(f"   Found {len(response)} public assets")
+            if response:
+                asset = response[0]
+                print(f"   Sample asset: {asset.get('name')} - {asset.get('status')}")
+        return success, response
+
+    def test_public_stats(self):
+        """Test getting public statistics"""
+        success, response = self.run_test("Get Public Stats", "GET", "stats/public", 200)
+        if success:
+            print(f"   Total assets: {response.get('total_assets', 'N/A')}")
+            print(f"   Available assets: {response.get('available_assets', 'N/A')}")
+            print(f"   Total users: {response.get('total_users', 'N/A')}")
+        return success, response
+
+    # Protected Routes Tests (should fail without proper tokens)
+    def test_protected_routes_without_auth(self):
+        """Test that protected routes require authentication"""
+        protected_endpoints = [
+            ("Get Assets (Protected)", "GET", "assets"),
+            ("Create Asset", "POST", "assets"),
+            ("Get Campaigns", "GET", "campaigns"),
+            ("Create Campaign", "POST", "campaigns")
+        ]
+        
+        all_passed = True
+        for name, method, endpoint in protected_endpoints:
+            success, _ = self.run_test(f"{name} - No Auth", method, endpoint, 401)
+            all_passed = all_passed and success
+        
+        return all_passed
+
+    # Role-based Access Tests
+    def test_role_based_access(self):
+        """Test role-based access control"""
+        if not self.admin_token:
+            print("⚠️  Skipping role-based access test - no admin token")
+            return False
+        
+        # Test admin accessing admin endpoints (should work)
+        success1, _ = self.run_test("Admin Access Admin Endpoint", "GET", "admin/users", 200, token=self.admin_token)
+        
+        # Test non-admin accessing admin endpoints (should fail)
+        # First create a non-admin token by registering and approving a user
+        timestamp = datetime.now().strftime('%H%M%S')
+        test_user_data = {
+            "email": f"testuser{timestamp}@example.com",
+            "password": "TestPass123!",
+            "company_name": "Test Company",
+            "contact_name": "Test User",
+            "phone": "+8801234567892",
+            "role": "buyer"
+        }
+        
+        # Register user
+        reg_success, reg_response = self.run_test("Register Test User for Role Test", "POST", "auth/register", 200, data=test_user_data)
+        if not reg_success:
+            return False
+        
+        # Approve user
+        user_id = reg_response.get('user_id')
+        approval_data = {"status": "approved"}
+        approve_success, _ = self.run_test("Approve Test User", "PATCH", f"admin/users/{user_id}/status", 200, data=approval_data, token=self.admin_token)
+        if not approve_success:
+            return False
+        
+        # Login as approved user
+        login_data = {"email": test_user_data["email"], "password": test_user_data["password"]}
+        login_success, login_response = self.run_test("Login Approved User", "POST", "auth/login", 200, data=login_data)
+        if not login_success:
+            return False
+        
+        user_token = login_response.get('access_token')
+        
+        # Test user accessing admin endpoint (should fail with 403)
+        success2, _ = self.run_test("User Access Admin Endpoint", "GET", "admin/users", 403, token=user_token)
+        
+        return success1 and success2
+
     def test_get_assets(self):
         """Test getting all assets"""
         success, response = self.run_test("Get All Assets", "GET", "assets", 200)
