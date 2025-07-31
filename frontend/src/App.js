@@ -449,7 +449,7 @@ const BeatSpace = () => {
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Types</SelectItem>
+                      <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="Billboard">Billboard</SelectItem>
                       <SelectItem value="Police Box">Police Box</SelectItem>
                       <SelectItem value="Roadside Barrier">Roadside Barrier</SelectItem>
