@@ -133,6 +133,8 @@ class OfferRequest(BaseModel):
 class OfferRequestCreate(BaseModel):
     asset_id: str
     campaign_name: str
+    campaign_type: str  # 'new' or 'existing'
+    existing_campaign_id: Optional[str] = None
     contract_duration: str
     estimated_budget: Optional[float] = None
     service_bundles: ServiceBundles
