@@ -174,9 +174,11 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
-                <Settings className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                alt="BeatSpace Logo" 
+                className="w-8 h-8"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                 <p className="text-xs text-gray-500">BeatSpace Management</p>
