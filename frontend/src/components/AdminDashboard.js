@@ -257,8 +257,8 @@ const AdminDashboard = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
                   <p className="text-3xl font-bold text-gray-900">
-                    {users.filter(u => u.status === 'pending').length + 
-                     assets.filter(a => a.status === 'Pending Approval').length}
+                    {(users || []).filter(u => u.status === 'pending').length + 
+                     (assets || []).filter(a => a.status === 'Pending Approval').length}
                   </p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-500" />
