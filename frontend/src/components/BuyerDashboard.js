@@ -40,6 +40,7 @@ const BuyerDashboard = () => {
   const navigate = useNavigate();
   const currentUser = getUser();
   const [campaigns, setCampaigns] = useState([]);
+  const [requestedOffers, setRequestedOffers] = useState([]);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
