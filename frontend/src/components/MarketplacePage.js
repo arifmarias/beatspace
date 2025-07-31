@@ -59,6 +59,9 @@ const MarketplacePage = () => {
   const [viewMode, setViewMode] = useState('map');
   const [searchTerm, setSearchTerm] = useState('');
   const [showOfferDialog, setShowOfferDialog] = useState(false);
+  const [showCampaignDialog, setShowCampaignDialog] = useState(false);
+  const [existingCampaigns, setExistingCampaigns] = useState([]);
+  const [selectedCampaignForAsset, setSelectedCampaignForAsset] = useState(null);
   const [offerDetails, setOfferDetails] = useState({
     campaignName: '',
     budget: '',
