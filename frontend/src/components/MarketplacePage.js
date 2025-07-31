@@ -103,6 +103,10 @@ const MarketplacePage = () => {
     initializeMap();
     fetchAssets();
     fetchStats();
+    
+    if (user) {
+      fetchExistingCampaigns();
+    }
   }, []);
 
   useEffect(() => {
