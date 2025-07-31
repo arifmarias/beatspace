@@ -362,6 +362,64 @@ def generate_invoice_pdf(payment: Payment, campaign_data: dict) -> bytes:
     buffer.seek(0)
     return buffer.getvalue()
 
+async def update_assets_status_for_campaign(campaign_id: str, campaign_status: str):
+    """Update asset statuses based on campaign status"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        return
+    
+    asset_ids = campaign.get("assets", [])
+    if not asset_ids:
+        return
+    
+    # Set asset status based on campaign status
+    if campaign_status == "Live":
+        new_asset_status = AssetStatus.LIVE
+    elif campaign_status == "Draft":
+        new_asset_status = AssetStatus.AVAILABLE
+    elif campaign_status == "Booked":
+        new_asset_status = AssetStatus.BOOKED
+    else:
+        return  # Don't change asset status for other campaign statuses
+    
+    # Update all assets in the campaign
+    await db.assets.update_many(
+        {"id": {"$in": asset_ids}},
+        {"$set": {"status": new_asset_status}}
+    )
+    
+    logger.info(f"Updated {len(asset_ids)} assets to status '{new_asset_status}' for campaign {campaign_id}")
+
+@api_router.put("/campaigns/{campaign_id}/status")
+async def update_campaign_status(
+    campaign_id: str,
+    status_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update campaign status and handle asset status changes"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Check permissions
+    if current_user.role == UserRole.BUYER and campaign["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only update your own campaigns")
+    
+    new_status = status_data.get("status")
+    if new_status not in ["Draft", "Live", "Paused", "Completed", "Cancelled"]:
+        raise HTTPException(status_code=400, detail="Invalid campaign status")
+    
+    # Update campaign status
+    await db.campaigns.update_one(
+        {"id": campaign_id},
+        {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
+    )
+    
+    # Update asset statuses based on campaign status
+    await update_assets_status_for_campaign(campaign_id, new_status)
+    
+    return {"message": f"Campaign status updated to {new_status}"}
+
 # Enhanced sample data initialization
 async def init_bangladesh_sample_data():
     """Initialize comprehensive sample data"""
