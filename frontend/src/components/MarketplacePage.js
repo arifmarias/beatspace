@@ -414,11 +414,65 @@ const MarketplacePage = () => {
 
   const handleOfferSubmit = async () => {
     try {
-      alert('Please sign in to submit a campaign request. This feature requires authentication.');
-      navigate('/login');
+      if (!currentUser) {
+        alert('Please sign in to submit a campaign request.');
+        navigate('/login');
+        return;
+      }
+
+      if (!offerDetails.campaignName.trim()) {
+        alert('Please enter a campaign name.');
+        return;
+      }
+
+      if (!selectedAssetForOffer) {
+        alert('No asset selected for offer request.');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      
+      // Prepare offer request data
+      const offerRequestData = {
+        asset_id: selectedAssetForOffer.id,
+        campaign_name: offerDetails.campaignName.trim(),
+        contract_duration: offerDetails.contractDuration,
+        estimated_budget: offerDetails.estimatedBudget ? parseFloat(offerDetails.estimatedBudget) : null,
+        service_bundles: offerDetails.serviceBundles,
+        timeline: offerDetails.timeline || null,
+        special_requirements: offerDetails.specialRequirements || null,
+        notes: offerDetails.notes || null
+      };
+
+      // Submit offer request
+      await axios.post(`${API}/offers/request`, offerRequestData, { headers });
+      
+      // Close dialog and reset form
+      setShowOfferDialog(false);
+      setSelectedAssetForOffer(null);
+      setOfferDetails({
+        campaignName: '',
+        assetId: '',
+        contractDuration: '3_months',
+        estimatedBudget: '',
+        serviceBundles: {
+          printing: false,
+          setup: false,
+          monitoring: false
+        },
+        timeline: '',
+        specialRequirements: '',
+        notes: ''
+      });
+
+      // Refresh assets to show updated status
+      fetchAssets();
+      
+      alert('Your offer request has been submitted successfully! You will be notified when we have a quote ready.');
+      
     } catch (error) {
       console.error('Error submitting offer request:', error);
-      alert('Error submitting request. Please try again.');
+      alert('Error submitting request: ' + (error.response?.data?.detail || error.message));
     }
   };
 
