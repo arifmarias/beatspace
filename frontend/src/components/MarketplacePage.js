@@ -756,8 +756,13 @@ const MarketplacePage = () => {
                         <h4 className="font-medium text-blue-900 mb-2">📋 Request Summary</h4>
                         <div className="text-sm text-blue-700 space-y-1">
                           <p><strong>Asset:</strong> {selectedAssetForOffer?.name || 'Selected asset'}</p>
+                          <p><strong>Campaign:</strong> {
+                            offerDetails.campaignType === 'new' 
+                              ? `New Campaign - ${offerDetails.campaignName || 'Not specified'}` 
+                              : `Existing Campaign - ${offerDetails.campaignName || 'Not selected'}`
+                          }</p>
                           <p><strong>Duration:</strong> {offerDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
-                          <p><strong>Budget:</strong> {offerDetails.estimatedBudget ? `৳${parseInt(offerDetails.estimatedBudget).toLocaleString()}` : 'Not specified'}</p>
+                          <p><strong>Budget:</strong> {offerDetails.estimatedBudget ? `৳${parseInt(offerDetails.estimatedBudget).toLocaleString()}` : '⚠️ Required'}</p>
                           <p><strong>Services:</strong> {Object.entries(offerDetails.serviceBundles).filter(([_, selected]) => selected).map(([service, _]) => service).join(', ') || 'None selected'}</p>
                         </div>
                       </div>
@@ -773,7 +778,11 @@ const MarketplacePage = () => {
                         <Button 
                           onClick={handleOfferSubmit}
                           className="bg-orange-600 hover:bg-orange-700"
-                          disabled={!offerDetails.campaignName.trim()}
+                          disabled={
+                            !offerDetails.estimatedBudget.trim() || 
+                            (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) ||
+                            (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId)
+                          }
                         >
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Submit Request
