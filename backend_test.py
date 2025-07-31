@@ -472,6 +472,247 @@ class BeatSpaceAPITester:
         
         return self.run_test("Create Asset", "POST", "assets", 201, data=asset_data)
 
+    # Phase 3 Advanced Feature Tests
+    def test_offer_mediation_system(self):
+        """Test Phase 3 Offer Mediation System"""
+        if not self.admin_token:
+            print("⚠️  Skipping offer mediation tests - no admin token")
+            return False
+        
+        print("\n   🔄 Testing Offer Mediation System...")
+        
+        # Test getting offer requests
+        success1, requests = self.run_test(
+            "Get Offer Requests", 
+            "GET", 
+            "admin/offer-requests", 
+            200, 
+            token=self.admin_token
+        )
+        
+        # Test submitting final offer
+        final_offer_data = {
+            "request_id": "test-request-001",
+            "campaign_id": "test-campaign-001",
+            "final_pricing": {
+                "billboard_1": 15000,
+                "billboard_2": 12000
+            },
+            "terms": "Standard terms and conditions apply",
+            "timeline": "2 weeks setup, 3 months campaign",
+            "included_services": ["setup", "monitoring", "maintenance"],
+            "total_amount": 27000,
+            "admin_notes": "Negotiated pricing based on bulk booking"
+        }
+        
+        success2, offer_response = self.run_test(
+            "Submit Final Offer", 
+            "POST", 
+            "admin/submit-final-offer", 
+            200, 
+            data=final_offer_data,
+            token=self.admin_token
+        )
+        
+        # Test buyer notification
+        notification_data = {
+            "campaign_id": "test-campaign-001",
+            "type": "offer_ready"
+        }
+        
+        success3, _ = self.run_test(
+            "Notify Buyer", 
+            "POST", 
+            "admin/notify-buyer", 
+            200, 
+            data=notification_data,
+            token=self.admin_token
+        )
+        
+        return success1 and success2 and success3
+
+    def test_asset_monitoring_system(self):
+        """Test Phase 3 Asset Monitoring System"""
+        if not self.admin_token:
+            print("⚠️  Skipping monitoring tests - no admin token")
+            return False
+        
+        print("\n   📊 Testing Asset Monitoring System...")
+        
+        # Test getting monitoring records
+        success1, records = self.run_test(
+            "Get Monitoring Records", 
+            "GET", 
+            "monitoring/records", 
+            200, 
+            token=self.admin_token,
+            params={"date_range": "30_days"}
+        )
+        
+        # Test creating monitoring record
+        monitoring_data = {
+            "asset_id": "test-asset-001",
+            "photos": [
+                "https://images.unsplash.com/photo-1541888946425-d81bb1924c35?w=800&h=600&fit=crop"
+            ],
+            "condition_rating": 8,
+            "notes": "Asset in good condition, minor cleaning required",
+            "weather_condition": "Clear",
+            "maintenance_required": False,
+            "issues_reported": "",
+            "inspector": "Test Inspector",
+            "gps_location": {"lat": 23.7461, "lng": 90.3742}
+        }
+        
+        success2, record_response = self.run_test(
+            "Create Monitoring Record", 
+            "POST", 
+            "monitoring/records", 
+            200, 
+            data=monitoring_data,
+            token=self.admin_token
+        )
+        
+        # Test monitoring report generation
+        success3, _ = self.run_test(
+            "Generate Monitoring Report", 
+            "GET", 
+            "monitoring/report/test-asset-001", 
+            200, 
+            token=self.admin_token,
+            params={"date_range": "30_days"}
+        )
+        
+        return success1 and success2 and success3
+
+    def test_advanced_analytics(self):
+        """Test Phase 3 Advanced Analytics Dashboard"""
+        if not self.admin_token:
+            print("⚠️  Skipping analytics tests - no admin token")
+            return False
+        
+        print("\n   📈 Testing Advanced Analytics...")
+        
+        # Test analytics overview
+        success1, overview = self.run_test(
+            "Analytics Overview", 
+            "GET", 
+            "analytics/overview", 
+            200, 
+            token=self.admin_token,
+            params={"date_range": "30_days"}
+        )
+        
+        if success1:
+            expected_keys = ['total_revenue', 'total_bookings', 'total_assets', 'active_campaigns']
+            missing_keys = [key for key in expected_keys if key not in overview]
+            if missing_keys:
+                print(f"   ⚠️  Missing analytics keys: {missing_keys}")
+            else:
+                print(f"   ✅ Analytics overview structure looks good")
+        
+        # Test revenue analytics
+        success2, revenue_data = self.run_test(
+            "Revenue Analytics", 
+            "GET", 
+            "analytics/revenue", 
+            200, 
+            token=self.admin_token,
+            params={"date_range": "30_days"}
+        )
+        
+        if success2 and isinstance(revenue_data, list):
+            print(f"   Revenue data points: {len(revenue_data)}")
+            if revenue_data:
+                sample_point = revenue_data[0]
+                expected_fields = ['date', 'revenue', 'bookings']
+                if all(field in sample_point for field in expected_fields):
+                    print(f"   ✅ Revenue data structure looks good")
+        
+        # Test asset analytics
+        success3, asset_data = self.run_test(
+            "Asset Analytics", 
+            "GET", 
+            "analytics/assets", 
+            200, 
+            token=self.admin_token,
+            params={"date_range": "30_days"}
+        )
+        
+        if success3 and isinstance(asset_data, list):
+            print(f"   Asset analytics categories: {len(asset_data)}")
+        
+        return success1 and success2 and success3
+
+    def test_payment_system(self):
+        """Test Phase 3 Payment System"""
+        if not self.admin_token:
+            print("⚠️  Skipping payment tests - no admin token")
+            return False
+        
+        print("\n   💳 Testing Payment System...")
+        
+        # Test creating payment
+        payment_data = {
+            "campaign_id": "test-campaign-001",
+            "offer_id": "test-offer-001",
+            "amount": 27000.0,
+            "payment_method": "bank_transfer"
+        }
+        
+        success1, payment_response = self.run_test(
+            "Create Payment", 
+            "POST", 
+            "payments", 
+            200, 
+            data=payment_data,
+            token=self.admin_token
+        )
+        
+        payment_id = None
+        if success1 and 'id' in payment_response:
+            payment_id = payment_response['id']
+            print(f"   Created payment ID: {payment_id}")
+        
+        # Test getting payment invoice
+        if payment_id:
+            success2, _ = self.run_test(
+                "Get Payment Invoice", 
+                "GET", 
+                f"payments/{payment_id}/invoice", 
+                200, 
+                token=self.admin_token
+            )
+        else:
+            success2 = False
+            print("   ⚠️  Skipping invoice test - no payment ID")
+        
+        return success1 and success2
+
+    def test_file_upload(self):
+        """Test Phase 3 File Upload Functionality"""
+        if not self.admin_token:
+            print("⚠️  Skipping file upload tests - no admin token")
+            return False
+        
+        print("\n   📁 Testing File Upload...")
+        
+        # Test image upload endpoint (without actual file for now)
+        # In a real test, we would upload an actual file
+        success, response = self.run_test(
+            "Image Upload Endpoint Check", 
+            "POST", 
+            "upload/image", 
+            422,  # Expect 422 because we're not sending a file
+            token=self.admin_token
+        )
+        
+        # 422 is expected because we're not sending a file, but endpoint should exist
+        if success:
+            print("   ✅ Upload endpoint exists and responds correctly")
+        
+        return success
+
 def main():
     print("🚀 Starting BeatSpace Phase 2 API Testing...")
     print("=" * 60)
