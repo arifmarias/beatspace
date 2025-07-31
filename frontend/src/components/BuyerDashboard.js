@@ -532,21 +532,11 @@ const BuyerDashboard = () => {
                                       <div className="mt-6">
                                         <div className="flex items-center justify-between mb-3">
                                           <h5 className="font-medium">Campaign Assets ({campaignAssets.length})</h5>
-                                          <div className="flex items-center space-x-2">
-                                            {selectedCampaign.status === 'Live' && (
-                                              <Badge variant="destructive" className="text-xs">
-                                                Live Campaign - Limited Editing
-                                              </Badge>
-                                            )}
-                                            <Button
-                                              size="sm"
-                                              variant="outline"
-                                              onClick={() => navigate('/marketplace')}
-                                            >
-                                              <Plus className="w-4 h-4 mr-1" />
-                                              {selectedCampaign.status === 'Live' ? 'Add New Assets' : 'Add Assets'}
-                                            </Button>
-                                          </div>
+                                          {selectedCampaign.status === 'Live' && (
+                                            <Badge variant="destructive" className="text-xs">
+                                              Live Campaign - Limited Editing
+                                            </Badge>
+                                          )}
                                         </div>
                                         
                                         {campaignAssets.length > 0 ? (
