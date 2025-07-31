@@ -295,8 +295,54 @@ class BeatSpaceAPITester:
         
         success, response = self.run_test(
             "Admin Update User Status", 
-            "PUT", 
+            "PATCH", 
             f"admin/users/{target_user['id']}/status", 
+            200, 
+            data=status_update,
+            token=self.admin_token
+        )
+        return success, response
+
+    def test_admin_get_assets(self):
+        """Test admin getting all assets"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin assets test - no admin token")
+            return False, {}
+        
+        success, response = self.run_test("Admin Get Assets", "GET", "admin/assets", 200, token=self.admin_token)
+        if success:
+            print(f"   Found {len(response)} assets in system")
+            for asset in response[:3]:  # Show first 3 assets
+                print(f"   Asset: {asset.get('name')} - {asset.get('type')} - {asset.get('status')}")
+        return success, response
+
+    def test_admin_update_asset_status(self):
+        """Test admin updating asset status"""
+        if not self.admin_token:
+            print("⚠️  Skipping asset status update test - no admin token")
+            return False, {}
+        
+        # First get assets to find one to update
+        success, assets = self.test_admin_get_assets()
+        if not success or not assets:
+            print("⚠️  No assets found to update status")
+            return False, {}
+        
+        # Find an asset to update
+        target_asset = assets[0] if assets else None
+        
+        if not target_asset:
+            print("⚠️  No asset found to update")
+            return False, {}
+        
+        status_update = {
+            "status": "Available"
+        }
+        
+        success, response = self.run_test(
+            "Admin Update Asset Status", 
+            "PATCH", 
+            f"admin/assets/{target_asset['id']}/status", 
             200, 
             data=status_update,
             token=self.admin_token
