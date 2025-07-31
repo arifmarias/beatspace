@@ -513,7 +513,7 @@ const BuyerDashboard = () => {
                                         </div>
                                         
                                         {campaignAssets.length > 0 ? (
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                                          <div className="space-y-3 max-h-60 overflow-y-auto">
                                             {campaignAssets.map((asset, index) => {
                                               // For live campaigns, only newly added assets (after campaign went live) can be edited
                                               const isEditableInLiveCampaign = selectedCampaign.status !== 'Live' || 
