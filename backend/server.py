@@ -14,6 +14,8 @@ from enum import Enum
 import bcrypt
 from jose import JWTError, jwt
 import json
+import cloudinary
+import cloudinary.uploader
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -24,15 +26,22 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # JWT Configuration
-SECRET_KEY = "beatspace_secret_key_2025_production"  # In production, use environment variable
+SECRET_KEY = "beatspace_secret_key_2025_production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', 'beatspace-demo'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', 'demo_key_123'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', 'demo_secret_456')
+)
 
 # Create the main app
 app = FastAPI(
     title="BeatSpace API", 
     description="Bangladesh Outdoor Advertising Marketplace - Production System",
-    version="1.0.0"
+    version="2.0.0"
 )
 
 # Create a router with the /api prefix
@@ -71,6 +80,14 @@ class UserStatus(str, Enum):
     REJECTED = "rejected"
     SUSPENDED = "suspended"
 
+class CampaignStatus(str, Enum):
+    DRAFT = "Draft"
+    PENDING_OFFER = "Pending Offer"
+    NEGOTIATING = "Negotiating"
+    APPROVED = "Approved"
+    LIVE = "Live"
+    COMPLETED = "Completed"
+
 # Models
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -81,10 +98,10 @@ class User(BaseModel):
     role: UserRole
     status: UserStatus = UserStatus.PENDING
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    verified_at: Optional[datetime] = None
     address: Optional[str] = None
     website: Optional[str] = None
-    business_license: Optional[str] = None  # Document URL for sellers
-    verified_at: Optional[datetime] = None
+    business_license: Optional[str] = None
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -101,6 +118,10 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class UserStatusUpdate(BaseModel):
+    status: UserStatus
+    reason: Optional[str] = None
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -111,9 +132,9 @@ class Asset(BaseModel):
     name: str
     type: AssetType
     address: str
-    location: Dict[str, float]  # {"lat": float, "lng": float}
-    dimensions: str  # e.g., "10 x 20"
-    pricing: Dict[str, float]  # {"3_months": 50000, "6_months": 90000, "12_months": 150000}
+    location: Dict[str, float]
+    dimensions: str
+    pricing: Dict[str, float]
     status: AssetStatus
     photos: List[str] = []
     description: str = ""
@@ -123,7 +144,7 @@ class Asset(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     approved_at: Optional[datetime] = None
     next_available_date: Optional[datetime] = None
-    visibility_score: int = Field(default=5)  # 1-10 scale
+    visibility_score: int = Field(default=5)
     traffic_volume: str = "Medium"
     district: str = ""
     division: str = ""
@@ -143,6 +164,10 @@ class AssetCreate(BaseModel):
     district: str = ""
     division: str = ""
 
+class AssetStatusUpdate(BaseModel):
+    status: AssetStatus
+    reason: Optional[str] = None
+
 class Campaign(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -151,9 +176,25 @@ class Campaign(BaseModel):
     asset_ids: List[str]
     description: str = ""
     budget: float
-    status: str = "Draft"  # Draft, Pending Offer, Negotiating, Approved, Live, Completed
+    status: CampaignStatus = CampaignStatus.DRAFT
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
     notes: str = ""
+
+class CampaignCreate(BaseModel):
+    name: str
+    buyer_id: str
+    buyer_name: str
+    asset_ids: List[str] = []
+    description: str = ""
+    budget: float
+    notes: str = ""
+
+class BestOfferRequest(BaseModel):
+    campaign_id: str
+    asset_requirements: Dict[str, Dict[str, Any]]
+    timeline: str = ""
+    special_requirements: str = ""
 
 # Utility functions
 def hash_password(password: str) -> str:
@@ -191,12 +232,44 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     return User(**user)
 
+async def require_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return current_user
+
+async def require_seller(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.SELLER:
+        raise HTTPException(status_code=403, detail="Seller access required")
+    return current_user
+
+async def require_buyer(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.BUYER:
+        raise HTTPException(status_code=403, detail="Buyer access required")
+    return current_user
+
 # Bangladesh sample data initialization
 async def init_bangladesh_sample_data():
     """Initialize sample outdoor advertising assets for Bangladesh"""
     existing_count = await db.assets.count_documents({})
     if existing_count > 0:
         return
+    
+    # Create admin user
+    admin_exists = await db.users.find_one({"role": "admin"})
+    if not admin_exists:
+        admin_user = {
+            "id": str(uuid.uuid4()),
+            "email": "admin@beatspace.com",
+            "password_hash": hash_password("admin123"),
+            "company_name": "BeatSpace Admin",
+            "contact_name": "System Administrator",
+            "phone": "+8801234567890",
+            "role": "admin",
+            "status": "approved",
+            "created_at": datetime.utcnow(),
+            "verified_at": datetime.utcnow()
+        }
+        await db.users.insert_one(admin_user)
     
     bangladesh_assets = [
         {
@@ -388,20 +461,16 @@ async def startup_event():
 @api_router.post("/auth/register", response_model=dict)
 async def register_user(user_data: UserCreate):
     """Register new user (buyer or seller)"""
-    # Check if user already exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Hash password
     hashed_password = hash_password(user_data.password)
     
-    # Create user
     user_dict = user_data.dict()
     del user_dict['password']
     user = User(**user_dict)
     
-    # Store user with hashed password
     user_doc = user.dict()
     user_doc['password_hash'] = hashed_password
     
@@ -423,14 +492,12 @@ async def login_user(login_data: UserLogin):
     if user['status'] != UserStatus.APPROVED:
         raise HTTPException(status_code=403, detail=f"Account status: {user['status']}. Please wait for admin approval.")
     
-    # Create access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user['id'], "role": user['role']}, 
         expires_delta=access_token_expires
     )
     
-    # Remove password from response
     user_obj = User(**user)
     
     return {
@@ -444,10 +511,65 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user information"""
     return current_user
 
-# Public Routes (no authentication required)
+# Admin Routes
+@api_router.get("/admin/users", response_model=List[User])
+async def get_all_users(admin_user: User = Depends(require_admin)):
+    """Get all users (admin only)"""
+    users = await db.users.find().to_list(1000)
+    return [User(**user) for user in users]
+
+@api_router.patch("/admin/users/{user_id}/status")
+async def update_user_status(
+    user_id: str, 
+    status_update: UserStatusUpdate,
+    admin_user: User = Depends(require_admin)
+):
+    """Update user status (admin only)"""
+    update_data = {"status": status_update.status}
+    if status_update.status == UserStatus.APPROVED:
+        update_data["verified_at"] = datetime.utcnow()
+    
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": f"User status updated to {status_update.status}"}
+
+@api_router.get("/admin/assets", response_model=List[Asset])
+async def get_all_assets_admin(admin_user: User = Depends(require_admin)):
+    """Get all assets (admin only)"""
+    assets = await db.assets.find().to_list(1000)
+    return [Asset(**asset) for asset in assets]
+
+@api_router.patch("/admin/assets/{asset_id}/status")
+async def update_asset_status(
+    asset_id: str,
+    status_update: AssetStatusUpdate,
+    admin_user: User = Depends(require_admin)
+):
+    """Update asset status (admin only)"""
+    update_data = {"status": status_update.status}
+    if status_update.status == AssetStatus.AVAILABLE:
+        update_data["approved_at"] = datetime.utcnow()
+    
+    result = await db.assets.update_one(
+        {"id": asset_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    return {"message": f"Asset status updated to {status_update.status}"}
+
+# Public Routes
 @api_router.get("/")
 async def root():
-    return {"message": "BeatSpace API - Bangladesh Outdoor Advertising Marketplace"}
+    return {"message": "BeatSpace API - Bangladesh Outdoor Advertising Marketplace", "version": "2.0.0"}
 
 @api_router.get("/assets/public", response_model=List[Asset])
 async def get_public_assets(
@@ -458,7 +580,7 @@ async def get_public_assets(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None
 ):
-    """Get publicly available assets (no authentication required)"""
+    """Get publicly available assets"""
     query = {"status": {"$in": ["Available", "Booked", "Live"]}}
     
     if asset_type:
@@ -473,7 +595,6 @@ async def get_public_assets(
     assets = await db.assets.find(query).to_list(1000)
     asset_objects = [Asset(**asset) for asset in assets]
     
-    # Filter by pricing if specified
     if min_price is not None or max_price is not None:
         filtered_assets = []
         for asset in asset_objects:
@@ -494,7 +615,6 @@ async def get_public_stats():
     available_assets = await db.assets.count_documents({"status": "Available"})
     total_users = await db.users.count_documents({})
     
-    # Get asset distribution by division
     pipeline = [
         {"$group": {"_id": "$division", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}}
@@ -510,7 +630,7 @@ async def get_public_stats():
         "currency": "BDT"
     }
 
-# Protected Routes (authentication required)
+# Protected Routes
 @api_router.get("/assets", response_model=List[Asset])
 async def get_assets(
     current_user: User = Depends(get_current_user),
@@ -522,7 +642,6 @@ async def get_assets(
     """Get assets (authenticated users)"""
     query = {}
     
-    # Sellers can only see their own assets
     if current_user.role == UserRole.SELLER:
         query["seller_id"] = current_user.id
     
@@ -541,12 +660,9 @@ async def get_assets(
 @api_router.post("/assets", response_model=Asset)
 async def create_asset(
     asset: AssetCreate, 
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_seller)
 ):
     """Create new asset (seller only)"""
-    if current_user.role != UserRole.SELLER:
-        raise HTTPException(status_code=403, detail="Only sellers can create assets")
-    
     asset_obj = Asset(
         **asset.dict(),
         seller_id=current_user.id,
@@ -557,15 +673,97 @@ async def create_asset(
     await db.assets.insert_one(asset_obj.dict())
     return asset_obj
 
+@api_router.put("/assets/{asset_id}", response_model=Asset)
+async def update_asset(
+    asset_id: str,
+    asset: AssetCreate,
+    current_user: User = Depends(require_seller)
+):
+    """Update asset (seller only)"""
+    existing_asset = await db.assets.find_one({"id": asset_id, "seller_id": current_user.id})
+    if not existing_asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    update_data = asset.dict()
+    update_data["status"] = AssetStatus.PENDING_APPROVAL  # Reset to pending when updated
+    
+    await db.assets.update_one(
+        {"id": asset_id},
+        {"$set": update_data}
+    )
+    
+    updated_asset = await db.assets.find_one({"id": asset_id})
+    return Asset(**updated_asset)
+
+@api_router.delete("/assets/{asset_id}")
+async def delete_asset(
+    asset_id: str,
+    current_user: User = Depends(require_seller)
+):
+    """Delete asset (seller only)"""
+    result = await db.assets.delete_one({"id": asset_id, "seller_id": current_user.id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    return {"message": "Asset deleted successfully"}
+
 @api_router.get("/campaigns", response_model=List[Campaign])
 async def get_campaigns(current_user: User = Depends(get_current_user)):
     """Get user campaigns"""
     query = {}
     if current_user.role == UserRole.BUYER:
         query["buyer_id"] = current_user.id
+    elif current_user.role == UserRole.ADMIN:
+        pass  # Admin can see all campaigns
+    else:
+        # Sellers can see campaigns that include their assets
+        seller_assets = await db.assets.find({"seller_id": current_user.id}).to_list(1000)
+        asset_ids = [asset["id"] for asset in seller_assets]
+        query["asset_ids"] = {"$in": asset_ids}
     
     campaigns = await db.campaigns.find(query).to_list(1000)
     return [Campaign(**campaign) for campaign in campaigns]
+
+@api_router.post("/campaigns", response_model=Campaign)
+async def create_campaign(
+    campaign: CampaignCreate,
+    current_user: User = Depends(require_buyer)
+):
+    """Create new campaign (buyer only)"""
+    campaign_obj = Campaign(**campaign.dict())
+    await db.campaigns.insert_one(campaign_obj.dict())
+    return campaign_obj
+
+@api_router.post("/campaigns/{campaign_id}/request-offer")
+async def request_best_offer(
+    campaign_id: str, 
+    request: BestOfferRequest,
+    current_user: User = Depends(require_buyer)
+):
+    """Submit request for best offer (buyer only)"""
+    campaign = await db.campaigns.find_one({"id": campaign_id, "buyer_id": current_user.id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    await db.campaigns.update_one(
+        {"id": campaign_id},
+        {"$set": {"status": CampaignStatus.PENDING_OFFER, "updated_at": datetime.utcnow()}}
+    )
+    
+    offer_request = {
+        "id": str(uuid.uuid4()),
+        "campaign_id": campaign_id,
+        **request.dict(),
+        "status": "Pending",
+        "created_at": datetime.utcnow()
+    }
+    await db.offer_requests.insert_one(offer_request)
+    
+    return {
+        "message": "Best offer request submitted successfully",
+        "request_id": offer_request["id"],
+        "status": "pending_admin_review"
+    }
 
 # Include the router in the main app
 app.include_router(api_router)
