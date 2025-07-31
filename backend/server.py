@@ -327,9 +327,21 @@ def generate_invoice_pdf(payment: Payment, campaign_data: dict) -> bytes:
 # Enhanced sample data initialization
 async def init_bangladesh_sample_data():
     """Initialize comprehensive sample data"""
-    # Always ensure admin user exists
-    admin_exists = await db.users.find_one({"role": "admin"})
-    if not admin_exists:
+    
+    # Clear existing data to ensure fresh start
+    await db.assets.delete_many({})
+    await db.campaigns.delete_many({})
+    
+    # Only keep essential users (admin and demo accounts)
+    existing_admin = await db.users.find_one({"email": "admin@beatspace.com"})
+    existing_seller = await db.users.find_one({"email": "dhaka.media@example.com"})
+    existing_buyer = await db.users.find_one({"email": "marketing@grameenphone.com"})
+    
+    if not existing_admin or not existing_seller or not existing_buyer:
+        # Clear all users and recreate essential ones
+        await db.users.delete_many({})
+        
+        # Create admin user
         admin_user = {
             "id": str(uuid.uuid4()),
             "email": "admin@beatspace.com",
@@ -344,62 +356,57 @@ async def init_bangladesh_sample_data():
             "subscription_plan": "enterprise"
         }
         await db.users.insert_one(admin_user)
-    
-    # Create sample seller users
-    sample_sellers = [
-        {
-            "id": "seller_bd_001",
-            "email": "dhaka.media@example.com",
-            "password_hash": hash_password("seller123"),
-            "company_name": "Dhaka Outdoor Media Ltd.",
-            "contact_name": "Rahman Ahmed",
-            "phone": "+8801712345678",
-            "role": "seller",
-            "status": "approved",
-            "created_at": datetime.utcnow(),
-            "verified_at": datetime.utcnow(),
-            "address": "Dhanmondi, Dhaka",
-            "subscription_plan": "premium"
-        },
-        {
-            "id": "seller_bd_002", 
-            "email": "ctg.ads@example.com",
-            "password_hash": hash_password("seller123"),
-            "company_name": "Chittagong Advertising Solutions",
-            "contact_name": "Fatima Khan",
-            "phone": "+8801812345678",
-            "role": "seller",
-            "status": "approved",
-            "created_at": datetime.utcnow(),
-            "verified_at": datetime.utcnow(),
-            "address": "Chittagong City",
-            "subscription_plan": "basic"
-        }
-    ]
-    
-    for seller in sample_sellers:
-        existing_seller = await db.users.find_one({"id": seller["id"]})
-        if not existing_seller:
+        
+        # Create sample seller users
+        sample_sellers = [
+            {
+                "id": "seller_bd_001",
+                "email": "dhaka.media@example.com",
+                "password_hash": hash_password("seller123"),
+                "company_name": "Dhaka Outdoor Media Ltd.",
+                "contact_name": "Rahman Ahmed",
+                "phone": "+8801712345678",
+                "role": "seller",
+                "status": "approved",
+                "created_at": datetime.utcnow(),
+                "verified_at": datetime.utcnow(),
+                "address": "Dhanmondi, Dhaka",
+                "subscription_plan": "premium"
+            },
+            {
+                "id": "seller_bd_002", 
+                "email": "ctg.ads@example.com",
+                "password_hash": hash_password("seller123"),
+                "company_name": "Chittagong Advertising Solutions",
+                "contact_name": "Fatima Khan",
+                "phone": "+8801812345678",
+                "role": "seller",
+                "status": "approved",
+                "created_at": datetime.utcnow(),
+                "verified_at": datetime.utcnow(),
+                "address": "Chittagong City",
+                "subscription_plan": "basic"
+            }
+        ]
+        
+        for seller in sample_sellers:
             await db.users.insert_one(seller)
-    
-    # Create sample buyer user
-    sample_buyer = {
-        "id": "buyer_bd_001",
-        "email": "marketing@grameenphone.com",
-        "password_hash": hash_password("buyer123"),
-        "company_name": "Grameenphone Ltd.",
-        "contact_name": "Sarah Rahman",
-        "phone": "+8801912345678",
-        "role": "buyer",
-        "status": "approved",
-        "created_at": datetime.utcnow(),
-        "verified_at": datetime.utcnow(),
-        "address": "Gulshan, Dhaka",
-        "subscription_plan": "enterprise"
-    }
-    
-    existing_buyer = await db.users.find_one({"id": sample_buyer["id"]})
-    if not existing_buyer:
+        
+        # Create sample buyer user
+        sample_buyer = {
+            "id": "buyer_bd_001",
+            "email": "marketing@grameenphone.com",
+            "password_hash": hash_password("buyer123"),
+            "company_name": "Grameenphone Ltd.",
+            "contact_name": "Sarah Rahman",
+            "phone": "+8801912345678",
+            "role": "buyer",
+            "status": "approved",
+            "created_at": datetime.utcnow(),
+            "verified_at": datetime.utcnow(),
+            "address": "Gulshan, Dhaka",
+            "subscription_plan": "enterprise"
+        }
         await db.users.insert_one(sample_buyer)
     
     # Sample assets (Enhanced with complete data) - only create if none exist
