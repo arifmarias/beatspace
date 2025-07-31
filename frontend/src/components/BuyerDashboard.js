@@ -1038,15 +1038,57 @@ const BuyerDashboard = () => {
       <Dialog open={showEditOfferDialog} onOpenChange={setShowEditOfferDialog}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Offer Request</DialogTitle>
+            <DialogTitle className="flex items-center space-x-2">
+              <span>📝 Edit Offer Request</span>
+            </DialogTitle>
           </DialogHeader>
           
           {editingOffer && (
             <div className="space-y-6">
-              {/* Campaign Information */}
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">Campaign: {editingOffer.campaign_name}</h4>
-                <p className="text-sm text-blue-800">Asset: {editingOffer.asset_name}</p>
+              {/* Selected Asset */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Selected Asset</h3>
+                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg border">
+                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-xs text-gray-500">Asset</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900">{editingOffer.asset_name}</h4>
+                    <p className="text-sm text-gray-600">Campaign: {editingOffer.campaign_name}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Campaign Selection */}
+              <div>
+                <label className="block text-sm font-semibold mb-3">Campaign Selection *</label>
+                <div className="space-y-4">
+                  <div>
+                    <Select 
+                      value={editingOffer.existing_campaign_id || ''} 
+                      onValueChange={(value) => {
+                        // Find the selected campaign to get its details
+                        const selectedCampaign = campaigns.find(c => c.id === value);
+                        setEditingOffer({
+                          ...editingOffer, 
+                          existing_campaign_id: value,
+                          campaign_name: selectedCampaign ? selectedCampaign.name : editingOffer.campaign_name
+                        });
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an existing campaign" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {campaigns.map(campaign => (
+                          <SelectItem key={campaign.id} value={campaign.id}>
+                            📁 {campaign.name} ({(campaign.assets || []).length} assets)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
 
               {/* Contract Duration and Budget */}
@@ -1075,20 +1117,55 @@ const BuyerDashboard = () => {
                     type="number"
                     value={editingOffer.estimated_budget}
                     onChange={(e) => setEditingOffer({...editingOffer, estimated_budget: parseFloat(e.target.value)})}
-                    placeholder="Enter your budget"
+                    placeholder="Enter your budget (required)"
                     className="border-2 border-orange-200 focus:border-orange-400"
                   />
+                  <p className="text-xs text-orange-600 mt-1">* Budget is required for offer processing</p>
                 </div>
               </div>
 
-              {/* Service Bundles */}
+              {/* Asset Starting Date */}
               <div>
-                <label className="block text-sm font-semibold mb-3">Service Bundles</label>
+                <label className="block text-sm font-semibold mb-2">Asset Starting Date *</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {editingOffer.timeline && editingOffer.timeline.includes('from') 
+                        ? editingOffer.timeline.replace('Asset starts from ', '')
+                        : "Select asset start date"
+                      }
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <CalendarComponent
+                      mode="single"
+                      selected={editingOffer.timeline && editingOffer.timeline.includes('from') 
+                        ? new Date(editingOffer.timeline.replace('Asset starts from ', ''))
+                        : null
+                      }
+                      onSelect={(date) => setEditingOffer({
+                        ...editingOffer, 
+                        timeline: date ? `Asset starts from ${date.toLocaleDateString()}` : ''
+                      })}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Additional Services */}
+              <div>
+                <label className="block text-sm font-semibold mb-3">Additional Services</label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id="printing"
+                      id="edit-printing"
                       checked={editingOffer.service_bundles?.printing || false}
                       onChange={(e) => setEditingOffer({
                         ...editingOffer, 
@@ -1099,12 +1176,12 @@ const BuyerDashboard = () => {
                       })}
                       className="rounded"
                     />
-                    <label htmlFor="printing" className="text-sm font-medium">🖨️ Design & Printing</label>
+                    <label htmlFor="edit-printing" className="text-sm font-medium">🖨️ Printing & Design</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id="setup"
+                      id="edit-setup"
                       checked={editingOffer.service_bundles?.setup || false}
                       onChange={(e) => setEditingOffer({
                         ...editingOffer, 
@@ -1115,12 +1192,12 @@ const BuyerDashboard = () => {
                       })}
                       className="rounded"
                     />
-                    <label htmlFor="setup" className="text-sm font-medium">🔧 Installation & Setup</label>
+                    <label htmlFor="edit-setup" className="text-sm font-medium">🔧 Installation & Setup</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id="monitoring"
+                      id="edit-monitoring"
                       checked={editingOffer.service_bundles?.monitoring || false}
                       onChange={(e) => setEditingOffer({
                         ...editingOffer, 
@@ -1131,19 +1208,9 @@ const BuyerDashboard = () => {
                       })}
                       className="rounded"
                     />
-                    <label htmlFor="monitoring" className="text-sm font-medium">📊 Performance Monitoring</label>
+                    <label htmlFor="edit-monitoring" className="text-sm font-medium">📊 Monitoring & Reports</label>
                   </div>
                 </div>
-              </div>
-
-              {/* Timeline */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">Timeline</label>
-                <Input
-                  value={editingOffer.timeline || ''}
-                  onChange={(e) => setEditingOffer({...editingOffer, timeline: e.target.value})}
-                  placeholder="Timeline preferences (e.g., Start from specific date)"
-                />
               </div>
 
               {/* Special Requirements */}
@@ -1152,12 +1219,12 @@ const BuyerDashboard = () => {
                 <Textarea
                   value={editingOffer.special_requirements || ''}
                   onChange={(e) => setEditingOffer({...editingOffer, special_requirements: e.target.value})}
-                  placeholder="Any special requirements for this asset..."
+                  placeholder="Any specific requirements, constraints, or special considerations..."
                   rows={3}
                 />
               </div>
 
-              {/* Notes */}
+              {/* Additional Notes */}
               <div>
                 <label className="block text-sm font-semibold mb-2">Additional Notes</label>
                 <Textarea
@@ -1183,6 +1250,7 @@ const BuyerDashboard = () => {
                   onClick={() => updateOfferRequest(editingOffer)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
+                  <Edit className="w-4 h-4 mr-2" />
                   Update Offer Request
                 </Button>
               </div>
