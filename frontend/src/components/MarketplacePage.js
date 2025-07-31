@@ -321,10 +321,10 @@ const MarketplacePage = () => {
   const addAssetToExistingCampaign = async (campaignId) => {
     try {
       const headers = getAuthHeaders();
-      const campaign = existingCampaigns.find(c => c.id === campaignId);
+      const selectedCampaign = existingCampaigns.find(c => c.id === campaignId);
       
-      if (campaign) {
-        const updatedAssets = [...(campaign.assets || [])];
+      if (selectedCampaign) {
+        const updatedAssets = [...(selectedCampaign.assets || [])];
         if (!updatedAssets.includes(selectedCampaignForAsset.id)) {
           updatedAssets.push(selectedCampaignForAsset.id);
           
@@ -332,7 +332,7 @@ const MarketplacePage = () => {
             assets: updatedAssets
           }, { headers });
           
-          // Add to temporary campaign for UI (fixed the bug here)
+          // Add to temporary campaign for UI
           if (!campaign.find(item => item.id === selectedCampaignForAsset.id)) {
             setCampaign([...campaign, selectedCampaignForAsset]);
           }
