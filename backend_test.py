@@ -491,6 +491,8 @@ def main():
         "Create Asset",
         "Admin Get Users",
         "Admin Update User Status",
+        "Admin Get Assets",
+        "Admin Update Asset Status",
         "Get Campaigns",
         "Create Campaign"
     ]
