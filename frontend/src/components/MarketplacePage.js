@@ -98,11 +98,13 @@ const MarketplacePage = () => {
   }, []);
 
   useEffect(() => {
-    if (viewMode === 'map' && mapRef.current && !mapInstanceRef.current) {
-      // Reinitialize map when switching to map view if not already initialized
+    if (viewMode === 'map') {
+      // Always reinitialize map when switching to map view
       setTimeout(() => {
-        initializeMap();
-      }, 100);
+        if (mapRef.current) {
+          initializeMap();
+        }
+      }, 300); // Increased timeout for better reliability
     }
   }, [viewMode]);
 
