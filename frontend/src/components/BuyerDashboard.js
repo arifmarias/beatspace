@@ -218,6 +218,41 @@ const BuyerDashboard = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
+  const deleteOfferRequest = async (offerId) => {
+    if (!confirm('Are you sure you want to delete this offer request?')) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      await axios.delete(`${API}/offers/requests/${offerId}`, { headers });
+      alert('Offer request deleted successfully!');
+      fetchBuyerData(); // Refresh the data
+    } catch (error) {
+      console.error('Error deleting offer request:', error);
+      alert('Failed to delete offer request. Please try again.');
+    }
+  };
+
+  const editOfferRequest = (offer) => {
+    setEditingOffer(offer);
+    setShowEditOfferDialog(true);
+  };
+
+  const updateOfferRequest = async (updatedOffer) => {
+    try {
+      const headers = getAuthHeaders();
+      await axios.put(`${API}/offers/requests/${updatedOffer.id}`, updatedOffer, { headers });
+      alert('Offer request updated successfully!');
+      setShowEditOfferDialog(false);
+      setEditingOffer(null);
+      fetchBuyerData(); // Refresh the data
+    } catch (error) {
+      console.error('Error updating offer request:', error);
+      alert('Failed to update offer request. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
