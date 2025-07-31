@@ -646,6 +646,373 @@ class BeatSpaceAPITester:
             print(f"   ⚠️  Found {inconsistencies} inconsistencies out of {total_checked} assets")
             return True, {"checked": total_checked, "inconsistencies": inconsistencies}
 
+    # REQUEST BEST OFFER WORKFLOW TESTS
+    def test_submit_offer_request_new_campaign(self):
+        """Test submitting a Request Best Offer for a new campaign"""
+        if not self.buyer_token:
+            print("⚠️  Skipping offer request test - no buyer token")
+            return False, {}
+        
+        # Get an available asset to request offer for
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found to request offer for")
+            return False, {}
+        
+        # Find an available asset
+        available_asset = None
+        for asset in assets:
+            if asset.get('status') == 'Available':
+                available_asset = asset
+                break
+        
+        if not available_asset:
+            available_asset = assets[0]  # Use first asset if none are available
+        
+        print(f"   Requesting offer for asset: {available_asset.get('name')}")
+        
+        # Create offer request data with new campaign_type and existing_campaign_id fields
+        offer_request_data = {
+            "asset_id": available_asset['id'],
+            "campaign_name": f"Test Campaign Offer Request {datetime.now().strftime('%H%M%S')}",
+            "campaign_type": "new",  # Testing new campaign type
+            "existing_campaign_id": None,  # Should be None for new campaigns
+            "contract_duration": "6_months",
+            "estimated_budget": 150000.0,
+            "service_bundles": {
+                "printing": True,
+                "setup": True,
+                "monitoring": False
+            },
+            "timeline": "Start within 2 weeks",
+            "special_requirements": "High visibility location preferred",
+            "notes": "This is a test offer request for API testing"
+        }
+        
+        success, response = self.run_test(
+            "Submit Offer Request (New Campaign)", 
+            "POST", 
+            "offers/request", 
+            200, 
+            data=offer_request_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Offer request created with ID: {response.get('id')}")
+            print(f"   Campaign Type: {response.get('campaign_type')}")
+            print(f"   Campaign Name: {response.get('campaign_name')}")
+            print(f"   Asset Name: {response.get('asset_name')}")
+            print(f"   Status: {response.get('status')}")
+            print(f"   Buyer Name: {response.get('buyer_name')}")
+            
+            # Verify all required fields are present
+            required_fields = ['id', 'buyer_id', 'buyer_name', 'asset_id', 'asset_name', 
+                             'campaign_name', 'campaign_type', 'contract_duration', 'status']
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                print(f"   ⚠️  Missing fields in response: {missing_fields}")
+            else:
+                print("   ✅ All required fields present in response")
+            
+            # Store the created offer request ID for later tests
+            self.created_offer_request_id = response.get('id')
+            
+            # Verify asset status was updated to Pending Offer
+            success_asset, asset_data = self.run_test(
+                "Check Asset Status After Offer Request", 
+                "GET", 
+                f"assets/{available_asset['id']}", 
+                200, 
+                token=self.buyer_token
+            )
+            if success_asset:
+                new_status = asset_data.get('status')
+                print(f"   Asset status after offer request: {new_status}")
+                if new_status == "Pending Offer":
+                    print("   ✅ Asset status correctly updated to Pending Offer")
+                else:
+                    print(f"   ⚠️  Asset status is {new_status}, expected Pending Offer")
+        
+        return success, response
+
+    def test_submit_offer_request_existing_campaign(self):
+        """Test submitting a Request Best Offer for an existing campaign"""
+        if not self.buyer_token:
+            print("⚠️  Skipping existing campaign offer request test - no buyer token")
+            return False, {}
+        
+        # Get buyer's campaigns to use as existing campaign
+        success, campaigns = self.test_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No existing campaigns found for existing campaign test")
+            return False, {}
+        
+        existing_campaign = campaigns[0]
+        print(f"   Using existing campaign: {existing_campaign.get('name')}")
+        
+        # Get an available asset
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found for existing campaign offer request")
+            return False, {}
+        
+        # Find an available asset not already in the campaign
+        available_asset = None
+        campaign_asset_ids = existing_campaign.get('assets', [])
+        for asset in assets:
+            if asset['id'] not in campaign_asset_ids and asset.get('status') == 'Available':
+                available_asset = asset
+                break
+        
+        if not available_asset:
+            # Use any asset if none are available
+            for asset in assets:
+                if asset['id'] not in campaign_asset_ids:
+                    available_asset = asset
+                    break
+        
+        if not available_asset:
+            print("⚠️  No suitable asset found for existing campaign test")
+            return False, {}
+        
+        print(f"   Requesting offer for asset: {available_asset.get('name')}")
+        
+        # Create offer request data for existing campaign
+        offer_request_data = {
+            "asset_id": available_asset['id'],
+            "campaign_name": existing_campaign['name'],  # Use existing campaign name
+            "campaign_type": "existing",  # Testing existing campaign type
+            "existing_campaign_id": existing_campaign['id'],  # Should have campaign ID for existing
+            "contract_duration": "3_months",
+            "estimated_budget": 80000.0,
+            "service_bundles": {
+                "printing": False,
+                "setup": True,
+                "monitoring": True
+            },
+            "timeline": "Add to existing campaign timeline",
+            "special_requirements": "Must complement existing campaign assets",
+            "notes": "Adding asset to existing campaign via offer request"
+        }
+        
+        success, response = self.run_test(
+            "Submit Offer Request (Existing Campaign)", 
+            "POST", 
+            "offers/request", 
+            200, 
+            data=offer_request_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Existing campaign offer request created with ID: {response.get('id')}")
+            print(f"   Campaign Type: {response.get('campaign_type')}")
+            print(f"   Existing Campaign ID: {response.get('existing_campaign_id')}")
+            print(f"   Campaign Name: {response.get('campaign_name')}")
+            
+            # Verify existing campaign fields
+            if response.get('campaign_type') == 'existing':
+                print("   ✅ Campaign type correctly set to 'existing'")
+            else:
+                print(f"   ⚠️  Campaign type is {response.get('campaign_type')}, expected 'existing'")
+            
+            if response.get('existing_campaign_id') == existing_campaign['id']:
+                print("   ✅ Existing campaign ID correctly set")
+            else:
+                print(f"   ⚠️  Existing campaign ID mismatch")
+        
+        return success, response
+
+    def test_get_offer_requests_buyer(self):
+        """Test buyer retrieving their submitted offer requests"""
+        if not self.buyer_token:
+            print("⚠️  Skipping get offer requests test - no buyer token")
+            return False, {}
+        
+        success, response = self.run_test(
+            "Get Offer Requests (Buyer)", 
+            "GET", 
+            "offers/requests", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Found {len(response)} offer requests for buyer")
+            
+            if response:
+                # Check first offer request structure
+                offer_request = response[0]
+                print(f"   Sample offer request: {offer_request.get('campaign_name')}")
+                print(f"   Status: {offer_request.get('status')}")
+                print(f"   Campaign Type: {offer_request.get('campaign_type')}")
+                print(f"   Asset Name: {offer_request.get('asset_name')}")
+                
+                # Verify required fields
+                required_fields = ['id', 'buyer_id', 'buyer_name', 'asset_id', 'asset_name', 
+                                 'campaign_name', 'campaign_type', 'status', 'created_at']
+                missing_fields = [field for field in required_fields if field not in offer_request]
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in offer request: {missing_fields}")
+                else:
+                    print("   ✅ All required fields present in offer request")
+                
+                # Check for new fields (campaign_type, existing_campaign_id)
+                if 'campaign_type' in offer_request:
+                    print(f"   ✅ Campaign type field present: {offer_request['campaign_type']}")
+                else:
+                    print("   ⚠️  Campaign type field missing")
+                
+                if offer_request.get('campaign_type') == 'existing':
+                    if 'existing_campaign_id' in offer_request and offer_request['existing_campaign_id']:
+                        print(f"   ✅ Existing campaign ID present for existing campaign type")
+                    else:
+                        print("   ⚠️  Existing campaign ID missing for existing campaign type")
+                elif offer_request.get('campaign_type') == 'new':
+                    if offer_request.get('existing_campaign_id') is None:
+                        print("   ✅ Existing campaign ID correctly null for new campaign type")
+                    else:
+                        print("   ⚠️  Existing campaign ID should be null for new campaign type")
+            else:
+                print("   ℹ️  No offer requests found (this is normal if none were created)")
+        
+        return success, response
+
+    def test_get_offer_requests_admin(self):
+        """Test admin retrieving all offer requests"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin offer requests test - no admin token")
+            return False, {}
+        
+        success, response = self.run_test(
+            "Get Offer Requests (Admin)", 
+            "GET", 
+            "offers/requests", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Admin can see {len(response)} total offer requests")
+            
+            if response:
+                # Group by buyer to show admin can see all
+                buyers = {}
+                for request in response:
+                    buyer_name = request.get('buyer_name', 'Unknown')
+                    buyers[buyer_name] = buyers.get(buyer_name, 0) + 1
+                
+                print("   Offer requests by buyer:")
+                for buyer, count in buyers.items():
+                    print(f"     {buyer}: {count} requests")
+                
+                print("   ✅ Admin has access to all offer requests")
+            else:
+                print("   ℹ️  No offer requests in system")
+        
+        return success, response
+
+    def test_offer_request_authentication(self):
+        """Test that offer request endpoints require proper authentication"""
+        print("   Testing offer request authentication requirements...")
+        
+        # Test submitting offer request without authentication
+        offer_request_data = {
+            "asset_id": "test-asset-id",
+            "campaign_name": "Test Campaign",
+            "campaign_type": "new",
+            "contract_duration": "3_months",
+            "service_bundles": {"printing": False, "setup": False, "monitoring": False}
+        }
+        
+        success, response = self.run_test(
+            "Submit Offer Request - No Auth", 
+            "POST", 
+            "offers/request", 
+            401,  # Should fail with 401 Unauthorized
+            data=offer_request_data
+        )
+        
+        if success:
+            print("   ✅ Offer request submission properly requires authentication")
+        
+        # Test getting offer requests without authentication
+        success, response = self.run_test(
+            "Get Offer Requests - No Auth", 
+            "GET", 
+            "offers/requests", 
+            401,  # Should fail with 401 Unauthorized
+        )
+        
+        if success:
+            print("   ✅ Getting offer requests properly requires authentication")
+        
+        # Test seller trying to submit offer request (should fail)
+        if self.seller_token:
+            success, response = self.run_test(
+                "Submit Offer Request - Seller Token", 
+                "POST", 
+                "offers/request", 
+                403,  # Should fail with 403 Forbidden
+                data=offer_request_data,
+                token=self.seller_token
+            )
+            
+            if success:
+                print("   ✅ Only buyers can submit offer requests (seller properly rejected)")
+        
+        return True, {}
+
+    def test_offer_request_data_validation(self):
+        """Test offer request data validation"""
+        if not self.buyer_token:
+            print("⚠️  Skipping offer request validation test - no buyer token")
+            return False, {}
+        
+        print("   Testing offer request data validation...")
+        
+        # Test with missing required fields
+        invalid_data = {
+            "campaign_name": "Test Campaign",
+            # Missing asset_id, campaign_type, contract_duration, service_bundles
+        }
+        
+        success, response = self.run_test(
+            "Submit Offer Request - Invalid Data", 
+            "POST", 
+            "offers/request", 
+            422,  # Should fail with 422 Validation Error
+            data=invalid_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Proper validation for missing required fields")
+        
+        # Test with invalid asset ID
+        invalid_asset_data = {
+            "asset_id": "non-existent-asset-id",
+            "campaign_name": "Test Campaign",
+            "campaign_type": "new",
+            "contract_duration": "3_months",
+            "service_bundles": {"printing": False, "setup": False, "monitoring": False}
+        }
+        
+        success, response = self.run_test(
+            "Submit Offer Request - Invalid Asset ID", 
+            "POST", 
+            "offers/request", 
+            404,  # Should fail with 404 Asset Not Found
+            data=invalid_asset_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print("   ✅ Proper validation for non-existent asset")
+        
+        return True, {}
+
 def main():
     print("🚀 Starting BeatSpace Backend API Testing...")
     print("Testing Critical Missing Endpoints and CRUD Operations")
