@@ -427,10 +427,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Asset status management for campaign lifecycle"
-    - "Campaign edit restrictions based on status"
-    - "Remove Add to Campaign buttons from list view"
-    - "Campaign management restrictions in Buyer Dashboard"
+    - "Updated Request Best Offer workflow with simplified campaign selection"
+    - "Edit offer functionality (PUT /api/offers/requests/{id})"
+    - "Delete offer functionality (DELETE /api/offers/requests/{id})"
+    - "Campaign creation with start/end dates"
+    - "Asset expiration date calculations and display"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
