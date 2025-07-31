@@ -55,7 +55,9 @@ const BuyerDashboard = () => {
     name: '',
     description: '',
     budget: '',
-    notes: ''
+    notes: '',
+    startDate: null,
+    endDate: null
   });
 
   useEffect(() => {
