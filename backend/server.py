@@ -69,10 +69,13 @@ class AssetType(str, Enum):
 
 class AssetStatus(str, Enum):
     AVAILABLE = "Available"
-    PENDING_APPROVAL = "Pending Approval"
+    PENDING_OFFER = "Pending Offer"
+    NEGOTIATING = "Negotiating"
     BOOKED = "Booked"
-    LIVE = "Live"
     WORK_IN_PROGRESS = "Work in Progress"
+    LIVE = "Live"
+    COMPLETED = "Completed"
+    PENDING_APPROVAL = "Pending Approval"
     UNAVAILABLE = "Unavailable"
 
 class UserRole(str, Enum):
