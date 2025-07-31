@@ -1159,32 +1159,7 @@ const MarketplacePage = () => {
                             {asset.description}
                           </p>
                           
-                          <div className="flex space-x-2">
-                            {asset.status === 'Available' ? (
-                              <Button
-                                onClick={() => isInCampaign ? removeFromCampaign(asset.id) : addToCampaign(asset)}
-                                variant={isInCampaign ? "destructive" : "default"}
-                                size="sm"
-                                className="flex-1"
-                              >
-                                {isInCampaign ? (
-                                  <>
-                                    <X className="w-4 h-4 mr-1" />
-                                    Remove
-                                  </>
-                                ) : (
-                                  <>
-                                    <Plus className="w-4 h-4 mr-1" />
-                                    Add to Campaign
-                                  </>
-                                )}
-                              </Button>
-                            ) : (
-                              <Button variant="outline" size="sm" className="flex-1" disabled>
-                                <Clock className="w-4 h-4 mr-1" />
-                                {asset.status === 'Booked' ? 'Currently Booked' : asset.status}
-                              </Button>
-                            )}
+                          <div className="flex justify-end">
                             <Button
                               variant="outline"
                               size="sm"
