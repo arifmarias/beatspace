@@ -221,6 +221,30 @@ backend:
           comment: "✅ PASSED - Sample data initialization working correctly. All test users (admin@beatspace.com, dhaka.media@example.com, marketing@grameenphone.com) can login successfully. 14 assets and sample campaigns created."
 
 frontend:
+  - task: "Remove Add to Campaign buttons from list view"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/MarketplacePage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Removed Add to Campaign button from marketplace list view, keeping only View Details button as per product requirements"
+
+  - task: "Campaign management restrictions in Buyer Dashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented Live vs Draft campaign restrictions - Live campaigns only allow adding new assets, Draft campaigns allow full asset management (edit/delete/update)"
+
   - task: "HomePage stats loading"
     implemented: true
     working: true
