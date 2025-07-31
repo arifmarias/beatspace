@@ -207,12 +207,12 @@ const BeatSpace = () => {
     }
 
     // Type filter
-    if (filters.type) {
+    if (filters.type && filters.type !== 'all') {
       filtered = filtered.filter(asset => asset.type === filters.type);
     }
 
     // Status filter
-    if (filters.status) {
+    if (filters.status && filters.status !== 'all') {
       filtered = filtered.filter(asset => asset.status === filters.status);
     }
 
