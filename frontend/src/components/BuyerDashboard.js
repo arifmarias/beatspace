@@ -562,6 +562,9 @@ const BuyerDashboard = () => {
                                                         <div className="flex-1">
                                                           <h6 className="font-medium text-sm truncate">{asset.name}</h6>
                                                           <p className="text-xs text-gray-500 truncate">{asset.address}</p>
+                                                          <p className="text-xs text-orange-600 truncate">
+                                                            Expires: {asset.expiration_date ? new Date(asset.expiration_date).toLocaleDateString() : 'Not specified'}
+                                                          </p>
                                                           <div className="flex items-center justify-between mt-1">
                                                             <span className="text-xs font-medium text-blue-600">
                                                               ৳{asset.pricing?.['3_months']?.toLocaleString()}/3mo
