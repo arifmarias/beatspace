@@ -97,6 +97,32 @@ const BuyerDashboard = () => {
     }
   };
 
+  const removeAssetFromCampaign = async (assetId) => {
+    if (!selectedCampaign) return;
+    
+    try {
+      const headers = getAuthHeaders();
+      
+      // Remove asset from campaign
+      const updatedAssets = (selectedCampaign.assets || []).filter(id => id !== assetId);
+      
+      await axios.put(`${API}/campaigns/${selectedCampaign.id}`, {
+        assets: updatedAssets
+      }, { headers });
+      
+      // Refresh campaign assets
+      fetchCampaignAssets(selectedCampaign);
+      fetchBuyerData(); // Refresh campaign list
+      
+      // Show success message
+      alert('Asset removed from campaign successfully!');
+      
+    } catch (error) {
+      console.error('Error removing asset from campaign:', error);
+      alert('Failed to remove asset from campaign. Please try again.');
+    }
+  };
+
   const fetchCampaignAssets = async (campaign) => {
     try {
       if (!campaign || !campaign.assets || campaign.assets.length === 0) {
