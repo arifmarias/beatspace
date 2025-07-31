@@ -684,15 +684,42 @@ const MarketplacePage = () => {
                         </div>
                       </div>
 
-                      {/* Timeline Preferences */}
-                      <div>
-                        <label className="block text-sm font-semibold mb-2">Timeline Preferences</label>
-                        <Input
-                          value={offerDetails.timeline}
-                          onChange={(e) => setOfferDetails({...offerDetails, timeline: e.target.value})}
-                          placeholder="e.g., Start in 2 weeks, Ready by March 2025"
-                        />
-                      </div>
+                      {/* Timeline Preferences / Tentative Start Date */}
+                      {offerDetails.campaignType === 'new' ? (
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Tentative Start Date</label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start text-left font-normal"
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {offerDetails.tentativeStartDate 
+                                  ? offerDetails.tentativeStartDate.toLocaleDateString()
+                                  : "Select start date"
+                                }
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <CalendarComponent
+                                mode="single"
+                                selected={offerDetails.tentativeStartDate}
+                                onSelect={(date) => setOfferDetails({...offerDetails, tentativeStartDate: date})}
+                                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      ) : (
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Campaign Timeline</label>
+                          <p className="text-sm text-gray-600 p-3 bg-gray-50 rounded">
+                            Timeline will be based on the existing campaign schedule.
+                          </p>
+                        </div>
+                      )}
 
                       {/* Service Bundles */}
                       <div>
