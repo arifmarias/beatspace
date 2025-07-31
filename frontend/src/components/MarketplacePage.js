@@ -687,32 +687,34 @@ const MarketplacePage = () => {
                     <span>Filters</span>
                   </CardTitle>
                 </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Search</label>
+                  <label className="block text-sm font-semibold mb-3 text-gray-700">Search Assets</label>
                   <Input
-                    placeholder="Search locations..."
+                    placeholder="Search by location, name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full"
                   />
                 </div>
 
+                <Separator />
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">Asset Type</label>
+                  <label className="block text-sm font-semibold mb-3 text-gray-700">Asset Type</label>
                   <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="Billboard">Billboard</SelectItem>
-                      <SelectItem value="Police Box">Police Box</SelectItem>
-                      <SelectItem value="Railway Station">Railway Station</SelectItem>
-                      <SelectItem value="Wall">Wall</SelectItem>
-                      <SelectItem value="Bridge">Bridge</SelectItem>
-                      <SelectItem value="Bus Stop">Bus Stop</SelectItem>
-                      <SelectItem value="Others">Others</SelectItem>
+                      <SelectItem value="Billboard">📄 Billboard</SelectItem>
+                      <SelectItem value="Police Box">🚓 Police Box</SelectItem>
+                      <SelectItem value="Railway Station">🚂 Railway Station</SelectItem>
+                      <SelectItem value="Wall">🧱 Wall</SelectItem>
+                      <SelectItem value="Bridge">🌉 Bridge</SelectItem>
+                      <SelectItem value="Bus Stop">🚌 Bus Stop</SelectItem>
+                      <SelectItem value="Others">📍 Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
