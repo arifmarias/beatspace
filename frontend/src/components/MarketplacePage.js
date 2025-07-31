@@ -542,6 +542,90 @@ const MarketplacePage = () => {
                   </DialogContent>
                 </Dialog>
               )}
+
+              {/* Campaign Selection Dialog */}
+              {showCampaignDialog && (
+                <Dialog open={showCampaignDialog} onOpenChange={setShowCampaignDialog}>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Asset to Campaign</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {selectedCampaignForAsset && (
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <div className="font-medium text-sm text-gray-900">
+                            {selectedCampaignForAsset.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {selectedCampaignForAsset.address}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {existingCampaigns.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-medium mb-2">
+                            Add to Existing Campaign
+                          </label>
+                          <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {existingCampaigns.map((camp) => (
+                              <div
+                                key={camp.id}
+                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                                onClick={() => addAssetToExistingCampaign(camp.id)}
+                              >
+                                <div>
+                                  <div className="font-medium text-sm">{camp.name}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {(camp.assets || []).length} assets • ৳{(camp.budget || 0).toLocaleString()}
+                                  </div>
+                                </div>
+                                <Plus className="w-4 h-4 text-blue-600" />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="border-t pt-4">
+                        <label className="block text-sm font-medium mb-2">
+                          Or Create New Campaign
+                        </label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Campaign name"
+                            value={offerDetails.campaignName}
+                            onChange={(e) => setOfferDetails({...offerDetails, campaignName: e.target.value})}
+                            className="flex-1"
+                          />
+                          <Button
+                            onClick={() => {
+                              if (offerDetails.campaignName.trim()) {
+                                createNewCampaignWithAsset(offerDetails.campaignName.trim());
+                              } else {
+                                alert('Please enter a campaign name');
+                              }
+                            }}
+                            disabled={!offerDetails.campaignName.trim()}
+                          >
+                            Create
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end space-x-2 pt-4 border-t">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowCampaignDialog(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+
               {currentUser ? (
                 <div className="flex items-center space-x-3">
                   <span className="text-sm text-gray-600">
