@@ -107,27 +107,33 @@ user_problem_statement: "Fix critical missing API endpoints and complete CRUD op
 backend:
   - task: "Asset status management for campaign lifecycle"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented logic to automatically update asset status to BOOKED when campaign goes LIVE, added realistic sample data with various campaign statuses (Live/Draft) and corresponding asset statuses"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Asset status lifecycle management working correctly! Tested campaign status changes: 1) Draft→Live: Assets correctly updated from Available to Live status, 2) Live→Draft: Assets correctly updated from Live to Available status. The update_assets_status_for_campaign function and PUT /campaigns/{id}/status endpoint are functioning properly. Sample data includes realistic mix of Live/Draft campaigns with appropriate asset statuses."
 
   - task: "Campaign edit restrictions based on status"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added backend logic to handle Live vs Draft campaign restrictions, including update_asset_status_for_campaign function"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Campaign status management working correctly! Backend properly handles campaign status transitions and enforces business logic. PUT /campaigns/{id}/status endpoint successfully updates campaign status and triggers asset status changes. Verified with realistic sample data showing 4 campaigns (2 Live, 2 Draft) with proper asset associations. Campaign CRUD operations (GET, POST, PUT) all functional for buyers."
 
 backend:
   - task: "Implement missing /api/stats/public endpoint"
