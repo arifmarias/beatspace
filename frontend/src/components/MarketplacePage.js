@@ -665,6 +665,16 @@ const MarketplacePage = () => {
                         </div>
                       </div>
 
+                      {/* Timeline Preferences */}
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Timeline Preferences</label>
+                        <Input
+                          value={offerDetails.timeline}
+                          onChange={(e) => setOfferDetails({...offerDetails, timeline: e.target.value})}
+                          placeholder="e.g., Start in 2 weeks, Ready by March 2025"
+                        />
+                      </div>
+
                       {/* Service Bundles */}
                       <div>
                         <label className="block text-sm font-semibold mb-3">Additional Services</label>
