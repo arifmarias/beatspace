@@ -14,6 +14,7 @@ class BeatSpaceAPITester:
         self.created_user_id = None
         self.created_asset_id = None
         self.created_campaign_id = None
+        self.created_offer_request_id = None
         self.test_results = {}
 
     def run_test(self, name, method, endpoint, expected_status, data=None, params=None, token=None):
