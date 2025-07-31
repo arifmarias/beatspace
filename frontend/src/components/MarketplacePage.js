@@ -567,6 +567,9 @@ const MarketplacePage = () => {
         },
         timeline: '',
         tentativeStartDate: null,
+        selectedCampaignEndDate: null,
+        assetExpirationDate: null,
+        expirationWarning: null,
         specialRequirements: '',
         notes: ''
       });
