@@ -351,8 +351,9 @@ const BuyerDashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="campaigns" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+            <TabsTrigger value="requested-offers">Requested Offers</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
