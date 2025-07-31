@@ -78,7 +78,7 @@ class BeatSpaceAPITester:
         """Test API root endpoint"""
         return self.run_test("API Root", "GET", "", 200)
 
-    # Authentication Tests
+    # Authentication Tests for Specific Users
     def test_admin_login(self):
         """Test admin login"""
         login_data = {
@@ -89,6 +89,32 @@ class BeatSpaceAPITester:
         if success and 'access_token' in response:
             self.admin_token = response['access_token']
             print(f"   Admin token obtained: {self.admin_token[:20]}...")
+            print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
+        return success, response
+
+    def test_seller_login(self):
+        """Test seller login"""
+        login_data = {
+            "email": "dhaka.media@example.com",
+            "password": "seller123"
+        }
+        success, response = self.run_test("Seller Login", "POST", "auth/login", 200, data=login_data)
+        if success and 'access_token' in response:
+            self.seller_token = response['access_token']
+            print(f"   Seller token obtained: {self.seller_token[:20]}...")
+            print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
+        return success, response
+
+    def test_buyer_login(self):
+        """Test buyer login"""
+        login_data = {
+            "email": "marketing@grameenphone.com",
+            "password": "buyer123"
+        }
+        success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
+        if success and 'access_token' in response:
+            self.buyer_token = response['access_token']
+            print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
             print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
         return success, response
 
