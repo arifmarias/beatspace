@@ -272,10 +272,13 @@ const AdminDashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="users">User Management</TabsTrigger>
-            <TabsTrigger value="assets">Asset Management</TabsTrigger>
-            <TabsTrigger value="campaigns">Campaign Overview</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="assets">Assets</TabsTrigger>
+            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+            <TabsTrigger value="offers">Offer Mediation</TabsTrigger>
+            <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           {/* Users Tab */}
