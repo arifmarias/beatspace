@@ -5,30 +5,11 @@ import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import MarketplacePage from './components/MarketplacePage';
+import BuyerDashboard from './components/BuyerDashboard';
+import SellerDashboard from './components/SellerDashboard';
+import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
-
-// Placeholder components for different dashboards
-const BuyerDashboard = () => (
-  <div className="min-h-screen bg-gray-100 p-8">
-    <h1 className="text-3xl font-bold text-gray-900 mb-4">Buyer Dashboard</h1>
-    <p className="text-gray-600">Coming soon in Phase 2...</p>
-  </div>
-);
-
-const SellerDashboard = () => (
-  <div className="min-h-screen bg-gray-100 p-8">
-    <h1 className="text-3xl font-bold text-gray-900 mb-4">Seller Dashboard</h1>
-    <p className="text-gray-600">Coming soon in Phase 2...</p>
-  </div>
-);
-
-const AdminDashboard = () => (
-  <div className="min-h-screen bg-gray-100 p-8">
-    <h1 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
-    <p className="text-gray-600">Coming soon in Phase 2...</p>
-  </div>
-);
 
 const UnauthorizedPage = () => (
   <div className="min-h-screen bg-gray-100 flex items-center justify-center">
