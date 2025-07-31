@@ -70,9 +70,11 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-white" />
-              </div>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                alt="BeatSpace Logo" 
+                className="w-10 h-10"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-white">BeatSpace</h1>
                 <p className="text-xs text-purple-300">Bangladesh Edition</p>
