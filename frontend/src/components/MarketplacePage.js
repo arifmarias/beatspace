@@ -1040,8 +1040,8 @@ const MarketplacePage = () => {
                   </div>
                 )}
                 
-                {selectedAsset.status === 'Available' && (
-                  <div className="space-y-2">
+                {selectedAsset.status === 'Available' && currentUser && (
+                  <div className="space-y-3">
                     <Button
                       onClick={() => {
                         const isInCampaign = campaign.find(item => item.id === selectedAsset.id);
@@ -1065,6 +1065,17 @@ const MarketplacePage = () => {
                           Add to Campaign
                         </>
                       )}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
+                      onClick={() => {
+                        setSelectedAssetForOffer(selectedAsset);
+                        setShowOfferDialog(true);
+                      }}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Request Best Offer
                     </Button>
                   </div>
                 )}
