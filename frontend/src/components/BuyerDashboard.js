@@ -276,7 +276,7 @@ const BuyerDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {campaigns.map((campaign) => (
+                      {(campaigns || []).map((campaign) => (
                         <TableRow key={campaign.id}>
                           <TableCell>
                             <div>
@@ -286,10 +286,10 @@ const BuyerDashboard = () => {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline">
-                              {campaign.asset_ids.length} assets
+                              {(campaign.asset_ids || campaign.assets || []).length} assets
                             </Badge>
                           </TableCell>
-                          <TableCell>৳{campaign.budget.toLocaleString()}</TableCell>
+                          <TableCell>৳{(campaign.budget || 0).toLocaleString()}</TableCell>
                           <TableCell>
                             <Badge className={getStatusColor(campaign.status)}>
                               {campaign.status}
