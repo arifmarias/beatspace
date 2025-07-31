@@ -1172,9 +1172,25 @@ const BuyerDashboard = () => {
                             console.log('Extracted date string:', dateStr);
                             
                             if (dateStr) {
-                              // Try parsing the date
-                              const parsedDate = new Date(dateStr);
-                              console.log('Parsed date:', parsedDate);
+                              // Try to parse different date formats
+                              let parsedDate = null;
+                              
+                              // Try MM/DD/YYYY format first
+                              parsedDate = new Date(dateStr);
+                              
+                              // If that fails, try DD/MM/YYYY format
+                              if (isNaN(parsedDate)) {
+                                // Convert DD/MM/YYYY to MM/DD/YYYY
+                                const parts = dateStr.split('/');
+                                if (parts.length === 3) {
+                                  const [day, month, year] = parts;
+                                  const reformattedDate = `${month}/${day}/${year}`;
+                                  console.log('Trying reformatted date:', reformattedDate);
+                                  parsedDate = new Date(reformattedDate);
+                                }
+                              }
+                              
+                              console.log('Final parsed date:', parsedDate);
                               
                               if (!isNaN(parsedDate)) {
                                 return parsedDate.toLocaleDateString();
@@ -1208,7 +1224,18 @@ const BuyerDashboard = () => {
                             }
                             
                             if (dateStr) {
-                              const parsedDate = new Date(dateStr);
+                              // Try to parse different date formats  
+                              let parsedDate = new Date(dateStr);
+                              
+                              // If that fails, try DD/MM/YYYY format
+                              if (isNaN(parsedDate)) {
+                                const parts = dateStr.split('/');
+                                if (parts.length === 3) {
+                                  const [day, month, year] = parts;
+                                  parsedDate = new Date(`${month}/${day}/${year}`);
+                                }
+                              }
+                              
                               if (!isNaN(parsedDate)) {
                                 return parsedDate;
                               }
@@ -1259,7 +1286,17 @@ const BuyerDashboard = () => {
                             console.log('Calculating expiration from date string:', dateStr);
                             
                             if (dateStr) {
-                              const startDate = new Date(dateStr);
+                              // Try to parse different date formats
+                              let startDate = new Date(dateStr);
+                              
+                              // If that fails, try DD/MM/YYYY format
+                              if (isNaN(startDate)) {
+                                const parts = dateStr.split('/');
+                                if (parts.length === 3) {
+                                  const [day, month, year] = parts;
+                                  startDate = new Date(`${month}/${day}/${year}`);
+                                }
+                              }
                               
                               if (!isNaN(startDate)) {
                                 const expirationDate = new Date(startDate);
