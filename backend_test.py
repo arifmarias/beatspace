@@ -736,7 +736,9 @@ def main():
         "Admin Get Assets",
         "Admin Update Asset Status",
         "Get Campaigns",
-        "Create Campaign"
+        "Create Campaign",
+        "Update Campaign Status to Live",
+        "Update Campaign Status to Draft"
     ]
     
     critical_passed = 0
