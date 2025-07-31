@@ -42,6 +42,7 @@ const BuyerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
+  const [campaignAssets, setCampaignAssets] = useState([]);
 
   const [campaignForm, setCampaignForm] = useState({
     name: '',
