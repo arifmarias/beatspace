@@ -240,6 +240,7 @@ const MarketplacePage = () => {
     try {
       const headers = getAuthHeaders();
       const response = await axios.get(`${API}/campaigns`, { headers });
+      console.log('Fetched campaigns:', response.data); // Debug log
       setExistingCampaigns(response.data || []);
     } catch (error) {
       console.error('Error fetching campaigns:', error);
