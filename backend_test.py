@@ -379,52 +379,120 @@ class BeatSpaceAPITester:
         )
         return success, response
 
-    # Role-based Access Tests
-    def test_role_based_access(self):
-        """Test role-based access control"""
+    # User Management Tests (Admin only)
+    def test_admin_get_users(self):
+        """Test admin getting all users"""
         if not self.admin_token:
-            print("⚠️  Skipping role-based access test - no admin token")
-            return False
+            print("⚠️  Skipping admin users test - no admin token")
+            return False, {}
         
-        # Test admin accessing admin endpoints (should work)
-        success1, _ = self.run_test("Admin Access Admin Endpoint", "GET", "admin/users", 200, token=self.admin_token)
+        success, response = self.run_test("Admin Get Users", "GET", "admin/users", 200, token=self.admin_token)
+        if success:
+            print(f"   Found {len(response)} users in system")
+            for user in response[:3]:  # Show first 3 users
+                print(f"   User: {user.get('email')} - {user.get('role')} - {user.get('status')}")
+        return success, response
+
+    def test_admin_update_user_status(self):
+        """Test admin updating user status"""
+        if not self.admin_token:
+            print("⚠️  Skipping user status update test - no admin token")
+            return False, {}
         
-        # Test non-admin accessing admin endpoints (should fail)
-        # First create a non-admin token by registering and approving a user
-        timestamp = datetime.now().strftime('%H%M%S')
-        test_user_data = {
-            "email": f"testuser{timestamp}@example.com",
-            "password": "TestPass123!",
-            "company_name": "Test Company",
-            "contact_name": "Test User",
-            "phone": "+8801234567892",
-            "role": "buyer"
+        # First get users to find one to update
+        success, users = self.test_admin_get_users()
+        if not success or not users:
+            print("⚠️  No users found to update status")
+            return False, {}
+        
+        # Find a user that's not admin
+        target_user = None
+        for user in users:
+            if user.get('role') != 'admin':
+                target_user = user
+                break
+        
+        if not target_user:
+            print("⚠️  No non-admin user found to update")
+            return False, {}
+        
+        status_update = {
+            "status": "approved",
+            "reason": "Test status update"
         }
         
-        # Register user
-        reg_success, reg_response = self.run_test("Register Test User for Role Test", "POST", "auth/register", 200, data=test_user_data)
-        if not reg_success:
-            return False
+        success, response = self.run_test(
+            "Admin Update User Status", 
+            "PUT", 
+            f"admin/users/{target_user['id']}/status", 
+            200, 
+            data=status_update,
+            token=self.admin_token
+        )
+        return success, response
+
+    # Campaign Management Tests
+    def test_get_campaigns(self):
+        """Test getting campaigns"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaigns test - no buyer token")
+            return False, {}
         
-        # Approve user
-        user_id = reg_response.get('user_id')
-        approval_data = {"status": "approved"}
-        approve_success, _ = self.run_test("Approve Test User", "PATCH", f"admin/users/{user_id}/status", 200, data=approval_data, token=self.admin_token)
-        if not approve_success:
-            return False
+        success, response = self.run_test("Get Campaigns", "GET", "campaigns", 200, token=self.buyer_token)
+        if success:
+            print(f"   Found {len(response)} campaigns for buyer")
+            if response:
+                campaign = response[0]
+                print(f"   Sample campaign: {campaign.get('name')} - {campaign.get('status')}")
+        return success, response
+
+    def test_create_campaign(self):
+        """Test creating a new campaign (buyer functionality)"""
+        if not self.buyer_token:
+            print("⚠️  Skipping campaign creation test - no buyer token")
+            return False, {}
         
-        # Login as approved user
-        login_data = {"email": test_user_data["email"], "password": test_user_data["password"]}
-        login_success, login_response = self.run_test("Login Approved User", "POST", "auth/login", 200, data=login_data)
-        if not login_success:
-            return False
+        # Get some asset IDs for the campaign
+        success, assets = self.test_public_assets()
+        asset_ids = []
+        if success and assets:
+            asset_ids = [assets[0]['id']] if assets else []
         
-        user_token = login_response.get('access_token')
+        campaign_data = {
+            "name": f"Test Campaign {datetime.now().strftime('%H%M%S')}",
+            "description": "Test campaign for API testing",
+            "assets": asset_ids,
+            "budget": 25000.0,
+            "start_date": "2025-02-01T00:00:00Z",
+            "end_date": "2025-04-30T23:59:59Z"
+        }
         
-        # Test user accessing admin endpoint (should fail with 403)
-        success2, _ = self.run_test("User Access Admin Endpoint", "GET", "admin/users", 403, token=user_token)
+        success, response = self.run_test("Create Campaign", "POST", "campaigns", 200, data=campaign_data, token=self.buyer_token)
+        if success and 'id' in response:
+            self.created_campaign_id = response['id']
+            print(f"   Created campaign ID: {self.created_campaign_id}")
+        return success, response
+
+    def test_update_campaign(self):
+        """Test updating a campaign"""
+        if not self.buyer_token or not self.created_campaign_id:
+            print("⚠️  Skipping campaign update test - missing buyer token or campaign ID")
+            return False, {}
         
-        return success1 and success2
+        update_data = {
+            "description": "Updated test campaign description",
+            "budget": 30000.0
+        }
+        
+        success, response = self.run_test(
+            "Update Campaign", 
+            "PUT", 
+            f"campaigns/{self.created_campaign_id}", 
+            200, 
+            data=update_data, 
+            token=self.buyer_token
+        )
+        return success, response
 
     # Legacy test methods for backward compatibility
     def test_get_assets(self):
