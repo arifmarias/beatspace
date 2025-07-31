@@ -614,13 +614,15 @@ async def init_bangladesh_sample_data():
         }
     ]
     
-    # Insert enhanced assets
-    for asset_data in bangladesh_assets:
-        asset = Asset(**asset_data)
-        await db.assets.insert_one(asset.dict())
+        # Insert enhanced assets
+        for asset_data in bangladesh_assets:
+            asset = Asset(**asset_data)
+            await db.assets.insert_one(asset.dict())
     
-    # Create sample campaigns
-    sample_campaigns = [
+    # Create sample campaigns - only if none exist
+    existing_campaigns = await db.campaigns.count_documents({})
+    if existing_campaigns == 0:
+        sample_campaigns = [
         {
             "id": str(uuid.uuid4()),
             "name": "Grameenphone 5G Launch Campaign",
