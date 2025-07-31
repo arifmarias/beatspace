@@ -228,10 +228,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Implement missing /api/stats/public endpoint"
-    - "Implement missing /api/assets/public endpoint"
-    - "Implement complete Asset CRUD operations"
-    - "Implement User Management routes for Admin"
+    - "HomePage stats loading"
+    - "Marketplace assets loading"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
