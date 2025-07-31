@@ -789,7 +789,7 @@ const MarketplacePage = () => {
                       {/* Asset Expiration Date */}
                       {offerDetails.assetExpirationDate && (
                         <div>
-                          <labelClassName="block text-sm font-semibold mb-2">Asset Expiration Date</label>
+                          <label className="block text-sm font-semibold mb-2">Asset Expiration Date</label>
                           <div className="p-3 bg-gray-50 rounded-lg border">
                             <p className="text-sm font-medium text-gray-900">
                               {offerDetails.assetExpirationDate.toLocaleDateString()}
