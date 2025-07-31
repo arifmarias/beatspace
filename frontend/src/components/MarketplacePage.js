@@ -230,6 +230,19 @@ const MarketplacePage = () => {
     }
   };
 
+  const fetchExistingCampaigns = async () => {
+    if (!currentUser) return;
+    
+    try {
+      const headers = getAuthHeaders();
+      const response = await axios.get(`${API}/campaigns`, { headers });
+      setExistingCampaigns(response.data || []);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+      setExistingCampaigns([]);
+    }
+  };
+
   const fetchStats = async () => {
     try {
       const response = await axios.get(`${API}/stats/public`);
