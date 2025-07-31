@@ -307,14 +307,33 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-white" />
-                </div>
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                  alt="BeatSpace Logo" 
+                  className="w-8 h-8"
+                />
                 <span className="text-xl font-bold text-white">BeatSpace</span>
               </div>
               <p className="text-gray-400">
                 Bangladesh's premier outdoor advertising marketplace platform.
               </p>
+              <div className="mt-4 space-y-2 text-sm text-gray-400">
+                <div>
+                  <strong className="text-white">Bangladesh Office</strong><br />
+                  Plot 19, Road 17, Banani C/A, Dhaka
+                </div>
+                <div>
+                  <strong className="text-white">Malaysia Office</strong><br />
+                  Laman Scenaria Kiara, No.6, Jalan 6/38a,<br />
+                  Taman Sri Sinar, 51200 Kuala Lumpur, Malaysia
+                </div>
+                <div>
+                  <strong className="text-white">General Inquiries</strong><br />
+                  <a href="mailto:info@thebeatspace.com" className="text-purple-400 hover:text-purple-300">
+                    info@thebeatspace.com
+                  </a>
+                </div>
+              </div>
             </div>
             
             <div>
