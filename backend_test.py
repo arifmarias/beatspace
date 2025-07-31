@@ -441,11 +441,13 @@ def main():
     tester.test_update_asset()
     tester.test_delete_asset()
     
-    # Test 4: User Management (Admin)
-    print("\n👑 USER MANAGEMENT (ADMIN)")
-    print("Testing admin user management capabilities")
+    # Test 4: Admin Management (Users & Assets)
+    print("\n👑 ADMIN MANAGEMENT (USERS & ASSETS)")
+    print("Testing admin management capabilities for users and assets")
     tester.test_admin_get_users()
     tester.test_admin_update_user_status()
+    tester.test_admin_get_assets()
+    tester.test_admin_update_asset_status()
     
     # Test 5: Campaign Management
     print("\n🎯 CAMPAIGN MANAGEMENT")
