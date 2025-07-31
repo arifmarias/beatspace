@@ -336,7 +336,10 @@ const BuyerDashboard = () => {
                                 <Button 
                                   variant="ghost" 
                                   size="sm"
-                                  onClick={() => setSelectedCampaign(campaign)}
+                                  onClick={() => {
+                                    setSelectedCampaign(campaign);
+                                    fetchCampaignAssets(campaign);
+                                  }}
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
