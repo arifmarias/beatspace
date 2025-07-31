@@ -1149,13 +1149,36 @@ const BuyerDashboard = () => {
                     >
                       <Calendar className="mr-2 h-4 w-4" />
                       {(() => {
-                        // Parse the date correctly from timeline
-                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                        console.log('Parsing timeline for display:', editingOffer.timeline);
+                        
+                        // Multiple parsing strategies to handle different formats
+                        if (editingOffer.timeline) {
                           try {
-                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
-                            const parsedDate = new Date(dateStr);
-                            if (!isNaN(parsedDate)) {
-                              return parsedDate.toLocaleDateString();
+                            let dateStr = '';
+                            
+                            // Strategy 1: Timeline contains "Asset starts from"
+                            if (editingOffer.timeline.includes('Asset starts from')) {
+                              dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            }
+                            // Strategy 2: Timeline contains "Start from"  
+                            else if (editingOffer.timeline.includes('Start from')) {
+                              dateStr = editingOffer.timeline.replace('Start from ', '').trim();
+                            }
+                            // Strategy 3: Timeline is just a date string
+                            else {
+                              dateStr = editingOffer.timeline.trim();
+                            }
+                            
+                            console.log('Extracted date string:', dateStr);
+                            
+                            if (dateStr) {
+                              // Try parsing the date
+                              const parsedDate = new Date(dateStr);
+                              console.log('Parsed date:', parsedDate);
+                              
+                              if (!isNaN(parsedDate)) {
+                                return parsedDate.toLocaleDateString();
+                              }
                             }
                           } catch (e) {
                             console.error('Date parsing error:', e);
@@ -1169,24 +1192,40 @@ const BuyerDashboard = () => {
                     <CalendarComponent
                       mode="single"
                       selected={(() => {
-                        if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
+                        console.log('Parsing timeline for calendar:', editingOffer.timeline);
+                        
+                        if (editingOffer.timeline) {
                           try {
-                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
-                            const parsedDate = new Date(dateStr);
-                            if (!isNaN(parsedDate)) {
-                              return parsedDate;
+                            let dateStr = '';
+                            
+                            // Multiple parsing strategies
+                            if (editingOffer.timeline.includes('Asset starts from')) {
+                              dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            } else if (editingOffer.timeline.includes('Start from')) {
+                              dateStr = editingOffer.timeline.replace('Start from ', '').trim();
+                            } else {
+                              dateStr = editingOffer.timeline.trim();
+                            }
+                            
+                            if (dateStr) {
+                              const parsedDate = new Date(dateStr);
+                              if (!isNaN(parsedDate)) {
+                                return parsedDate;
+                              }
                             }
                           } catch (e) {
-                            console.error('Date parsing error:', e);
+                            console.error('Date parsing error for calendar:', e);
                           }
                         }
                         return null;
                       })()}
                       onSelect={(date) => {
                         if (date) {
+                          const formattedDate = date.toLocaleDateString('en-US');
+                          console.log('Selected new date:', formattedDate);
                           setEditingOffer({
                             ...editingOffer, 
-                            timeline: `Asset starts from ${date.toLocaleDateString('en-US')}`
+                            timeline: `Asset starts from ${formattedDate}`
                           });
                         }
                       }}
@@ -1205,32 +1244,47 @@ const BuyerDashboard = () => {
                     <p className="text-sm font-medium text-gray-900">
                       {(() => {
                         try {
-                          if (editingOffer.timeline && editingOffer.timeline.includes('from')) {
-                            const dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
-                            const startDate = new Date(dateStr);
+                          if (editingOffer.timeline) {
+                            let dateStr = '';
                             
-                            if (!isNaN(startDate)) {
-                              const expirationDate = new Date(startDate);
+                            // Multiple parsing strategies for expiration calculation
+                            if (editingOffer.timeline.includes('Asset starts from')) {
+                              dateStr = editingOffer.timeline.replace('Asset starts from ', '').trim();
+                            } else if (editingOffer.timeline.includes('Start from')) {
+                              dateStr = editingOffer.timeline.replace('Start from ', '').trim();
+                            } else {
+                              dateStr = editingOffer.timeline.trim();
+                            }
+                            
+                            console.log('Calculating expiration from date string:', dateStr);
+                            
+                            if (dateStr) {
+                              const startDate = new Date(dateStr);
                               
-                              switch (editingOffer.contract_duration) {
-                                case '3_months':
-                                  expirationDate.setMonth(startDate.getMonth() + 3);
-                                  break;
-                                case '6_months':
-                                  expirationDate.setMonth(startDate.getMonth() + 6);
-                                  break;
-                                case '12_months':
-                                  expirationDate.setFullYear(startDate.getFullYear() + 1);
-                                  break;
-                                default:
-                                  expirationDate.setMonth(startDate.getMonth() + 3);
-                                  break;
+                              if (!isNaN(startDate)) {
+                                const expirationDate = new Date(startDate);
+                                
+                                switch (editingOffer.contract_duration) {
+                                  case '3_months':
+                                    expirationDate.setMonth(startDate.getMonth() + 3);
+                                    break;
+                                  case '6_months':
+                                    expirationDate.setMonth(startDate.getMonth() + 6);
+                                    break;
+                                  case '12_months':
+                                    expirationDate.setFullYear(startDate.getFullYear() + 1);
+                                    break;
+                                  default:
+                                    expirationDate.setMonth(startDate.getMonth() + 3);
+                                    break;
+                                }
+                                
+                                console.log('Calculated expiration date:', expirationDate);
+                                return expirationDate.toLocaleDateString('en-US');
                               }
-                              
-                              return expirationDate.toLocaleDateString('en-US');
                             }
                           }
-                          return 'Invalid start date';
+                          return 'Please select start date';
                         } catch (error) {
                           console.error('Expiration date calculation error:', error);
                           return 'Error calculating date';
