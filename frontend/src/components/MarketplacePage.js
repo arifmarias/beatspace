@@ -500,6 +500,7 @@ const MarketplacePage = () => {
           monitoring: false
         },
         timeline: '',
+        tentativeStartDate: null,
         specialRequirements: '',
         notes: ''
       });
