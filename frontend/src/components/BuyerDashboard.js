@@ -263,7 +263,7 @@ const BuyerDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {campaigns.length > 0 ? (
+                {(campaigns || []).length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
