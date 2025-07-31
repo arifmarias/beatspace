@@ -1401,7 +1401,11 @@ const MarketplacePage = () => {
                   </div>
                 )}
                 
-                {selectedAsset.status === 'Available' && currentUser && (
+                {/* Always show Request Best Offer button for debugging */}
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-500">
+                    Debug: Status = {selectedAsset.status}, User = {currentUser ? 'Logged In' : 'Not Logged In'}
+                  </div>
                   <Button 
                     variant="outline"
                     className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
@@ -1414,7 +1418,7 @@ const MarketplacePage = () => {
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Request Best Offer
                   </Button>
-                )}
+                </div>
 
                 {selectedAsset.next_available_date && (
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
