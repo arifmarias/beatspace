@@ -313,6 +313,8 @@ const MarketplacePage = () => {
     
     setSelectedCampaignForAsset(asset);
     setShowCampaignDialog(true);
+    // Fetch existing campaigns when dialog opens
+    fetchExistingCampaigns();
   };
 
   const addAssetToExistingCampaign = async (campaignId) => {
