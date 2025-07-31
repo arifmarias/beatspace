@@ -1292,6 +1292,7 @@ const MarketplacePage = () => {
                     className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
                     onClick={() => {
                       setSelectedAssetForOffer(selectedAsset);
+                      fetchExistingCampaigns(); // Fetch campaigns for dropdown
                       setShowOfferDialog(true);
                     }}
                   >
