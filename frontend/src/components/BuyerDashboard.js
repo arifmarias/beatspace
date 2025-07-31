@@ -67,28 +67,37 @@ const BuyerDashboard = () => {
       const campaignsRes = await axios.get(`${API}/campaigns`, { headers });
       setCampaigns(campaignsRes.data || []);
 
+      // Fetch requested offers
+      const offersRes = await axios.get(`${API}/offers/requests`, { headers });
+      setRequestedOffers(offersRes.data || []);
+
       // Calculate stats with null safety
-      const campaignData = campaignsRes.data || [];
+      const campaignData = campaignsRes.data || [];  
+      const offerData = offersRes.data || [];
       const totalCampaigns = campaignData.length;
       const activeCampaigns = campaignData.filter(c => c.status === 'Live').length;
       const pendingCampaigns = campaignData.filter(c => c.status === 'Pending Offer' || c.status === 'Negotiating').length;
       const totalBudget = campaignData.reduce((sum, c) => sum + (c.budget || 0), 0);
+      const totalOfferRequests = offerData.length;
 
       setStats({
         totalCampaigns,
         activeCampaigns,
         pendingCampaigns,
-        totalBudget
+        totalBudget,
+        totalOfferRequests
       });
     } catch (error) {
       console.error('Error fetching buyer data:', error);
       // Set default empty states on error
       setCampaigns([]);
+      setRequestedOffers([]);
       setStats({
         totalCampaigns: 0,
         activeCampaigns: 0,
         pendingCampaigns: 0,
-        totalBudget: 0
+        totalBudget: 0,
+        totalOfferRequests: 0
       });
       if (error.response?.status === 401) {
         logout();
