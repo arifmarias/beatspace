@@ -211,12 +211,12 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-3xl font-bold text-gray-900">{users.length}</p>
+                  <p className="text-3xl font-bold text-gray-900">{(users || []).length}</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-500" />
               </div>
               <div className="mt-2 text-sm text-gray-500">
-                {users.filter(u => u.status === 'pending').length} pending approval
+                {(users || []).filter(u => u.status === 'pending').length} pending approval
               </div>
             </CardContent>
           </Card>
@@ -226,12 +226,12 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Assets</p>
-                  <p className="text-3xl font-bold text-gray-900">{assets.length}</p>
+                  <p className="text-3xl font-bold text-gray-900">{(assets || []).length}</p>
                 </div>
                 <Building className="w-8 h-8 text-green-500" />
               </div>
               <div className="mt-2 text-sm text-gray-500">
-                {assets.filter(a => a.status === 'Pending Approval').length} pending approval
+                {(assets || []).filter(a => a.status === 'Pending Approval').length} pending approval
               </div>
             </CardContent>
           </Card>
@@ -241,7 +241,7 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Campaigns</p>
-                  <p className="text-3xl font-bold text-gray-900">{campaigns.length}</p>
+                  <p className="text-3xl font-bold text-gray-900">{(campaigns || []).length}</p>
                 </div>
                 <BarChart3 className="w-8 h-8 text-purple-500" />
               </div>
