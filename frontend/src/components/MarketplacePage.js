@@ -29,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Separator } from './ui/separator';
-import { getAuthHeaders, getUser } from '../utils/auth';
+import { getAuthHeaders, getUser, logout } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
