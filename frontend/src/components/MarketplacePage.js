@@ -447,6 +447,22 @@ const MarketplacePage = () => {
         return;
       }
 
+      // Check asset availability before submitting
+      try {
+        const headers = getAuthHeaders();
+        const assetCheckRes = await axios.get(`${API}/assets/${selectedAssetForOffer.id}`, { headers });
+        const currentAssetStatus = assetCheckRes.data.status;
+        
+        if (currentAssetStatus !== 'Available') {
+          alert(`Asset is no longer available. Current status: ${currentAssetStatus}. Please select a different asset.`);
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking asset availability:', error);
+        alert('Unable to verify asset availability. Please try again.');
+        return;
+      }
+
       const headers = getAuthHeaders();
       
       // Prepare offer request data
