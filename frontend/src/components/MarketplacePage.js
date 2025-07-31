@@ -305,8 +305,71 @@ const MarketplacePage = () => {
   };
 
   const addToCampaign = (asset) => {
-    if (!campaign.find(item => item.id === asset.id)) {
-      setCampaign([...campaign, asset]);
+    if (!currentUser) {
+      alert('Please log in to add assets to campaign');
+      navigate('/login');
+      return;
+    }
+    
+    setSelectedCampaignForAsset(asset);
+    setShowCampaignDialog(true);
+  };
+
+  const addAssetToExistingCampaign = async (campaignId) => {
+    try {
+      const headers = getAuthHeaders();
+      const campaign = existingCampaigns.find(c => c.id === campaignId);
+      
+      if (campaign) {
+        const updatedAssets = [...(campaign.assets || [])];
+        if (!updatedAssets.includes(selectedCampaignForAsset.id)) {
+          updatedAssets.push(selectedCampaignForAsset.id);
+          
+          await axios.put(`${API}/campaigns/${campaignId}`, {
+            assets: updatedAssets
+          }, { headers });
+          
+          // Add to temporary campaign for UI
+          if (!campaign.find(item => item.id === selectedCampaignForAsset.id)) {
+            setCampaign([...campaign, selectedCampaignForAsset]);
+          }
+          
+          alert('Asset added to campaign successfully!');
+          setShowCampaignDialog(false);
+          fetchExistingCampaigns(); // Refresh campaigns
+        } else {
+          alert('Asset is already in this campaign');
+        }
+      }
+    } catch (error) {
+      console.error('Error adding asset to campaign:', error);
+      alert('Failed to add asset to campaign');
+    }
+  };
+
+  const createNewCampaignWithAsset = async (campaignName) => {
+    try {
+      const headers = getAuthHeaders();
+      const newCampaign = {
+        name: campaignName,
+        description: `Campaign created from marketplace`,
+        assets: [selectedCampaignForAsset.id],
+        budget: 0
+      };
+      
+      await axios.post(`${API}/campaigns`, newCampaign, { headers });
+      
+      // Add to temporary campaign for UI
+      if (!campaign.find(item => item.id === selectedCampaignForAsset.id)) {
+        setCampaign([...campaign, selectedCampaignForAsset]);
+      }
+      
+      alert('New campaign created and asset added successfully!');
+      setShowCampaignDialog(false);
+      fetchExistingCampaigns(); // Refresh campaigns
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      alert('Failed to create campaign');
     }
   };
 
