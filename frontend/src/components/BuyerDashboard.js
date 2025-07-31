@@ -1026,6 +1026,101 @@ const BuyerDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Offer Dialog */}
+      <Dialog open={showEditOfferDialog} onOpenChange={setShowEditOfferDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Offer Request</DialogTitle>
+          </DialogHeader>
+          
+          {editingOffer && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Campaign Name</label>
+                <Input
+                  value={editingOffer.campaign_name}
+                  onChange={(e) => setEditingOffer({...editingOffer, campaign_name: e.target.value})}
+                  placeholder="Campaign name"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Contract Duration</label>
+                  <Select 
+                    value={editingOffer.contract_duration} 
+                    onValueChange={(value) => setEditingOffer({...editingOffer, contract_duration: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3_months">3 Months</SelectItem>
+                      <SelectItem value="6_months">6 Months</SelectItem>
+                      <SelectItem value="12_months">12 Months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Budget (৳)</label>
+                  <Input
+                    type="number"
+                    value={editingOffer.estimated_budget}
+                    onChange={(e) => setEditingOffer({...editingOffer, estimated_budget: parseFloat(e.target.value)})}
+                    placeholder="Budget"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Timeline</label>
+                <Input
+                  value={editingOffer.timeline || ''}
+                  onChange={(e) => setEditingOffer({...editingOffer, timeline: e.target.value})}
+                  placeholder="Timeline preferences"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Special Requirements</label>
+                <Textarea
+                  value={editingOffer.special_requirements || ''}
+                  onChange={(e) => setEditingOffer({...editingOffer, special_requirements: e.target.value})}
+                  placeholder="Any special requirements..."
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Notes</label>
+                <Textarea
+                  value={editingOffer.notes || ''}
+                  onChange={(e) => setEditingOffer({...editingOffer, notes: e.target.value})}
+                  placeholder="Additional notes..."
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditOfferDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => updateOfferRequest(editingOffer)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Update Offer
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
