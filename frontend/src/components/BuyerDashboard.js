@@ -63,11 +63,12 @@ const BuyerDashboard = () => {
       const campaignsRes = await axios.get(`${API}/campaigns`, { headers });
       setCampaigns(campaignsRes.data);
 
-      // Calculate stats
-      const totalCampaigns = campaignsRes.data.length;
-      const activeCampaigns = campaignsRes.data.filter(c => c.status === 'Live').length;
-      const pendingCampaigns = campaignsRes.data.filter(c => c.status === 'Pending Offer' || c.status === 'Negotiating').length;
-      const totalBudget = campaignsRes.data.reduce((sum, c) => sum + c.budget, 0);
+      // Calculate stats with null safety
+      const campaignData = campaignsRes.data || [];
+      const totalCampaigns = campaignData.length;
+      const activeCampaigns = campaignData.filter(c => c.status === 'Live').length;
+      const pendingCampaigns = campaignData.filter(c => c.status === 'Pending Offer' || c.status === 'Negotiating').length;
+      const totalBudget = campaignData.reduce((sum, c) => sum + (c.budget || 0), 0);
 
       setStats({
         totalCampaigns,
