@@ -676,16 +676,17 @@ const MarketplacePage = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Filter className="w-5 h-5" />
-                  <span>Filters</span>
-                </CardTitle>
-              </CardHeader>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filters Sidebar - Fixed Left Position */}
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <div className="sticky top-6">
+              <Card className="shadow-sm border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center space-x-2 text-lg">
+                    <Filter className="w-5 h-5 text-blue-600" />
+                    <span>Filters</span>
+                  </CardTitle>
+                </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Search</label>
