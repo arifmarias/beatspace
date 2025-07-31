@@ -95,6 +95,29 @@ const BuyerDashboard = () => {
     }
   };
 
+  const fetchCampaignAssets = async (campaign) => {
+    try {
+      if (!campaign || !campaign.assets || campaign.assets.length === 0) {
+        setCampaignAssets([]);
+        return;
+      }
+
+      // Fetch all public assets and filter by campaign asset IDs
+      const response = await axios.get(`${API}/assets/public`);
+      const allAssets = response.data || [];
+      
+      // Filter assets that are in this campaign
+      const campaignAssetsList = allAssets.filter(asset => 
+        campaign.assets.includes(asset.id)
+      );
+      
+      setCampaignAssets(campaignAssetsList);
+    } catch (error) {
+      console.error('Error fetching campaign assets:', error);
+      setCampaignAssets([]);
+    }
+  };
+
   const handleCreateCampaign = async () => {
     try {
       const headers = getAuthHeaders();
