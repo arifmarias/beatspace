@@ -291,6 +291,61 @@ class BeatSpaceAPITester:
         
         return success1 and success2
 
+    # Legacy test methods for backward compatibility
+    def test_get_assets(self):
+        """Test getting all assets (legacy method)"""
+        success, response = self.run_test("Get All Assets (Legacy)", "GET", "assets/public", 200)
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} assets")
+            if len(response) > 0:
+                asset = response[0]
+                required_fields = ['id', 'name', 'type', 'address', 'location', 'pricing', 'status']
+                missing_fields = [field for field in required_fields if field not in asset]
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in asset: {missing_fields}")
+                else:
+                    print(f"   ✅ Asset structure looks good")
+                    print(f"   Sample asset: {asset['name']} - {asset['type']} - {asset['status']}")
+        return success, response
+
+    def test_get_single_asset(self, asset_id):
+        """Test getting a single asset by ID (legacy method)"""
+        # Since we don't have a single asset endpoint in the new API, we'll test the public assets endpoint
+        success, response = self.run_test(f"Get Single Asset {asset_id}", "GET", "assets/public", 200)
+        if success and response:
+            # Find the asset with the given ID
+            found_asset = None
+            for asset in response:
+                if asset.get('id') == asset_id:
+                    found_asset = asset
+                    break
+            if found_asset:
+                print(f"   Found asset: {found_asset['name']}")
+                return True, found_asset
+            else:
+                print(f"   Asset {asset_id} not found in public assets")
+                return False, {}
+        return success, response
+
+    def test_get_nonexistent_asset(self):
+        """Test getting a non-existent asset (legacy method)"""
+        # This will test the public assets endpoint with a filter that should return empty
+        return self.run_test("Get Non-existent Asset", "GET", "assets/public", 200, params={"district": "NonExistentDistrict"})
+
+    def test_get_stats(self):
+        """Test platform statistics endpoint (legacy method)"""
+        success, response = self.run_test("Get Platform Stats (Legacy)", "GET", "stats/public", 200)
+        if success:
+            expected_keys = ['total_assets', 'available_assets', 'total_users', 'asset_types']
+            missing_keys = [key for key in expected_keys if key not in response]
+            if missing_keys:
+                print(f"   ⚠️  Missing keys in stats: {missing_keys}")
+            else:
+                print(f"   ✅ Stats structure looks good")
+                print(f"   Total assets: {response.get('total_assets', 'N/A')}")
+                print(f"   Available assets: {response.get('available_assets', 'N/A')}")
+        return success, response
+
     def test_get_assets(self):
         """Test getting all assets"""
         success, response = self.run_test("Get All Assets", "GET", "assets", 200)
