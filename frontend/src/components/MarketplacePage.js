@@ -1209,43 +1209,17 @@ const MarketplacePage = () => {
                 )}
                 
                 {selectedAsset.status === 'Available' && currentUser && (
-                  <div className="space-y-3">
-                    <Button
-                      onClick={() => {
-                        const isInCampaign = campaign.find(item => item.id === selectedAsset.id);
-                        if (isInCampaign) {
-                          removeFromCampaign(selectedAsset.id);
-                        } else {
-                          addToCampaign(selectedAsset);
-                        }
-                      }}
-                      className="w-full"
-                      variant={campaign.find(item => item.id === selectedAsset.id) ? "destructive" : "default"}
-                    >
-                      {campaign.find(item => item.id === selectedAsset.id) ? (
-                        <>
-                          <X className="w-4 h-4 mr-2" />
-                          Remove from Campaign
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add to Campaign
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
-                      onClick={() => {
-                        setSelectedAssetForOffer(selectedAsset);
-                        setShowOfferDialog(true);
-                      }}
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Request Best Offer
-                    </Button>
-                  </div>
+                  <Button 
+                    variant="outline"
+                    className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
+                    onClick={() => {
+                      setSelectedAssetForOffer(selectedAsset);
+                      setShowOfferDialog(true);
+                    }}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Request Best Offer
+                  </Button>
                 )}
 
                 {selectedAsset.next_available_date && (
