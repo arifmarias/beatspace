@@ -463,6 +463,13 @@ const AdminDashboard = () => {
                     <span>Asset Management</span>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
+                    <Button 
+                      onClick={() => setShowAddAsset(true)}
+                      className="bg-orange-600 hover:bg-orange-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Asset
+                    </Button>
                     <Input
                       placeholder="Search assets..."
                       value={searchTerm}
