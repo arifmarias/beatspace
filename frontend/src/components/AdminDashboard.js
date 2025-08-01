@@ -1243,10 +1243,27 @@ const AdminDashboard = () => {
           <TabsContent value="campaigns" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Campaign Overview</span>
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="w-5 h-5" />
+                    <span>Campaign Management</span>
+                  </CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      onClick={() => setShowAddCampaign(true)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Campaign
+                    </Button>
+                    <Input
+                      placeholder="Search campaigns..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-64"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {(campaigns || []).length > 0 ? (
@@ -1255,29 +1272,74 @@ const AdminDashboard = () => {
                       <TableRow>
                         <TableHead>Campaign</TableHead>
                         <TableHead>Buyer</TableHead>
-                        <TableHead>Assets</TableHead>
-                        <TableHead>Budget</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Budget</TableHead>
+                        <TableHead>Assets</TableHead>
+                        <TableHead>Start Date</TableHead>
+                        <TableHead>End Date</TableHead>
                         <TableHead>Created</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {(campaigns || []).map((campaign) => (
                         <TableRow key={campaign.id}>
                           <TableCell>
-                            <div className="font-medium">{campaign.name}</div>
-                            <div className="text-sm text-gray-500">{campaign.description}</div>
+                            <div>
+                              <div className="font-medium">{campaign.name}</div>
+                              {campaign.description && (
+                                <div className="text-sm text-gray-500 truncate max-w-xs">
+                                  {campaign.description}
+                                </div>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>{campaign.buyer_name}</TableCell>
-                          <TableCell>{(campaign.assets || []).length} assets</TableCell>
-                          <TableCell>৳{(campaign.budget || 0).toLocaleString()}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(campaign.status)}>
+                            <Badge className={`${getStatusColor(campaign.status)}`}>
                               {campaign.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
+                            {campaign.budget ? `৳${campaign.budget.toLocaleString()}` : 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            {campaign.campaign_assets?.length || 0} assets
+                          </TableCell>
+                          <TableCell>
+                            {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            {campaign.end_date ? new Date(campaign.end_date).toLocaleDateString() : 'N/A'}
+                          </TableCell>
+                          <TableCell>
                             {new Date(campaign.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem 
+                                  onClick={() => editCampaign(campaign)}
+                                  className="flex items-center cursor-pointer"
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit Campaign
+                                </DropdownMenuItem>
+                                
+                                <DropdownMenuItem 
+                                  onClick={() => deleteCampaign(campaign)}
+                                  className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <X className="h-4 w-4 mr-2" />
+                                  Delete Campaign
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1285,8 +1347,7 @@ const AdminDashboard = () => {
                   </Table>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
-                    <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No campaigns created yet</p>
+                    No campaigns found. Create your first campaign to get started.
                   </div>
                 )}
               </CardContent>
