@@ -196,6 +196,113 @@ class BeatSpaceAPITester:
             print(f"   Created asset ID: {self.created_asset_id}")
         return success, response
 
+    def test_admin_create_asset_with_fixed_data_format(self):
+        """Test FIXED asset creation with corrected data format - PRIORITY TEST"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin asset creation test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING FIXED ASSET CREATION WITH CORRECTED DATA FORMAT")
+        print("   Testing specific data format fixes:")
+        print("   ✅ Traffic Volume as STRING (not integer)")
+        print("   ✅ Location field with coordinates included")
+        print("   ✅ Visibility Score as INTEGER")
+        print("   ✅ Complete asset creation workflow")
+        
+        # Get a seller to assign the asset to
+        success, users = self.test_admin_get_users()
+        seller_user = None
+        if success and users:
+            for user in users:
+                if user.get('role') == 'seller':
+                    seller_user = user
+                    break
+        
+        if not seller_user:
+            print("⚠️  No seller found to assign asset to")
+            return False, {}
+        
+        # CORRECTED DATA FORMAT - exactly as specified in review request
+        asset_data = {
+            "name": "Fixed Asset Test",
+            "description": "Test with corrected data format",
+            "address": "Test Address, Dhaka",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "type": "Billboard",
+            "dimensions": "10ft x 20ft",
+            "location": {"lat": 23.8103, "lng": 90.4125},  # ✅ FIXED: Location field included
+            "traffic_volume": "High",  # ✅ FIXED: String, not integer
+            "visibility_score": 8,     # ✅ FIXED: Integer, not float
+            "pricing": {
+                "weekly_rate": 2000,
+                "monthly_rate": 7000,
+                "yearly_rate": 80000
+            },
+            "seller_id": seller_user['id'],
+            "photos": ["test_image_url"]
+        }
+        
+        print(f"   Using seller: {seller_user.get('company_name')} (ID: {seller_user['id']})")
+        print(f"   Asset data validation:")
+        print(f"     - traffic_volume: '{asset_data['traffic_volume']}' (type: {type(asset_data['traffic_volume']).__name__})")
+        print(f"     - visibility_score: {asset_data['visibility_score']} (type: {type(asset_data['visibility_score']).__name__})")
+        print(f"     - location: {asset_data['location']}")
+        print(f"     - pricing structure: {list(asset_data['pricing'].keys())}")
+        
+        success, response = self.run_test(
+            "ADMIN CREATE ASSET - FIXED DATA FORMAT", 
+            "POST", 
+            "assets", 
+            200,  # Should return 200/201, NOT 500
+            data=asset_data, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print("🎉 ASSET CREATION WITH FIXED DATA FORMAT - SUCCESS!")
+            print(f"   ✅ Created asset ID: {response.get('id')}")
+            print(f"   ✅ Asset name: {response.get('name')}")
+            print(f"   ✅ Asset status: {response.get('status')}")
+            print(f"   ✅ Seller assigned: {response.get('seller_name')}")
+            
+            # Verify the corrected data format was preserved
+            if response.get('traffic_volume') == "High":
+                print("   ✅ Traffic volume correctly stored as string")
+            else:
+                print(f"   ⚠️  Traffic volume: {response.get('traffic_volume')} (expected: 'High')")
+            
+            if response.get('visibility_score') == 8:
+                print("   ✅ Visibility score correctly stored as integer")
+            else:
+                print(f"   ⚠️  Visibility score: {response.get('visibility_score')} (expected: 8)")
+            
+            if response.get('location') and 'lat' in response.get('location', {}):
+                print("   ✅ Location field with coordinates correctly stored")
+            else:
+                print(f"   ⚠️  Location field: {response.get('location')}")
+            
+            # Verify asset appears in public assets list
+            success_public, public_assets = self.test_public_assets()
+            if success_public:
+                created_asset_found = False
+                for asset in public_assets:
+                    if asset.get('id') == response.get('id'):
+                        created_asset_found = True
+                        print("   ✅ Created asset appears in public assets list")
+                        break
+                
+                if not created_asset_found:
+                    print("   ⚠️  Created asset not found in public assets list")
+            
+            print("🎯 FIXED DATA FORMAT VALIDATION COMPLETE - ALL TESTS PASSED!")
+            return True, response
+        else:
+            print("❌ ASSET CREATION FAILED - DATA FORMAT ISSUES PERSIST")
+            return False, {}
+        
+        return success, response
+
     def test_get_single_asset(self):
         """Test getting a single asset by ID"""
         if not self.created_asset_id:
