@@ -1249,31 +1249,64 @@ const AdminDashboard = () => {
                     
                     {/* Image Preview Section */}
                     {assetForm.photos.length > 0 && (
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Uploaded Images:</label>
-                        <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                          {assetForm.photos.map((photo, index) => (
-                            <div key={index} className="relative">
-                              <img 
-                                src={photo} 
-                                alt={`Preview ${index + 1}`}
-                                className="w-full h-16 object-cover rounded border"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
-                              >
-                                ×
-                              </button>
-                              {index === 0 && (
-                                <div className="absolute bottom-0 left-0 bg-green-500 text-white text-xs px-1 rounded-tr">
-                                  Main
-                                </div>
-                              )}
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-gray-700">
+                          Uploaded Images ({assetForm.photos.length}):
+                        </label>
+                        
+                        {/* Single image or first image display */}
+                        {assetForm.photos.length === 1 ? (
+                          <div className="relative">
+                            <img 
+                              src={assetForm.photos[0]} 
+                              alt="Asset preview"
+                              className="w-full h-32 object-cover rounded border"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(0)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                            <div className="absolute bottom-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                              Main Image
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ) : (
+                          /* Multiple images carousel */
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+                              {assetForm.photos.map((photo, index) => (
+                                <div key={index} className="relative group">
+                                  <img 
+                                    src={photo} 
+                                    alt={`Preview ${index + 1}`}
+                                    className="w-full h-20 object-cover rounded border hover:opacity-75 transition-opacity"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeImage(index)}
+                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    ×
+                                  </button>
+                                  {index === 0 && (
+                                    <div className="absolute bottom-0 left-0 bg-green-500 text-white text-xs px-1 rounded-tr">
+                                      Main
+                                    </div>
+                                  )}
+                                  <div className="absolute top-0 right-0 bg-black bg-opacity-50 text-white text-xs px-1 rounded-bl">
+                                    {index + 1}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Hover over images to remove. First image is used as main display.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
