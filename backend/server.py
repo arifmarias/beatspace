@@ -1861,7 +1861,7 @@ class Campaign(BaseModel):
     buyer_id: str
     buyer_name: str
     description: str = ""
-    assets: List[str] = []
+    campaign_assets: List[CampaignAsset] = []  # Enhanced asset management
     status: CampaignStatus = CampaignStatus.DRAFT
     budget: Optional[float] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -1872,7 +1872,7 @@ class Campaign(BaseModel):
 class CampaignCreate(BaseModel):
     name: str
     description: str = ""
-    assets: List[str] = []
+    campaign_assets: List[CampaignAsset] = []
     budget: Optional[float] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
