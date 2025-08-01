@@ -1616,14 +1616,22 @@ async def create_asset(
     asset_data: dict,
     current_user: User = Depends(get_current_user)
 ):
-    """Create new asset (seller only)"""
-    if current_user.role != UserRole.SELLER:
-        raise HTTPException(status_code=403, detail="Only sellers can create assets")
+    """Create new asset (seller or admin)"""
+    if current_user.role not in [UserRole.SELLER, UserRole.ADMIN]:
+        raise HTTPException(status_code=403, detail="Only sellers and admins can create assets")
     
-    # Add seller information
-    asset_data["seller_id"] = current_user.id
-    asset_data["seller_name"] = current_user.company_name
-    asset_data["status"] = AssetStatus.PENDING_APPROVAL
+    # For admin users, use the provided seller information from the form
+    # For seller users, use their own information
+    if current_user.role == UserRole.SELLER:
+        asset_data["seller_id"] = current_user.id
+        asset_data["seller_name"] = current_user.company_name
+        asset_data["status"] = AssetStatus.PENDING_APPROVAL
+    else:  # Admin user
+        # Admin can specify seller_id and seller_name from the form
+        # Status can be set to Available directly (admin approval)
+        if not asset_data.get("seller_id"):
+            raise HTTPException(status_code=400, detail="Seller ID is required for admin asset creation")
+        asset_data["status"] = AssetStatus.AVAILABLE  # Admin-created assets are pre-approved
     
     asset = Asset(**asset_data)
     await db.assets.insert_one(asset.dict())
