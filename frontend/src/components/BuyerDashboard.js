@@ -904,8 +904,7 @@ const BuyerDashboard = () => {
                           )}
                         </CardContent>
                       </Card>
-                      );
-                    })}
+                    )}
                   </div>
                 )}
               </CardContent>
