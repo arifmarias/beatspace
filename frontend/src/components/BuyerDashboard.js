@@ -416,11 +416,22 @@ const BuyerDashboard = () => {
     }
   }, [editOfferDetails.tentativeStartDate, editOfferDetails.contractDuration, editOfferDetails.selectedCampaignEndDate]);
 
-  const updateOfferRequest = async (updatedOfferData) => {
+  const updateOfferRequest = async () => {
+    console.log('🚨 UPDATE OFFER REQUEST CALLED');
+    console.log('🚨 editingOffer:', editingOffer);
+    console.log('🚨 editOfferDetails:', editOfferDetails);
+    
+    if (!editingOffer) {
+      console.error('🚨 ERROR: No offer being edited');
+      alert('Error: No offer selected for editing');
+      return;
+    }
+    
     try {
-      console.log('🚨 Updating offer request with data:', updatedOfferData);
+      console.log('🚨 Starting update process...');
       
       const headers = getAuthHeaders();
+      console.log('🚨 Auth headers:', headers);
       
       // Prepare the update payload
       const updatePayload = {
@@ -437,19 +448,31 @@ const BuyerDashboard = () => {
         notes: editOfferDetails.notes || ''
       };
       
-      console.log('🚨 Sending update payload:', updatePayload);
+      console.log('🚨 Update payload prepared:', updatePayload);
+      console.log('🚨 API endpoint:', `${API}/offers/requests/${editingOffer.id}`);
       
-      await axios.put(`${API}/offers/requests/${editingOffer.id}`, updatePayload, { headers });
+      console.log('🚨 Making API call...');
+      const response = await axios.put(`${API}/offers/requests/${editingOffer.id}`, updatePayload, { headers });
+      console.log('🚨 API response:', response);
       
-      alert('Offer request updated successfully!');
+      console.log('🚨 Update successful, showing success message...');
+      alert('🎉 Offer request updated successfully!');
+      
+      console.log('🚨 Closing dialog and resetting state...');
       setShowEditOfferDialog(false);
       setEditingOffer(null);
-      setActiveTab('requested-offers'); // Navigate back to Requested Offers tab
-      fetchBuyerData(); // Refresh the data
+      
+      console.log('🚨 Setting active tab to requested-offers...');
+      setActiveTab('requested-offers');
+      
+      console.log('🚨 Refreshing buyer data...');
+      await fetchBuyerData();
+      console.log('🚨 Data refresh completed');
       
     } catch (error) {
-      console.error('Error updating offer request:', error);
-      console.error('Error response:', error.response);
+      console.error('🚨 Error updating offer request:', error);
+      console.error('🚨 Error response:', error.response);
+      console.error('🚨 Error data:', error.response?.data);
       alert('Failed to update offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
