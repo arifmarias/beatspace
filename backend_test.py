@@ -4361,6 +4361,100 @@ def run_user_management_crud_tests():
         return 1
 
 
+def run_admin_campaign_management_tests():
+    """Run comprehensive Admin Campaign Management CRUD tests - PRIORITY TESTS"""
+    print("\n" + "="*80)
+    print("🎯 BEATSPACE ADMIN CAMPAIGN MANAGEMENT CRUD TESTING - PRIORITY TESTS")
+    print("="*80)
+    print("Testing newly implemented Admin Campaign Management CRUD endpoints:")
+    print("✅ GET /api/admin/campaigns - List all campaigns for admin")
+    print("✅ POST /api/admin/campaigns - Create campaign via admin")
+    print("✅ PUT /api/admin/campaigns/{id} - Update campaign via admin")
+    print("✅ DELETE /api/admin/campaigns/{id} - Delete campaign via admin")
+    print("✅ PATCH /api/admin/campaigns/{id}/status - Update campaign status")
+    print("✅ Enhanced Campaign model with campaign_assets and CampaignStatus enum")
+    print("="*80)
+    
+    tester = BeatSpaceAPITester()
+    
+    # Step 1: Authentication
+    print("\n🔐 STEP 1: AUTHENTICATION")
+    admin_success, admin_response = tester.test_admin_login()
+    if not admin_success:
+        print("❌ Admin authentication failed - cannot proceed with tests")
+        return 1
+    
+    # Step 2: Get All Campaigns (Priority Test 1)
+    print("\n📋 STEP 2: GET ALL CAMPAIGNS - PRIORITY TEST 1")
+    list_success, list_response = tester.test_admin_get_campaigns()
+    
+    # Step 3: Create Campaign (Priority Test 2)
+    print("\n➕ STEP 3: CREATE CAMPAIGN - PRIORITY TEST 2")
+    create_success, create_response = tester.test_admin_create_campaign()
+    
+    # Step 4: Update Campaign (Priority Test 3)
+    print("\n✏️ STEP 4: UPDATE CAMPAIGN - PRIORITY TEST 3")
+    update_success, update_response = tester.test_admin_update_campaign()
+    
+    # Step 5: Update Campaign Status (Priority Test 5)
+    print("\n🔄 STEP 5: UPDATE CAMPAIGN STATUS - PRIORITY TEST 5")
+    status_success, status_response = tester.test_admin_update_campaign_status()
+    
+    # Step 6: Delete Campaign (Priority Test 4)
+    print("\n🗑️ STEP 6: DELETE CAMPAIGN - PRIORITY TEST 4")
+    delete_success, delete_response = tester.test_admin_delete_campaign()
+    
+    # Step 7: Authentication & Authorization Testing
+    print("\n🔒 STEP 7: AUTHENTICATION & AUTHORIZATION TESTING")
+    auth_success, auth_response = tester.test_admin_campaign_authentication()
+    
+    # Step 8: Complete CRUD Workflow
+    print("\n🔄 STEP 8: COMPLETE CRUD WORKFLOW")
+    workflow_success, workflow_response = tester.test_admin_campaign_complete_workflow()
+    
+    # Summary
+    print("\n" + "="*80)
+    print("🎯 ADMIN CAMPAIGN MANAGEMENT CRUD TESTING SUMMARY")
+    print("="*80)
+    
+    tests = [
+        ("Admin Authentication", admin_success),
+        ("Get All Campaigns (GET /api/admin/campaigns)", list_success),
+        ("Create Campaign (POST /api/admin/campaigns)", create_success),
+        ("Update Campaign (PUT /api/admin/campaigns/{id})", update_success),
+        ("Update Campaign Status (PATCH /api/admin/campaigns/{id}/status)", status_success),
+        ("Delete Campaign (DELETE /api/admin/campaigns/{id})", delete_success),
+        ("Authentication & Authorization", auth_success),
+        ("Complete CRUD Workflow", workflow_success)
+    ]
+    
+    passed_tests = sum(1 for _, success in tests if success)
+    total_tests = len(tests)
+    
+    for test_name, success in tests:
+        status = "✅ PASSED" if success else "❌ FAILED"
+        print(f"   {status} - {test_name}")
+    
+    print(f"\n📊 RESULTS: {passed_tests}/{total_tests} tests passed ({(passed_tests/total_tests)*100:.1f}%)")
+    print(f"✅ Tests Passed: {tester.tests_passed}")
+    print(f"❌ Tests Failed: {tester.tests_run - tester.tests_passed}")
+    print(f"📈 Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    
+    if passed_tests == total_tests:
+        print("\n🎉 ALL ADMIN CAMPAIGN MANAGEMENT CRUD TESTS PASSED!")
+        print("✅ Enhanced Campaign model with campaign_assets working")
+        print("✅ CampaignStatus enum (Draft, Negotiation, Ready, Live, Completed) working")
+        print("✅ Start/end date fields working correctly")
+        print("✅ Admin authentication enforced for all endpoints")
+        print("✅ Complete CRUD workflow (Create → Read → Update → Delete) working")
+        print("✅ Status transitions working with new enum values")
+        print("\n🔍 CONCLUSION: Admin Campaign Management CRUD system is fully functional!")
+        return 0
+    else:
+        print("\n⚠️  Some tests failed - see details above")
+        return 1
+
+
 if __name__ == "__main__":
-    # Run User Management CRUD Tests as requested in the review
-    sys.exit(run_user_management_crud_tests())
+    # Run Admin Campaign Management CRUD Tests as requested in the review
+    sys.exit(run_admin_campaign_management_tests())
