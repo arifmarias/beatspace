@@ -456,7 +456,6 @@ test_plan:
   current_focus:
     - "Updated Request Best Offer workflow with simplified campaign selection"
     - "Edit offer functionality (PUT /api/offers/requests/{id})"
-    - "Delete offer functionality (DELETE /api/offers/requests/{id})"
     - "Campaign creation with start/end dates"
     - "Asset expiration date calculations and display"
   stuck_tasks: []
