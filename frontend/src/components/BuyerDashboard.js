@@ -328,7 +328,10 @@ const BuyerDashboard = () => {
   };
 
   const editOfferRequest = (offer) => {
-    console.log('Editing offer:', offer); // Debug log to see the data structure
+    console.log('🚨 EDIT FUNCTION CALLED - Editing offer:', offer); 
+    
+    // Add immediate feedback
+    alert('🚨 EDIT FUNCTION WORKING! Opening edit dialog...');
     
     // Process the offer data to ensure proper date handling
     const processedOffer = {
@@ -337,7 +340,7 @@ const BuyerDashboard = () => {
       timeline: offer.timeline || '',
     };
     
-    console.log('Processed offer timeline:', processedOffer.timeline); // Debug log
+    console.log('🚨 Processed offer timeline:', processedOffer.timeline); 
     
     setEditingOffer(processedOffer);
     setShowEditOfferDialog(true);
