@@ -981,7 +981,17 @@ const BuyerDashboard = () => {
                               <div className="font-medium text-blue-600">
                                 ৳{offer.estimated_budget?.toLocaleString()}
                               </div>
-                              <div className="text-xs text-gray-500">Your offer</div>
+                              <div className="flex items-center space-x-1 text-xs">
+                                <span className="text-gray-500">Your offer</span>
+                                {(() => {
+                                  const comparison = getPriceComparison(offer);
+                                  return comparison ? (
+                                    <span className={`font-medium ${comparison.color}`}>
+                                      ({comparison.text})
+                                    </span>
+                                  ) : null;
+                                })()}
+                              </div>
                             </TableCell>
                             <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
                             <TableCell className="capitalize">{offer.campaign_type}</TableCell>
