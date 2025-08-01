@@ -1877,6 +1877,99 @@ class CampaignCreate(BaseModel):
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
 
+# Admin Campaign Management Endpoints
+@api_router.get("/admin/campaigns", response_model=List[Campaign])
+async def get_all_campaigns_admin(admin_user: User = Depends(require_admin)):
+    """Get all campaigns for admin management"""
+    campaigns = await db.campaigns.find({}).to_list(1000)
+    return [Campaign(**campaign) for campaign in campaigns]
+
+@api_router.post("/admin/campaigns", response_model=Campaign)
+async def create_campaign_admin(
+    campaign_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Create new campaign (admin only)"""
+    # Get buyer information from buyer_id
+    buyer = await db.users.find_one({"id": campaign_data.get("buyer_id")})
+    if not buyer:
+        raise HTTPException(status_code=404, detail="Buyer not found")
+    
+    campaign = Campaign(
+        **campaign_data,
+        buyer_name=buyer["company_name"],
+        status=CampaignStatus.DRAFT
+    )
+    
+    await db.campaigns.insert_one(campaign.dict())
+    return campaign
+
+@api_router.put("/admin/campaigns/{campaign_id}", response_model=Campaign)
+async def update_campaign_admin(
+    campaign_id: str,
+    campaign_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update campaign information (admin only)"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    campaign_data["updated_at"] = datetime.utcnow()
+    
+    # If buyer_id is being changed, update buyer_name
+    if "buyer_id" in campaign_data:
+        buyer = await db.users.find_one({"id": campaign_data["buyer_id"]})
+        if buyer:
+            campaign_data["buyer_name"] = buyer["company_name"]
+    
+    updated_campaign = await db.campaigns.find_one_and_update(
+        {"id": campaign_id},
+        {"$set": campaign_data},
+        return_document=True
+    )
+    
+    return Campaign(**updated_campaign)
+
+@api_router.delete("/admin/campaigns/{campaign_id}")
+async def delete_campaign_admin(
+    campaign_id: str,
+    admin_user: User = Depends(require_admin)
+):
+    """Delete campaign (admin only)"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Delete the campaign
+    await db.campaigns.delete_one({"id": campaign_id})
+    
+    return {"message": f"Campaign deleted successfully"}
+
+@api_router.patch("/admin/campaigns/{campaign_id}/status")
+async def update_campaign_status_admin(
+    campaign_id: str,
+    status_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update campaign status (admin only)"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    new_status = status_data.get("status")
+    if new_status not in [s.value for s in CampaignStatus]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    update_data = {"status": new_status, "updated_at": datetime.utcnow()}
+    
+    await db.campaigns.update_one(
+        {"id": campaign_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": f"Campaign status updated to {new_status}"}
+
 @api_router.get("/campaigns/{campaign_id}", response_model=Campaign)
 async def get_campaign(campaign_id: str, current_user: User = Depends(get_current_user)):
     """Get single campaign by ID"""
