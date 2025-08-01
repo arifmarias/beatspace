@@ -1326,9 +1326,6 @@ const AdminDashboard = () => {
                 Create Asset
               </Button>
             </div>
-                Create Asset
-              </Button>
-            </div>
           </DialogContent>
         </Dialog>
 
