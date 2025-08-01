@@ -1426,7 +1426,7 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleUpdateAsset}
                 className="bg-blue-600 hover:bg-blue-700"
-                disabled={!assetForm.name || !assetForm.address || !assetForm.pricing.weekly_rate}
+                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.weekly_rate || !assetForm.seller_id}
               >
                 Update Asset
               </Button>
