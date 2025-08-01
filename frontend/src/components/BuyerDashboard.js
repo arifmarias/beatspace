@@ -656,6 +656,7 @@ const BuyerDashboard = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={(e) => {
+                                      alert('🚨 EDIT BUTTON CLICKED!');
                                       console.log('🚨 EDIT BUTTON JSX RENDER - Button clicked!');
                                       e.stopPropagation();
                                       e.preventDefault();
@@ -670,6 +671,7 @@ const BuyerDashboard = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={(e) => {
+                                      alert('🚨 DELETE BUTTON CLICKED!');
                                       console.log('🚨 DELETE BUTTON JSX RENDER - Button clicked!');
                                       e.stopPropagation();
                                       e.preventDefault();
