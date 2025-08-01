@@ -119,8 +119,27 @@ const BuyerDashboard = () => {
       // Fetch requested offers
       const offersRes = await axios.get(`${API}/offers/requests`, { headers });
       console.log('🚨 FETCHED OFFERS RAW:', offersRes.data);
-      setRequestedOffers(offersRes.data || []);
-      console.log('🚨 OFFERS SET TO STATE:', offersRes.data || []);
+      
+      // Enrich offers with asset pricing data
+      const enrichedOffers = await Promise.all((offersRes.data || []).map(async (offer) => {
+        try {
+          // Fetch asset details to get pricing
+          const assetRes = await axios.get(`${API}/assets/public`);
+          const allAssets = assetRes.data || [];
+          const assetDetails = allAssets.find(asset => asset.id === offer.asset_id);
+          
+          return {
+            ...offer,
+            asset_pricing: assetDetails?.pricing || null
+          };
+        } catch (error) {
+          console.error('Error fetching asset pricing for offer:', offer.id, error);
+          return offer; // Return offer without pricing if fetch fails
+        }
+      }));
+      
+      setRequestedOffers(enrichedOffers);
+      console.log('🚨 OFFERS SET TO STATE WITH PRICING:', enrichedOffers);
 
       // Calculate stats with null safety
       const campaignData = campaignsRes.data || [];  
