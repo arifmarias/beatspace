@@ -1465,16 +1465,26 @@ const AdminDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
+                    Status *
                   </label>
-                  <Input
-                    value={assetForm.status}
-                    disabled
-                    className="bg-gray-50 text-gray-600"
-                    placeholder="Current Status"
-                  />
+                  <Select 
+                    value={assetForm.status} 
+                    onValueChange={(value) => setAssetForm({...assetForm, status: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Available">Available</SelectItem>
+                      <SelectItem value="Pending Offer">Pending Offer</SelectItem>
+                      <SelectItem value="Negotiating">Negotiating</SelectItem>
+                      <SelectItem value="Booked">Booked</SelectItem>
+                      <SelectItem value="Work in Progress">Work in Progress</SelectItem>
+                      <SelectItem value="Live">Live</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <p className="text-xs text-gray-500 mt-1">
-                    Status can only be changed through admin approval actions
+                    Update asset status based on current workflow stage
                   </p>
                 </div>
 
