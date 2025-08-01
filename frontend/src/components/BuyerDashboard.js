@@ -783,7 +783,16 @@ const BuyerDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {(requestedOffers || []).map((offer) => (
+                    {(requestedOffers || []).map((offer) => {
+                      // Debug logging for each offer
+                      console.log('🚨 RENDERING OFFER:', {
+                        id: offer.id,
+                        campaign_name: offer.campaign_name,
+                        status: offer.status,
+                        asset_name: offer.asset_name
+                      });
+                      
+                      return (
                       <Card key={offer.id} className="border-l-4 border-l-orange-500">
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start mb-4">
