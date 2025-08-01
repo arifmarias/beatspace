@@ -1605,6 +1605,310 @@ class BeatSpaceAPITester:
         
         return True, {}
 
+    def run_focused_delete_offer_tests(self):
+        """Run focused DELETE offer request functionality tests"""
+        print("🎯 FOCUSED DELETE OFFER REQUEST TESTING")
+        print("=" * 60)
+        print("Testing DELETE /api/offers/requests/{id} endpoint functionality")
+        print("Focus: Verify backend DELETE functionality before investigating frontend issue")
+        print("=" * 60)
+        
+        # Authentication Tests - Focus on buyer
+        print("\n🔐 AUTHENTICATION SETUP")
+        print("-" * 30)
+        self.test_buyer_login()
+        
+        if not self.buyer_token:
+            print("❌ CRITICAL: Cannot proceed without buyer authentication")
+            return False, 0
+        
+        # Check existing offer requests
+        print("\n📋 EXISTING OFFER REQUESTS CHECK")
+        print("-" * 30)
+        success, existing_requests = self.test_get_offer_requests_buyer()
+        
+        if success and existing_requests:
+            print(f"✅ Found {len(existing_requests)} existing offer requests")
+            for i, req in enumerate(existing_requests[:3]):
+                print(f"   {i+1}. {req.get('campaign_name')} - Status: {req.get('status')}")
+        else:
+            print("ℹ️  No existing offer requests found")
+        
+        # Create test offer request for deletion
+        print("\n🆕 CREATE TEST OFFER REQUEST")
+        print("-" * 30)
+        success, test_request = self.create_test_offer_request_for_deletion()
+        
+        if not success:
+            print("❌ CRITICAL: Cannot create test offer request for deletion")
+            return False, 0
+        
+        test_request_id = test_request.get('id')
+        test_asset_id = test_request.get('asset_id')
+        
+        # Core DELETE functionality tests
+        print("\n🗑️  CORE DELETE FUNCTIONALITY TESTS")
+        print("-" * 30)
+        
+        # Test 1: Verify asset status before deletion
+        print("\n1️⃣  Verify Asset Status Before Deletion")
+        success_before, asset_before = self.run_test(
+            "Get Asset Status Before Delete", 
+            "GET", 
+            f"assets/{test_asset_id}", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success_before:
+            status_before = asset_before.get('status')
+            print(f"   Asset status before deletion: {status_before}")
+            if status_before == "Pending Offer":
+                print("   ✅ Asset correctly in 'Pending Offer' status")
+            else:
+                print(f"   ⚠️  Expected 'Pending Offer', got '{status_before}'")
+        
+        # Test 2: DELETE the offer request
+        print("\n2️⃣  Execute DELETE Request")
+        success_delete, delete_response = self.run_test(
+            "DELETE Offer Request", 
+            "DELETE", 
+            f"offers/requests/{test_request_id}", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success_delete:
+            print("   ✅ DELETE request successful")
+            print(f"   Response: {delete_response.get('message', 'No message')}")
+        else:
+            print("   ❌ DELETE request failed")
+            return False, 0
+        
+        # Test 3: Verify asset status reset
+        print("\n3️⃣  Verify Asset Status Reset")
+        success_after, asset_after = self.run_test(
+            "Get Asset Status After Delete", 
+            "GET", 
+            f"assets/{test_asset_id}", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success_after:
+            status_after = asset_after.get('status')
+            print(f"   Asset status after deletion: {status_after}")
+            if status_after == "Available":
+                print("   ✅ Asset status correctly reset to 'Available'")
+            else:
+                print(f"   ❌ Expected 'Available', got '{status_after}'")
+        
+        # Test 4: Verify offer request removed
+        print("\n4️⃣  Verify Offer Request Removed")
+        success_verify, verify_response = self.run_test(
+            "Verify Offer Request Deleted", 
+            "GET", 
+            f"offers/requests/{test_request_id}", 
+            404,  # Should return 404 Not Found
+            token=self.buyer_token
+        )
+        
+        if success_verify:
+            print("   ✅ Offer request properly removed from system")
+        else:
+            print("   ❌ Offer request still exists in system")
+        
+        # Permission and security tests
+        print("\n🔒 PERMISSION & SECURITY TESTS")
+        print("-" * 30)
+        
+        # Create another test request for permission tests
+        success, perm_test_request = self.create_test_offer_request_for_deletion()
+        if success:
+            perm_request_id = perm_test_request.get('id')
+            
+            # Test unauthenticated access
+            print("\n5️⃣  Test Unauthenticated DELETE")
+            success_unauth, unauth_response = self.run_test(
+                "DELETE Without Authentication", 
+                "DELETE", 
+                f"offers/requests/{perm_request_id}", 
+                403,  # Should return 401 or 403
+                # No token provided
+            )
+            
+            if success_unauth:
+                print("   ✅ Properly rejects unauthenticated DELETE requests")
+            else:
+                print("   ⚠️  Authentication check may need review")
+            
+            # Test with admin token (should work)
+            if self.admin_token:
+                print("\n6️⃣  Test Admin DELETE Access")
+                success_admin, admin_response = self.run_test(
+                    "DELETE With Admin Token", 
+                    "DELETE", 
+                    f"offers/requests/{perm_request_id}", 
+                    200,  # Admin should be able to delete
+                    token=self.admin_token
+                )
+                
+                if success_admin:
+                    print("   ✅ Admin can delete offer requests")
+                else:
+                    print("   ℹ️  Admin DELETE access may be restricted")
+            
+        # Test with existing offer requests from system
+        print("\n📊 EXISTING SYSTEM DATA TESTS")
+        print("-" * 30)
+        
+        if existing_requests:
+            # Find a pending request to test with
+            pending_request = None
+            for req in existing_requests:
+                if req.get('status') == 'Pending':
+                    pending_request = req
+                    break
+            
+            if pending_request:
+                print(f"\n7️⃣  Test DELETE on Existing Pending Request")
+                print(f"   Request: {pending_request.get('campaign_name')}")
+                
+                existing_request_id = pending_request['id']
+                existing_asset_id = pending_request['asset_id']
+                
+                # Check asset status before
+                success_existing_before, existing_asset_before = self.run_test(
+                    "Get Existing Asset Status Before", 
+                    "GET", 
+                    f"assets/{existing_asset_id}", 
+                    200, 
+                    token=self.buyer_token
+                )
+                
+                if success_existing_before:
+                    print(f"   Asset status before: {existing_asset_before.get('status')}")
+                
+                # Delete existing request
+                success_existing_delete, existing_delete_response = self.run_test(
+                    "DELETE Existing Offer Request", 
+                    "DELETE", 
+                    f"offers/requests/{existing_request_id}", 
+                    200, 
+                    token=self.buyer_token
+                )
+                
+                if success_existing_delete:
+                    print("   ✅ Successfully deleted existing offer request")
+                    
+                    # Check asset status after
+                    success_existing_after, existing_asset_after = self.run_test(
+                        "Get Existing Asset Status After", 
+                        "GET", 
+                        f"assets/{existing_asset_id}", 
+                        200, 
+                        token=self.buyer_token
+                    )
+                    
+                    if success_existing_after:
+                        status_after = existing_asset_after.get('status')
+                        print(f"   Asset status after: {status_after}")
+                        if status_after == "Available":
+                            print("   ✅ Existing asset status correctly reset")
+                        else:
+                            print(f"   ⚠️  Asset status: {status_after}")
+                else:
+                    print("   ❌ Failed to delete existing offer request")
+            else:
+                print("   ℹ️  No pending requests found in existing data")
+        
+        # Final Results
+        print("\n" + "=" * 60)
+        print("🎯 DELETE OFFER REQUEST TESTING COMPLETE")
+        print("=" * 60)
+        print(f"Total Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        # Summary of DELETE-specific results
+        delete_tests = [
+            "DELETE Offer Request",
+            "Get Asset Status After Delete", 
+            "Verify Offer Request Deleted",
+            "DELETE Without Authentication",
+            "DELETE Existing Offer Request"
+        ]
+        
+        print(f"\n🔍 DELETE-SPECIFIC TEST RESULTS:")
+        passed_delete_tests = 0
+        total_delete_tests = 0
+        
+        for test_name in delete_tests:
+            if test_name in self.test_results:
+                total_delete_tests += 1
+                result = self.test_results[test_name]
+                status = "✅ PASS" if result['success'] else "❌ FAIL"
+                if result['success']:
+                    passed_delete_tests += 1
+                print(f"  {status} - {test_name}")
+        
+        if total_delete_tests > 0:
+            delete_success_rate = (passed_delete_tests / total_delete_tests) * 100
+            print(f"\n📊 DELETE Functionality Success Rate: {delete_success_rate:.1f}% ({passed_delete_tests}/{total_delete_tests})")
+        
+        return self.tests_passed, self.tests_run
+
+    def create_test_offer_request_for_deletion(self):
+        """Create a test offer request specifically for deletion testing"""
+        # Get an available asset
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found for deletion test")
+            return False, {}
+        
+        # Find an available asset
+        available_asset = None
+        for asset in assets:
+            if asset.get('status') == 'Available':
+                available_asset = asset
+                break
+        
+        if not available_asset:
+            available_asset = assets[0]  # Use first asset if none are available
+        
+        # Create offer request for deletion
+        offer_request_data = {
+            "asset_id": available_asset['id'],
+            "campaign_name": f"DELETE Test Campaign {datetime.now().strftime('%H%M%S')}",
+            "campaign_type": "new",
+            "contract_duration": "3_months",
+            "estimated_budget": 75000.0,
+            "service_bundles": {
+                "printing": True,
+                "setup": False,
+                "monitoring": False
+            },
+            "timeline": "For DELETE functionality testing",
+            "special_requirements": "Test request for deletion",
+            "notes": "This offer request is created specifically for DELETE testing"
+        }
+        
+        success, response = self.run_test(
+            "Create Test Offer Request for DELETE", 
+            "POST", 
+            "offers/request", 
+            200, 
+            data=offer_request_data,
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Created test offer request: {response.get('id')}")
+            print(f"   Asset: {available_asset.get('name')}")
+            print(f"   Campaign: {response.get('campaign_name')}")
+        
+        return success, response
+
     def run_delete_offer_tests(self):
         """Run focused DELETE offer request tests as requested"""
         print("🚀 Starting DELETE Offer Request Functionality Testing...")
