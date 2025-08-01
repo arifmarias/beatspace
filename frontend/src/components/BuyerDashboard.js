@@ -433,19 +433,21 @@ const BuyerDashboard = () => {
       const headers = getAuthHeaders();
       console.log('🚨 Auth headers:', headers);
       
-      // Prepare the update payload
+      // Prepare the update payload - ONLY include fields that backend expects
       const updatePayload = {
-        campaign_type: editOfferDetails.campaignType,
+        asset_id: editingOffer.asset_id, // Required field - don't change
         campaign_name: editOfferDetails.campaignName,
+        campaign_type: editOfferDetails.campaignType,
         existing_campaign_id: editOfferDetails.existingCampaignId || null,
         contract_duration: editOfferDetails.contractDuration,
         estimated_budget: parseFloat(editOfferDetails.estimatedBudget) || 0,
-        service_bundles: editOfferDetails.serviceBundles,
+        service_bundles: editOfferDetails.serviceBundles, // This matches ServiceBundles model
         timeline: editOfferDetails.timeline || '',
-        tentative_start_date: editOfferDetails.tentativeStartDate ? editOfferDetails.tentativeStartDate.toISOString() : null,
-        asset_expiration_date: editOfferDetails.assetExpirationDate ? editOfferDetails.assetExpirationDate.toISOString() : null,
         special_requirements: editOfferDetails.specialRequirements || '',
         notes: editOfferDetails.notes || ''
+        // Removed fields that backend doesn't expect:
+        // - tentative_start_date (not in OfferRequestCreate)
+        // - asset_expiration_date (not in OfferRequestCreate)
       };
       
       console.log('🚨 Update payload prepared:', updatePayload);
