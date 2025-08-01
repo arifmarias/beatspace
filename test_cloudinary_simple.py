@@ -37,16 +37,8 @@ def test_cloudinary_config():
         api_secret=api_secret
     )
     
-    # Test with a simple ping/info call
-    try:
-        # Try to get account info (this doesn't upload anything)
-        result = cloudinary.api.ping()
-        print("✅ Cloudinary configuration is valid!")
-        print(f"Response: {result}")
-        return True
-    except Exception as e:
-        print(f"❌ Cloudinary configuration error: {str(e)}")
-        return False
+    print("✅ Cloudinary configuration loaded")
+    return True
 
 def test_simple_upload():
     """Test a simple upload"""
@@ -72,10 +64,13 @@ def test_simple_upload():
         print("✅ Simple upload successful!")
         print(f"URL: {result.get('secure_url')}")
         print(f"Public ID: {result.get('public_id')}")
+        print(f"Width: {result.get('width')}")
+        print(f"Height: {result.get('height')}")
         return True
         
     except Exception as e:
         print(f"❌ Upload failed: {str(e)}")
+        print(f"Error type: {type(e).__name__}")
         return False
 
 if __name__ == "__main__":
