@@ -1064,95 +1064,264 @@ const BuyerDashboard = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Edit Offer Request Dialog */}
+        {/* Edit Offer Request Dialog - Same as Request Best Offer */}
         <Dialog open={showEditOfferDialog} onOpenChange={setShowEditOfferDialog}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Offer Request</DialogTitle>
+              <DialogTitle className="flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5 text-blue-600" />
+                <span>Edit Offer Request</span>
+              </DialogTitle>
+              <p className="text-sm text-gray-600">
+                Modify your offer request details and get updated pricing
+              </p>
             </DialogHeader>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Asset Summary */}
               {editingOffer && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Asset Name
-                    </label>
-                    <Input
-                      value={editingOffer.asset_name || ''}
-                      disabled
-                      className="bg-gray-100"
-                    />
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2">Selected Asset</h4>
+                  <div className="flex items-start space-x-3">
+                    <div>
+                      <h5 className="font-medium">{editingOffer.asset_name}</h5>
+                      <p className="text-sm text-gray-600">Asset ID: {editingOffer.asset_id}</p>
+                    </div>
                   </div>
+                </div>
+              )}
 
+              {/* Campaign Selection */}
+              <div>
+                <label className="block text-sm font-semibold mb-3">Campaign Selection *</label>
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Campaign Name
-                    </label>
-                    <Input
-                      value={editingOffer.campaign_name || ''}
-                      onChange={(e) => setEditingOffer({...editingOffer, campaign_name: e.target.value})}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Budget (৳)
-                    </label>
-                    <Input
-                      type="number"
-                      value={editingOffer.estimated_budget || ''}
-                      onChange={(e) => setEditingOffer({...editingOffer, estimated_budget: parseFloat(e.target.value)})}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Contract Duration
-                    </label>
                     <Select 
-                      value={editingOffer.contract_duration || ''} 
-                      onValueChange={(value) => setEditingOffer({...editingOffer, contract_duration: value})}
+                      value={editOfferDetails.existingCampaignId || ''} 
+                      onValueChange={(value) => {
+                        const selectedCampaign = campaigns.find(c => c.id === value);
+                        setEditOfferDetails({
+                          ...editOfferDetails, 
+                          campaignType: 'existing',
+                          existingCampaignId: value,
+                          campaignName: selectedCampaign ? selectedCampaign.name : '',
+                          selectedCampaignEndDate: selectedCampaign ? selectedCampaign.end_date : null
+                        });
+                      }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select duration" />
+                        <SelectValue placeholder="Select an existing campaign" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1_week">1 Week</SelectItem>
-                        <SelectItem value="2_weeks">2 Weeks</SelectItem>
-                        <SelectItem value="1_month">1 Month</SelectItem>
-                        <SelectItem value="3_months">3 Months</SelectItem>
-                        <SelectItem value="6_months">6 Months</SelectItem>
-                        <SelectItem value="1_year">1 Year</SelectItem>
+                        {campaigns.map(campaign => (
+                          <SelectItem key={campaign.id} value={campaign.id}>
+                            📁 {campaign.name} ({(campaign.assets || []).length} assets)
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {editOfferDetails.selectedCampaignEndDate && (
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <strong>Campaign End Date:</strong> {new Date(editOfferDetails.selectedCampaignEndDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Notes
-                    </label>
-                    <Textarea
-                      value={editingOffer.notes || ''}
-                      onChange={(e) => setEditingOffer({...editingOffer, notes: e.target.value})}
-                      placeholder="Additional notes or requirements"
-                      rows={3}
+              {/* Contract Duration and Budget */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
+                  <Select 
+                    value={editOfferDetails.contractDuration} 
+                    onValueChange={(value) => setEditOfferDetails({...editOfferDetails, contractDuration: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3_months">3 Months</SelectItem>
+                      <SelectItem value="6_months">6 Months</SelectItem>
+                      <SelectItem value="12_months">12 Months</SelectItem>
+                      <SelectItem value="custom">Custom Duration</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Estimated Budget (৳) *</label>
+                  <Input
+                    type="number"
+                    value={editOfferDetails.estimatedBudget}
+                    onChange={(e) => setEditOfferDetails({...editOfferDetails, estimatedBudget: e.target.value})}
+                    placeholder="Enter your budget (required)"
+                    required
+                    className="border-2 border-blue-200 focus:border-blue-400"
+                  />
+                  <p className="text-xs text-blue-600 mt-1">* Budget is required for offer processing</p>
+                </div>
+              </div>
+
+              {/* Asset Starting Date */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Asset Starting Date *</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {editOfferDetails.tentativeStartDate 
+                        ? editOfferDetails.tentativeStartDate.toLocaleDateString()
+                        : "Select asset start date"
+                      }
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <CalendarComponent
+                      mode="single"
+                      selected={editOfferDetails.tentativeStartDate}
+                      onSelect={(date) => setEditOfferDetails({...editOfferDetails, tentativeStartDate: date})}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
                     />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Asset Expiration Date */}
+              {editOfferDetails.assetExpirationDate && (
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Asset Expiration Date</label>
+                  <div className="p-3 bg-gray-50 rounded-lg border">
+                    <p className="text-sm font-medium text-gray-900">
+                      {editOfferDetails.assetExpirationDate.toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Calculated based on start date + {editOfferDetails.contractDuration.replace('_', ' ')}
+                    </p>
+                    {editOfferDetails.expirationWarning && (
+                      <p className="text-xs text-orange-600 mt-1">
+                        ⚠️ {editOfferDetails.expirationWarning}
+                      </p>
+                    )}
                   </div>
-                </>
+                </div>
               )}
-            </div>
-            
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button variant="outline" onClick={() => setShowEditOfferDialog(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => updateOfferRequest(editingOffer)}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Update Offer Request
-              </Button>
+
+              {/* Service Bundles */}
+              <div>
+                <label className="block text-sm font-semibold mb-3">Additional Services</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-printing"
+                      checked={editOfferDetails.serviceBundles.printing}
+                      onChange={(e) => setEditOfferDetails({
+                        ...editOfferDetails, 
+                        serviceBundles: {...editOfferDetails.serviceBundles, printing: e.target.checked}
+                      })}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <label htmlFor="edit-printing" className="text-sm">
+                      🖨️ Printing & Design
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-setup"
+                      checked={editOfferDetails.serviceBundles.setup}
+                      onChange={(e) => setEditOfferDetails({
+                        ...editOfferDetails, 
+                        serviceBundles: {...editOfferDetails.serviceBundles, setup: e.target.checked}
+                      })}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <label htmlFor="edit-setup" className="text-sm">
+                      🔧 Installation & Setup
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-monitoring"
+                      checked={editOfferDetails.serviceBundles.monitoring}
+                      onChange={(e) => setEditOfferDetails({
+                        ...editOfferDetails, 
+                        serviceBundles: {...editOfferDetails.serviceBundles, monitoring: e.target.checked}
+                      })}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <label htmlFor="edit-monitoring" className="text-sm">
+                      📊 Monitoring & Reports
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Special Requirements */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Special Requirements</label>
+                <Textarea
+                  value={editOfferDetails.specialRequirements}
+                  onChange={(e) => setEditOfferDetails({...editOfferDetails, specialRequirements: e.target.value})}
+                  placeholder="Any specific requirements, constraints, or special considerations..."
+                  rows={3}
+                />
+              </div>
+
+              {/* Campaign Notes */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Campaign Notes & Instructions</label>
+                <Textarea
+                  value={editOfferDetails.notes}
+                  onChange={(e) => setEditOfferDetails({...editOfferDetails, notes: e.target.value})}
+                  placeholder="Additional notes, campaign objectives, target audience, etc..."
+                  rows={3}
+                />
+              </div>
+
+              {/* Summary Section */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">📋 Updated Request Summary</h4>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p><strong>Asset:</strong> {editingOffer?.asset_name || 'Selected asset'}</p>
+                  <p><strong>Campaign:</strong> {editOfferDetails.campaignName || 'Not selected'}</p>
+                  <p><strong>Duration:</strong> {editOfferDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
+                  <p><strong>Budget:</strong> {editOfferDetails.estimatedBudget ? `৳${parseInt(editOfferDetails.estimatedBudget).toLocaleString()}` : '⚠️ Required'}</p>
+                  <p><strong>Services:</strong> {Object.entries(editOfferDetails.serviceBundles).filter(([_, selected]) => selected).map(([service, _]) => service).join(', ') || 'None selected'}</p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowEditOfferDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => updateOfferRequest()}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={
+                    !editOfferDetails.estimatedBudget.trim() || 
+                    !editOfferDetails.existingCampaignId
+                  }
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Update Request
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
