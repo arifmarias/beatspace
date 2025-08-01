@@ -1465,6 +1465,21 @@ const AdminDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <Input
+                    value={assetForm.status}
+                    disabled
+                    className="bg-gray-50 text-gray-600"
+                    placeholder="Current Status"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Status can only be changed through admin approval actions
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Dimensions
                   </label>
                   <Input
