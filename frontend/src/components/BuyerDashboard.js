@@ -896,41 +896,44 @@ const BuyerDashboard = () => {
                               {(() => {
                                 console.log('🚨 RENDERING ACTIONS for offer:', offer.id, 'status:', offer.status);
                                 return offer.status === 'Pending';
-                              })() && (
-                                <div className="flex space-x-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      alert('🚨 EDIT BUTTON CLICKED!');
-                                      console.log('🚨 EDIT BUTTON JSX RENDER - Button clicked!');
-                                      e.stopPropagation();
-                                      e.preventDefault();
-                                      handleEditOffer(offer);
-                                    }}
-                                    className="text-blue-600 hover:text-blue-800"
-                                  >
-                                    <Edit className="w-4 h-4 mr-1" />
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      alert('🚨 DELETE BUTTON CLICKED!');
-                                      console.log('🚨 DELETE BUTTON JSX RENDER - Button clicked!');
-                                      e.stopPropagation();
-                                      e.preventDefault();
-                                      handleDeleteOffer(offer.id, e);
-                                    }}
-                                    className="text-red-600 hover:text-red-800"
-                                  >
-                                    <X className="w-4 h-4 mr-1" />
-                                    Delete
-                                  </Button>
-                                </div>
-                              )}
-                              {offer.status !== 'Pending' && (
+                              })() ? (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className="w-40">
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        alert('🚨 EDIT BUTTON CLICKED!');
+                                        console.log('🚨 EDIT BUTTON JSX RENDER - Button clicked!');
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        handleEditOffer(offer);
+                                      }}
+                                      className="cursor-pointer text-blue-600"
+                                    >
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Edit Offer
+                                    </DropdownMenuItem>
+                                    
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        alert('🚨 DELETE BUTTON CLICKED!');
+                                        console.log('🚨 DELETE BUTTON JSX RENDER - Button clicked!');
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        handleDeleteOffer(offer.id, e);
+                                      }}
+                                      className="cursor-pointer text-red-600"
+                                    >
+                                      <X className="h-4 w-4 mr-2" />
+                                      Delete Offer
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              ) : (
                                 <span className="text-gray-500 text-sm">
                                   No actions available (Status: {offer.status})
                                 </span>
