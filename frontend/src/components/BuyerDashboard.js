@@ -669,9 +669,17 @@ const BuyerDashboard = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => {
-                                    console.log('🚨 DELETE BUTTON CLICKED FOR OFFER:', offer.id);
-                                    deleteOfferRequest(offer.id);
+                                  onClick={(e) => {
+                                    console.log('🚨 BUTTON CLICK EVENT FIRED');
+                                    console.log('🚨 Event target:', e.target);
+                                    console.log('🚨 Attempting to call deleteOfferRequest with:', offer.id);
+                                    
+                                    // Try immediate function call
+                                    try {
+                                      deleteOfferRequest(offer.id);
+                                    } catch (error) {
+                                      console.error('🚨 Error calling deleteOfferRequest:', error);
+                                    }
                                   }}
                                   className="text-red-600 hover:text-red-800"
                                 >
