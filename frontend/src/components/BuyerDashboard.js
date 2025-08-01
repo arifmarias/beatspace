@@ -214,8 +214,8 @@ const BuyerDashboard = () => {
       
       console.log('🚨 Direct campaign assets:', campaignAssetsList.length);
       
-      // For Draft campaigns, also include assets that have pending offer requests for this campaign
-      if (campaign.status === 'Draft') {
+      // For both Draft AND Live campaigns, include assets that have pending offer requests
+      if (campaign.status === 'Draft' || campaign.status === 'Live') {
         const headers = getAuthHeaders();
         const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
         const allOfferRequests = offersResponse.data || [];
