@@ -610,7 +610,15 @@ const BuyerDashboard = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => editOfferRequest(offer)}
+                                    onClick={() => {
+                                      console.log('🚨 EDIT BUTTON CLICKED - offer:', offer);
+                                      try {
+                                        editOfferRequest(offer);
+                                      } catch (error) {
+                                        console.error('🚨 Edit function error:', error);
+                                        alert('Error calling edit function: ' + error.message);
+                                      }
+                                    }}
                                     className="text-blue-600 hover:text-blue-800"
                                   >
                                     <Edit className="w-4 h-4 mr-1" />
@@ -619,16 +627,13 @@ const BuyerDashboard = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={(e) => {
-                                      console.log('🚨 TABLE DELETE BUTTON CLICK EVENT FIRED');
-                                      console.log('🚨 Event target:', e.target);
-                                      console.log('🚨 Attempting to call deleteOfferRequest with:', offer.id);
-                                      
-                                      // Try immediate function call
+                                    onClick={() => {
+                                      console.log('🚨 DELETE BUTTON CLICKED - offer ID:', offer.id);
                                       try {
                                         deleteOfferRequest(offer.id);
                                       } catch (error) {
-                                        console.error('🚨 Error calling deleteOfferRequest:', error);
+                                        console.error('🚨 Delete function error:', error);
+                                        alert('Error calling delete function: ' + error.message);
                                       }
                                     }}
                                     className="text-red-600 hover:text-red-800"
@@ -637,6 +642,9 @@ const BuyerDashboard = () => {
                                     Delete
                                   </Button>
                                 </div>
+                              )}
+                              {offer.status !== 'Pending' && (
+                                <span className="text-gray-500 text-sm">No actions available</span>
                               )}
                             </TableCell>
                           </TableRow>
