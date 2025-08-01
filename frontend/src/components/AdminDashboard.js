@@ -1330,7 +1330,8 @@ const AdminDashboard = () => {
               </Button>
               <Button 
                 onClick={() => {
-                  console.log('CREATE ASSET BUTTON CLICKED');
+                  console.log('🔥 CREATE ASSET BUTTON CLICKED!');
+                  alert('Button clicked! Check console for details.');
                   console.log('Button disabled status:', (!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.weekly_rate || !assetForm.seller_id));
                   console.log('Form validation details:');
                   console.log('- Name:', assetForm.name ? '✅' : '❌', assetForm.name);
