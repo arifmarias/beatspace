@@ -285,6 +285,84 @@ const BuyerDashboard = () => {
     }
   };
 
+  const editCampaign = (campaign) => {
+    console.log('Editing campaign:', campaign);
+    
+    // Populate form with existing campaign data
+    setCampaignForm({
+      name: campaign.name || '',
+      description: campaign.description || '',
+      budget: campaign.budget?.toString() || '',
+      notes: campaign.notes || '',
+      startDate: campaign.start_date ? new Date(campaign.start_date) : null,
+      endDate: campaign.end_date ? new Date(campaign.end_date) : null
+    });
+    
+    setEditingCampaign(campaign);
+    setShowEditCampaign(true);
+  };
+
+  const handleUpdateCampaign = async () => {
+    try {
+      if (!editingCampaign) {
+        alert('Error: No campaign selected for editing');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      
+      const updateData = {
+        name: campaignForm.name,
+        description: campaignForm.description,
+        budget: parseFloat(campaignForm.budget) || 0,
+        notes: campaignForm.notes,
+        start_date: campaignForm.startDate ? campaignForm.startDate.toISOString() : null,
+        end_date: campaignForm.endDate ? campaignForm.endDate.toISOString() : null
+      };
+
+      await axios.put(`${API}/campaigns/${editingCampaign.id}`, updateData, { headers });
+      alert('Campaign updated successfully!');
+      
+      setShowEditCampaign(false);
+      setEditingCampaign(null);
+      setCampaignForm({
+        name: '',
+        description: '',
+        budget: '',
+        notes: '',
+        startDate: null,
+        endDate: null
+      });
+      fetchBuyerData();
+      
+    } catch (error) {
+      console.error('Error updating campaign:', error);
+      alert('Failed to update campaign. Please try again.');
+    }
+  };
+
+  const deleteCampaign = async (campaign) => {
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to delete the campaign "${campaign.name}"?\n\nThis action cannot be undone and will also delete any associated offer requests.`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.delete(`${API}/campaigns/${campaign.id}`, { headers });
+      alert(`Campaign "${campaign.name}" deleted successfully!`);
+      
+      fetchBuyerData(); // Refresh the campaign list
+      
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      alert('Failed to delete campaign: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       'Draft': 'bg-gray-100 text-gray-800',
