@@ -774,17 +774,42 @@ const BuyerDashboard = () => {
                             {campaign.created_at ? new Date(campaign.created_at).toLocaleDateString() : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={async () => {
-                                setSelectedCampaign(campaign);
-                                await fetchCampaignAssets(campaign);
-                              }}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View Details
-                            </Button>
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  setSelectedCampaign(campaign);
+                                  await fetchCampaignAssets(campaign);
+                                }}
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View Details
+                              </Button>
+                              
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => editCampaign(campaign)}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                              
+                              {/* Only allow deletion for Draft campaigns */}
+                              {campaign.status === 'Draft' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => deleteCampaign(campaign)}
+                                  className="text-red-600 hover:text-red-800"
+                                >
+                                  <X className="w-4 h-4 mr-1" />
+                                  Delete
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
