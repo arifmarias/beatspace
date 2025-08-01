@@ -127,10 +127,16 @@ const AdminDashboard = () => {
         axios.get(`${API}/stats/public`)
       ]);
 
-      setUsers(usersRes.data);
+      const allUsers = usersRes.data || [];
+      setUsers(allUsers);
       setAssets(assetsRes.data);
       setCampaigns(campaignsRes.data);
       setStats(statsRes.data);
+
+      // Filter sellers for the asset form dropdown
+      const sellerUsers = allUsers.filter(user => user.role === 'seller');
+      setSellers(sellerUsers);
+
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       if (error.response?.status === 401) {
