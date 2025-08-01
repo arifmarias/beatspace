@@ -2615,63 +2615,60 @@ class BeatSpaceAPITester:
         return self.tests_passed, self.tests_run
 
 def main():
-    """Main function to run Cloudinary image upload tests"""
-    print("🎯 BeatSpace Backend API - Cloudinary Image Upload Testing")
+    """Main function to run admin asset creation test"""
+    print("🎯 BeatSpace Backend API - Admin Asset Creation Fix Testing")
     print("=" * 80)
     
     tester = BeatSpaceAPITester()
     
-    # Run Cloudinary tests
-    passed, total = tester.run_cloudinary_tests()
+    # Run admin asset creation test
+    passed, total = tester.run_admin_asset_creation_test()
     
     # Print detailed results
     print("\n" + "=" * 60)
-    print("📊 DETAILED CLOUDINARY TEST RESULTS")
+    print("📊 DETAILED ADMIN ASSET CREATION TEST RESULTS")
     print("=" * 60)
     
-    cloudinary_specific_tests = [
+    admin_tests = [
         "Admin Login",
-        "Backend Connectivity Check",
-        "Single Image Upload",
-        "Multiple Images Upload",
-        "Image Upload Error Handling"
+        "Admin Get Users", 
+        "Admin Asset Creation (FIXED)",
+        "Verify Asset in List"
     ]
     
-    cloudinary_passed = 0
-    cloudinary_total = 0
+    admin_passed = 0
+    admin_total = 0
     
-    for test_name in cloudinary_specific_tests:
+    for test_name in admin_tests:
         if test_name in tester.test_results:
-            cloudinary_total += 1
+            admin_total += 1
             result = tester.test_results[test_name]
             if result['success']:
-                cloudinary_passed += 1
+                admin_passed += 1
                 print(f"✅ {test_name}")
             else:
                 print(f"❌ {test_name} - Status: {result.get('status_code', 'Error')}")
                 if 'error' in result:
                     print(f"   Error: {result['error']}")
     
-    print(f"\n📈 CLOUDINARY FUNCTIONALITY SUMMARY")
-    print(f"Total Cloudinary Tests: {cloudinary_passed}/{cloudinary_total} passed")
+    print(f"\n📈 ADMIN ASSET CREATION FIX SUMMARY")
+    print(f"Admin Asset Creation Tests: {admin_passed}/{admin_total} passed")
     print(f"Overall Tests: {tester.tests_passed}/{tester.tests_run} passed")
     
     # Determine overall status
-    if cloudinary_passed >= cloudinary_total * 0.8:  # 80% pass rate for Cloudinary tests
-        print("🎉 Cloudinary image upload functionality is working correctly!")
+    if admin_passed >= admin_total * 0.8:  # 80% pass rate for admin tests
+        print("🎉 Admin asset creation functionality is working correctly!")
         print("✅ Key findings:")
-        print("   - POST /api/upload/image endpoint working")
-        print("   - POST /api/upload/images endpoint working")
-        print("   - Admin authentication (admin@beatspace.com/admin123) working")
-        print("   - Images uploaded to Cloudinary cloud storage")
-        print("   - Images organized in 'beatspace_assets' folder")
-        print("   - Image optimization applied (800x600 limit, auto quality/format)")
-        print("   - Proper authentication required for uploads")
-        print("   - Error handling for invalid files working")
-        print("\n🔍 CONCLUSION: Cloudinary integration is production-ready.")
+        print("   - ✅ Admin authentication (admin@beatspace.com/admin123) working")
+        print("   - ✅ Authorization fix verified: Admins can now create assets (no 403 error)")
+        print("   - ✅ Asset status verified: Admin-created assets have 'Available' status (pre-approved)")
+        print("   - ✅ Seller assignment verified: Assets can be assigned to specific sellers via seller_id")
+        print("   - ✅ Data validation verified: Complete asset data including all required fields")
+        print("   - ✅ Asset appears in assets list after creation")
+        print("\n🔍 CONCLUSION: Admin asset creation fix is working correctly.")
         return 0
     else:
-        print("❌ Cloudinary functionality has issues that need attention")
+        print("❌ Admin asset creation functionality has issues that need attention")
         return 1
 
 if __name__ == "__main__":
