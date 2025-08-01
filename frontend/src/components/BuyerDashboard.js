@@ -229,12 +229,26 @@ const BuyerDashboard = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
+  // Add window debugging functions for easier testing
+  window.testDeleteFunction = (offerId) => {
+    console.log('🧪 WINDOW TEST: Delete function called with:', offerId);
+    deleteOfferRequest(offerId);
+  };
+
+  window.testEditFunction = (offer) => {
+    console.log('🧪 WINDOW TEST: Edit function called with:', offer);
+    editOfferRequest(offer);
+  };
+
   const deleteOfferRequest = async (offerId) => {
     console.log('🚨 DELETE FUNCTION ENTRY - ID:', offerId);
     
-    // Add window object debugging
+    // Add more comprehensive debugging
+    console.log('🚨 Function context - this:', this);
+    console.log('🚨 Function typeof:', typeof deleteOfferRequest);
     console.log('🚨 Window confirm available:', typeof window.confirm);
     console.log('🚨 Axios available:', typeof axios);
+    console.log('🚨 API constant:', API);
     
     if (!offerId) {
       console.error('🚨 ERROR: No offer ID provided');
