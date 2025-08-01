@@ -1114,6 +1114,683 @@ class BeatSpaceAPITester:
             print(f"   ⚠️  Found {inconsistencies} inconsistencies out of {total_checked} assets")
             return True, {"checked": total_checked, "inconsistencies": inconsistencies}
 
+    # ADMIN CAMPAIGN MANAGEMENT CRUD TESTS - PRIORITY TESTS
+    def test_admin_get_campaigns(self):
+        """Test GET /api/admin/campaigns - List all campaigns for admin - PRIORITY TEST 1"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaigns test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN GET CAMPAIGNS - PRIORITY TEST 1")
+        
+        success, response = self.run_test(
+            "Admin Get All Campaigns", 
+            "GET", 
+            "admin/campaigns", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Found {len(response)} campaigns in system")
+            
+            if response:
+                # Check campaign structure
+                campaign = response[0]
+                required_fields = ['id', 'name', 'buyer_id', 'buyer_name', 'status', 'created_at']
+                missing_fields = [field for field in required_fields if field not in campaign]
+                
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in campaign: {missing_fields}")
+                else:
+                    print("   ✅ Campaign structure looks good")
+                
+                # Show campaign details
+                for i, camp in enumerate(response[:3]):  # Show first 3 campaigns
+                    print(f"   Campaign {i+1}: {camp.get('name')} - {camp.get('status')} - Buyer: {camp.get('buyer_name')}")
+                    
+                    # Check for enhanced features
+                    if 'campaign_assets' in camp:
+                        assets_count = len(camp.get('campaign_assets', []))
+                        print(f"     Campaign Assets: {assets_count} assets")
+                    
+                    if 'start_date' in camp and camp.get('start_date'):
+                        print(f"     Start Date: {camp.get('start_date')}")
+                    
+                    if 'end_date' in camp and camp.get('end_date'):
+                        print(f"     End Date: {camp.get('end_date')}")
+                
+                # Check for CampaignStatus enum values
+                statuses = [camp.get('status') for camp in response]
+                unique_statuses = set(statuses)
+                print(f"   Campaign statuses found: {list(unique_statuses)}")
+                
+                # Verify enhanced Campaign model features
+                enhanced_features = 0
+                for camp in response:
+                    if 'campaign_assets' in camp:
+                        enhanced_features += 1
+                
+                if enhanced_features > 0:
+                    print(f"   ✅ Enhanced Campaign model detected ({enhanced_features} campaigns with campaign_assets)")
+                else:
+                    print("   ⚠️  Enhanced Campaign model features not detected")
+            else:
+                print("   ℹ️  No campaigns found in system")
+        
+        return success, response
+
+    def test_admin_create_campaign(self):
+        """Test POST /api/admin/campaigns - Create campaign via admin - PRIORITY TEST 2"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaign creation test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN CREATE CAMPAIGN - PRIORITY TEST 2")
+        
+        # Get a buyer to assign the campaign to
+        success, users = self.test_admin_get_users()
+        buyer_user = None
+        if success and users:
+            for user in users:
+                if user.get('role') == 'buyer':
+                    buyer_user = user
+                    break
+        
+        if not buyer_user:
+            print("⚠️  No buyer found to assign campaign to")
+            return False, {}
+        
+        # Get some assets for campaign_assets
+        success, assets = self.test_public_assets()
+        campaign_assets = []
+        if success and assets:
+            # Create CampaignAsset objects for the first 2 assets
+            for i, asset in enumerate(assets[:2]):
+                campaign_asset = {
+                    "asset_id": asset['id'],
+                    "asset_name": asset['name'],
+                    "asset_start_date": "2025-01-05T00:00:00Z",
+                    "asset_expiration_date": "2025-01-25T00:00:00Z"
+                }
+                campaign_assets.append(campaign_asset)
+        
+        print(f"   Using buyer: {buyer_user.get('company_name')} (ID: {buyer_user['id']})")
+        print(f"   Campaign will have {len(campaign_assets)} assets")
+        
+        # Create campaign data with enhanced features
+        campaign_data = {
+            "name": f"Test Admin Campaign {datetime.now().strftime('%H%M%S')}",
+            "description": "Campaign created by admin for testing enhanced features",
+            "buyer_id": buyer_user['id'],
+            "budget": 50000,
+            "start_date": "2025-01-01T00:00:00Z",
+            "end_date": "2025-02-01T00:00:00Z",
+            "campaign_assets": campaign_assets
+        }
+        
+        print(f"   Campaign data:")
+        print(f"     Name: {campaign_data['name']}")
+        print(f"     Budget: ৳{campaign_data['budget']:,}")
+        print(f"     Duration: {campaign_data['start_date']} to {campaign_data['end_date']}")
+        print(f"     Assets: {len(campaign_data['campaign_assets'])} campaign assets")
+        
+        success, response = self.run_test(
+            "Admin Create Campaign", 
+            "POST", 
+            "admin/campaigns", 
+            200, 
+            data=campaign_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Campaign created successfully with ID: {response.get('id')}")
+            print(f"   Campaign Name: {response.get('name')}")
+            print(f"   Status: {response.get('status')}")
+            print(f"   Buyer Name: {response.get('buyer_name')}")
+            print(f"   Budget: ৳{response.get('budget', 0):,}")
+            
+            # Store created campaign ID for other tests
+            self.created_campaign_id = response.get('id')
+            
+            # Verify enhanced features
+            if response.get('campaign_assets'):
+                print(f"   ✅ Campaign Assets: {len(response.get('campaign_assets', []))} assets")
+                for i, asset in enumerate(response.get('campaign_assets', [])[:2]):
+                    print(f"     Asset {i+1}: {asset.get('asset_name')} (ID: {asset.get('asset_id')})")
+                    print(f"       Start: {asset.get('asset_start_date')}")
+                    print(f"       Expiration: {asset.get('asset_expiration_date')}")
+            else:
+                print("   ⚠️  Campaign assets not found in response")
+            
+            if response.get('start_date'):
+                print(f"   ✅ Start Date: {response.get('start_date')}")
+            else:
+                print("   ⚠️  Start date not found in response")
+            
+            if response.get('end_date'):
+                print(f"   ✅ End Date: {response.get('end_date')}")
+            else:
+                print("   ⚠️  End date not found in response")
+            
+            # Verify default status is Draft
+            if response.get('status') == 'Draft':
+                print("   ✅ Campaign created with default 'Draft' status")
+            else:
+                print(f"   ⚠️  Campaign status is {response.get('status')}, expected 'Draft'")
+        
+        return success, response
+
+    def test_admin_update_campaign(self):
+        """Test PUT /api/admin/campaigns/{id} - Update campaign via admin - PRIORITY TEST 3"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaign update test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN UPDATE CAMPAIGN - PRIORITY TEST 3")
+        
+        # First get campaigns to find one to update
+        success, campaigns = self.test_admin_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found to update")
+            return False, {}
+        
+        # Use created campaign if available, otherwise use first campaign
+        target_campaign = None
+        if self.created_campaign_id:
+            for campaign in campaigns:
+                if campaign.get('id') == self.created_campaign_id:
+                    target_campaign = campaign
+                    break
+        
+        if not target_campaign:
+            target_campaign = campaigns[0]
+        
+        campaign_id = target_campaign['id']
+        print(f"   Updating campaign: {target_campaign.get('name')}")
+        
+        # Create update data
+        update_data = {
+            "name": f"Updated {target_campaign.get('name')}",
+            "description": "Updated description via admin API testing",
+            "budget": 75000,  # Increased budget
+            "start_date": "2025-01-15T00:00:00Z",  # Updated dates
+            "end_date": "2025-03-15T00:00:00Z"
+        }
+        
+        print(f"   Update data:")
+        print(f"     New Name: {update_data['name']}")
+        print(f"     New Budget: ৳{update_data['budget']:,}")
+        print(f"     New Duration: {update_data['start_date']} to {update_data['end_date']}")
+        
+        success, response = self.run_test(
+            "Admin Update Campaign", 
+            "PUT", 
+            f"admin/campaigns/{campaign_id}", 
+            200, 
+            data=update_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Campaign updated successfully")
+            print(f"   Updated Name: {response.get('name')}")
+            print(f"   Updated Budget: ৳{response.get('budget', 0):,}")
+            print(f"   Updated Start Date: {response.get('start_date')}")
+            print(f"   Updated End Date: {response.get('end_date')}")
+            
+            # Verify updates were applied
+            if response.get('name') == update_data['name']:
+                print("   ✅ Campaign name updated correctly")
+            else:
+                print("   ⚠️  Campaign name not updated correctly")
+            
+            if response.get('budget') == update_data['budget']:
+                print("   ✅ Budget updated correctly")
+            else:
+                print("   ⚠️  Budget not updated correctly")
+            
+            # Check that updated_at timestamp was set
+            if response.get('updated_at'):
+                print("   ✅ Updated timestamp set correctly")
+            else:
+                print("   ⚠️  Updated timestamp not set")
+        
+        return success, response
+
+    def test_admin_update_campaign_status(self):
+        """Test PATCH /api/admin/campaigns/{id}/status - Update campaign status - PRIORITY TEST 5"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaign status update test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN UPDATE CAMPAIGN STATUS - PRIORITY TEST 5")
+        
+        # Get campaigns to find one to update status
+        success, campaigns = self.test_admin_get_campaigns()
+        if not success or not campaigns:
+            print("⚠️  No campaigns found to update status")
+            return False, {}
+        
+        # Find a campaign to test status transitions
+        target_campaign = campaigns[0]
+        campaign_id = target_campaign['id']
+        current_status = target_campaign.get('status')
+        
+        print(f"   Testing status update for campaign: {target_campaign.get('name')}")
+        print(f"   Current status: {current_status}")
+        
+        # Test status transitions based on CampaignStatus enum
+        # Draft, Negotiation, Ready, Live, Completed
+        status_transitions = [
+            ("Draft", "Negotiation"),
+            ("Negotiation", "Ready"),
+            ("Ready", "Live"),
+            ("Live", "Completed")
+        ]
+        
+        # Find appropriate transition
+        next_status = None
+        if current_status == "Draft":
+            next_status = "Negotiation"
+        elif current_status == "Negotiation":
+            next_status = "Ready"
+        elif current_status == "Ready":
+            next_status = "Live"
+        elif current_status == "Live":
+            next_status = "Completed"
+        else:
+            next_status = "Draft"  # Reset to Draft for testing
+        
+        print(f"   Testing transition: {current_status} → {next_status}")
+        
+        status_update = {
+            "status": next_status
+        }
+        
+        success, response = self.run_test(
+            f"Admin Update Campaign Status ({current_status} → {next_status})", 
+            "PATCH", 
+            f"admin/campaigns/{campaign_id}/status", 
+            200, 
+            data=status_update,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Campaign status updated successfully")
+            print(f"   Response: {response.get('message', 'No message')}")
+            
+            # Verify the status was actually updated by fetching the campaign
+            success_verify, updated_campaign = self.run_test(
+                "Verify Status Update", 
+                "GET", 
+                f"admin/campaigns", 
+                200, 
+                token=self.admin_token
+            )
+            
+            if success_verify:
+                # Find the updated campaign
+                for campaign in updated_campaign:
+                    if campaign.get('id') == campaign_id:
+                        actual_status = campaign.get('status')
+                        print(f"   Verified status: {actual_status}")
+                        
+                        if actual_status == next_status:
+                            print("   ✅ Status updated correctly")
+                        else:
+                            print(f"   ⚠️  Status is {actual_status}, expected {next_status}")
+                        break
+        
+        # Test invalid status
+        print("   Testing invalid status rejection...")
+        invalid_status_update = {
+            "status": "InvalidStatus"
+        }
+        
+        success_invalid, response_invalid = self.run_test(
+            "Admin Update Campaign Status (Invalid)", 
+            "PATCH", 
+            f"admin/campaigns/{campaign_id}/status", 
+            400,  # Should fail with 400 Bad Request
+            data=invalid_status_update,
+            token=self.admin_token
+        )
+        
+        if success_invalid:
+            print("   ✅ Invalid status properly rejected")
+        
+        return success, response
+
+    def test_admin_delete_campaign(self):
+        """Test DELETE /api/admin/campaigns/{id} - Delete campaign via admin - PRIORITY TEST 4"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaign deletion test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN DELETE CAMPAIGN - PRIORITY TEST 4")
+        
+        # Create a campaign specifically for deletion test
+        success, users = self.test_admin_get_users()
+        buyer_user = None
+        if success and users:
+            for user in users:
+                if user.get('role') == 'buyer':
+                    buyer_user = user
+                    break
+        
+        if not buyer_user:
+            print("⚠️  No buyer found for deletion test")
+            return False, {}
+        
+        # Create campaign for deletion
+        campaign_data = {
+            "name": f"Delete Test Campaign {datetime.now().strftime('%H%M%S')}",
+            "description": "Campaign created specifically for deletion testing",
+            "buyer_id": buyer_user['id'],
+            "budget": 25000,
+            "start_date": "2025-01-01T00:00:00Z",
+            "end_date": "2025-02-01T00:00:00Z",
+            "campaign_assets": []
+        }
+        
+        success, create_response = self.run_test(
+            "Create Campaign for Deletion Test", 
+            "POST", 
+            "admin/campaigns", 
+            200, 
+            data=campaign_data,
+            token=self.admin_token
+        )
+        
+        if not success:
+            print("⚠️  Could not create campaign for deletion test")
+            return False, {}
+        
+        campaign_id = create_response.get('id')
+        print(f"   Created campaign {create_response.get('name')} for deletion test")
+        
+        # Now delete the campaign
+        success, response = self.run_test(
+            "Admin Delete Campaign", 
+            "DELETE", 
+            f"admin/campaigns/{campaign_id}", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Campaign deleted successfully")
+            print(f"   Response: {response.get('message', 'No message')}")
+            
+            # Verify campaign no longer exists
+            success_verify, campaigns = self.run_test(
+                "Verify Campaign Deleted", 
+                "GET", 
+                "admin/campaigns", 
+                200, 
+                token=self.admin_token
+            )
+            
+            if success_verify:
+                # Check that deleted campaign is not in the list
+                campaign_found = False
+                for campaign in campaigns:
+                    if campaign.get('id') == campaign_id:
+                        campaign_found = True
+                        break
+                
+                if not campaign_found:
+                    print("   ✅ Campaign properly removed from system")
+                else:
+                    print("   ⚠️  Campaign may still exist in system")
+        
+        return success, response
+
+    def test_admin_campaign_authentication(self):
+        """Test that admin campaign endpoints require admin authentication"""
+        print("🎯 TESTING ADMIN CAMPAIGN AUTHENTICATION")
+        
+        # Test getting campaigns without authentication
+        success, response = self.run_test(
+            "Get Admin Campaigns - No Auth", 
+            "GET", 
+            "admin/campaigns", 
+            401,  # Should fail with 401 Unauthorized
+        )
+        
+        if success:
+            print("   ✅ Getting admin campaigns properly requires authentication")
+        
+        # Test creating campaign without authentication
+        campaign_data = {
+            "name": "Test Campaign",
+            "description": "Test",
+            "buyer_id": "test-buyer-id",
+            "budget": 10000
+        }
+        
+        success, response = self.run_test(
+            "Create Campaign - No Auth", 
+            "POST", 
+            "admin/campaigns", 
+            401,  # Should fail with 401 Unauthorized
+            data=campaign_data
+        )
+        
+        if success:
+            print("   ✅ Creating campaigns properly requires authentication")
+        
+        # Test with non-admin token (buyer/seller should fail)
+        if self.buyer_token:
+            success, response = self.run_test(
+                "Get Admin Campaigns - Buyer Token", 
+                "GET", 
+                "admin/campaigns", 
+                403,  # Should fail with 403 Forbidden
+                token=self.buyer_token
+            )
+            
+            if success:
+                print("   ✅ Only admins can access campaign management (buyer properly rejected)")
+        
+        if self.seller_token:
+            success, response = self.run_test(
+                "Create Campaign - Seller Token", 
+                "POST", 
+                "admin/campaigns", 
+                403,  # Should fail with 403 Forbidden
+                data=campaign_data,
+                token=self.seller_token
+            )
+            
+            if success:
+                print("   ✅ Only admins can create campaigns (seller properly rejected)")
+        
+        return True, {}
+
+    def test_admin_campaign_complete_workflow(self):
+        """Test complete admin campaign CRUD workflow: Create → Read → Update → Delete"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin campaign workflow test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING COMPLETE ADMIN CAMPAIGN CRUD WORKFLOW")
+        
+        # Get a buyer for the workflow
+        success, users = self.test_admin_get_users()
+        buyer_user = None
+        if success and users:
+            for user in users:
+                if user.get('role') == 'buyer':
+                    buyer_user = user
+                    break
+        
+        if not buyer_user:
+            print("⚠️  No buyer found for workflow test")
+            return False, {}
+        
+        # Get assets for campaign_assets
+        success, assets = self.test_public_assets()
+        campaign_assets = []
+        if success and assets:
+            asset = assets[0]
+            campaign_asset = {
+                "asset_id": asset['id'],
+                "asset_name": asset['name'],
+                "asset_start_date": "2025-01-05T00:00:00Z",
+                "asset_expiration_date": "2025-01-25T00:00:00Z"
+            }
+            campaign_assets.append(campaign_asset)
+        
+        workflow_id = datetime.now().strftime('%H%M%S')
+        
+        # Step 1: CREATE
+        print("   Step 1: CREATE Campaign")
+        campaign_data = {
+            "name": f"Workflow Test Campaign {workflow_id}",
+            "description": "Complete CRUD workflow test campaign",
+            "buyer_id": buyer_user['id'],
+            "budget": 40000,
+            "start_date": "2025-01-01T00:00:00Z",
+            "end_date": "2025-02-01T00:00:00Z",
+            "campaign_assets": campaign_assets
+        }
+        
+        success, create_response = self.run_test(
+            "Workflow Step 1: CREATE", 
+            "POST", 
+            "admin/campaigns", 
+            200, 
+            data=campaign_data,
+            token=self.admin_token
+        )
+        
+        if not success:
+            print("   ❌ CREATE step failed")
+            return False, {}
+        
+        campaign_id = create_response.get('id')
+        print(f"   ✅ CREATE: Campaign created with ID {campaign_id}")
+        
+        # Step 2: READ
+        print("   Step 2: READ Campaign")
+        success, campaigns = self.run_test(
+            "Workflow Step 2: READ", 
+            "GET", 
+            "admin/campaigns", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            # Find our created campaign
+            found_campaign = None
+            for campaign in campaigns:
+                if campaign.get('id') == campaign_id:
+                    found_campaign = campaign
+                    break
+            
+            if found_campaign:
+                print(f"   ✅ READ: Campaign found - {found_campaign.get('name')}")
+            else:
+                print("   ❌ READ: Created campaign not found")
+                return False, {}
+        else:
+            print("   ❌ READ step failed")
+            return False, {}
+        
+        # Step 3: UPDATE
+        print("   Step 3: UPDATE Campaign")
+        update_data = {
+            "name": f"Updated Workflow Test Campaign {workflow_id}",
+            "description": "Updated via complete CRUD workflow test",
+            "budget": 60000
+        }
+        
+        success, update_response = self.run_test(
+            "Workflow Step 3: UPDATE", 
+            "PUT", 
+            f"admin/campaigns/{campaign_id}", 
+            200, 
+            data=update_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ UPDATE: Campaign updated - {update_response.get('name')}")
+            print(f"   ✅ UPDATE: Budget updated to ৳{update_response.get('budget', 0):,}")
+        else:
+            print("   ❌ UPDATE step failed")
+            return False, {}
+        
+        # Step 4: UPDATE STATUS
+        print("   Step 4: UPDATE STATUS")
+        status_update = {"status": "Live"}
+        
+        success, status_response = self.run_test(
+            "Workflow Step 4: UPDATE STATUS", 
+            "PATCH", 
+            f"admin/campaigns/{campaign_id}/status", 
+            200, 
+            data=status_update,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ UPDATE STATUS: {status_response.get('message', 'Status updated')}")
+        else:
+            print("   ❌ UPDATE STATUS step failed")
+            return False, {}
+        
+        # Step 5: DELETE
+        print("   Step 5: DELETE Campaign")
+        success, delete_response = self.run_test(
+            "Workflow Step 5: DELETE", 
+            "DELETE", 
+            f"admin/campaigns/{campaign_id}", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ DELETE: {delete_response.get('message', 'Campaign deleted')}")
+            
+            # Verify deletion
+            success, final_campaigns = self.run_test(
+                "Workflow Verification: Confirm Deletion", 
+                "GET", 
+                "admin/campaigns", 
+                200, 
+                token=self.admin_token
+            )
+            
+            if success:
+                campaign_still_exists = False
+                for campaign in final_campaigns:
+                    if campaign.get('id') == campaign_id:
+                        campaign_still_exists = True
+                        break
+                
+                if not campaign_still_exists:
+                    print("   ✅ VERIFICATION: Campaign properly deleted from system")
+                else:
+                    print("   ⚠️  VERIFICATION: Campaign may still exist in system")
+        else:
+            print("   ❌ DELETE step failed")
+            return False, {}
+        
+        print("   🎉 COMPLETE ADMIN CAMPAIGN CRUD WORKFLOW - ALL STEPS PASSED!")
+        return True, {
+            "create": True,
+            "read": True,
+            "update": True,
+            "update_status": True,
+            "delete": True
+        }
+
     # REQUEST BEST OFFER WORKFLOW TESTS
     def test_submit_offer_request_new_campaign(self):
         """Test submitting a Request Best Offer for a new campaign"""
