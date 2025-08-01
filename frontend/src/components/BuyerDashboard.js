@@ -697,9 +697,9 @@ const BuyerDashboard = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
+                              onClick={async () => {
                                 setSelectedCampaign(campaign);
-                                fetchCampaignAssets(campaign);
+                                await fetchCampaignAssets(campaign);
                               }}
                             >
                               <Eye className="w-4 h-4 mr-1" />
