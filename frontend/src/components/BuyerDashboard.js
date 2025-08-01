@@ -694,18 +694,6 @@ const BuyerDashboard = () => {
                 <CardTitle className="flex items-center space-x-2">
                   <FileText className="w-5 h-5" />
                   <span>Requested Offers</span>
-                  {/* Debug button */}
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => {
-                      console.log('🧪 DEBUG BUTTON CLICKED');
-                      console.log('🧪 Requested offers:', requestedOffers);
-                      alert('Debug button working! Check console for offer data.');
-                    }}
-                  >
-                    🧪 Test
-                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
