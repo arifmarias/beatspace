@@ -880,6 +880,425 @@ const AdminDashboard = () => {
             <AdvancedAnalytics />
           </TabsContent>
         </Tabs>
+
+        {/* Add Asset Dialog */}
+        <Dialog open={showAddAsset} onOpenChange={(open) => {
+          setShowAddAsset(open);
+          if (!open) resetAssetForm();
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Asset</DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Name *
+                  </label>
+                  <Input
+                    value={assetForm.name}
+                    onChange={(e) => setAssetForm({...assetForm, name: e.target.value})}
+                    placeholder="Enter asset name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <Textarea
+                    value={assetForm.description}
+                    onChange={(e) => setAssetForm({...assetForm, description: e.target.value})}
+                    placeholder="Asset description"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Address *
+                  </label>
+                  <Input
+                    value={assetForm.address}
+                    onChange={(e) => setAssetForm({...assetForm, address: e.target.value})}
+                    placeholder="Full address"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      District *
+                    </label>
+                    <Input
+                      value={assetForm.district}
+                      onChange={(e) => setAssetForm({...assetForm, district: e.target.value})}
+                      placeholder="District"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Division *
+                    </label>
+                    <Input
+                      value={assetForm.division}
+                      onChange={(e) => setAssetForm({...assetForm, division: e.target.value})}
+                      placeholder="Division"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Type *
+                  </label>
+                  <Select 
+                    value={assetForm.type} 
+                    onValueChange={(value) => setAssetForm({...assetForm, type: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Billboard">Billboard</SelectItem>
+                      <SelectItem value="Digital Display">Digital Display</SelectItem>
+                      <SelectItem value="Transit Ad">Transit Ad</SelectItem>
+                      <SelectItem value="Street Furniture">Street Furniture</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Dimensions
+                  </label>
+                  <Input
+                    value={assetForm.dimensions}
+                    onChange={(e) => setAssetForm({...assetForm, dimensions: e.target.value})}
+                    placeholder="e.g., 10ft x 20ft"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Traffic Volume (daily)
+                  </label>
+                  <Input
+                    type="number"
+                    value={assetForm.traffic_volume}
+                    onChange={(e) => setAssetForm({...assetForm, traffic_volume: e.target.value})}
+                    placeholder="Daily traffic volume"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Visibility Score (1-10)
+                  </label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    step="0.1"
+                    value={assetForm.visibility_score}
+                    onChange={(e) => setAssetForm({...assetForm, visibility_score: e.target.value})}
+                    placeholder="Visibility score"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Pricing (৳) *
+                  </label>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Weekly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.weekly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, weekly_rate: e.target.value}
+                      })}
+                      placeholder="Weekly rate"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Monthly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.monthly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, monthly_rate: e.target.value}
+                      })}
+                      placeholder="Monthly rate"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Yearly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.yearly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, yearly_rate: e.target.value}
+                      })}
+                      placeholder="Yearly rate"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Seller Name *
+                  </label>
+                  <Input
+                    value={assetForm.seller_name}
+                    onChange={(e) => setAssetForm({...assetForm, seller_name: e.target.value})}
+                    placeholder="Seller/Owner name"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowAddAsset(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateAsset}
+                className="bg-orange-600 hover:bg-orange-700"
+                disabled={!assetForm.name || !assetForm.address || !assetForm.pricing.weekly_rate}
+              >
+                Create Asset
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Asset Dialog */}
+        <Dialog open={showEditAsset} onOpenChange={(open) => {
+          setShowEditAsset(open);
+          if (!open) {
+            setEditingAsset(null);
+            resetAssetForm();
+          }
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Asset</DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Name *
+                  </label>
+                  <Input
+                    value={assetForm.name}
+                    onChange={(e) => setAssetForm({...assetForm, name: e.target.value})}
+                    placeholder="Enter asset name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <Textarea
+                    value={assetForm.description}
+                    onChange={(e) => setAssetForm({...assetForm, description: e.target.value})}
+                    placeholder="Asset description"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Address *
+                  </label>
+                  <Input
+                    value={assetForm.address}
+                    onChange={(e) => setAssetForm({...assetForm, address: e.target.value})}
+                    placeholder="Full address"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      District *
+                    </label>
+                    <Input
+                      value={assetForm.district}
+                      onChange={(e) => setAssetForm({...assetForm, district: e.target.value})}
+                      placeholder="District"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Division *
+                    </label>
+                    <Input
+                      value={assetForm.division}
+                      onChange={(e) => setAssetForm({...assetForm, division: e.target.value})}
+                      placeholder="Division"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Type *
+                  </label>
+                  <Select 
+                    value={assetForm.type} 
+                    onValueChange={(value) => setAssetForm({...assetForm, type: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Billboard">Billboard</SelectItem>
+                      <SelectItem value="Digital Display">Digital Display</SelectItem>
+                      <SelectItem value="Transit Ad">Transit Ad</SelectItem>
+                      <SelectItem value="Street Furniture">Street Furniture</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Dimensions
+                  </label>
+                  <Input
+                    value={assetForm.dimensions}
+                    onChange={(e) => setAssetForm({...assetForm, dimensions: e.target.value})}
+                    placeholder="e.g., 10ft x 20ft"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Traffic Volume (daily)
+                  </label>
+                  <Input
+                    type="number"
+                    value={assetForm.traffic_volume}
+                    onChange={(e) => setAssetForm({...assetForm, traffic_volume: e.target.value})}
+                    placeholder="Daily traffic volume"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Visibility Score (1-10)
+                  </label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    step="0.1"
+                    value={assetForm.visibility_score}
+                    onChange={(e) => setAssetForm({...assetForm, visibility_score: e.target.value})}
+                    placeholder="Visibility score"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Pricing (৳) *
+                  </label>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Weekly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.weekly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, weekly_rate: e.target.value}
+                      })}
+                      placeholder="Weekly rate"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Monthly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.monthly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, monthly_rate: e.target.value}
+                      })}
+                      placeholder="Monthly rate"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Yearly Rate</label>
+                    <Input
+                      type="number"
+                      value={assetForm.pricing.yearly_rate}
+                      onChange={(e) => setAssetForm({
+                        ...assetForm, 
+                        pricing: {...assetForm.pricing, yearly_rate: e.target.value}
+                      })}
+                      placeholder="Yearly rate"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Seller Name *
+                  </label>
+                  <Input
+                    value={assetForm.seller_name}
+                    onChange={(e) => setAssetForm({...assetForm, seller_name: e.target.value})}
+                    placeholder="Seller/Owner name"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditAsset(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUpdateAsset}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!assetForm.name || !assetForm.address || !assetForm.pricing.weekly_rate}
+              >
+                Update Asset
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
