@@ -1605,6 +1605,171 @@ class BeatSpaceAPITester:
         
         return True, {}
 
+    def test_admin_asset_creation_fix(self):
+        """Test the FIXED admin asset creation functionality"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin asset creation test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN ASSET CREATION FIX")
+        print("   Testing admin ability to create assets with pre-approved status...")
+        
+        # Get existing sellers to assign asset to
+        success, users = self.test_admin_get_users()
+        if not success or not users:
+            print("⚠️  No users found to assign asset to")
+            return False, {}
+        
+        # Find a seller to assign the asset to
+        seller_user = None
+        for user in users:
+            if user.get('role') == 'seller':
+                seller_user = user
+                break
+        
+        if not seller_user:
+            print("⚠️  No seller found to assign asset to")
+            return False, {}
+        
+        print(f"   Assigning asset to seller: {seller_user.get('company_name')} ({seller_user.get('email')})")
+        
+        # Create comprehensive asset data as specified in the test scenario
+        asset_data = {
+            "name": "Test Billboard Admin",
+            "description": "Test asset created by admin",
+            "address": "Test Address, Dhaka",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "type": "Billboard",
+            "dimensions": "10ft x 20ft",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "traffic_volume": 5000,
+            "visibility_score": 8.5,
+            "pricing": {
+                "weekly_rate": 2000,
+                "monthly_rate": 7000,
+                "yearly_rate": 80000
+            },
+            "seller_id": seller_user['id'],
+            "seller_name": seller_user.get('company_name'),
+            "photos": ["https://images.unsplash.com/photo-1541888946425-d81bb1924c35?w=800&h=600&fit=crop"],
+            "specifications": {
+                "material": "Vinyl with weather protection",
+                "lighting": "LED backlit",
+                "installation": "Professional setup included"
+            }
+        }
+        
+        # Test admin asset creation
+        success, response = self.run_test(
+            "Admin Asset Creation (FIXED)", 
+            "POST", 
+            "assets", 
+            200,  # Should return 200/201, NOT 403
+            data=asset_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print("   ✅ AUTHORIZATION FIX VERIFIED: Admin can now create assets (no 403 error)")
+            print(f"   Created asset ID: {response.get('id')}")
+            print(f"   Asset name: {response.get('name')}")
+            print(f"   Asset status: {response.get('status')}")
+            print(f"   Assigned seller: {response.get('seller_name')}")
+            
+            # Verify asset status is "Available" (pre-approved)
+            if response.get('status') == 'Available':
+                print("   ✅ ASSET STATUS VERIFIED: Admin-created asset has 'Available' status (pre-approved)")
+            else:
+                print(f"   ❌ ASSET STATUS ISSUE: Expected 'Available', got '{response.get('status')}'")
+            
+            # Verify seller assignment
+            if response.get('seller_id') == seller_user['id']:
+                print("   ✅ SELLER ASSIGNMENT VERIFIED: Asset correctly assigned to specified seller")
+            else:
+                print(f"   ❌ SELLER ASSIGNMENT ISSUE: Expected seller_id '{seller_user['id']}', got '{response.get('seller_id')}'")
+            
+            # Verify all required fields are present
+            required_fields = ['id', 'name', 'description', 'address', 'district', 'division', 
+                             'type', 'dimensions', 'pricing', 'seller_id', 'seller_name', 'status']
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                print(f"   ⚠️  Missing fields in response: {missing_fields}")
+            else:
+                print("   ✅ DATA VALIDATION VERIFIED: All required fields present in response")
+            
+            # Verify pricing structure
+            pricing = response.get('pricing', {})
+            expected_pricing_keys = ['weekly_rate', 'monthly_rate', 'yearly_rate']
+            if all(key in pricing for key in expected_pricing_keys):
+                print("   ✅ PRICING STRUCTURE VERIFIED: All pricing tiers present")
+                print(f"   Weekly: ৳{pricing.get('weekly_rate')}, Monthly: ৳{pricing.get('monthly_rate')}, Yearly: ৳{pricing.get('yearly_rate')}")
+            else:
+                print(f"   ⚠️  Pricing structure incomplete: {pricing}")
+            
+            # Store created asset ID for verification in assets list
+            self.created_asset_id = response.get('id')
+            
+            # Verify asset appears in assets list
+            success_list, assets_list = self.run_test(
+                "Verify Asset in List", 
+                "GET", 
+                "assets/public", 
+                200
+            )
+            
+            if success_list:
+                created_asset_found = False
+                for asset in assets_list:
+                    if asset.get('id') == self.created_asset_id:
+                        created_asset_found = True
+                        print("   ✅ ASSET LIST VERIFICATION: Created asset appears in assets list")
+                        break
+                
+                if not created_asset_found:
+                    print("   ⚠️  Created asset not found in assets list")
+            
+            return True, response
+        else:
+            print("   ❌ ADMIN ASSET CREATION FAILED")
+            return False, {}
+
+    def run_admin_asset_creation_test(self):
+        """Run focused test for admin asset creation fix"""
+        print("🚀 Starting ADMIN ASSET CREATION FIX Testing...")
+        print(f"🌐 Base URL: {self.base_url}")
+        print("=" * 80)
+
+        # Authentication Test
+        print("\n📋 AUTHENTICATION")
+        print("-" * 40)
+        admin_success, admin_response = self.test_admin_login()
+        
+        if not admin_success:
+            print("❌ Admin login failed - cannot proceed with asset creation test")
+            return False, 0, 1
+        
+        # Admin Asset Creation Test
+        print("\n📋 ADMIN ASSET CREATION FIX")
+        print("-" * 40)
+        creation_success, creation_response = self.test_admin_asset_creation_fix()
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print("🎯 ADMIN ASSET CREATION TEST SUMMARY")
+        print("=" * 80)
+        print(f"✅ Tests Passed: {self.tests_passed}")
+        print(f"❌ Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"📊 Total Tests: {self.tests_run}")
+        print(f"📈 Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        if creation_success:
+            print("🎉 ADMIN ASSET CREATION FIX VERIFIED! Authorization issue resolved.")
+        else:
+            print("⚠️  Admin asset creation still has issues.")
+        
+        return self.tests_passed, self.tests_run
+
     def run_focused_delete_offer_tests(self):
         """Run focused DELETE offer request functionality tests"""
         print("🎯 FOCUSED DELETE OFFER REQUEST TESTING")
