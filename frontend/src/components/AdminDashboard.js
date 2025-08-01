@@ -693,117 +693,138 @@ const AdminDashboard = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex space-x-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => setSelectedAsset(asset)}
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-4xl">
-                              <DialogHeader>
-                                <DialogTitle>Asset Details</DialogTitle>
-                              </DialogHeader>
-                              {selectedAsset && (
-                                <div className="space-y-6">
-                                  <div className="grid grid-cols-2 gap-6">
-                                    <div>
-                                      {selectedAsset.photos && selectedAsset.photos[0] && (
-                                        <img 
-                                          src={selectedAsset.photos[0]} 
-                                          alt={selectedAsset.name}
-                                          className="w-full h-48 object-cover rounded-lg mb-4"
-                                        />
-                                      )}
-                                      <h3 className="font-semibold text-lg mb-2">{selectedAsset.name}</h3>
-                                      <p className="text-gray-600 mb-4">{selectedAsset.description}</p>
-                                      <div className="space-y-2 text-sm">
-                                        <p><strong>Address:</strong> {selectedAsset.address}</p>
-                                        <p><strong>Type:</strong> {selectedAsset.type}</p>
-                                        <p><strong>Dimensions:</strong> {selectedAsset.dimensions}</p>
-                                        <p><strong>Traffic Volume:</strong> {selectedAsset.traffic_volume}</p>
-                                        <p><strong>Visibility Score:</strong> {selectedAsset.visibility_score}/10</p>
-                                      </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                              <DropdownMenuItem asChild>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <div 
+                                      className="flex items-center cursor-pointer px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm w-full"
+                                      onClick={() => setSelectedAsset(asset)}
+                                    >
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View Details
                                     </div>
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Pricing</h4>
-                                      <div className="space-y-2 text-sm mb-4">
-                                        {Object.entries(selectedAsset.pricing).map(([duration, price]) => (
-                                          <p key={duration}>
-                                            <strong>{duration.replace('_', ' ')}:</strong> ৳{price.toLocaleString()}
-                                          </p>
-                                        ))}
-                                      </div>
-                                      
-                                      <h4 className="font-semibold mb-2">Seller Information</h4>
-                                      <div className="space-y-2 text-sm mb-4">
-                                        <p><strong>Seller:</strong> {selectedAsset.seller_name}</p>
-                                        <p><strong>Status:</strong> 
-                                          <Badge className={`ml-2 ${getStatusColor(selectedAsset.status)}`}>
-                                            {selectedAsset.status}
-                                          </Badge>
-                                        </p>
-                                        <p><strong>Created:</strong> {new Date(selectedAsset.created_at).toLocaleString()}</p>
-                                      </div>
-
-                                      {selectedAsset.specifications && Object.keys(selectedAsset.specifications).length > 0 && (
-                                        <div>
-                                          <h4 className="font-semibold mb-2">Specifications</h4>
-                                          <div className="space-y-1 text-sm">
-                                            {Object.entries(selectedAsset.specifications).map(([key, value]) => (
-                                              <p key={key}><strong>{key}:</strong> {value}</p>
-                                            ))}
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-4xl">
+                                    <DialogHeader>
+                                      <DialogTitle>Asset Details</DialogTitle>
+                                    </DialogHeader>
+                                    {selectedAsset && (
+                                      <div className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-6">
+                                          <div>
+                                            {selectedAsset.photos && selectedAsset.photos[0] && (
+                                              <img 
+                                                src={selectedAsset.photos[0]} 
+                                                alt={selectedAsset.name}
+                                                className="w-full h-48 object-cover rounded-lg mb-4"
+                                              />
+                                            )}
+                                            <h3 className="font-semibold text-lg mb-2">{selectedAsset.name}</h3>
+                                            <p className="text-gray-600 mb-4">{selectedAsset.description}</p>
+                                            
+                                            <div className="space-y-3">
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Location:</span>
+                                                <span className="font-medium">{selectedAsset.district}, {selectedAsset.division}</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Type:</span>
+                                                <span className="font-medium">{selectedAsset.type}</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Dimensions:</span>
+                                                <span className="font-medium">{selectedAsset.dimensions}</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Traffic Volume:</span>
+                                                <span className="font-medium">{selectedAsset.traffic_volume?.toLocaleString()}/day</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Visibility Score:</span>
+                                                <span className="font-medium">{selectedAsset.visibility_score}/10</span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          
+                                          <div>
+                                            <h4 className="font-semibold mb-3">Pricing Information</h4>
+                                            <div className="space-y-3">
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Weekly Rate:</span>
+                                                <span className="font-medium">৳{selectedAsset.pricing?.weekly_rate?.toLocaleString()}</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Monthly Rate:</span>
+                                                <span className="font-medium">৳{selectedAsset.pricing?.monthly_rate?.toLocaleString()}</span>
+                                              </div>
+                                              <div className="flex justify-between">
+                                                <span className="text-gray-500">Yearly Rate:</span>
+                                                <span className="font-medium">৳{selectedAsset.pricing?.yearly_rate?.toLocaleString()}</span>
+                                              </div>
+                                            </div>
+                                            
+                                            <div className="mt-6">
+                                              <h4 className="font-semibold mb-3">Status</h4>
+                                              <Badge className={getStatusColor(selectedAsset.status)}>
+                                                {selectedAsset.status}
+                                              </Badge>
+                                            </div>
+                                            
+                                            <div className="mt-6">
+                                              <h4 className="font-semibold mb-3">Seller Information</h4>
+                                              <p className="font-medium">{selectedAsset.seller_name}</p>
+                                            </div>
                                           </div>
                                         </div>
-                                      )}
-                                    </div>
-                                  </div>
 
-                                  {selectedAsset.status === 'Pending Approval' && (
-                                    <div className="flex space-x-3 pt-4 border-t">
-                                      <Button
-                                        onClick={() => updateAssetStatus(selectedAsset.id, 'Available')}
-                                        className="bg-green-600 hover:bg-green-700"
-                                      >
-                                        <CheckCircle className="w-4 h-4 mr-2" />
-                                        Approve Asset
-                                      </Button>
-                                      <Button
-                                        onClick={() => updateAssetStatus(selectedAsset.id, 'Unavailable', 'Rejected by admin')}
-                                        variant="destructive"
-                                      >
-                                        <XCircle className="w-4 h-4 mr-2" />
-                                        Reject Asset
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
-                          
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => editAsset(asset)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => deleteAsset(asset)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                          </div>
+                                        {selectedAsset.status === 'Pending Approval' && (
+                                          <div className="flex space-x-3 pt-4 border-t">
+                                            <Button
+                                              onClick={() => updateAssetStatus(selectedAsset.id, 'Available')}
+                                              className="bg-green-600 hover:bg-green-700"
+                                            >
+                                              <CheckCircle className="w-4 h-4 mr-2" />
+                                              Approve Asset
+                                            </Button>
+                                            <Button
+                                              onClick={() => updateAssetStatus(selectedAsset.id, 'Unavailable', 'Rejected by admin')}
+                                              variant="destructive"
+                                            >
+                                              <XCircle className="w-4 h-4 mr-2" />
+                                              Reject Asset
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </DialogContent>
+                                </Dialog>
+                              </DropdownMenuItem>
+                              
+                              <DropdownMenuItem
+                                onClick={() => editAsset(asset)}
+                                className="cursor-pointer text-blue-600"
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Asset
+                              </DropdownMenuItem>
+                              
+                              <DropdownMenuItem
+                                onClick={() => deleteAsset(asset)}
+                                className="cursor-pointer text-red-600"
+                              >
+                                <X className="h-4 w-4 mr-2" />
+                                Delete Asset
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
