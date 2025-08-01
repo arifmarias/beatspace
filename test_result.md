@@ -304,6 +304,21 @@ backend:
           agent: "testing"
           comment: "✅ PASSED - Asset expiration date system working! Assets have next_available_date field for tracking availability. Campaign end dates properly stored and can be used for expiration calculations. System supports flexible date management for campaign and asset lifecycle."
 
+  - task: "Fix delete button functionality in Requested Offers tab"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "🚨 BUG REPORT: Delete button in Requested Offers tab not working - user clicks delete button but nothing happens. This is a critical frontend functionality issue."
+        - working: "NA"
+          agent: "main"
+          comment: "Investigating delete button issue. Backend DELETE /api/offers/requests/{id} endpoint confirmed working by testing agent. Issue appears to be in frontend deleteOfferRequest function or UI event handlers."
+
 frontend:
   - task: "Remove Add to Campaign buttons from list view"
     implemented: true
