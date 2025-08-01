@@ -734,92 +734,119 @@ const AdminDashboard = () => {
                           {new Date(user.created_at).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => setSelectedUser(user)}
-                              >
-                                <Eye className="w-4 h-4" />
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
                               </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>User Details</DialogTitle>
-                              </DialogHeader>
-                              {selectedUser && (
-                                <div className="space-y-6">
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Company Information</h4>
-                                      <div className="space-y-2 text-sm">
-                                        <p><strong>Company:</strong> {selectedUser.company_name}</p>
-                                        <p><strong>Contact:</strong> {selectedUser.contact_name}</p>
-                                        <p><strong>Email:</strong> {selectedUser.email}</p>
-                                        <p><strong>Phone:</strong> {selectedUser.phone}</p>
-                                        <p><strong>Role:</strong> {selectedUser.role}</p>
-                                        {selectedUser.website && (
-                                          <p><strong>Website:</strong> {selectedUser.website}</p>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                              <DropdownMenuItem asChild>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <div 
+                                      className="flex items-center cursor-pointer px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm w-full"
+                                      onClick={() => setSelectedUser(user)}
+                                    >
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View Details
+                                    </div>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl">
+                                    <DialogHeader>
+                                      <DialogTitle>User Details</DialogTitle>
+                                    </DialogHeader>
+                                    {selectedUser && (
+                                      <div className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <h4 className="font-semibold mb-2">Company Information</h4>
+                                            <div className="space-y-2 text-sm">
+                                              <p><strong>Company:</strong> {selectedUser.company_name}</p>
+                                              <p><strong>Contact:</strong> {selectedUser.contact_name}</p>
+                                              <p><strong>Email:</strong> {selectedUser.email}</p>
+                                              <p><strong>Phone:</strong> {selectedUser.phone}</p>
+                                              <p><strong>Role:</strong> {selectedUser.role}</p>
+                                              {selectedUser.website && (
+                                                <p><strong>Website:</strong> {selectedUser.website}</p>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <h4 className="font-semibold mb-2">Account Status</h4>
+                                            <div className="space-y-2 text-sm">
+                                              <p><strong>Status:</strong> 
+                                                <Badge className={`ml-2 ${getStatusColor(selectedUser.status)}`}>
+                                                  {selectedUser.status}
+                                                </Badge>
+                                              </p>
+                                              <p><strong>Created:</strong> {new Date(selectedUser.created_at).toLocaleString()}</p>
+                                              {selectedUser.verified_at && (
+                                                <p><strong>Verified:</strong> {new Date(selectedUser.verified_at).toLocaleString()}</p>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {selectedUser.address && (
+                                          <div>
+                                            <h4 className="font-semibold mb-2">Address</h4>
+                                            <p className="text-sm">{selectedUser.address}</p>
+                                          </div>
+                                        )}
+
+                                        {selectedUser.status === 'pending' && (
+                                          <div className="flex space-x-3 pt-4 border-t">
+                                            <Button
+                                              onClick={() => updateUserStatus(selectedUser.id, 'approved')}
+                                              className="bg-green-600 hover:bg-green-700"
+                                            >
+                                              <UserCheck className="w-4 h-4 mr-2" />
+                                              Approve User
+                                            </Button>
+                                            <Button
+                                              onClick={() => updateUserStatus(selectedUser.id, 'rejected', 'Rejected by admin')}
+                                              variant="destructive"
+                                            >
+                                              <UserX className="w-4 h-4 mr-2" />
+                                              Reject User
+                                            </Button>
+                                          </div>
+                                        )}
+
+                                        {selectedUser.status === 'approved' && (
+                                          <div className="flex space-x-3 pt-4 border-t">
+                                            <Button
+                                              onClick={() => updateUserStatus(selectedUser.id, 'suspended', 'Suspended by admin')}
+                                              variant="outline"
+                                            >
+                                              Suspend User
+                                            </Button>
+                                          </div>
                                         )}
                                       </div>
-                                    </div>
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Account Status</h4>
-                                      <div className="space-y-2 text-sm">
-                                        <p><strong>Status:</strong> 
-                                          <Badge className={`ml-2 ${getStatusColor(selectedUser.status)}`}>
-                                            {selectedUser.status}
-                                          </Badge>
-                                        </p>
-                                        <p><strong>Created:</strong> {new Date(selectedUser.created_at).toLocaleString()}</p>
-                                        {selectedUser.verified_at && (
-                                          <p><strong>Verified:</strong> {new Date(selectedUser.verified_at).toLocaleString()}</p>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {selectedUser.address && (
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Address</h4>
-                                      <p className="text-sm">{selectedUser.address}</p>
-                                    </div>
-                                  )}
-
-                                  {selectedUser.status === 'pending' && (
-                                    <div className="flex space-x-3 pt-4 border-t">
-                                      <Button
-                                        onClick={() => updateUserStatus(selectedUser.id, 'approved')}
-                                        className="bg-green-600 hover:bg-green-700"
-                                      >
-                                        <UserCheck className="w-4 h-4 mr-2" />
-                                        Approve User
-                                      </Button>
-                                      <Button
-                                        onClick={() => updateUserStatus(selectedUser.id, 'rejected', 'Rejected by admin')}
-                                        variant="destructive"
-                                      >
-                                        <UserX className="w-4 h-4 mr-2" />
-                                        Reject User
-                                      </Button>
-                                    </div>
-                                  )}
-
-                                  {selectedUser.status === 'approved' && (
-                                    <div className="flex space-x-3 pt-4 border-t">
-                                      <Button
-                                        onClick={() => updateUserStatus(selectedUser.id, 'suspended', 'Suspended by admin')}
-                                        variant="outline"
-                                      >
-                                        Suspend User
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
+                                    )}
+                                  </DialogContent>
+                                </Dialog>
+                              </DropdownMenuItem>
+                              
+                              <DropdownMenuItem 
+                                onClick={() => editUser(user)}
+                                className="flex items-center cursor-pointer"
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit User
+                              </DropdownMenuItem>
+                              
+                              <DropdownMenuItem 
+                                onClick={() => deleteUser(user)}
+                                className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <X className="h-4 w-4 mr-2" />
+                                Delete User
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
