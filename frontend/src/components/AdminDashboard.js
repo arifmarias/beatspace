@@ -1213,23 +1213,41 @@ const AdminDashboard = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       District *
                     </label>
-                    <Input
-                      value={assetForm.district}
-                      onChange={(e) => setAssetForm({...assetForm, district: e.target.value})}
-                      placeholder="District"
-                      required
-                    />
+                    <Select 
+                      value={assetForm.district} 
+                      onValueChange={(value) => setAssetForm({...assetForm, district: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select district" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-48 overflow-y-auto">
+                        {bangladeshDistricts.map((district) => (
+                          <SelectItem key={district} value={district}>
+                            {district}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Division *
                     </label>
-                    <Input
-                      value={assetForm.division}
-                      onChange={(e) => setAssetForm({...assetForm, division: e.target.value})}
-                      placeholder="Division"
-                      required
-                    />
+                    <Select 
+                      value={assetForm.division} 
+                      onValueChange={(value) => setAssetForm({...assetForm, division: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select division" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {bangladeshDivisions.map((division) => (
+                          <SelectItem key={division} value={division}>
+                            {division}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
