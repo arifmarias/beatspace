@@ -337,31 +337,41 @@ const BuyerDashboard = () => {
   };
 
   const editOfferRequest = (offer) => {
-    console.log('🚨 EDIT FUNCTION START - offer received:', offer?.id);
-    
-    // Simple immediate alert test
-    alert('🚨 EDIT BUTTON IS WORKING!');
-    
-    console.log('🚨 Alert shown, proceeding with edit logic...');
+    console.log('🚨 EDIT FUNCTION START - offer received:', offer);
     
     try {
-      // Process the offer data
-      const processedOffer = {
-        ...offer,
+      // Populate the edit form with existing offer data
+      setEditOfferDetails({
+        campaignType: offer.campaign_type || 'existing',
+        campaignName: offer.campaign_name || '',
+        existingCampaignId: offer.existing_campaign_id || '',
+        assetId: offer.asset_id || '',
+        contractDuration: offer.contract_duration || '3_months',
+        estimatedBudget: offer.estimated_budget?.toString() || '',
+        serviceBundles: {
+          printing: offer.service_bundles?.printing || false,
+          setup: offer.service_bundles?.setup || false,
+          monitoring: offer.service_bundles?.monitoring || false
+        },
         timeline: offer.timeline || '',
-      };
+        tentativeStartDate: offer.tentative_start_date ? new Date(offer.tentative_start_date) : null,
+        selectedCampaignEndDate: offer.selected_campaign_end_date ? new Date(offer.selected_campaign_end_date) : null,
+        assetExpirationDate: offer.asset_expiration_date ? new Date(offer.asset_expiration_date) : null,
+        specialRequirements: offer.special_requirements || '',
+        notes: offer.notes || ''
+      });
       
-      console.log('🚨 Setting editing offer state...');
-      setEditingOffer(processedOffer);
+      // Set the offer being edited
+      setEditingOffer(offer);
       
-      console.log('🚨 Setting show dialog state to true...');
+      // Show the dialog
       setShowEditOfferDialog(true);
       
-      console.log('🚨 Edit function completed successfully');
+      console.log('🚨 Edit dialog should now be visible');
       
     } catch (error) {
       console.error('🚨 ERROR in editOfferRequest:', error);
-      alert('Error in edit function: ' + error.message);
+      alert('Error preparing edit form: ' + error.message);
     }
   };
 
