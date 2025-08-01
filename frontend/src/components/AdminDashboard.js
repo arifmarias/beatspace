@@ -290,20 +290,42 @@ const AdminDashboard = () => {
   };
 
   // Image upload handler
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
     
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64Image = e.target.result;
-        setAssetForm(prev => ({
-          ...prev,
-          photos: [...prev.photos, base64Image]
-        }));
-      };
-      reader.readAsDataURL(file);
-    });
+    if (files.length === 0) return;
+    
+    try {
+      setLoading(true);
+      const headers = getAuthHeaders();
+      
+      // Create FormData for multiple file upload
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+      
+      // Upload to Cloudinary via backend
+      const response = await axios.post(`${API}/upload/images`, formData, {
+        headers: {
+          ...headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      // Add uploaded image URLs to form
+      const uploadedUrls = response.data.images.map(img => img.url);
+      setAssetForm(prev => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedUrls]
+      }));
+      
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload images: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Remove image from upload
