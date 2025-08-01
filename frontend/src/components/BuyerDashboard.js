@@ -201,21 +201,49 @@ const BuyerDashboard = () => {
 
   const fetchCampaignAssets = async (campaign) => {
     try {
-      if (!campaign || !campaign.assets || campaign.assets.length === 0) {
-        setCampaignAssets([]);
-        return;
-      }
-
-      // Fetch all public assets and filter by campaign asset IDs
-      const response = await axios.get(`${API}/assets/public`);
-      const allAssets = response.data || [];
+      console.log('🚨 Fetching assets for campaign:', campaign.name, 'ID:', campaign.id);
       
-      // Filter assets that are in this campaign
-      const campaignAssetsList = allAssets.filter(asset => 
+      // Fetch all public assets
+      const assetsResponse = await axios.get(`${API}/assets/public`);
+      const allAssets = assetsResponse.data || [];
+      
+      // Start with assets that are already in the campaign
+      let campaignAssetsList = allAssets.filter(asset => 
         campaign.assets.includes(asset.id)
       );
       
+      console.log('🚨 Direct campaign assets:', campaignAssetsList.length);
+      
+      // For Draft campaigns, also include assets that have pending offer requests for this campaign
+      if (campaign.status === 'Draft') {
+        const headers = getAuthHeaders();
+        const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+        const allOfferRequests = offersResponse.data || [];
+        
+        // Find offer requests for this campaign
+        const campaignOfferRequests = allOfferRequests.filter(offer => 
+          offer.existing_campaign_id === campaign.id && 
+          (offer.status === 'Pending' || offer.status === 'Processing')
+        );
+        
+        console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
+        
+        // Add assets from offer requests that aren't already in the campaign
+        campaignOfferRequests.forEach(offer => {
+          const requestedAsset = allAssets.find(asset => asset.id === offer.asset_id);
+          if (requestedAsset && !campaignAssetsList.find(existing => existing.id === requestedAsset.id)) {
+            // Mark this asset as "requested" so we can display it differently
+            requestedAsset.isRequested = true;
+            requestedAsset.offerStatus = offer.status;
+            requestedAsset.offerId = offer.id;
+            campaignAssetsList.push(requestedAsset);
+          }
+        });
+      }
+      
+      console.log('🚨 Total campaign assets (including requested):', campaignAssetsList.length);
       setCampaignAssets(campaignAssetsList);
+      
     } catch (error) {
       console.error('Error fetching campaign assets:', error);
       setCampaignAssets([]);
