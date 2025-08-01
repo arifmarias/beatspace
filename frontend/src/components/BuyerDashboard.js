@@ -273,13 +273,6 @@ const BuyerDashboard = () => {
   const deleteOfferRequest = async (offerId) => {
     console.log('🚨 DELETE FUNCTION ENTRY - ID:', offerId);
     
-    // Add more comprehensive debugging
-    console.log('🚨 Function context - this:', this);
-    console.log('🚨 Function typeof:', typeof deleteOfferRequest);
-    console.log('🚨 Window confirm available:', typeof window.confirm);
-    console.log('🚨 Axios available:', typeof axios);
-    console.log('🚨 API constant:', API);
-    
     if (!offerId) {
       console.error('🚨 ERROR: No offer ID provided');
       alert('Error: Cannot delete offer - no ID provided');
@@ -287,17 +280,9 @@ const BuyerDashboard = () => {
     }
     
     try {
-      // TEMPORARILY SKIP CONFIRMATION FOR TESTING
       console.log('🚨 SKIPPING CONFIRMATION FOR TESTING...');
-      // const confirmed = window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.');
-      // console.log('🚨 User confirmation result:', confirmed);
-      
-      // if (!confirmed) {
-      //   console.log('🚨 User cancelled deletion');
-      //   return;
-      // }
-
       console.log('🚨 Starting delete request...');
+      
       const headers = getAuthHeaders();
       console.log('🚨 Headers obtained:', headers);
       
@@ -310,19 +295,20 @@ const BuyerDashboard = () => {
       const deleteUrl = `${API}/offers/requests/${offerId}`;
       console.log('🚨 DELETE URL:', deleteUrl);
       
+      console.log('🚨 ABOUT TO MAKE DELETE REQUEST...');
       const response = await axios.delete(deleteUrl, { headers });
-      console.log('🚨 Delete response received:', response);
+      console.log('🚨 DELETE REQUEST COMPLETED - Response:', response);
       
+      console.log('🚨 ABOUT TO SHOW SUCCESS ALERT...');
       alert('🎉 OFFER REQUEST DELETED SUCCESSFULLY!');
-      fetchBuyerData();
+      console.log('🚨 SUCCESS ALERT CALLED');
+      
+      console.log('🚨 ABOUT TO REFRESH DATA...');
+      await fetchBuyerData();
+      console.log('🚨 DATA REFRESH COMPLETED');
       
     } catch (error) {
       console.error('🚨 Delete request failed:', error);
-      console.error('🚨 Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
       alert('Failed to delete offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
