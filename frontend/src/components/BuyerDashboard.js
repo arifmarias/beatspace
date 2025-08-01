@@ -398,7 +398,7 @@ const BuyerDashboard = () => {
 
   // Calculate asset price based on duration
   const calculateAssetPrice = (offer) => {
-    // Try to get asset pricing info - this might be in the offer data or we need to fetch it
+    // Asset pricing should come from the asset database via asset_pricing field
     if (!offer.asset_pricing) {
       return 'N/A'; // If pricing info not available
     }
