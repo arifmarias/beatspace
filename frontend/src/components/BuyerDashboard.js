@@ -924,7 +924,7 @@ const BuyerDashboard = () => {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-sm font-medium text-gray-500">Campaign Assets</label>
-                    {selectedCampaign.status === 'Draft' && (
+                    {(selectedCampaign.status === 'Draft' || selectedCampaign.status === 'Live') && (
                       <Button 
                         size="sm" 
                         onClick={() => {
@@ -944,7 +944,7 @@ const BuyerDashboard = () => {
                     <div className="text-center py-8 bg-gray-50 rounded-lg">
                       <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-gray-500 mb-3">No assets selected for this campaign yet.</p>
-                      {selectedCampaign.status === 'Draft' && (
+                      {(selectedCampaign.status === 'Draft' || selectedCampaign.status === 'Live') && (
                         <Button 
                           size="sm"
                           onClick={() => {
@@ -988,7 +988,7 @@ const BuyerDashboard = () => {
                                   )}
                                 </div>
                                 
-                                {/* Show Asset Expiry Date for Live Campaign assets */}
+                                {/* Show Asset Expiry Date for Live Campaign assets (non-requested) */}
                                 {selectedCampaign.status === 'Live' && !asset.isRequested && (
                                   <div className="mt-2 space-y-1">
                                     {asset.next_available_date && (
@@ -1013,8 +1013,8 @@ const BuyerDashboard = () => {
                                   </div>
                                 )}
                                 
-                                {/* For non-Live campaigns, show availability info */}
-                                {selectedCampaign.status !== 'Live' && !asset.isRequested && asset.next_available_date && (
+                                {/* For Draft campaigns, show availability info */}
+                                {selectedCampaign.status === 'Draft' && !asset.isRequested && asset.next_available_date && (
                                   <p className="text-xs text-gray-500 mt-1">
                                     Available until: {new Date(asset.next_available_date).toLocaleDateString()}
                                   </p>
