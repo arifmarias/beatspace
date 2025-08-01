@@ -76,7 +76,9 @@ const BuyerDashboard = () => {
 
       // Fetch requested offers
       const offersRes = await axios.get(`${API}/offers/requests`, { headers });
+      console.log('🚨 FETCHED OFFERS RAW:', offersRes.data);
       setRequestedOffers(offersRes.data || []);
+      console.log('🚨 OFFERS SET TO STATE:', offersRes.data || []);
 
       // Calculate stats with null safety
       const campaignData = campaignsRes.data || [];  
