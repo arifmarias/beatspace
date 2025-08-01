@@ -375,15 +375,77 @@ const BuyerDashboard = () => {
     }
   };
 
-  const updateOfferRequest = async (updatedOffer) => {
+  // Calculate asset expiration date (same logic as MarketplacePage)
+  useEffect(() => {
+    if (editOfferDetails.tentativeStartDate && editOfferDetails.contractDuration) {
+      const startDate = new Date(editOfferDetails.tentativeStartDate);
+      let expirationDate;
+      
+      switch (editOfferDetails.contractDuration) {
+        case '3_months':
+          expirationDate = new Date(startDate);
+          expirationDate.setMonth(expirationDate.getMonth() + 3);
+          break;
+        case '6_months':
+          expirationDate = new Date(startDate);
+          expirationDate.setMonth(expirationDate.getMonth() + 6);
+          break;
+        case '12_months':
+          expirationDate = new Date(startDate);
+          expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+          break;
+        default:
+          expirationDate = null;
+      }
+
+      // Check against campaign end date if it exists
+      let expirationWarning = '';
+      if (expirationDate && editOfferDetails.selectedCampaignEndDate) {
+        const campaignEndDate = new Date(editOfferDetails.selectedCampaignEndDate);
+        if (expirationDate > campaignEndDate) {
+          expirationWarning = 'Asset expiration extends beyond campaign end date';
+        }
+      }
+
+      setEditOfferDetails(prev => ({
+        ...prev,
+        assetExpirationDate: expirationDate,
+        expirationWarning
+      }));
+    }
+  }, [editOfferDetails.tentativeStartDate, editOfferDetails.contractDuration, editOfferDetails.selectedCampaignEndDate]);
+
+  const updateOfferRequest = async (updatedOfferData) => {
     try {
+      console.log('🚨 Updating offer request with data:', updatedOfferData);
+      
       const headers = getAuthHeaders();
-      await axios.put(`${API}/offers/requests/${updatedOffer.id}`, updatedOffer, { headers });
+      
+      // Prepare the update payload
+      const updatePayload = {
+        campaign_type: editOfferDetails.campaignType,
+        campaign_name: editOfferDetails.campaignName,
+        existing_campaign_id: editOfferDetails.existingCampaignId || null,
+        contract_duration: editOfferDetails.contractDuration,
+        estimated_budget: parseFloat(editOfferDetails.estimatedBudget) || 0,
+        service_bundles: editOfferDetails.serviceBundles,
+        timeline: editOfferDetails.timeline || '',
+        tentative_start_date: editOfferDetails.tentativeStartDate ? editOfferDetails.tentativeStartDate.toISOString() : null,
+        asset_expiration_date: editOfferDetails.assetExpirationDate ? editOfferDetails.assetExpirationDate.toISOString() : null,
+        special_requirements: editOfferDetails.specialRequirements || '',
+        notes: editOfferDetails.notes || ''
+      };
+      
+      console.log('🚨 Sending update payload:', updatePayload);
+      
+      await axios.put(`${API}/offers/requests/${editingOffer.id}`, updatePayload, { headers });
+      
       alert('Offer request updated successfully!');
       setShowEditOfferDialog(false);
       setEditingOffer(null);
       setActiveTab('requested-offers'); // Navigate back to Requested Offers tab
       fetchBuyerData(); // Refresh the data
+      
     } catch (error) {
       console.error('Error updating offer request:', error);
       console.error('Error response:', error.response);
