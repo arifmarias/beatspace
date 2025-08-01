@@ -1193,7 +1193,11 @@ const BuyerDashboard = () => {
                               console.log('Final parsed date:', parsedDate);
                               
                               if (!isNaN(parsedDate)) {
-                                return parsedDate.toLocaleDateString();
+                                // Format as DD/MM/YYYY consistently
+                                const day = String(parsedDate.getDate()).padStart(2, '0');
+                                const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                                const year = parsedDate.getFullYear();
+                                return `${day}/${month}/${year}`;
                               }
                             }
                           } catch (e) {
@@ -1317,7 +1321,12 @@ const BuyerDashboard = () => {
                                 }
                                 
                                 console.log('Calculated expiration date:', expirationDate);
-                                return expirationDate.toLocaleDateString('en-US');
+                                
+                                // Format as DD/MM/YYYY consistently to match start date
+                                const day = String(expirationDate.getDate()).padStart(2, '0');
+                                const month = String(expirationDate.getMonth() + 1).padStart(2, '0');
+                                const year = expirationDate.getFullYear();
+                                return `${day}/${month}/${year}`;
                               }
                             }
                           }
