@@ -509,7 +509,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Cloudinary image upload integration"
     - "Cloudinary frontend integration with enhanced UI"
     - "Asset creation workflow verification"
   stuck_tasks: []
