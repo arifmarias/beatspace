@@ -228,24 +228,42 @@ const BuyerDashboard = () => {
   };
 
   const deleteOfferRequest = async (offerId) => {
-    console.log('Delete offer request called with ID:', offerId);
+    console.log('🚨 DELETE BUTTON CLICKED - Function called with ID:', offerId);
+    console.log('🚨 Offer ID type:', typeof offerId);
+    console.log('🚨 Offer ID value:', offerId);
     
+    // Extra validation
+    if (!offerId) {
+      console.error('🚨 ERROR: Offer ID is null, undefined, or empty:', offerId);
+      alert('Error: Cannot delete offer - invalid ID');
+      return;
+    }
+    
+    console.log('🚨 Showing confirmation dialog...');
     if (!window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.')) {
+      console.log('🚨 User cancelled deletion');
       return;
     }
 
+    console.log('🚨 User confirmed deletion, proceeding...');
+    
     try {
       const headers = getAuthHeaders();
-      console.log('Attempting to delete offer with headers:', headers);
+      console.log('🚨 Auth headers:', headers);
+      console.log('🚨 API endpoint:', `${API}/offers/requests/${offerId}`);
       
       const response = await axios.delete(`${API}/offers/requests/${offerId}`, { headers });
-      console.log('Delete response:', response);
+      console.log('🚨 Delete response status:', response.status);
+      console.log('🚨 Delete response data:', response.data);
       
       alert('Offer request deleted successfully!');
+      console.log('🚨 Refreshing buyer data...');
       fetchBuyerData(); // Refresh the data
     } catch (error) {
-      console.error('Error deleting offer request:', error);
-      console.error('Error response:', error.response);
+      console.error('🚨 ERROR deleting offer request:', error);
+      console.error('🚨 ERROR response:', error.response);
+      console.error('🚨 ERROR response data:', error.response?.data);
+      console.error('🚨 ERROR response status:', error.response?.status);
       alert('Failed to delete offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
