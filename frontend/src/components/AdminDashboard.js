@@ -107,6 +107,21 @@ const AdminDashboard = () => {
     status: 'pending' // Default status for new users
   });
 
+  // Campaign form state
+  const [campaignForm, setCampaignForm] = useState({
+    name: '',
+    description: '',
+    buyer_id: '',
+    budget: '',
+    start_date: '',
+    end_date: '',
+    status: 'Draft', // Default status for new campaigns
+    campaign_assets: [] // Array of {asset_id, asset_name, asset_start_date, asset_expiration_date}
+  });
+
+  // Available assets for campaign selection
+  const [availableAssets, setAvailableAssets] = useState([]);
+
   // Asset form state
   const [assetForm, setAssetForm] = useState({
     name: '',
