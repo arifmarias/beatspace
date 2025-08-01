@@ -1116,6 +1116,21 @@ const AdminDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <Input
+                    value={assetForm.status}
+                    disabled
+                    className="bg-gray-50 text-gray-600"
+                    placeholder="Available (Default)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    New assets are created with "Available" status by default
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Dimensions
                   </label>
                   <Input
