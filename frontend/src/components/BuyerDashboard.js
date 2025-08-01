@@ -914,11 +914,26 @@ const BuyerDashboard = () => {
                                   <Badge className={getStatusColor(asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status)}>
                                     {asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status}
                                   </Badge>
-                                  <span className="text-sm text-gray-500">
-                                    ৳{asset.pricing?.weekly_rate?.toLocaleString()}/week
-                                  </span>
                                 </div>
-                                {asset.next_available_date && (
+                                
+                                {/* Show Asset Expiry Date for Live Campaign assets */}
+                                {selectedCampaign.status === 'Live' && (
+                                  <div className="mt-2 space-y-1">
+                                    {asset.next_available_date && (
+                                      <p className="text-xs text-blue-600 font-medium">
+                                        🗓️ Asset Expiry: {new Date(asset.next_available_date).toLocaleDateString()}
+                                      </p>
+                                    )}
+                                    {selectedCampaign.end_date && (
+                                      <p className="text-xs text-gray-500">
+                                        Campaign End: {new Date(selectedCampaign.end_date).toLocaleDateString()}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                                
+                                {/* For non-Live campaigns, show availability info */}
+                                {selectedCampaign.status !== 'Live' && asset.next_available_date && (
                                   <p className="text-xs text-gray-500 mt-1">
                                     Available until: {new Date(asset.next_available_date).toLocaleDateString()}
                                   </p>
