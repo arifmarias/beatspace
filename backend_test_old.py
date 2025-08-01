@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class BeatSpaceAPITester:
-    def __init__(self, base_url="https://a4df27c4-1783-4db7-95ad-c286de139cf8.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://8a43b0da-d3e7-43b1-b383-7f20141de3d5.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
