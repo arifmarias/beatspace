@@ -64,6 +64,20 @@ const BuyerDashboard = () => {
   useEffect(() => {
     console.log('🚨 BuyerDashboard component mounted/updated');
     console.log('🚨 Current requested offers:', requestedOffers);
+    
+    // Add global test functions for debugging
+    window.debugDeleteOffer = (offerId) => {
+      console.log('🧪 GLOBAL DELETE TEST called with:', offerId);
+      if (window.confirm('Global delete test - proceed?')) {
+        deleteOfferRequest(offerId);
+      }
+    };
+    
+    window.debugEditOffer = (offer) => {
+      console.log('🧪 GLOBAL EDIT TEST called with:', offer);
+      editOfferRequest(offer);
+    };
+    
     fetchBuyerData();
   }, []);
 
