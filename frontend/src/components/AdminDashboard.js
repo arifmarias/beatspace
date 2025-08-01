@@ -66,6 +66,27 @@ const AdminDashboard = () => {
   const [assetFilter, setAssetFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Asset form state
+  const [assetForm, setAssetForm] = useState({
+    name: '',
+    description: '',
+    address: '',
+    district: '',
+    division: '',
+    type: 'Billboard',
+    dimensions: '',
+    traffic_volume: '',
+    visibility_score: '',
+    pricing: {
+      weekly_rate: '',
+      monthly_rate: '',
+      yearly_rate: ''
+    },
+    photos: [],
+    seller_id: '',
+    seller_name: ''
+  });
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
