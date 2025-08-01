@@ -1173,7 +1173,7 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleCreateAsset}
                 className="bg-orange-600 hover:bg-orange-700"
-                disabled={!assetForm.name || !assetForm.address || !assetForm.pricing.weekly_rate}
+                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.weekly_rate || !assetForm.seller_id}
               >
                 Create Asset
               </Button>
