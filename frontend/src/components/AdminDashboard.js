@@ -92,6 +92,18 @@ const AdminDashboard = () => {
 
   const [sellers, setSellers] = useState([]);
 
+  // User form state
+  const [userForm, setUserForm] = useState({
+    company_name: '',
+    contact_name: '',
+    email: '',
+    phone: '',
+    website: '',
+    address: '',
+    role: 'buyer',
+    status: 'pending' // Default status for new users
+  });
+
   // Asset form state
   const [assetForm, setAssetForm] = useState({
     name: '',
