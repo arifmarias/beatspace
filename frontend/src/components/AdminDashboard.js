@@ -20,6 +20,7 @@ import {
   Search,
   Filter,
   MoreHorizontal,
+  MoreVertical,
   ChevronDown,
   Mail,
   Phone,
