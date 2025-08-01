@@ -624,7 +624,7 @@ const BuyerDashboard = () => {
                         });
                         
                         return (
-                          <TableRow key={offer.id}>
+                          <TableRow key={`offer-${offer.id}`}>
                             <TableCell>
                               <div className="font-medium">{offer.asset_name}</div>
                             </TableCell>
@@ -647,19 +647,19 @@ const BuyerDashboard = () => {
                             <TableCell className="capitalize">{offer.campaign_type}</TableCell>
                             <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
-                              {offer.status === 'Pending' && (
+                              {(() => {
+                                console.log('🚨 RENDERING ACTIONS for offer:', offer.id, 'status:', offer.status);
+                                return offer.status === 'Pending';
+                              })() && (
                                 <div className="flex space-x-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                      console.log('🚨 EDIT BUTTON CLICKED - offer:', offer);
-                                      try {
-                                        editOfferRequest(offer);
-                                      } catch (error) {
-                                        console.error('🚨 Edit function error:', error);
-                                        alert('Error calling edit function: ' + error.message);
-                                      }
+                                    onClick={(e) => {
+                                      console.log('🚨 EDIT BUTTON JSX RENDER - Button clicked!');
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      handleEditOffer(offer);
                                     }}
                                     className="text-blue-600 hover:text-blue-800"
                                   >
@@ -669,14 +669,11 @@ const BuyerDashboard = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                      console.log('🚨 DELETE BUTTON CLICKED - offer ID:', offer.id);
-                                      try {
-                                        deleteOfferRequest(offer.id);
-                                      } catch (error) {
-                                        console.error('🚨 Delete function error:', error);
-                                        alert('Error calling delete function: ' + error.message);
-                                      }
+                                    onClick={(e) => {
+                                      console.log('🚨 DELETE BUTTON JSX RENDER - Button clicked!');
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      handleDeleteOffer(offer.id, e);
                                     }}
                                     className="text-red-600 hover:text-red-800"
                                   >
@@ -686,7 +683,9 @@ const BuyerDashboard = () => {
                                 </div>
                               )}
                               {offer.status !== 'Pending' && (
-                                <span className="text-gray-500 text-sm">No actions available</span>
+                                <span className="text-gray-500 text-sm">
+                                  No actions available (Status: {offer.status})
+                                </span>
                               )}
                             </TableCell>
                           </TableRow>
