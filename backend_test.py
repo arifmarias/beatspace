@@ -1856,10 +1856,10 @@ class BeatSpaceAPITester:
             print("❌ Admin login failed - cannot proceed with asset creation test")
             return False, 0, 1
         
-        # Admin Asset Creation Test
-        print("\n📋 ADMIN ASSET CREATION FIX")
+        # Admin Asset Creation Test - FIXED DATA FORMAT
+        print("\n📋 ADMIN ASSET CREATION FIX - CORRECTED DATA FORMAT")
         print("-" * 40)
-        creation_success, creation_response = self.test_admin_asset_creation_fix()
+        creation_success, creation_response = self.test_admin_create_asset_with_fixed_data_format()
         
         # Summary
         print("\n" + "=" * 80)
