@@ -1564,7 +1564,21 @@ const BuyerDashboard = () => {
         </Dialog>
 
         {/* Edit Campaign Dialog */}
-        <Dialog open={showEditCampaign} onOpenChange={setShowEditCampaign}>
+        <Dialog open={showEditCampaign} onOpenChange={(open) => {
+          setShowEditCampaign(open);
+          if (!open) {
+            // Reset form when closing
+            setEditingCampaign(null);
+            setCampaignForm({
+              name: '',
+              description: '',
+              budget: '',
+              notes: '',
+              startDate: null,
+              endDate: null
+            });
+          }
+        }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Edit Campaign</DialogTitle>
