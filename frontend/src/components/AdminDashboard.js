@@ -180,6 +180,105 @@ const AdminDashboard = () => {
     }
   };
 
+  // User CRUD Functions
+  const handleCreateUser = async () => {
+    try {
+      const headers = getAuthHeaders();
+      
+      const userData = {
+        ...userForm,
+        password: 'tempPassword123' // Default password for admin-created users
+      };
+
+      const response = await axios.post(`${API}/auth/register`, userData, { headers });
+      alert('User created successfully!');
+      
+      setShowAddUser(false);
+      resetUserForm();
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Error creating user:', error);
+      alert('Failed to create user: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const editUser = (user) => {
+    setUserForm({
+      company_name: user.company_name || '',
+      contact_name: user.contact_name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      website: user.website || '',
+      address: user.address || '',
+      role: user.role || 'buyer',
+      status: user.status || 'pending'
+    });
+    
+    setEditingUser(user);
+    setShowEditUser(true);
+  };
+
+  const handleUpdateUser = async () => {
+    try {
+      if (!editingUser) {
+        alert('Error: No user selected for editing');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      
+      const updateData = {
+        ...userForm
+      };
+
+      await axios.put(`${API}/admin/users/${editingUser.id}`, updateData, { headers });
+      alert('User updated successfully!');
+      
+      setShowEditUser(false);
+      setEditingUser(null);
+      resetUserForm();
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('Failed to update user: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const deleteUser = async (user) => {
+    const confirmMessage = `Are you sure you want to delete the user "${user.company_name}"?\n\nThis action cannot be undone.`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.delete(`${API}/admin/users/${user.id}`, { headers });
+      alert(`User "${user.company_name}" deleted successfully!`);
+      
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Failed to delete user: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const resetUserForm = () => {
+    setUserForm({
+      company_name: '',
+      contact_name: '',
+      email: '',
+      phone: '',
+      website: '',
+      address: '',
+      role: 'buyer',
+      status: 'pending'
+    });
+  };
+
   const updateAssetStatus = async (assetId, status, reason = '') => {
     try {
       const headers = getAuthHeaders();
