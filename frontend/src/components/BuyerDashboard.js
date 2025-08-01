@@ -62,6 +62,8 @@ const BuyerDashboard = () => {
   });
 
   useEffect(() => {
+    console.log('🚨 BuyerDashboard component mounted/updated');
+    console.log('🚨 Current requested offers:', requestedOffers);
     fetchBuyerData();
   }, []);
 
