@@ -52,6 +52,27 @@ const BuyerDashboard = () => {
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('campaigns');
 
+  // Edit offer form state - same structure as MarketplacePage
+  const [editOfferDetails, setEditOfferDetails] = useState({
+    campaignType: 'existing', // Default to existing for edits
+    campaignName: '',
+    existingCampaignId: '',
+    assetId: '',
+    contractDuration: '3_months',
+    estimatedBudget: '',
+    serviceBundles: {
+      printing: false,
+      setup: false,
+      monitoring: false
+    },
+    timeline: '',
+    tentativeStartDate: null,
+    selectedCampaignEndDate: null,
+    assetExpirationDate: null,
+    specialRequirements: '',
+    notes: ''
+  });
+
   const [campaignForm, setCampaignForm] = useState({
     name: '',
     description: '',
