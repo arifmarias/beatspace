@@ -435,6 +435,25 @@ const BuyerDashboard = () => {
     return calculatedPrice;
   };
 
+  // Compare user offer with asset price
+  const getPriceComparison = (offer) => {
+    const assetPrice = calculateAssetPrice(offer);
+    const userOffer = offer.estimated_budget || 0;
+    
+    if (assetPrice === 'N/A') return null;
+    
+    const difference = userOffer - assetPrice;
+    const percentDiff = ((difference / assetPrice) * 100).toFixed(1);
+    
+    if (difference > 0) {
+      return { type: 'higher', text: `+${percentDiff}%`, color: 'text-green-600' };
+    } else if (difference < 0) {
+      return { type: 'lower', text: `${percentDiff}%`, color: 'text-red-600' };
+    } else {
+      return { type: 'equal', text: 'Match', color: 'text-gray-600' };
+    }
+  };
+
   // Move button handlers outside JSX to prevent recreation on each render
   const handleEditOffer = (offer) => {
     console.log('🚨 HANDLE EDIT CALLED - offer:', offer?.id);
