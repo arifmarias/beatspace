@@ -1643,8 +1643,8 @@ class BeatSpaceAPITester:
             "type": "Billboard",
             "dimensions": "10ft x 20ft",
             "location": {"lat": 23.7461, "lng": 90.3742},
-            "traffic_volume": 5000,
-            "visibility_score": 8.5,
+            "traffic_volume": "High",  # String, not integer
+            "visibility_score": 8,     # Integer, not float
             "pricing": {
                 "weekly_rate": 2000,
                 "monthly_rate": 7000,
