@@ -152,6 +152,136 @@ const AdminDashboard = () => {
     }
   };
 
+  // Asset CRUD Functions
+  const handleCreateAsset = async () => {
+    try {
+      const headers = getAuthHeaders();
+      
+      const assetData = {
+        ...assetForm,
+        traffic_volume: parseInt(assetForm.traffic_volume) || 0,
+        visibility_score: parseFloat(assetForm.visibility_score) || 0,
+        pricing: {
+          weekly_rate: parseFloat(assetForm.pricing.weekly_rate) || 0,
+          monthly_rate: parseFloat(assetForm.pricing.monthly_rate) || 0,
+          yearly_rate: parseFloat(assetForm.pricing.yearly_rate) || 0
+        }
+      };
+
+      await axios.post(`${API}/assets`, assetData, { headers });
+      alert('Asset created successfully!');
+      
+      setShowAddAsset(false);
+      resetAssetForm();
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Error creating asset:', error);
+      alert('Failed to create asset: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const editAsset = (asset) => {
+    setAssetForm({
+      name: asset.name || '',
+      description: asset.description || '',
+      address: asset.address || '',
+      district: asset.district || '',
+      division: asset.division || '',
+      type: asset.type || 'Billboard',
+      dimensions: asset.dimensions || '',
+      traffic_volume: asset.traffic_volume?.toString() || '',
+      visibility_score: asset.visibility_score?.toString() || '',
+      pricing: {
+        weekly_rate: asset.pricing?.weekly_rate?.toString() || '',
+        monthly_rate: asset.pricing?.monthly_rate?.toString() || '',
+        yearly_rate: asset.pricing?.yearly_rate?.toString() || ''
+      },
+      photos: asset.photos || [],
+      seller_id: asset.seller_id || '',
+      seller_name: asset.seller_name || ''
+    });
+    
+    setEditingAsset(asset);
+    setShowEditAsset(true);
+  };
+
+  const handleUpdateAsset = async () => {
+    try {
+      if (!editingAsset) {
+        alert('Error: No asset selected for editing');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      
+      const updateData = {
+        ...assetForm,
+        traffic_volume: parseInt(assetForm.traffic_volume) || 0,
+        visibility_score: parseFloat(assetForm.visibility_score) || 0,
+        pricing: {
+          weekly_rate: parseFloat(assetForm.pricing.weekly_rate) || 0,
+          monthly_rate: parseFloat(assetForm.pricing.monthly_rate) || 0,
+          yearly_rate: parseFloat(assetForm.pricing.yearly_rate) || 0
+        }
+      };
+
+      await axios.put(`${API}/assets/${editingAsset.id}`, updateData, { headers });
+      alert('Asset updated successfully!');
+      
+      setShowEditAsset(false);
+      setEditingAsset(null);
+      resetAssetForm();
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error updating asset:', error);
+      alert('Failed to update asset: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const deleteAsset = async (asset) => {
+    const confirmMessage = `Are you sure you want to delete the asset "${asset.name}"?\n\nThis action cannot be undone.`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.delete(`${API}/assets/${asset.id}`, { headers });
+      alert(`Asset "${asset.name}" deleted successfully!`);
+      
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      alert('Failed to delete asset: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const resetAssetForm = () => {
+    setAssetForm({
+      name: '',
+      description: '',
+      address: '',
+      district: '',
+      division: '',
+      type: 'Billboard',
+      dimensions: '',
+      traffic_volume: '',
+      visibility_score: '',
+      pricing: {
+        weekly_rate: '',
+        monthly_rate: '',
+        yearly_rate: ''
+      },
+      photos: [],
+      seller_id: '',
+      seller_name: ''
+    });
+  };
+
   const filteredUsers = (users || []).filter(user => {
     const matchesFilter = userFilter === 'all' || user.status === userFilter;
     const matchesSearch = !searchTerm || 
