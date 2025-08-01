@@ -332,7 +332,10 @@ backend:
           comment: "🚨 CONTRADICTION: User manual testing shows edit and delete buttons still not working despite testing agent report. Buttons visible but clicking produces no response, no console logs, no confirmation dialogs."
         - working: "NA"
           agent: "main"
-          comment: "TROUBLESHOOTING: Root cause identified as React event handling issue. Implementing fixes: 1) Added proper key props to table rows for React reconciliation, 2) Moved button handlers outside JSX to prevent recreation, 3) Added event.stopPropagation() and preventDefault() to button handlers, 4) Added immediate alert() feedback to verify button clicks are registering, 5) Enhanced debugging with render-time logging to verify button rendering."
+          comment: "TROUBLESHOOTING: Root cause identified as React event handling issue. Implemented fixes: 1) Added proper key props to table rows for React reconciliation, 2) Moved button handlers outside JSX to prevent recreation, 3) Added event.stopPropagation() and preventDefault() to button handlers, 4) Added immediate alert() feedback to verify button clicks are registering, 5) Enhanced debugging with render-time logging to verify button rendering."
+        - working: "partial"
+          agent: "main"
+          comment: "PROGRESS UPDATE: ✅ DELETE functionality now working correctly - user confirmed deletion is happening successfully. ✅ EDIT button click events now firing - console logs show button clicks are registered. 🔧 IMPLEMENTING FULL EDIT DIALOG: Replaced simple edit dialog with complete 'Request Best Offer' style dialog that matches MarketplacePage functionality: 1) Pre-populates all existing offer data (campaign, budget, duration, services, dates, notes), 2) Includes same calculations for asset expiration dates, 3) Has full campaign selection with existing campaigns dropdown, 4) All service bundles checkboxes, 5) Special requirements and notes fields, 6) Auto-calculation of dates and validation, 7) Proper update API call to PUT /api/offers/requests/{id} with correct payload format."
 
 frontend:
   - task: "Remove Add to Campaign buttons from list view"
