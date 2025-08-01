@@ -1497,6 +1497,45 @@ async def upload_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
+@api_router.post("/upload/images")
+async def upload_multiple_images(
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Upload multiple images to Cloudinary cloud storage"""
+    try:
+        uploaded_images = []
+        
+        for file in files:
+            # Read file content
+            content = await file.read()
+            
+            # Upload to Cloudinary
+            result = cloudinary.uploader.upload(
+                content,
+                folder="beatspace_assets",
+                resource_type="image",
+                public_id=f"asset_{uuid.uuid4().hex[:8]}",
+                transformation=[
+                    {'width': 800, 'height': 600, 'crop': 'limit'},
+                    {'quality': 'auto'},
+                    {'fetch_format': 'auto'}
+                ]
+            )
+            
+            uploaded_images.append({
+                "url": result.get('secure_url'),
+                "public_id": result.get('public_id'),
+                "filename": file.filename,
+                "width": result.get('width'),
+                "height": result.get('height')
+            })
+        
+        return {"images": uploaded_images}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
 # Public Stats Route
 @api_router.get("/stats/public")
 async def get_public_stats():
