@@ -329,11 +329,31 @@ const AdminDashboard = () => {
   };
 
   // Remove image from upload
-  const removeImage = (index) => {
-    setAssetForm(prev => ({
-      ...prev,
-      photos: prev.photos.filter((_, i) => i !== index)
-    }));
+  const removeImage = async (index) => {
+    try {
+      const imageUrl = assetForm.photos[index];
+      
+      // Extract public_id from Cloudinary URL if it's a Cloudinary image
+      if (imageUrl && imageUrl.includes('cloudinary.com')) {
+        const publicId = imageUrl.split('/').pop().split('.')[0];
+        
+        // Optional: Delete from Cloudinary (you can implement this endpoint if needed)
+        // await axios.delete(`${API}/upload/image/${publicId}`, { headers: getAuthHeaders() });
+      }
+      
+      // Remove from local state
+      setAssetForm(prev => ({
+        ...prev,
+        photos: prev.photos.filter((_, i) => i !== index)
+      }));
+    } catch (error) {
+      console.error('Error removing image:', error);
+      // Still remove from local state even if deletion fails
+      setAssetForm(prev => ({
+        ...prev,
+        photos: prev.photos.filter((_, i) => i !== index)
+      }));
+    }
   };
 
   const resetAssetForm = () => {
