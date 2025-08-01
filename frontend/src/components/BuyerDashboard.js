@@ -462,79 +462,61 @@ const BuyerDashboard = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {(campaigns || []).map((campaign) => (
-                      <Card key={campaign.id} className="border-l-4 border-l-orange-500">
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start mb-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Campaign Name</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Budget</TableHead>
+                        <TableHead>Assets</TableHead>
+                        <TableHead>Start Date</TableHead>
+                        <TableHead>End Date</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(campaigns || []).map((campaign) => (
+                        <TableRow key={campaign.id}>
+                          <TableCell>
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-900">{campaign.name}</h3>
-                              <p className="text-sm text-gray-600">{campaign.description}</p>
+                              <div className="font-medium">{campaign.name}</div>
+                              <div className="text-sm text-gray-500">{campaign.description}</div>
                             </div>
+                          </TableCell>
+                          <TableCell>
                             <Badge className={getStatusColor(campaign.status)}>
                               {campaign.status}
                             </Badge>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                            <div>
-                              <p className="text-sm text-gray-500">Budget</p>
-                              <p className="font-medium">৳{campaign.budget?.toLocaleString()}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Assets</p>
-                              <p className="font-medium">{(campaign.assets || []).length} selected</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Start Date</p>
-                              <p className="font-medium">
-                                {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'Not set'}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">End Date</p>
-                              <p className="font-medium">
-                                {campaign.end_date ? new Date(campaign.end_date).toLocaleDateString() : 'Not set'}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-end space-x-2">
+                          </TableCell>
+                          <TableCell>৳{campaign.budget?.toLocaleString()}</TableCell>
+                          <TableCell>{(campaign.assets || []).length} selected</TableCell>
+                          <TableCell>
+                            {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'Not set'}
+                          </TableCell>
+                          <TableCell>
+                            {campaign.end_date ? new Date(campaign.end_date).toLocaleDateString() : 'Not set'}
+                          </TableCell>
+                          <TableCell>
+                            {campaign.created_at ? new Date(campaign.created_at).toLocaleDateString() : 'N/A'}
+                          </TableCell>
+                          <TableCell>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setSelectedCampaign(campaign)}
+                              onClick={() => {
+                                setSelectedCampaign(campaign);
+                                fetchCampaignAssets(campaign);
+                              }}
                             >
                               <Eye className="w-4 h-4 mr-1" />
                               View Details
                             </Button>
-                            {campaign.status === 'Draft' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => updateCampaignStatus(campaign.id, 'Live')}
-                                className="text-green-600 hover:text-green-800"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Go Live
-                              </Button>
-                            )}
-                            {campaign.status === 'Live' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => updateCampaignStatus(campaign.id, 'Draft')}
-                                className="text-yellow-600 hover:text-yellow-800"
-                              >
-                                <Clock className="w-4 h-4 mr-1" />
-                                Pause
-                              </Button>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
