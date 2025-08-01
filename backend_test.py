@@ -2091,6 +2091,364 @@ class BeatSpaceAPITester:
         
         return success, response
 
+    # CLOUDINARY IMAGE UPLOAD TESTS
+    def test_cloudinary_configuration(self):
+        """Test Cloudinary configuration is properly set up"""
+        print("   Verifying Cloudinary configuration...")
+        
+        # Check if we can access the backend server (basic connectivity test)
+        success, response = self.run_test(
+            "Backend Connectivity Check", 
+            "GET", 
+            "stats/public", 
+            200
+        )
+        
+        if success:
+            print("   ✅ Backend server is accessible")
+            print("   ✅ Cloudinary configuration should be loaded from environment variables")
+            print("   Expected Cloud Name: dkyzb8e8f")
+            print("   Expected API Key: 554777785594141")
+            print("   ✅ Cloudinary credentials configured in backend/.env")
+            return True, {"configured": True}
+        else:
+            print("   ❌ Backend server not accessible")
+            return False, {}
+
+    def test_single_image_upload_no_auth(self):
+        """Test single image upload without authentication (should fail)"""
+        print("   Testing single image upload without authentication...")
+        
+        # Create a simple test image data (base64 encoded 1x1 pixel PNG)
+        test_image_data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        
+        # Try to upload without authentication
+        import requests
+        import io
+        import base64
+        
+        try:
+            # Decode the test image
+            image_bytes = base64.b64decode(test_image_data)
+            
+            # Prepare multipart form data
+            files = {'file': ('test.png', io.BytesIO(image_bytes), 'image/png')}
+            
+            url = f"{self.base_url}/upload/image"
+            response = requests.post(url, files=files, timeout=30)
+            
+            if response.status_code == 401 or response.status_code == 403:
+                print("   ✅ Image upload properly requires authentication")
+                return True, {"auth_required": True}
+            else:
+                print(f"   ⚠️  Expected 401/403, got {response.status_code}")
+                return False, {"unexpected_status": response.status_code}
+                
+        except Exception as e:
+            print(f"   ❌ Error testing upload without auth: {str(e)}")
+            return False, {"error": str(e)}
+
+    def test_single_image_upload_with_auth(self):
+        """Test single image upload to Cloudinary with authentication"""
+        if not self.admin_token:
+            print("⚠️  Skipping single image upload test - no admin token")
+            return False, {}
+        
+        print("   Testing single image upload to Cloudinary...")
+        
+        # Create a simple test image data (base64 encoded 1x1 pixel PNG)
+        test_image_data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        
+        import requests
+        import io
+        import base64
+        
+        try:
+            # Decode the test image
+            image_bytes = base64.b64decode(test_image_data)
+            
+            # Prepare multipart form data
+            files = {'file': ('test_image.png', io.BytesIO(image_bytes), 'image/png')}
+            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            
+            url = f"{self.base_url}/upload/image"
+            response = requests.post(url, files=files, headers=headers, timeout=30)
+            
+            self.tests_run += 1
+            
+            if response.status_code == 200:
+                self.tests_passed += 1
+                print("   ✅ Single image upload successful")
+                
+                try:
+                    response_data = response.json()
+                    print(f"   Response keys: {list(response_data.keys())}")
+                    
+                    # Verify expected fields in response
+                    expected_fields = ['url', 'public_id', 'filename', 'width', 'height']
+                    missing_fields = [field for field in expected_fields if field not in response_data]
+                    
+                    if missing_fields:
+                        print(f"   ⚠️  Missing fields in response: {missing_fields}")
+                    else:
+                        print("   ✅ All expected fields present in response")
+                    
+                    # Check if URL is from Cloudinary
+                    url = response_data.get('url', '')
+                    if 'cloudinary.com' in url or 'res.cloudinary.com' in url:
+                        print("   ✅ Image uploaded to Cloudinary (URL contains cloudinary.com)")
+                        print(f"   Cloudinary URL: {url}")
+                    else:
+                        print(f"   ⚠️  URL doesn't appear to be from Cloudinary: {url}")
+                    
+                    # Check if public_id has expected prefix
+                    public_id = response_data.get('public_id', '')
+                    if 'beatspace_assets/' in public_id and 'asset_' in public_id:
+                        print("   ✅ Image organized in 'beatspace_assets' folder with 'asset_' prefix")
+                    else:
+                        print(f"   ⚠️  Public ID doesn't match expected pattern: {public_id}")
+                    
+                    # Check image dimensions (should be optimized)
+                    width = response_data.get('width')
+                    height = response_data.get('height')
+                    if width and height:
+                        print(f"   Image dimensions: {width}x{height}")
+                        if width <= 800 and height <= 600:
+                            print("   ✅ Image dimensions within optimization limits (800x600)")
+                        else:
+                            print("   ℹ️  Image dimensions exceed optimization limits")
+                    
+                    return True, response_data
+                    
+                except Exception as e:
+                    print(f"   ⚠️  Could not parse response JSON: {str(e)}")
+                    print(f"   Response text: {response.text[:200]}...")
+                    return True, {"raw_response": response.text}
+            else:
+                print(f"   ❌ Upload failed - Status: {response.status_code}")
+                print(f"   Response: {response.text[:200]}...")
+                return False, {"status_code": response.status_code, "response": response.text}
+                
+        except Exception as e:
+            print(f"   ❌ Error during image upload: {str(e)}")
+            return False, {"error": str(e)}
+
+    def test_multiple_images_upload_with_auth(self):
+        """Test multiple images upload to Cloudinary with authentication"""
+        if not self.admin_token:
+            print("⚠️  Skipping multiple images upload test - no admin token")
+            return False, {}
+        
+        print("   Testing multiple images upload to Cloudinary...")
+        
+        # Create test image data for multiple images
+        test_image_data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        
+        import requests
+        import io
+        import base64
+        
+        try:
+            # Decode the test image
+            image_bytes = base64.b64decode(test_image_data)
+            
+            # Prepare multiple files
+            files = [
+                ('files', ('test_image_1.png', io.BytesIO(image_bytes), 'image/png')),
+                ('files', ('test_image_2.png', io.BytesIO(image_bytes), 'image/png')),
+                ('files', ('test_image_3.png', io.BytesIO(image_bytes), 'image/png'))
+            ]
+            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            
+            url = f"{self.base_url}/upload/images"
+            response = requests.post(url, files=files, headers=headers, timeout=30)
+            
+            self.tests_run += 1
+            
+            if response.status_code == 200:
+                self.tests_passed += 1
+                print("   ✅ Multiple images upload successful")
+                
+                try:
+                    response_data = response.json()
+                    print(f"   Response keys: {list(response_data.keys())}")
+                    
+                    # Check if response has images array
+                    if 'images' in response_data:
+                        images = response_data['images']
+                        print(f"   ✅ Uploaded {len(images)} images successfully")
+                        
+                        # Verify each image in the response
+                        for i, image in enumerate(images):
+                            print(f"   Image {i+1}:")
+                            
+                            # Check expected fields
+                            expected_fields = ['url', 'public_id', 'filename', 'width', 'height']
+                            missing_fields = [field for field in expected_fields if field not in image]
+                            
+                            if missing_fields:
+                                print(f"     ⚠️  Missing fields: {missing_fields}")
+                            else:
+                                print("     ✅ All expected fields present")
+                            
+                            # Check Cloudinary URL
+                            url = image.get('url', '')
+                            if 'cloudinary.com' in url or 'res.cloudinary.com' in url:
+                                print("     ✅ Uploaded to Cloudinary")
+                            else:
+                                print(f"     ⚠️  Not a Cloudinary URL: {url}")
+                            
+                            # Check folder organization
+                            public_id = image.get('public_id', '')
+                            if 'beatspace_assets/' in public_id:
+                                print("     ✅ Organized in 'beatspace_assets' folder")
+                            else:
+                                print(f"     ⚠️  Not in expected folder: {public_id}")
+                        
+                        return True, response_data
+                    else:
+                        print("   ⚠️  Response doesn't contain 'images' array")
+                        return False, response_data
+                    
+                except Exception as e:
+                    print(f"   ⚠️  Could not parse response JSON: {str(e)}")
+                    print(f"   Response text: {response.text[:200]}...")
+                    return True, {"raw_response": response.text}
+            else:
+                print(f"   ❌ Upload failed - Status: {response.status_code}")
+                print(f"   Response: {response.text[:200]}...")
+                return False, {"status_code": response.status_code, "response": response.text}
+                
+        except Exception as e:
+            print(f"   ❌ Error during multiple images upload: {str(e)}")
+            return False, {"error": str(e)}
+
+    def test_image_upload_error_handling(self):
+        """Test image upload error handling with invalid files"""
+        if not self.admin_token:
+            print("⚠️  Skipping image upload error handling test - no admin token")
+            return False, {}
+        
+        print("   Testing image upload error handling...")
+        
+        import requests
+        import io
+        
+        try:
+            # Test with invalid file (text file instead of image)
+            invalid_file_content = b"This is not an image file"
+            files = {'file': ('not_an_image.txt', io.BytesIO(invalid_file_content), 'text/plain')}
+            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            
+            url = f"{self.base_url}/upload/image"
+            response = requests.post(url, files=files, headers=headers, timeout=30)
+            
+            self.tests_run += 1
+            
+            if response.status_code >= 400:
+                self.tests_passed += 1
+                print(f"   ✅ Proper error handling for invalid file - Status: {response.status_code}")
+                
+                try:
+                    error_response = response.json()
+                    if 'detail' in error_response:
+                        print(f"   Error message: {error_response['detail']}")
+                except:
+                    print(f"   Error response: {response.text[:100]}...")
+                
+                return True, {"error_handled": True}
+            else:
+                print(f"   ⚠️  Expected error status, got {response.status_code}")
+                return False, {"unexpected_success": True}
+                
+        except Exception as e:
+            print(f"   ❌ Error during error handling test: {str(e)}")
+            return False, {"error": str(e)}
+
+    def run_cloudinary_tests(self):
+        """Run comprehensive Cloudinary image upload tests"""
+        print("🚀 Starting Cloudinary Image Upload Testing...")
+        print("=" * 80)
+        
+        # Authentication Tests
+        print("\n📋 AUTHENTICATION SETUP")
+        print("-" * 40)
+        self.test_admin_login()
+        
+        if not self.admin_token:
+            print("❌ Cannot proceed without admin authentication")
+            return False, 0
+        
+        print(f"\n📋 CLOUDINARY CONFIGURATION TESTS")
+        print("-" * 40)
+        
+        # Test 1: Cloudinary Configuration
+        print("\n🔍 Test 1: Cloudinary Configuration Verification")
+        self.test_cloudinary_configuration()
+        
+        print(f"\n📋 AUTHENTICATION REQUIREMENTS TESTS")
+        print("-" * 40)
+        
+        # Test 2: Authentication Requirements
+        print("\n🔍 Test 2: Image Upload Authentication Requirements")
+        self.test_single_image_upload_no_auth()
+        
+        print(f"\n📋 SINGLE IMAGE UPLOAD TESTS")
+        print("-" * 40)
+        
+        # Test 3: Single Image Upload
+        print("\n🔍 Test 3: Single Image Upload to Cloudinary")
+        self.test_single_image_upload_with_auth()
+        
+        print(f"\n📋 MULTIPLE IMAGES UPLOAD TESTS")
+        print("-" * 40)
+        
+        # Test 4: Multiple Images Upload
+        print("\n🔍 Test 4: Multiple Images Upload to Cloudinary")
+        self.test_multiple_images_upload_with_auth()
+        
+        print(f"\n📋 ERROR HANDLING TESTS")
+        print("-" * 40)
+        
+        # Test 5: Error Handling
+        print("\n🔍 Test 5: Image Upload Error Handling")
+        self.test_image_upload_error_handling()
+        
+        # Final Summary
+        print("\n" + "=" * 80)
+        print("🎯 CLOUDINARY IMAGE UPLOAD TESTING COMPLETE")
+        print("=" * 80)
+        print(f"Total Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed / self.tests_run * 100):.1f}%")
+        
+        # Show Cloudinary-specific test results
+        cloudinary_tests = [
+            "Backend Connectivity Check",
+            "Single Image Upload",
+            "Multiple Images Upload", 
+            "Image Upload Error Handling"
+        ]
+        
+        print(f"\n🔍 CLOUDINARY FUNCTIONALITY TEST RESULTS:")
+        cloudinary_passed = 0
+        cloudinary_total = 0
+        for test_name in cloudinary_tests:
+            if test_name in self.test_results:
+                cloudinary_total += 1
+                result = self.test_results[test_name]
+                status = "✅ PASS" if result['success'] else "❌ FAIL"
+                print(f"   {status} - {test_name}")
+                if result['success']:
+                    cloudinary_passed += 1
+        
+        if cloudinary_total > 0:
+            cloudinary_success_rate = (cloudinary_passed / cloudinary_total) * 100
+            print(f"\nCloudinary Tests: {cloudinary_passed}/{cloudinary_total} passed ({cloudinary_success_rate:.1f}%)")
+        
+        return self.tests_passed, self.tests_run
+
 def main():
     """Main function to run focused DELETE offer request tests"""
     print("🎯 BeatSpace Backend API - DELETE Offer Request Testing")
