@@ -1151,6 +1151,279 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
 
+        {/* Add User Dialog */}
+        <Dialog open={showAddUser} onOpenChange={(open) => {
+          setShowAddUser(open);
+          if (!open) resetUserForm();
+        }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New User</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Company Name *
+                </label>
+                <Input
+                  value={userForm.company_name}
+                  onChange={(e) => setUserForm({...userForm, company_name: e.target.value})}
+                  placeholder="Enter company name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Name *
+                </label>
+                <Input
+                  value={userForm.contact_name}
+                  onChange={(e) => setUserForm({...userForm, contact_name: e.target.value})}
+                  placeholder="Enter contact name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <Input
+                  type="email"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({...userForm, email: e.target.value})}
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <Input
+                  value={userForm.phone}
+                  onChange={(e) => setUserForm({...userForm, phone: e.target.value})}
+                  placeholder="Enter phone number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website
+                </label>
+                <Input
+                  value={userForm.website}
+                  onChange={(e) => setUserForm({...userForm, website: e.target.value})}
+                  placeholder="Enter website URL"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address
+                </label>
+                <Textarea
+                  value={userForm.address}
+                  onChange={(e) => setUserForm({...userForm, address: e.target.value})}
+                  placeholder="Enter company address"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role *
+                </label>
+                <Select 
+                  value={userForm.role} 
+                  onValueChange={(value) => setUserForm({...userForm, role: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="buyer">Buyer</SelectItem>
+                    <SelectItem value="seller">Seller</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <Input
+                  value={userForm.status}
+                  disabled
+                  className="bg-gray-50 text-gray-600"
+                  placeholder="Pending (Default)"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  New users are created with "Pending" status by default
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowAddUser(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateUser}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!userForm.company_name || !userForm.contact_name || !userForm.email}
+              >
+                Create User
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit User Dialog */}
+        <Dialog open={showEditUser} onOpenChange={(open) => {
+          setShowEditUser(open);
+          if (!open) {
+            setEditingUser(null);
+            resetUserForm();
+          }
+        }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit User</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Company Name *
+                </label>
+                <Input
+                  value={userForm.company_name}
+                  onChange={(e) => setUserForm({...userForm, company_name: e.target.value})}
+                  placeholder="Enter company name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Name *
+                </label>
+                <Input
+                  value={userForm.contact_name}
+                  onChange={(e) => setUserForm({...userForm, contact_name: e.target.value})}
+                  placeholder="Enter contact name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <Input
+                  type="email"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({...userForm, email: e.target.value})}
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <Input
+                  value={userForm.phone}
+                  onChange={(e) => setUserForm({...userForm, phone: e.target.value})}
+                  placeholder="Enter phone number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website
+                </label>
+                <Input
+                  value={userForm.website}
+                  onChange={(e) => setUserForm({...userForm, website: e.target.value})}
+                  placeholder="Enter website URL"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address
+                </label>
+                <Textarea
+                  value={userForm.address}
+                  onChange={(e) => setUserForm({...userForm, address: e.target.value})}
+                  placeholder="Enter company address"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role *
+                </label>
+                <Select 
+                  value={userForm.role} 
+                  onValueChange={(value) => setUserForm({...userForm, role: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="buyer">Buyer</SelectItem>
+                    <SelectItem value="seller">Seller</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status *
+                </label>
+                <Select 
+                  value={userForm.status} 
+                  onValueChange={(value) => setUserForm({...userForm, status: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Update user status based on review and approval
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditUser(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUpdateUser}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!userForm.company_name || !userForm.contact_name || !userForm.email}
+              >
+                Update User
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Add Asset Dialog */}
         <Dialog open={showAddAsset} onOpenChange={(open) => {
           setShowAddAsset(open);
