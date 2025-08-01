@@ -67,6 +67,9 @@ const AdminDashboard = () => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showEditUser, setShowEditUser] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [showAddCampaign, setShowAddCampaign] = useState(false);
+  const [showEditCampaign, setShowEditCampaign] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
   const [userFilter, setUserFilter] = useState('all');
   const [assetFilter, setAssetFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
