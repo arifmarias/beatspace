@@ -289,6 +289,31 @@ const AdminDashboard = () => {
     }
   };
 
+  // Image upload handler
+  const handleImageUpload = (event) => {
+    const files = Array.from(event.target.files);
+    
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Image = e.target.result;
+        setAssetForm(prev => ({
+          ...prev,
+          photos: [...prev.photos, base64Image]
+        }));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Remove image from upload
+  const removeImage = (index) => {
+    setAssetForm(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index)
+    }));
+  };
+
   const resetAssetForm = () => {
     setAssetForm({
       name: '',
