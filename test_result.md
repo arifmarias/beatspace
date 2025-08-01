@@ -321,6 +321,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "Investigating delete button issue. Backend DELETE /api/offers/requests/{id} endpoint confirmed working by testing agent. Issue appears to be in frontend deleteOfferRequest function or UI event handlers."
+        - working: "NA"
+          agent: "main"
+          comment: "Fixed JSX syntax errors and added comprehensive debugging logs. Converted UI layouts back to table format as requested: 1) Campaigns now display as table with proper columns (removed admin-only pause/go live buttons), 2) Requested offers now display as table format with edit/delete action buttons, 3) Enhanced delete button debugging with detailed console logs and event handler verification."
 
 frontend:
   - task: "Remove Add to Campaign buttons from list view"
