@@ -91,9 +91,8 @@ class UserStatus(str, Enum):
 
 class CampaignStatus(str, Enum):
     DRAFT = "Draft"
-    PENDING_OFFER = "Pending Offer"
-    NEGOTIATING = "Negotiating"
-    APPROVED = "Approved"
+    NEGOTIATION = "Negotiation"
+    READY = "Ready"
     LIVE = "Live"
     COMPLETED = "Completed"
 
