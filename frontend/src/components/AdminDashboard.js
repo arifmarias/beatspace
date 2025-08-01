@@ -171,6 +171,11 @@ const AdminDashboard = () => {
       const sellerUsers = allUsers.filter(user => user.role === 'seller');
       setSellers(sellerUsers);
 
+      // Fetch available assets for campaign management
+      const availableAssetsResponse = await axios.get(`${API}/assets/public`);
+      const availableAssetsData = availableAssetsResponse.data.filter(asset => asset.status === 'Available');
+      setAvailableAssets(availableAssetsData);
+
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       if (error.response?.status === 401) {
