@@ -1383,14 +1383,38 @@ const AdminDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Seller Name *
+                    Seller *
                   </label>
-                  <Input
-                    value={assetForm.seller_name}
-                    onChange={(e) => setAssetForm({...assetForm, seller_name: e.target.value})}
-                    placeholder="Seller/Owner name"
-                    required
-                  />
+                  <Select 
+                    value={assetForm.seller_id} 
+                    onValueChange={(value) => {
+                      const selectedSeller = sellers.find(seller => seller.id === value);
+                      setAssetForm({
+                        ...assetForm, 
+                        seller_id: value,
+                        seller_name: selectedSeller ? selectedSeller.company_name || selectedSeller.name : ''
+                      });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select seller" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-48 overflow-y-auto">
+                      {sellers.map((seller) => (
+                        <SelectItem key={seller.id} value={seller.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{seller.company_name || seller.name}</span>
+                            <span className="text-xs text-gray-500">{seller.email}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {sellers.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      No sellers found. Please ensure there are users with 'seller' role.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
