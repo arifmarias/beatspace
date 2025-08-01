@@ -3504,5 +3504,119 @@ def main():
         print("❌ Admin asset creation functionality has issues that need attention")
         return 1
 
+    def run_user_management_crud_tests(self):
+        """Run comprehensive User Management CRUD tests - PRIORITY TESTS"""
+        print("\n" + "="*80)
+        print("🎯 BEATSPACE USER MANAGEMENT CRUD TESTING - PRIORITY TESTS")
+        print("="*80)
+        print("Testing Admin Dashboard User Management functionality:")
+        print("✅ Admin User Creation")
+        print("✅ Admin User Update") 
+        print("✅ Admin User Delete")
+        print("✅ User Status Management")
+        print("✅ User Listing")
+        print("="*80)
+        
+        # Step 1: Authentication
+        print("\n🔐 STEP 1: AUTHENTICATION")
+        admin_success, admin_response = self.test_admin_login()
+        if not admin_success:
+            print("❌ CRITICAL: Admin authentication failed - cannot proceed with user management tests")
+            return
+        
+        # Step 2: User Listing (Priority Test 5)
+        print("\n📋 STEP 2: USER LISTING - PRIORITY TEST 5")
+        list_success, list_response = self.test_admin_get_users()
+        
+        # Step 3: User Creation (Priority Test 1)
+        print("\n➕ STEP 3: USER CREATION - PRIORITY TEST 1")
+        create_success, create_response = self.test_admin_create_user()
+        
+        # Step 4: User Information Update (Priority Test 2)
+        print("\n✏️ STEP 4: USER INFORMATION UPDATE - PRIORITY TEST 2")
+        update_success, update_response = self.test_admin_update_user_info()
+        
+        # Step 5: User Status Management (Priority Test 4)
+        print("\n🔄 STEP 5: USER STATUS MANAGEMENT - PRIORITY TEST 4")
+        status_success, status_response = self.test_admin_update_user_status()
+        
+        # Step 6: User Status Workflow Testing
+        print("\n🔄 STEP 6: USER STATUS WORKFLOW TESTING")
+        workflow_success, workflow_response = self.test_user_status_workflow()
+        
+        # Step 7: User Deletion (Priority Test 3)
+        print("\n🗑️ STEP 7: USER DELETION - PRIORITY TEST 3")
+        delete_success, delete_response = self.test_admin_delete_user()
+        
+        # Step 8: Authentication & Authorization Testing
+        print("\n🔒 STEP 8: AUTHENTICATION & AUTHORIZATION TESTING")
+        auth_success, auth_response = self.test_user_management_authentication()
+        
+        # Summary
+        print("\n" + "="*80)
+        print("🎯 USER MANAGEMENT CRUD TESTING SUMMARY")
+        print("="*80)
+        
+        tests = [
+            ("Admin Authentication", admin_success),
+            ("User Listing (GET /api/admin/users)", list_success),
+            ("User Creation (POST /api/admin/users)", create_success),
+            ("User Info Update (PUT /api/admin/users/{id})", update_success),
+            ("User Status Update (PATCH /api/admin/users/{id}/status)", status_success),
+            ("User Status Workflow", workflow_success),
+            ("User Deletion (DELETE /api/admin/users/{id})", delete_success),
+            ("Authentication & Authorization", auth_success)
+        ]
+        
+        passed_tests = sum(1 for _, success in tests if success)
+        total_tests = len(tests)
+        
+        for test_name, success in tests:
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"   {status} - {test_name}")
+        
+        print(f"\n📊 RESULTS: {passed_tests}/{total_tests} tests passed ({(passed_tests/total_tests)*100:.1f}%)")
+        
+        if passed_tests == total_tests:
+            print("🎉 ALL USER MANAGEMENT CRUD TESTS PASSED!")
+            print("✅ Admin can create users with default 'pending' status")
+            print("✅ Admin can update user information and status")
+            print("✅ Admin can delete users")
+            print("✅ Status updates work correctly (pending → approved → suspended)")
+            print("✅ All CRUD operations properly secured with admin authentication")
+        else:
+            print("⚠️  Some tests failed - see details above")
+        
+        print("="*80)
+        
+        return passed_tests == total_tests
+
+
+def run_user_management_crud_tests():
+    """Main function to run User Management CRUD tests"""
+    print("🚀 Starting BeatSpace User Management CRUD Testing...")
+    print(f"🌐 Base URL: https://37418983-9503-4987-a0fc-a4c67a993362.preview.emergentagent.com/api")
+    print("🔑 Admin Credentials: admin@beatspace.com / admin123")
+    
+    tester = BeatSpaceAPITester()
+    
+    # Run User Management CRUD Tests
+    success = tester.run_user_management_crud_tests()
+    
+    print(f"\n📊 FINAL RESULTS:")
+    print(f"✅ Tests Passed: {tester.tests_passed}")
+    print(f"❌ Tests Failed: {tester.tests_run - tester.tests_passed}")
+    print(f"📈 Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    
+    if success:
+        print("\n🎉 USER MANAGEMENT CRUD FUNCTIONALITY VERIFIED!")
+        print("All priority tests passed - Admin Dashboard User Management is working correctly.")
+        return 0
+    else:
+        print("\n⚠️  User Management CRUD functionality has issues that need attention.")
+        return 1
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    # Run User Management CRUD Tests as requested in the review
+    sys.exit(run_user_management_crud_tests())
