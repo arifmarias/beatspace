@@ -783,6 +783,25 @@ const AdminDashboard = () => {
                               )}
                             </DialogContent>
                           </Dialog>
+                          
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => editAsset(asset)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => deleteAsset(asset)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
