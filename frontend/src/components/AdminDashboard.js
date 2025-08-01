@@ -222,6 +222,7 @@ const AdminDashboard = () => {
       dimensions: asset.dimensions || '',
       traffic_volume: asset.traffic_volume?.toString() || '',
       visibility_score: asset.visibility_score?.toString() || '',
+      status: asset.status || 'Available', // Include current status
       pricing: {
         weekly_rate: asset.pricing?.weekly_rate?.toString() || '',
         monthly_rate: asset.pricing?.monthly_rate?.toString() || '',
