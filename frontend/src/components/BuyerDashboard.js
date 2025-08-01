@@ -245,15 +245,29 @@ const BuyerDashboard = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  // Add window debugging functions for easier testing
-  window.testDeleteFunction = (offerId) => {
-    console.log('🧪 WINDOW TEST: Delete function called with:', offerId);
-    deleteOfferRequest(offerId);
+  // Move button handlers outside JSX to prevent recreation on each render
+  const handleEditOffer = (offer) => {
+    console.log('🚨 EDIT HANDLER CALLED - offer:', offer);
+    try {
+      editOfferRequest(offer);
+    } catch (error) {
+      console.error('🚨 Edit function error:', error);
+      alert('Error calling edit function: ' + error.message);
+    }
   };
 
-  window.testEditFunction = (offer) => {
-    console.log('🧪 WINDOW TEST: Edit function called with:', offer);
-    editOfferRequest(offer);
+  const handleDeleteOffer = (offerId, event) => {
+    console.log('🚨 DELETE HANDLER CALLED - offer ID:', offerId);
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    try {
+      deleteOfferRequest(offerId);
+    } catch (error) {
+      console.error('🚨 Delete function error:', error);
+      alert('Error calling delete function: ' + error.message);
+    }
   };
 
   const deleteOfferRequest = async (offerId) => {
