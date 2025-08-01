@@ -928,7 +928,23 @@ const BuyerDashboard = () => {
                                 {offer.status}
                               </Badge>
                             </TableCell>
-                            <TableCell>৳{offer.estimated_budget?.toLocaleString()}</TableCell>
+                            <TableCell>
+                              <div className="font-medium text-gray-900">
+                                ৳{calculateAssetPrice(offer) !== 'N/A' 
+                                  ? calculateAssetPrice(offer).toLocaleString() 
+                                  : 'N/A'
+                                }
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                ({offer.contract_duration?.replace('_', ' ')})
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="font-medium text-blue-600">
+                                ৳{offer.estimated_budget?.toLocaleString()}
+                              </div>
+                              <div className="text-xs text-gray-500">Your offer</div>
+                            </TableCell>
                             <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
                             <TableCell className="capitalize">{offer.campaign_type}</TableCell>
                             <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
