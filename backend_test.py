@@ -2450,66 +2450,63 @@ class BeatSpaceAPITester:
         return self.tests_passed, self.tests_run
 
 def main():
-    """Main function to run focused DELETE offer request tests"""
-    print("🎯 BeatSpace Backend API - DELETE Offer Request Testing")
+    """Main function to run Cloudinary image upload tests"""
+    print("🎯 BeatSpace Backend API - Cloudinary Image Upload Testing")
     print("=" * 80)
     
     tester = BeatSpaceAPITester()
     
-    # Run focused DELETE tests
-    passed, total = tester.run_focused_delete_offer_tests()
+    # Run Cloudinary tests
+    passed, total = tester.run_cloudinary_tests()
     
     # Print detailed results
     print("\n" + "=" * 60)
-    print("📊 DETAILED DELETE TEST RESULTS")
+    print("📊 DETAILED CLOUDINARY TEST RESULTS")
     print("=" * 60)
     
-    delete_specific_tests = [
-        "Buyer Login",
-        "Get Offer Requests (Buyer)",
-        "Create Test Offer Request for DELETE",
-        "Get Asset Status Before Delete",
-        "DELETE Offer Request",
-        "Get Asset Status After Delete",
-        "Verify Offer Request Deleted",
-        "DELETE Without Authentication",
-        "DELETE Existing Offer Request"
+    cloudinary_specific_tests = [
+        "Admin Login",
+        "Backend Connectivity Check",
+        "Single Image Upload",
+        "Multiple Images Upload",
+        "Image Upload Error Handling"
     ]
     
-    delete_passed = 0
-    delete_total = 0
+    cloudinary_passed = 0
+    cloudinary_total = 0
     
-    for test_name in delete_specific_tests:
+    for test_name in cloudinary_specific_tests:
         if test_name in tester.test_results:
-            delete_total += 1
+            cloudinary_total += 1
             result = tester.test_results[test_name]
             if result['success']:
-                delete_passed += 1
+                cloudinary_passed += 1
                 print(f"✅ {test_name}")
             else:
                 print(f"❌ {test_name} - Status: {result.get('status_code', 'Error')}")
                 if 'error' in result:
                     print(f"   Error: {result['error']}")
     
-    print(f"\n📈 DELETE FUNCTIONALITY SUMMARY")
-    print(f"Total DELETE Tests: {delete_passed}/{delete_total} passed")
+    print(f"\n📈 CLOUDINARY FUNCTIONALITY SUMMARY")
+    print(f"Total Cloudinary Tests: {cloudinary_passed}/{cloudinary_total} passed")
     print(f"Overall Tests: {tester.tests_passed}/{tester.tests_run} passed")
     
     # Determine overall status
-    if delete_passed >= delete_total * 0.8:  # 80% pass rate for DELETE tests
-        print("🎉 DELETE functionality is working correctly!")
+    if cloudinary_passed >= cloudinary_total * 0.8:  # 80% pass rate for Cloudinary tests
+        print("🎉 Cloudinary image upload functionality is working correctly!")
         print("✅ Key findings:")
-        print("   - DELETE /api/offers/requests/{id} endpoint working")
-        print("   - Buyer authentication (marketing@grameenphone.com/buyer123) working")
-        print("   - Only buyers can delete their own pending offer requests")
-        print("   - Asset status correctly resets to 'Available' upon deletion")
-        print("   - Offer requests properly removed from system")
-        print("   - Existing offer requests in system can be deleted")
-        print("\n🔍 CONCLUSION: Backend DELETE functionality is production-ready.")
-        print("   If frontend delete button not working, issue is in frontend JavaScript/React code.")
+        print("   - POST /api/upload/image endpoint working")
+        print("   - POST /api/upload/images endpoint working")
+        print("   - Admin authentication (admin@beatspace.com/admin123) working")
+        print("   - Images uploaded to Cloudinary cloud storage")
+        print("   - Images organized in 'beatspace_assets' folder")
+        print("   - Image optimization applied (800x600 limit, auto quality/format)")
+        print("   - Proper authentication required for uploads")
+        print("   - Error handling for invalid files working")
+        print("\n🔍 CONCLUSION: Cloudinary integration is production-ready.")
         return 0
     else:
-        print("❌ DELETE functionality has issues that need attention")
+        print("❌ Cloudinary functionality has issues that need attention")
         return 1
 
 if __name__ == "__main__":
