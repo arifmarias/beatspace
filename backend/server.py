@@ -1468,16 +1468,32 @@ async def upload_image(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user)
 ):
-    """Upload image to cloud storage"""
+    """Upload image to Cloudinary cloud storage"""
     try:
         # Read file content
         content = await file.read()
         
-        # For demo, return a placeholder URL
-        # In production, upload to Cloudinary
-        demo_url = f"https://images.unsplash.com/photo-{uuid.uuid4().hex[:8]}?w=800&h=600&fit=crop"
+        # Upload to Cloudinary
+        result = cloudinary.uploader.upload(
+            content,
+            folder="beatspace_assets",  # Organize uploads in a folder
+            resource_type="image",
+            public_id=f"asset_{uuid.uuid4().hex[:8]}",  # Unique public ID
+            transformation=[
+                {'width': 800, 'height': 600, 'crop': 'limit'},  # Resize large images
+                {'quality': 'auto'},  # Optimize quality
+                {'fetch_format': 'auto'}  # Auto format selection
+            ]
+        )
         
-        return {"url": demo_url, "filename": file.filename}
+        return {
+            "url": result.get('secure_url'),
+            "public_id": result.get('public_id'),
+            "filename": file.filename,
+            "width": result.get('width'),
+            "height": result.get('height')
+        }
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
