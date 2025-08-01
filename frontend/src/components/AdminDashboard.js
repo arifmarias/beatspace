@@ -665,6 +665,13 @@ const AdminDashboard = () => {
                     <span>User Management</span>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
+                    <Button 
+                      onClick={() => setShowAddUser(true)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add User
+                    </Button>
                     <Input
                       placeholder="Search users..."
                       value={searchTerm}
