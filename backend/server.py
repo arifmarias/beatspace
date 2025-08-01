@@ -1735,6 +1735,82 @@ async def update_user_status(
     
     return {"message": f"User status updated to {status_update.status}"}
 
+@api_router.post("/admin/users", response_model=User)
+async def create_user_admin(
+    user_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Create new user (admin only)"""
+    # Check if email already exists
+    existing_user = await db.users.find_one({"email": user_data.get("email")})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Hash password
+    user_data["password"] = hash_password(user_data.get("password", "tempPassword123"))
+    user_data["status"] = UserStatus.PENDING  # Default status for admin-created users
+    user_data["created_at"] = datetime.utcnow()
+    
+    user = User(**user_data)
+    await db.users.insert_one(user.dict())
+    
+    return user
+
+@api_router.put("/admin/users/{user_id}", response_model=User)
+async def update_user_admin(
+    user_id: str,
+    user_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update user information (admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Don't allow updating password through this endpoint
+    if "password" in user_data:
+        del user_data["password"]
+    
+    # Don't allow updating created_at
+    if "created_at" in user_data:
+        del user_data["created_at"]
+    
+    user_data["updated_at"] = datetime.utcnow()
+    
+    updated_user = await db.users.find_one_and_update(
+        {"id": user_id},
+        {"$set": user_data},
+        return_document=True
+    )
+    
+    return User(**updated_user)
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user_admin(
+    user_id: str,
+    admin_user: User = Depends(require_admin)
+):
+    """Delete user (admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Prevent deleting admin users
+    if user.get("role") == UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Cannot delete admin users")
+    
+    # Delete associated data (campaigns, assets, etc.)
+    # Delete user's campaigns
+    await db.campaigns.delete_many({"buyer_id": user_id})
+    
+    # Delete user's assets (if seller)
+    await db.assets.delete_many({"seller_id": user_id})
+    
+    # Delete the user
+    await db.users.delete_one({"id": user_id})
+    
+    return {"message": f"User and associated data deleted successfully"}
+
 @api_router.patch("/admin/assets/{asset_id}/status")
 async def update_asset_status(
     asset_id: str,
