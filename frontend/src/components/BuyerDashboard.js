@@ -922,30 +922,74 @@ const BuyerDashboard = () => {
                 )}
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500 mb-3 block">Campaign Assets</label>
-                  {(selectedCampaign.assets || []).length === 0 ? (
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="text-sm font-medium text-gray-500">Campaign Assets</label>
+                    {selectedCampaign.status === 'Draft' && (
+                      <Button 
+                        size="sm" 
+                        onClick={() => {
+                          // Close current dialog and navigate to marketplace
+                          setSelectedCampaign(null);
+                          navigate('/marketplace');
+                        }}
+                        className="bg-orange-600 hover:bg-orange-700"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Asset
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {(campaignAssets || []).length === 0 ? (
                     <div className="text-center py-8 bg-gray-50 rounded-lg">
                       <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No assets selected for this campaign yet.</p>
+                      <p className="text-gray-500 mb-3">No assets selected for this campaign yet.</p>
+                      {selectedCampaign.status === 'Draft' && (
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCampaign(null);
+                            navigate('/marketplace');
+                          }}
+                          className="bg-orange-600 hover:bg-orange-700"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Your First Asset
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {(campaignAssets || []).map((asset) => (
-                        <Card key={asset.id} className="border">
+                        <Card key={asset.id} className={`border ${asset.isRequested ? 'border-orange-200 bg-orange-50' : ''}`}>
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
-                                <h4 className="font-medium text-gray-900">{asset.name}</h4>
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h4 className="font-medium text-gray-900">{asset.name}</h4>
+                                  {asset.isRequested && (
+                                    <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                      Requested
+                                    </Badge>
+                                  )}
+                                </div>
                                 <p className="text-sm text-gray-600 mb-2">{asset.address}</p>
                                 <div className="flex items-center space-x-4">
                                   <Badge variant="outline">{asset.type}</Badge>
-                                  <Badge className={getStatusColor(asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status)}>
-                                    {asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status}
-                                  </Badge>
+                                  
+                                  {asset.isRequested ? (
+                                    <Badge className="bg-orange-100 text-orange-800">
+                                      {asset.offerStatus}
+                                    </Badge>
+                                  ) : (
+                                    <Badge className={getStatusColor(asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status)}>
+                                      {asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status}
+                                    </Badge>
+                                  )}
                                 </div>
                                 
                                 {/* Show Asset Expiry Date for Live Campaign assets */}
-                                {selectedCampaign.status === 'Live' && (
+                                {selectedCampaign.status === 'Live' && !asset.isRequested && (
                                   <div className="mt-2 space-y-1">
                                     {asset.next_available_date && (
                                       <p className="text-xs text-blue-600 font-medium">
@@ -960,23 +1004,54 @@ const BuyerDashboard = () => {
                                   </div>
                                 )}
                                 
+                                {/* For requested assets, show different info */}
+                                {asset.isRequested && (
+                                  <div className="mt-2">
+                                    <p className="text-xs text-orange-600">
+                                      📋 Offer request submitted - waiting for admin response
+                                    </p>
+                                  </div>
+                                )}
+                                
                                 {/* For non-Live campaigns, show availability info */}
-                                {selectedCampaign.status !== 'Live' && asset.next_available_date && (
+                                {selectedCampaign.status !== 'Live' && !asset.isRequested && asset.next_available_date && (
                                   <p className="text-xs text-gray-500 mt-1">
                                     Available until: {new Date(asset.next_available_date).toLocaleDateString()}
                                   </p>
                                 )}
                               </div>
-                              {selectedCampaign.status === 'Draft' && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => removeAssetFromCampaign(asset.id)}
-                                  className="text-red-600 hover:text-red-800"
-                                >
-                                  <X className="w-4 h-4" />
-                                </Button>
-                              )}
+                              
+                              {/* Action buttons */}
+                              <div className="flex space-x-2">
+                                {selectedCampaign.status === 'Draft' && !asset.isRequested && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => removeAssetFromCampaign(asset.id)}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                )}
+                                
+                                {asset.isRequested && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      // Find and edit the offer request
+                                      const offerToEdit = requestedOffers.find(offer => offer.id === asset.offerId);
+                                      if (offerToEdit) {
+                                        setSelectedCampaign(null); // Close campaign dialog
+                                        editOfferRequest(offerToEdit); // Open edit dialog
+                                      }
+                                    }}
+                                    className="text-blue-600 hover:text-blue-800"
+                                  >
+                                    <Edit className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
