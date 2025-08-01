@@ -302,6 +302,141 @@ const AdminDashboard = () => {
     });
   };
 
+  // Campaign CRUD Functions
+  const handleCreateCampaign = async () => {
+    try {
+      const headers = getAuthHeaders();
+      
+      const campaignData = {
+        ...campaignForm,
+        budget: parseFloat(campaignForm.budget) || 0,
+        start_date: campaignForm.start_date ? new Date(campaignForm.start_date).toISOString() : null,
+        end_date: campaignForm.end_date ? new Date(campaignForm.end_date).toISOString() : null
+      };
+
+      const response = await axios.post(`${API}/admin/campaigns`, campaignData, { headers });
+      alert('Campaign created successfully!');
+      
+      setShowAddCampaign(false);
+      resetCampaignForm();
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      alert('Failed to create campaign: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const editCampaign = (campaign) => {
+    setCampaignForm({
+      name: campaign.name || '',
+      description: campaign.description || '',
+      buyer_id: campaign.buyer_id || '',
+      budget: campaign.budget?.toString() || '',
+      start_date: campaign.start_date ? new Date(campaign.start_date).toISOString().split('T')[0] : '',
+      end_date: campaign.end_date ? new Date(campaign.end_date).toISOString().split('T')[0] : '',
+      status: campaign.status || 'Draft',
+      campaign_assets: campaign.campaign_assets || []
+    });
+    
+    setEditingCampaign(campaign);
+    setShowEditCampaign(true);
+  };
+
+  const handleUpdateCampaign = async () => {
+    try {
+      if (!editingCampaign) {
+        alert('Error: No campaign selected for editing');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      
+      const updateData = {
+        ...campaignForm,
+        budget: parseFloat(campaignForm.budget) || 0,
+        start_date: campaignForm.start_date ? new Date(campaignForm.start_date).toISOString() : null,
+        end_date: campaignForm.end_date ? new Date(campaignForm.end_date).toISOString() : null
+      };
+
+      await axios.put(`${API}/admin/campaigns/${editingCampaign.id}`, updateData, { headers });
+      alert('Campaign updated successfully!');
+      
+      setShowEditCampaign(false);
+      setEditingCampaign(null);
+      resetCampaignForm();
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error updating campaign:', error);
+      alert('Failed to update campaign: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const deleteCampaign = async (campaign) => {
+    const confirmMessage = `Are you sure you want to delete the campaign "${campaign.name}"?\n\nThis action cannot be undone.`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.delete(`${API}/admin/campaigns/${campaign.id}`, { headers });
+      alert(`Campaign "${campaign.name}" deleted successfully!`);
+      
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      alert('Failed to delete campaign: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const resetCampaignForm = () => {
+    setCampaignForm({
+      name: '',
+      description: '',
+      buyer_id: '',
+      budget: '',
+      start_date: '',
+      end_date: '',
+      status: 'Draft',
+      campaign_assets: []
+    });
+  };
+
+  // Campaign Asset Management Functions
+  const addAssetToCampaign = () => {
+    const newAsset = {
+      asset_id: '',
+      asset_name: '',
+      asset_start_date: campaignForm.start_date || '',
+      asset_expiration_date: campaignForm.end_date || ''
+    };
+    
+    setCampaignForm(prev => ({
+      ...prev,
+      campaign_assets: [...prev.campaign_assets, newAsset]
+    }));
+  };
+
+  const removeAssetFromCampaign = (index) => {
+    setCampaignForm(prev => ({
+      ...prev,
+      campaign_assets: prev.campaign_assets.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateCampaignAsset = (index, field, value) => {
+    setCampaignForm(prev => ({
+      ...prev,
+      campaign_assets: prev.campaign_assets.map((asset, i) => 
+        i === index ? { ...asset, [field]: value } : asset
+      )
+    }));
+  };
+
   const updateAssetStatus = async (assetId, status, reason = '') => {
     try {
       const headers = getAuthHeaders();
