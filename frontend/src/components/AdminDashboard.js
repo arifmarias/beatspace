@@ -1643,6 +1643,466 @@ const AdminDashboard = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Add Campaign Dialog */}
+        <Dialog open={showAddCampaign} onOpenChange={(open) => {
+          setShowAddCampaign(open);
+          if (!open) resetCampaignForm();
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Campaign</DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Campaign Name *
+                  </label>
+                  <Input
+                    value={campaignForm.name}
+                    onChange={(e) => setCampaignForm({...campaignForm, name: e.target.value})}
+                    placeholder="Enter campaign name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <Textarea
+                    value={campaignForm.description}
+                    onChange={(e) => setCampaignForm({...campaignForm, description: e.target.value})}
+                    placeholder="Enter campaign description"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Buyer *
+                  </label>
+                  <Select 
+                    value={campaignForm.buyer_id} 
+                    onValueChange={(value) => setCampaignForm({...campaignForm, buyer_id: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select buyer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(users || []).filter(user => user.role === 'buyer').map(buyer => (
+                        <SelectItem key={buyer.id} value={buyer.id}>
+                          {buyer.company_name} ({buyer.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Budget (৳)
+                  </label>
+                  <Input
+                    type="number"
+                    value={campaignForm.budget}
+                    onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
+                    placeholder="Enter budget amount"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Start Date *
+                    </label>
+                    <Input
+                      type="date"
+                      value={campaignForm.start_date}
+                      onChange={(e) => setCampaignForm({...campaignForm, start_date: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      End Date *
+                    </label>
+                    <Input
+                      type="date"
+                      value={campaignForm.end_date}
+                      onChange={(e) => setCampaignForm({...campaignForm, end_date: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <Input
+                    value={campaignForm.status}
+                    disabled
+                    className="bg-gray-50 text-gray-600"
+                    placeholder="Draft (Default)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    New campaigns are created with "Draft" status by default
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Campaign Assets
+                    </label>
+                    <Button 
+                      type="button"
+                      onClick={addAssetToCampaign}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Asset
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {campaignForm.campaign_assets.map((asset, index) => (
+                      <div key={index} className="border rounded-lg p-3 space-y-2">
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm font-medium">Asset {index + 1}</span>
+                          <Button
+                            type="button"
+                            onClick={() => removeAssetFromCampaign(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-600 hover:text-red-700 p-1"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Asset *
+                          </label>
+                          <Select 
+                            value={asset.asset_id} 
+                            onValueChange={(value) => {
+                              const selectedAsset = availableAssets.find(a => a.id === value);
+                              updateCampaignAsset(index, 'asset_id', value);
+                              updateCampaignAsset(index, 'asset_name', selectedAsset?.name || '');
+                            }}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue placeholder="Select available asset" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableAssets.map(availableAsset => (
+                                <SelectItem key={availableAsset.id} value={availableAsset.id}>
+                                  {availableAsset.name} - {availableAsset.address}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              Asset Start Date *
+                            </label>
+                            <Input
+                              type="date"
+                              value={asset.asset_start_date}
+                              onChange={(e) => updateCampaignAsset(index, 'asset_start_date', e.target.value)}
+                              className="h-8 text-xs"
+                              min={campaignForm.start_date}
+                              max={campaignForm.end_date}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              Asset Expiry Date *
+                            </label>
+                            <Input
+                              type="date"
+                              value={asset.asset_expiration_date}
+                              onChange={(e) => updateCampaignAsset(index, 'asset_expiration_date', e.target.value)}
+                              className="h-8 text-xs"
+                              min={asset.asset_start_date || campaignForm.start_date}
+                              max={campaignForm.end_date}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {campaignForm.campaign_assets.length === 0 && (
+                      <div className="text-center py-4 text-gray-500 text-sm border-2 border-dashed rounded-lg">
+                        No assets added yet. Click "Add Asset" to get started.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowAddCampaign(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateCampaign}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={!campaignForm.name || !campaignForm.buyer_id || !campaignForm.start_date || !campaignForm.end_date}
+              >
+                Create Campaign
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Campaign Dialog */}
+        <Dialog open={showEditCampaign} onOpenChange={(open) => {
+          setShowEditCampaign(open);
+          if (!open) {
+            setEditingCampaign(null);
+            resetCampaignForm();
+          }
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Campaign</DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Campaign Name *
+                  </label>
+                  <Input
+                    value={campaignForm.name}
+                    onChange={(e) => setCampaignForm({...campaignForm, name: e.target.value})}
+                    placeholder="Enter campaign name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <Textarea
+                    value={campaignForm.description}
+                    onChange={(e) => setCampaignForm({...campaignForm, description: e.target.value})}
+                    placeholder="Enter campaign description"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Buyer *
+                  </label>
+                  <Select 
+                    value={campaignForm.buyer_id} 
+                    onValueChange={(value) => setCampaignForm({...campaignForm, buyer_id: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select buyer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(users || []).filter(user => user.role === 'buyer').map(buyer => (
+                        <SelectItem key={buyer.id} value={buyer.id}>
+                          {buyer.company_name} ({buyer.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Budget (৳)
+                  </label>
+                  <Input
+                    type="number"
+                    value={campaignForm.budget}
+                    onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
+                    placeholder="Enter budget amount"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Start Date *
+                    </label>
+                    <Input
+                      type="date"
+                      value={campaignForm.start_date}
+                      onChange={(e) => setCampaignForm({...campaignForm, start_date: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      End Date *
+                    </label>
+                    <Input
+                      type="date"
+                      value={campaignForm.end_date}
+                      onChange={(e) => setCampaignForm({...campaignForm, end_date: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status *
+                  </label>
+                  <Select 
+                    value={campaignForm.status} 
+                    onValueChange={(value) => setCampaignForm({...campaignForm, status: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Draft">Draft</SelectItem>
+                      <SelectItem value="Negotiation">Negotiation</SelectItem>
+                      <SelectItem value="Ready">Ready</SelectItem>
+                      <SelectItem value="Live">Live</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Update campaign status based on current stage
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Campaign Assets
+                    </label>
+                    <Button 
+                      type="button"
+                      onClick={addAssetToCampaign}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Asset
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {campaignForm.campaign_assets.map((asset, index) => (
+                      <div key={index} className="border rounded-lg p-3 space-y-2">
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm font-medium">Asset {index + 1}</span>
+                          <Button
+                            type="button"
+                            onClick={() => removeAssetFromCampaign(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-600 hover:text-red-700 p-1"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Asset *
+                          </label>
+                          <Select 
+                            value={asset.asset_id} 
+                            onValueChange={(value) => {
+                              const selectedAsset = availableAssets.find(a => a.id === value);
+                              updateCampaignAsset(index, 'asset_id', value);
+                              updateCampaignAsset(index, 'asset_name', selectedAsset?.name || '');
+                            }}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue placeholder="Select available asset" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableAssets.map(availableAsset => (
+                                <SelectItem key={availableAsset.id} value={availableAsset.id}>
+                                  {availableAsset.name} - {availableAsset.address}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              Asset Start Date *
+                            </label>
+                            <Input
+                              type="date"
+                              value={asset.asset_start_date}
+                              onChange={(e) => updateCampaignAsset(index, 'asset_start_date', e.target.value)}
+                              className="h-8 text-xs"
+                              min={campaignForm.start_date}
+                              max={campaignForm.end_date}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              Asset Expiry Date *
+                            </label>
+                            <Input
+                              type="date"
+                              value={asset.asset_expiration_date}
+                              onChange={(e) => updateCampaignAsset(index, 'asset_expiration_date', e.target.value)}
+                              className="h-8 text-xs"
+                              min={asset.asset_start_date || campaignForm.start_date}
+                              max={campaignForm.end_date}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {campaignForm.campaign_assets.length === 0 && (
+                      <div className="text-center py-4 text-gray-500 text-sm border-2 border-dashed rounded-lg">
+                        No assets added yet. Click "Add Asset" to get started.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditCampaign(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUpdateCampaign}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={!campaignForm.name || !campaignForm.buyer_id || !campaignForm.start_date || !campaignForm.end_date}
+              >
+                Update Campaign
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Add Asset Dialog */}
         <Dialog open={showAddAsset} onOpenChange={(open) => {
           setShowAddAsset(open);
