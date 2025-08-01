@@ -1562,6 +1562,131 @@ const BuyerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Campaign Dialog */}
+        <Dialog open={showEditCampaign} onOpenChange={setShowEditCampaign}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Campaign</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Campaign Name *
+                </label>
+                <Input
+                  value={campaignForm.name}
+                  onChange={(e) => setCampaignForm({...campaignForm, name: e.target.value})}
+                  placeholder="Enter campaign name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <Textarea
+                  value={campaignForm.description}
+                  onChange={(e) => setCampaignForm({...campaignForm, description: e.target.value})}
+                  placeholder="Describe your campaign objectives"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Budget (৳) *
+                </label>
+                <Input
+                  type="number"
+                  value={campaignForm.budget}
+                  onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
+                  placeholder="Enter total budget"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Campaign Start Date
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {campaignForm.startDate ? campaignForm.startDate.toLocaleDateString() : "Select start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <CalendarComponent
+                        mode="single"
+                        selected={campaignForm.startDate}
+                        onSelect={(date) => setCampaignForm({...campaignForm, startDate: date})}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Campaign End Date
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {campaignForm.endDate ? campaignForm.endDate.toLocaleDateString() : "Select end date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <CalendarComponent
+                        mode="single"
+                        selected={campaignForm.endDate}
+                        onSelect={(date) => setCampaignForm({...campaignForm, endDate: date})}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <Textarea
+                  value={campaignForm.notes}
+                  onChange={(e) => setCampaignForm({...campaignForm, notes: e.target.value})}
+                  placeholder="Additional notes or requirements"
+                  rows={2}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditCampaign(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUpdateCampaign}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={!campaignForm.name || !campaignForm.budget}
+              >
+                Update Campaign
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
