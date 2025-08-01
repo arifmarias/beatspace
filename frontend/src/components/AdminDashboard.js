@@ -371,6 +371,7 @@ const AdminDashboard = () => {
       dimensions: '',
       traffic_volume: '',
       visibility_score: '',
+      status: 'Available', // Default status
       pricing: {
         weekly_rate: '',
         monthly_rate: '',
