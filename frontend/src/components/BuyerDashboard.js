@@ -969,6 +969,99 @@ const BuyerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Offer Request Dialog */}
+        <Dialog open={showEditOfferDialog} onOpenChange={setShowEditOfferDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Offer Request</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {editingOffer && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Asset Name
+                    </label>
+                    <Input
+                      value={editingOffer.asset_name || ''}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Campaign Name
+                    </label>
+                    <Input
+                      value={editingOffer.campaign_name || ''}
+                      onChange={(e) => setEditingOffer({...editingOffer, campaign_name: e.target.value})}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Budget (৳)
+                    </label>
+                    <Input
+                      type="number"
+                      value={editingOffer.estimated_budget || ''}
+                      onChange={(e) => setEditingOffer({...editingOffer, estimated_budget: parseFloat(e.target.value)})}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Contract Duration
+                    </label>
+                    <Select 
+                      value={editingOffer.contract_duration || ''} 
+                      onValueChange={(value) => setEditingOffer({...editingOffer, contract_duration: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1_week">1 Week</SelectItem>
+                        <SelectItem value="2_weeks">2 Weeks</SelectItem>
+                        <SelectItem value="1_month">1 Month</SelectItem>
+                        <SelectItem value="3_months">3 Months</SelectItem>
+                        <SelectItem value="6_months">6 Months</SelectItem>
+                        <SelectItem value="1_year">1 Year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Notes
+                    </label>
+                    <Textarea
+                      value={editingOffer.notes || ''}
+                      onChange={(e) => setEditingOffer({...editingOffer, notes: e.target.value})}
+                      placeholder="Additional notes or requirements"
+                      rows={3}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowEditOfferDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => updateOfferRequest(editingOffer)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Update Offer Request
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
