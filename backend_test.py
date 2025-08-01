@@ -240,6 +240,7 @@ class BeatSpaceAPITester:
                 "yearly_rate": 80000
             },
             "seller_id": seller_user['id'],
+            "seller_name": seller_user.get('company_name'),  # ✅ FIXED: Added missing seller_name
             "photos": ["test_image_url"]
         }
         
