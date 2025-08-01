@@ -314,22 +314,32 @@ const BuyerDashboard = () => {
   };
 
   const editOfferRequest = (offer) => {
-    console.log('🚨 EDIT FUNCTION CALLED - Editing offer:', offer); 
+    console.log('🚨 EDIT FUNCTION START - offer received:', offer?.id);
     
-    // Add immediate feedback
-    alert('🚨 EDIT FUNCTION WORKING! Opening edit dialog...');
+    // Simple immediate alert test
+    alert('🚨 EDIT BUTTON IS WORKING!');
     
-    // Process the offer data to ensure proper date handling
-    const processedOffer = {
-      ...offer,
-      // Ensure timeline is in the correct format for date parsing
-      timeline: offer.timeline || '',
-    };
+    console.log('🚨 Alert shown, proceeding with edit logic...');
     
-    console.log('🚨 Processed offer timeline:', processedOffer.timeline); 
-    
-    setEditingOffer(processedOffer);
-    setShowEditOfferDialog(true);
+    try {
+      // Process the offer data
+      const processedOffer = {
+        ...offer,
+        timeline: offer.timeline || '',
+      };
+      
+      console.log('🚨 Setting editing offer state...');
+      setEditingOffer(processedOffer);
+      
+      console.log('🚨 Setting show dialog state to true...');
+      setShowEditOfferDialog(true);
+      
+      console.log('🚨 Edit function completed successfully');
+      
+    } catch (error) {
+      console.error('🚨 ERROR in editOfferRequest:', error);
+      alert('Error in edit function: ' + error.message);
+    }
   };
 
   const updateOfferRequest = async (updatedOffer) => {
