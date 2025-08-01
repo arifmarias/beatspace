@@ -96,6 +96,13 @@ class CampaignStatus(str, Enum):
     LIVE = "Live"
     COMPLETED = "Completed"
 
+class CampaignAsset(BaseModel):
+    asset_id: str
+    asset_name: str
+    asset_start_date: datetime
+    asset_expiration_date: datetime
+    added_at: datetime = Field(default_factory=datetime.utcnow)
+
 class PaymentStatus(str, Enum):
     PENDING = "pending"
     PROCESSING = "processing"
