@@ -1333,8 +1333,25 @@ const BuyerDashboard = () => {
                 >
                   Cancel
                 </Button>
+                
+                {/* Debug test button */}
                 <Button 
-                  onClick={() => updateOfferRequest()}
+                  variant="outline"
+                  onClick={() => {
+                    console.log('🧪 TEST BUTTON CLICKED');
+                    alert('🧪 Test button working!');
+                  }}
+                  className="bg-yellow-100"
+                >
+                  🧪 Test
+                </Button>
+                
+                <Button 
+                  onClick={() => {
+                    console.log('🚨 UPDATE BUTTON CLICKED');
+                    alert('🚨 Update button clicked!');
+                    updateOfferRequest();
+                  }}
                   className="bg-blue-600 hover:bg-blue-700"
                   disabled={
                     !editOfferDetails.estimatedBudget.trim() || 
