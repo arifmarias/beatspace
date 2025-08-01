@@ -287,14 +287,15 @@ const BuyerDashboard = () => {
     }
     
     try {
-      console.log('🚨 About to show confirmation dialog...');
-      const confirmed = window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.');
-      console.log('🚨 User confirmation result:', confirmed);
+      // TEMPORARILY SKIP CONFIRMATION FOR TESTING
+      console.log('🚨 SKIPPING CONFIRMATION FOR TESTING...');
+      // const confirmed = window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.');
+      // console.log('🚨 User confirmation result:', confirmed);
       
-      if (!confirmed) {
-        console.log('🚨 User cancelled deletion');
-        return;
-      }
+      // if (!confirmed) {
+      //   console.log('🚨 User cancelled deletion');
+      //   return;
+      // }
 
       console.log('🚨 Starting delete request...');
       const headers = getAuthHeaders();
@@ -312,7 +313,7 @@ const BuyerDashboard = () => {
       const response = await axios.delete(deleteUrl, { headers });
       console.log('🚨 Delete response received:', response);
       
-      alert('Offer request deleted successfully!');
+      alert('🎉 OFFER REQUEST DELETED SUCCESSFULLY!');
       fetchBuyerData();
       
     } catch (error) {
