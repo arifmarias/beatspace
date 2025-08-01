@@ -868,7 +868,14 @@ const BuyerDashboard = () => {
                           )}
 
                           {/* Edit/Delete Actions - Only for Pending offers */}
-                          {offer.status === 'Pending' && (
+                          {(() => {
+                            console.log('🚨 CHECKING DELETE BUTTON CONDITION:', {
+                              offer_id: offer.id,
+                              status: offer.status,
+                              should_show: offer.status === 'Pending'
+                            });
+                            return offer.status === 'Pending';
+                          })() && (
                             <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
                               <Button
                                 variant="outline"
@@ -882,7 +889,10 @@ const BuyerDashboard = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => deleteOfferRequest(offer.id)}
+                                onClick={() => {
+                                  console.log('🚨 DELETE BUTTON CLICKED FOR OFFER:', offer.id);
+                                  deleteOfferRequest(offer.id);
+                                }}
                                 className="text-red-600 hover:text-red-800"
                               >
                                 <X className="w-4 h-4 mr-1" />
@@ -892,7 +902,8 @@ const BuyerDashboard = () => {
                           )}
                         </CardContent>
                       </Card>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
