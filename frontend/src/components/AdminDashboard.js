@@ -1489,6 +1489,54 @@ const AdminDashboard = () => {
                     </p>
                   )}
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Asset Images
+                  </label>
+                  <div className="space-y-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Upload multiple images. First image will be used as main display image.
+                    </p>
+                    
+                    {/* Image Preview Section */}
+                    {assetForm.photos.length > 0 && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Uploaded Images:</label>
+                        <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                          {assetForm.photos.map((photo, index) => (
+                            <div key={index} className="relative">
+                              <img 
+                                src={photo} 
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-16 object-cover rounded border"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                              >
+                                ×
+                              </button>
+                              {index === 0 && (
+                                <div className="absolute bottom-0 left-0 bg-green-500 text-white text-xs px-1 rounded-tr">
+                                  Main
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             
