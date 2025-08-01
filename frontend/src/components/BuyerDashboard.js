@@ -230,42 +230,54 @@ const BuyerDashboard = () => {
   };
 
   const deleteOfferRequest = async (offerId) => {
-    console.log('🚨 DELETE BUTTON CLICKED - Function called with ID:', offerId);
-    console.log('🚨 Offer ID type:', typeof offerId);
-    console.log('🚨 Offer ID value:', offerId);
+    console.log('🚨 DELETE FUNCTION ENTRY - ID:', offerId);
     
-    // Extra validation
+    // Add window object debugging
+    console.log('🚨 Window confirm available:', typeof window.confirm);
+    console.log('🚨 Axios available:', typeof axios);
+    
     if (!offerId) {
-      console.error('🚨 ERROR: Offer ID is null, undefined, or empty:', offerId);
-      alert('Error: Cannot delete offer - invalid ID');
+      console.error('🚨 ERROR: No offer ID provided');
+      alert('Error: Cannot delete offer - no ID provided');
       return;
     }
-    
-    console.log('🚨 Showing confirmation dialog...');
-    if (!window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.')) {
-      console.log('🚨 User cancelled deletion');
-      return;
-    }
-
-    console.log('🚨 User confirmed deletion, proceeding...');
     
     try {
-      const headers = getAuthHeaders();
-      console.log('🚨 Auth headers:', headers);
-      console.log('🚨 API endpoint:', `${API}/offers/requests/${offerId}`);
+      console.log('🚨 About to show confirmation dialog...');
+      const confirmed = window.confirm('Are you sure you want to delete this offer request? This action cannot be undone.');
+      console.log('🚨 User confirmation result:', confirmed);
       
-      const response = await axios.delete(`${API}/offers/requests/${offerId}`, { headers });
-      console.log('🚨 Delete response status:', response.status);
-      console.log('🚨 Delete response data:', response.data);
+      if (!confirmed) {
+        console.log('🚨 User cancelled deletion');
+        return;
+      }
+
+      console.log('🚨 Starting delete request...');
+      const headers = getAuthHeaders();
+      console.log('🚨 Headers obtained:', headers);
+      
+      if (!headers || !headers.Authorization) {
+        console.error('🚨 ERROR: No auth headers available');
+        alert('Error: Not authenticated. Please log in again.');
+        return;
+      }
+      
+      const deleteUrl = `${API}/offers/requests/${offerId}`;
+      console.log('🚨 DELETE URL:', deleteUrl);
+      
+      const response = await axios.delete(deleteUrl, { headers });
+      console.log('🚨 Delete response received:', response);
       
       alert('Offer request deleted successfully!');
-      console.log('🚨 Refreshing buyer data...');
-      fetchBuyerData(); // Refresh the data
+      fetchBuyerData();
+      
     } catch (error) {
-      console.error('🚨 ERROR deleting offer request:', error);
-      console.error('🚨 ERROR response:', error.response);
-      console.error('🚨 ERROR response data:', error.response?.data);
-      console.error('🚨 ERROR response status:', error.response?.status);
+      console.error('🚨 Delete request failed:', error);
+      console.error('🚨 Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       alert('Failed to delete offer request: ' + (error.response?.data?.detail || error.message));
     }
   };
