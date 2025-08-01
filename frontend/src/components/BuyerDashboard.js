@@ -544,24 +544,36 @@ const BuyerDashboard = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {(requestedOffers || []).map((offer) => {
-                      // Debug logging for each offer
-                      console.log('🚨 RENDERING OFFER:', {
-                        id: offer.id,
-                        campaign_name: offer.campaign_name,
-                        status: offer.status,
-                        asset_name: offer.asset_name
-                      });
-                      
-                      return (
-                        <Card key={offer.id} className="border-l-4 border-l-orange-500">
-                          <CardContent className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                              <div>
-                                <h3 className="text-lg font-semibold text-gray-900">{offer.asset_name}</h3>
-                                <p className="text-sm text-gray-600">Campaign: {offer.campaign_name}</p>
-                              </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Asset Name</TableHead>
+                        <TableHead>Campaign</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Budget</TableHead>
+                        <TableHead>Duration</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Submitted</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(requestedOffers || []).map((offer) => {
+                        // Debug logging for each offer
+                        console.log('🚨 RENDERING OFFER IN TABLE:', {
+                          id: offer.id,
+                          campaign_name: offer.campaign_name,
+                          status: offer.status,
+                          asset_name: offer.asset_name
+                        });
+                        
+                        return (
+                          <TableRow key={offer.id}>
+                            <TableCell>
+                              <div className="font-medium">{offer.asset_name}</div>
+                            </TableCell>
+                            <TableCell>{offer.campaign_name}</TableCell>
+                            <TableCell>
                               <Badge 
                                 variant={
                                   offer.status === 'Pending' ? 'secondary' :
@@ -573,108 +585,51 @@ const BuyerDashboard = () => {
                               >
                                 {offer.status}
                               </Badge>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                              <div>
-                                <p className="text-sm text-gray-500">Budget</p>
-                                <p className="font-medium">৳{offer.estimated_budget?.toLocaleString()}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-500">Duration</p>
-                                <p className="font-medium">{offer.contract_duration?.replace('_', ' ')}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-500">Type</p>
-                                <p className="font-medium capitalize">{offer.campaign_type}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-500">Submitted</p>
-                                <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
-                              </div>
-                            </div>
-
-                            {offer.timeline && (
-                              <div className="mb-4">
-                                <p className="text-sm text-gray-500">Timeline</p>
-                                <p className="text-sm">{offer.timeline}</p>
-                              </div>
-                            )}
-
-                            {offer.special_requirements && (
-                              <div className="mb-4">
-                                <p className="text-sm text-gray-500">Special Requirements</p>
-                                <p className="text-sm">{offer.special_requirements}</p>
-                              </div>
-                            )}
-
-                            {offer.notes && (
-                              <div className="mb-4">
-                                <p className="text-sm text-gray-500">Notes</p>
-                                <p className="text-sm">{offer.notes}</p>
-                              </div>
-                            )}
-
-                            {offer.admin_response && (
-                              <div className="bg-blue-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-500 mb-1">Admin Response</p>
-                                <p className="text-sm">{offer.admin_response}</p>
-                              </div>
-                            )}
-
-                            {offer.final_offer && (
-                              <div className="bg-green-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-500 mb-1">Final Offer Details</p>
-                                <pre className="text-sm">{JSON.stringify(offer.final_offer, null, 2)}</pre>
-                              </div>
-                            )}
-
-                            {/* Edit/Delete Actions - Only for Pending offers */}
-                            {(() => {
-                              console.log('🚨 CHECKING DELETE BUTTON CONDITION:', {
-                                offer_id: offer.id,
-                                status: offer.status,
-                                should_show: offer.status === 'Pending'
-                              });
-                              return offer.status === 'Pending';
-                            })() && (
-                              <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => editOfferRequest(offer)}
-                                  className="text-blue-600 hover:text-blue-800"
-                                >
-                                  <Edit className="w-4 h-4 mr-1" />
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    console.log('🚨 BUTTON CLICK EVENT FIRED');
-                                    console.log('🚨 Event target:', e.target);
-                                    console.log('🚨 Attempting to call deleteOfferRequest with:', offer.id);
-                                    
-                                    // Try immediate function call
-                                    try {
-                                      deleteOfferRequest(offer.id);
-                                    } catch (error) {
-                                      console.error('🚨 Error calling deleteOfferRequest:', error);
-                                    }
-                                  }}
-                                  className="text-red-600 hover:text-red-800"
-                                >
-                                  <X className="w-4 h-4 mr-1" />
-                                  Delete
-                                </Button>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
+                            </TableCell>
+                            <TableCell>৳{offer.estimated_budget?.toLocaleString()}</TableCell>
+                            <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
+                            <TableCell className="capitalize">{offer.campaign_type}</TableCell>
+                            <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              {offer.status === 'Pending' && (
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => editOfferRequest(offer)}
+                                    className="text-blue-600 hover:text-blue-800"
+                                  >
+                                    <Edit className="w-4 h-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      console.log('🚨 TABLE DELETE BUTTON CLICK EVENT FIRED');
+                                      console.log('🚨 Event target:', e.target);
+                                      console.log('🚨 Attempting to call deleteOfferRequest with:', offer.id);
+                                      
+                                      // Try immediate function call
+                                      try {
+                                        deleteOfferRequest(offer.id);
+                                      } catch (error) {
+                                        console.error('🚨 Error calling deleteOfferRequest:', error);
+                                      }
+                                    }}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <X className="w-4 h-4 mr-1" />
+                                    Delete
+                                  </Button>
+                                </div>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
