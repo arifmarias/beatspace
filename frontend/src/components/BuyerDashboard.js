@@ -377,6 +377,45 @@ const BuyerDashboard = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
+  // Calculate asset price based on duration
+  const calculateAssetPrice = (offer) => {
+    // Try to get asset pricing info - this might be in the offer data or we need to fetch it
+    if (!offer.asset_pricing) {
+      return 'N/A'; // If pricing info not available
+    }
+    
+    const pricing = offer.asset_pricing;
+    const duration = offer.contract_duration;
+    
+    let calculatedPrice = 0;
+    
+    switch (duration) {
+      case '1_week':
+        calculatedPrice = pricing.weekly_rate || 0;
+        break;
+      case '2_weeks':
+        calculatedPrice = (pricing.weekly_rate || 0) * 2;
+        break;
+      case '1_month':
+        calculatedPrice = pricing.monthly_rate || (pricing.weekly_rate || 0) * 4;
+        break;
+      case '3_months':
+        calculatedPrice = (pricing.monthly_rate || (pricing.weekly_rate || 0) * 4) * 3;
+        break;
+      case '6_months':
+        calculatedPrice = (pricing.monthly_rate || (pricing.weekly_rate || 0) * 4) * 6;
+        break;
+      case '12_months':
+      case '1_year':
+        calculatedPrice = pricing.yearly_rate || (pricing.monthly_rate || (pricing.weekly_rate || 0) * 4) * 12;
+        break;
+      default:
+        calculatedPrice = 0;
+    }
+    
+    return calculatedPrice;
+  };
+
   // Move button handlers outside JSX to prevent recreation on each render
   const handleEditOffer = (offer) => {
     console.log('🚨 HANDLE EDIT CALLED - offer:', offer?.id);
