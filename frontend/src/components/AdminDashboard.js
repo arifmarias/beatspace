@@ -183,8 +183,12 @@ const AdminDashboard = () => {
 
   // Asset CRUD Functions
   const handleCreateAsset = async () => {
+    console.log('CREATE ASSET FUNCTION CALLED');
+    console.log('Asset Form Data:', assetForm);
+    
     try {
       const headers = getAuthHeaders();
+      console.log('Auth Headers:', headers);
       
       const assetData = {
         ...assetForm,
@@ -197,7 +201,12 @@ const AdminDashboard = () => {
         }
       };
 
-      await axios.post(`${API}/assets`, assetData, { headers });
+      console.log('Sending Asset Data:', assetData);
+      console.log('API URL:', `${API}/assets`);
+      
+      const response = await axios.post(`${API}/assets`, assetData, { headers });
+      console.log('Asset creation response:', response.data);
+      
       alert('Asset created successfully!');
       
       setShowAddAsset(false);
@@ -205,6 +214,7 @@ const AdminDashboard = () => {
       fetchDashboardData();
     } catch (error) {
       console.error('Error creating asset:', error);
+      console.error('Error response:', error.response?.data);
       alert('Failed to create asset: ' + (error.response?.data?.detail || error.message));
     }
   };
