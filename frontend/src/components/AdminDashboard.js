@@ -1329,7 +1329,19 @@ const AdminDashboard = () => {
                 Cancel
               </Button>
               <Button 
-                onClick={handleCreateAsset}
+                onClick={() => {
+                  console.log('CREATE ASSET BUTTON CLICKED');
+                  console.log('Button disabled status:', (!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.weekly_rate || !assetForm.seller_id));
+                  console.log('Form validation details:');
+                  console.log('- Name:', assetForm.name ? '✅' : '❌', assetForm.name);
+                  console.log('- Address:', assetForm.address ? '✅' : '❌', assetForm.address);
+                  console.log('- District:', assetForm.district ? '✅' : '❌', assetForm.district);
+                  console.log('- Division:', assetForm.division ? '✅' : '❌', assetForm.division);
+                  console.log('- Weekly Rate:', assetForm.pricing.weekly_rate ? '✅' : '❌', assetForm.pricing.weekly_rate);
+                  console.log('- Seller ID:', assetForm.seller_id ? '✅' : '❌', assetForm.seller_id);
+                  
+                  handleCreateAsset();
+                }}
                 className="bg-orange-600 hover:bg-orange-700"
                 disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.weekly_rate || !assetForm.seller_id}
               >
