@@ -503,10 +503,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Updated Request Best Offer workflow with simplified campaign selection"
-    - "Edit offer functionality (PUT /api/offers/requests/{id})"
-    - "Campaign creation with start/end dates"
-    - "Asset expiration date calculations and display"
+    - "Cloudinary image upload integration"
+    - "Cloudinary frontend integration with enhanced UI"
+    - "Asset creation workflow verification"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
