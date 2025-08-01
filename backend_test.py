@@ -2107,7 +2107,7 @@ class BeatSpaceAPITester:
         if success:
             print("   ✅ Backend server is accessible")
             print("   ✅ Cloudinary configuration should be loaded from environment variables")
-            print("   Expected Cloud Name: dkyzb8e8f")
+            print("   Expected Cloud Name: dtkyz8v6f (CORRECTED)")
             print("   Expected API Key: 554777785594141")
             print("   ✅ Cloudinary credentials configured in backend/.env")
             return True, {"configured": True}
