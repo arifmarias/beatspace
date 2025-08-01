@@ -360,9 +360,9 @@ class BeatSpaceAPITester:
         )
         return success, response
 
-    # User Management Tests (Admin only)
+    # User Management CRUD Tests (Admin only) - PRIORITY TESTS
     def test_admin_get_users(self):
-        """Test admin getting all users"""
+        """Test admin getting all users - PRIORITY TEST 5"""
         if not self.admin_token:
             print("⚠️  Skipping admin users test - no admin token")
             return False, {}
@@ -374,11 +374,126 @@ class BeatSpaceAPITester:
                 print(f"   User: {user.get('email')} - {user.get('role')} - {user.get('status')}")
         return success, response
 
+    def test_admin_create_user(self):
+        """Test admin creating new users - PRIORITY TEST 1"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin user creation test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN USER CREATION - PRIORITY TEST 1")
+        
+        # Create a new user via admin
+        user_data = {
+            "email": f"testuser_{datetime.now().strftime('%H%M%S')}@beatspace.com",
+            "password": "testpass123",
+            "company_name": "Test Company Ltd.",
+            "contact_name": "Test User",
+            "phone": "+8801234567890",
+            "role": "seller",
+            "address": "Test Address, Dhaka",
+            "website": "https://testcompany.com"
+        }
+        
+        success, response = self.run_test(
+            "Admin Create User", 
+            "POST", 
+            "admin/users", 
+            200, 
+            data=user_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ User created successfully with ID: {response.get('id')}")
+            print(f"   Email: {response.get('email')}")
+            print(f"   Role: {response.get('role')}")
+            print(f"   Status: {response.get('status')}")
+            print(f"   Company: {response.get('company_name')}")
+            
+            # Store created user ID for other tests
+            self.created_user_id = response.get('id')
+            
+            # Verify user has default "pending" status
+            if response.get('status') == 'pending':
+                print("   ✅ User created with default 'pending' status")
+            else:
+                print(f"   ⚠️  User status is {response.get('status')}, expected 'pending'")
+        
+        return success, response
+
+    def test_admin_update_user_info(self):
+        """Test admin updating user information - PRIORITY TEST 2"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin user update test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN USER UPDATE - PRIORITY TEST 2")
+        
+        # First get users to find one to update
+        success, users = self.test_admin_get_users()
+        if not success or not users:
+            print("⚠️  No users found to update")
+            return False, {}
+        
+        # Find a user that's not admin (prefer the created user if available)
+        target_user = None
+        if self.created_user_id:
+            for user in users:
+                if user.get('id') == self.created_user_id:
+                    target_user = user
+                    break
+        
+        if not target_user:
+            for user in users:
+                if user.get('role') != 'admin':
+                    target_user = user
+                    break
+        
+        if not target_user:
+            print("⚠️  No non-admin user found to update")
+            return False, {}
+        
+        print(f"   Updating user: {target_user.get('email')}")
+        
+        # Update user information
+        update_data = {
+            "company_name": "Updated Company Name Ltd.",
+            "contact_name": "Updated Contact Name",
+            "phone": "+8801987654321",
+            "address": "Updated Address, Chittagong",
+            "website": "https://updatedcompany.com"
+        }
+        
+        success, response = self.run_test(
+            "Admin Update User Info", 
+            "PUT", 
+            f"admin/users/{target_user['id']}", 
+            200, 
+            data=update_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ User information updated successfully")
+            print(f"   Updated company: {response.get('company_name')}")
+            print(f"   Updated contact: {response.get('contact_name')}")
+            print(f"   Updated phone: {response.get('phone')}")
+            
+            # Verify updates were applied
+            if response.get('company_name') == update_data['company_name']:
+                print("   ✅ Company name updated correctly")
+            else:
+                print("   ⚠️  Company name not updated correctly")
+        
+        return success, response
+
     def test_admin_update_user_status(self):
-        """Test admin updating user status"""
+        """Test admin updating user status - PRIORITY TEST 4"""
         if not self.admin_token:
             print("⚠️  Skipping user status update test - no admin token")
             return False, {}
+        
+        print("🎯 TESTING ADMIN USER STATUS UPDATE - PRIORITY TEST 4")
         
         # First get users to find one to update
         success, users = self.test_admin_get_users()
@@ -386,20 +501,33 @@ class BeatSpaceAPITester:
             print("⚠️  No users found to update status")
             return False, {}
         
-        # Find a user that's not admin
+        # Find a user that's not admin (prefer the created user if available)
         target_user = None
-        for user in users:
-            if user.get('role') != 'admin':
-                target_user = user
-                break
+        if self.created_user_id:
+            for user in users:
+                if user.get('id') == self.created_user_id:
+                    target_user = user
+                    break
+        
+        if not target_user:
+            for user in users:
+                if user.get('role') != 'admin':
+                    target_user = user
+                    break
         
         if not target_user:
             print("⚠️  No non-admin user found to update")
             return False, {}
         
+        current_status = target_user.get('status')
+        print(f"   Updating user: {target_user.get('email')} (current status: {current_status})")
+        
+        # Test status workflow: pending → approved
+        new_status = "approved" if current_status == "pending" else "suspended"
+        
         status_update = {
-            "status": "approved",
-            "reason": "Test status update"
+            "status": new_status,
+            "reason": f"Test status update from {current_status} to {new_status}"
         }
         
         success, response = self.run_test(
@@ -410,7 +538,238 @@ class BeatSpaceAPITester:
             data=status_update,
             token=self.admin_token
         )
+        
+        if success:
+            print(f"   ✅ User status updated successfully")
+            print(f"   Status changed from '{current_status}' to '{response.get('status')}'")
+            
+            # Verify status was updated correctly
+            if response.get('status') == new_status:
+                print("   ✅ Status updated correctly")
+            else:
+                print(f"   ⚠️  Status is {response.get('status')}, expected {new_status}")
+        
         return success, response
+
+    def test_admin_delete_user(self):
+        """Test admin deleting users - PRIORITY TEST 3"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin user deletion test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING ADMIN USER DELETE - PRIORITY TEST 3")
+        
+        # Create a user specifically for deletion test
+        user_data = {
+            "email": f"deletetest_{datetime.now().strftime('%H%M%S')}@beatspace.com",
+            "password": "deletetest123",
+            "company_name": "Delete Test Company",
+            "contact_name": "Delete Test User",
+            "phone": "+8801111111111",
+            "role": "buyer",
+            "address": "Delete Test Address"
+        }
+        
+        success, create_response = self.run_test(
+            "Create User for Deletion Test", 
+            "POST", 
+            "admin/users", 
+            200, 
+            data=user_data,
+            token=self.admin_token
+        )
+        
+        if not success:
+            print("⚠️  Could not create user for deletion test")
+            return False, {}
+        
+        user_id = create_response.get('id')
+        print(f"   Created user {create_response.get('email')} for deletion test")
+        
+        # Now delete the user
+        success, response = self.run_test(
+            "Admin Delete User", 
+            "DELETE", 
+            f"admin/users/{user_id}", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ User deleted successfully")
+            print(f"   Response: {response.get('message', 'No message')}")
+            
+            # Verify user no longer exists
+            success_get, get_response = self.run_test(
+                "Verify User Deleted", 
+                "GET", 
+                f"admin/users/{user_id}", 
+                404,  # Should fail with 404 Not Found
+                token=self.admin_token
+            )
+            
+            if success_get:
+                print("   ✅ User properly removed from system")
+            else:
+                print("   ⚠️  User may still exist in system")
+        
+        return success, response
+
+    def test_user_status_workflow(self):
+        """Test complete user status workflow: pending → approved → suspended"""
+        if not self.admin_token:
+            print("⚠️  Skipping user status workflow test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING USER STATUS WORKFLOW")
+        
+        # Create a new user for workflow testing
+        user_data = {
+            "email": f"workflow_{datetime.now().strftime('%H%M%S')}@beatspace.com",
+            "password": "workflow123",
+            "company_name": "Workflow Test Company",
+            "contact_name": "Workflow Test User",
+            "phone": "+8802222222222",
+            "role": "seller"
+        }
+        
+        success, create_response = self.run_test(
+            "Create User for Workflow Test", 
+            "POST", 
+            "admin/users", 
+            200, 
+            data=user_data,
+            token=self.admin_token
+        )
+        
+        if not success:
+            print("⚠️  Could not create user for workflow test")
+            return False, {}
+        
+        user_id = create_response.get('id')
+        print(f"   Created user: {create_response.get('email')}")
+        print(f"   Initial status: {create_response.get('status')}")
+        
+        # Step 1: pending → approved
+        status_update_1 = {
+            "status": "approved",
+            "reason": "Workflow test - approving user"
+        }
+        
+        success, response_1 = self.run_test(
+            "Status Update: pending → approved", 
+            "PATCH", 
+            f"admin/users/{user_id}/status", 
+            200, 
+            data=status_update_1,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Step 1: Status updated to '{response_1.get('status')}'")
+        
+        # Step 2: approved → suspended
+        status_update_2 = {
+            "status": "suspended",
+            "reason": "Workflow test - suspending user"
+        }
+        
+        success, response_2 = self.run_test(
+            "Status Update: approved → suspended", 
+            "PATCH", 
+            f"admin/users/{user_id}/status", 
+            200, 
+            data=status_update_2,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Step 2: Status updated to '{response_2.get('status')}'")
+        
+        # Step 3: suspended → approved (reactivation)
+        status_update_3 = {
+            "status": "approved",
+            "reason": "Workflow test - reactivating user"
+        }
+        
+        success, response_3 = self.run_test(
+            "Status Update: suspended → approved", 
+            "PATCH", 
+            f"admin/users/{user_id}/status", 
+            200, 
+            data=status_update_3,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Step 3: Status updated to '{response_3.get('status')}'")
+            print("   ✅ Complete status workflow tested successfully")
+        
+        return success, response_3
+
+    def test_user_management_authentication(self):
+        """Test that user management endpoints require admin authentication"""
+        print("🎯 TESTING USER MANAGEMENT AUTHENTICATION")
+        
+        # Test creating user without authentication
+        user_data = {
+            "email": "noauth@test.com",
+            "password": "test123",
+            "company_name": "No Auth Test",
+            "contact_name": "No Auth User",
+            "phone": "+8803333333333",
+            "role": "buyer"
+        }
+        
+        success, response = self.run_test(
+            "Create User - No Auth", 
+            "POST", 
+            "admin/users", 
+            401,  # Should fail with 401 Unauthorized
+            data=user_data
+        )
+        
+        if success:
+            print("   ✅ User creation properly requires authentication")
+        
+        # Test getting users without authentication
+        success, response = self.run_test(
+            "Get Users - No Auth", 
+            "GET", 
+            "admin/users", 
+            401,  # Should fail with 401 Unauthorized
+        )
+        
+        if success:
+            print("   ✅ Getting users properly requires authentication")
+        
+        # Test with non-admin token (buyer/seller should fail)
+        if self.buyer_token:
+            success, response = self.run_test(
+                "Create User - Buyer Token", 
+                "POST", 
+                "admin/users", 
+                403,  # Should fail with 403 Forbidden
+                data=user_data,
+                token=self.buyer_token
+            )
+            
+            if success:
+                print("   ✅ Only admins can create users (buyer properly rejected)")
+        
+        if self.seller_token:
+            success, response = self.run_test(
+                "Get Users - Seller Token", 
+                "GET", 
+                "admin/users", 
+                403,  # Should fail with 403 Forbidden
+                token=self.seller_token
+            )
+            
+            if success:
+                print("   ✅ Only admins can access user management (seller properly rejected)")
+        
+        return True, {}
 
     def test_admin_get_assets(self):
         """Test admin getting all assets"""
