@@ -336,6 +336,9 @@ backend:
         - working: "partial"
           agent: "main"
           comment: "PROGRESS UPDATE: ✅ DELETE functionality now working correctly - user confirmed deletion is happening successfully. ✅ EDIT button click events now firing - console logs show button clicks are registered. 🔧 IMPLEMENTING FULL EDIT DIALOG: Replaced simple edit dialog with complete 'Request Best Offer' style dialog that matches MarketplacePage functionality: 1) Pre-populates all existing offer data (campaign, budget, duration, services, dates, notes), 2) Includes same calculations for asset expiration dates, 3) Has full campaign selection with existing campaigns dropdown, 4) All service bundles checkboxes, 5) Special requirements and notes fields, 6) Auto-calculation of dates and validation, 7) Proper update API call to PUT /api/offers/requests/{id} with correct payload format."
+        - working: true
+          agent: "main"
+          comment: "✅ FULLY RESOLVED: Both edit and delete functionality now working perfectly! 🎯 FINAL FIX: Resolved 422 validation error in update request by fixing payload format - removed fields not expected by backend OfferRequestCreate model (tentative_start_date, asset_expiration_date) and ensured only valid fields are sent: asset_id, campaign_name, campaign_type, existing_campaign_id, contract_duration, estimated_budget, service_bundles, timeline, special_requirements, notes. 🎉 USER CONFIRMATION: User confirmed 'update is working fine' - complete edit dialog opens with pre-populated data, allows modifications, saves changes successfully, closes dialog, and refreshes table with updated data."
 
 frontend:
   - task: "Remove Add to Campaign buttons from list view"
