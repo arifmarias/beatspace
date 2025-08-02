@@ -619,24 +619,24 @@ const MarketplacePage = () => {
       // Validation for campaign selection
       if (!offerDetails.existingCampaignId) {
         console.log('❌ No campaign selected');
-        alert('Please select an existing campaign.');
+        notify.warning('Please select an existing campaign.');
         return;
       }
 
       // Asset start date validation
       if (!offerDetails.tentativeStartDate) {
-        alert('Please select an asset starting date.');
+        notify.warning('Please select an asset starting date.');
         return;
       }
 
       // Mandatory budget validation
       if (!offerDetails.estimatedBudget || !offerDetails.estimatedBudget.trim()) {
-        alert('Estimated budget is required to process your offer request.');
+        notify.warning('Estimated budget is required to process your offer request.');
         return;
       }
 
       if (!selectedAssetForOffer) {
-        alert('No asset selected for offer request.');
+        notify.error('No asset selected for offer request.');
         return;
       }
 
