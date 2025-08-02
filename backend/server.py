@@ -1020,13 +1020,15 @@ async def create_dummy_booked_assets_data():
             "campaign_assets": [
                 {
                     "asset_id": booked_assets[0]["id"],  # Gulshan Avenue Digital Billboard
-                    "start_date": datetime.utcnow(),
-                    "end_date": datetime.utcnow() + timedelta(days=60)
+                    "asset_name": booked_assets[0]["name"],
+                    "asset_start_date": datetime.utcnow(),
+                    "asset_expiration_date": datetime.utcnow() + timedelta(days=60)
                 },
                 {
                     "asset_id": booked_assets[1]["id"],  # Dhanmondi Metro Station Banner  
-                    "start_date": datetime.utcnow(),
-                    "end_date": datetime.utcnow() + timedelta(days=60)
+                    "asset_name": booked_assets[1]["name"],
+                    "asset_start_date": datetime.utcnow(),
+                    "asset_expiration_date": datetime.utcnow() + timedelta(days=60)
                 }
             ],
             "created_at": datetime.utcnow() - timedelta(days=5),
