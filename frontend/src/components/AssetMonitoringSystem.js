@@ -552,7 +552,7 @@ const AssetMonitoringSystem = () => {
                   <SelectValue placeholder="Choose asset to monitor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {assets.map(asset => (
+                  {assets.filter(asset => asset.id && asset.id.trim() !== '').map(asset => (
                     <SelectItem key={asset.id} value={asset.id}>
                       {asset.name} - {asset.type}
                     </SelectItem>
