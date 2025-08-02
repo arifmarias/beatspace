@@ -35,6 +35,7 @@ import { Textarea } from './ui/textarea';
 import { Separator } from './ui/separator';
 import { getAuthHeaders, getUser, logout } from '../utils/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useNotification } from './ui/notification';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
