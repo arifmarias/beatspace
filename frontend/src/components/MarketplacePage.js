@@ -33,7 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Textarea } from './ui/textarea';
 import { Separator } from './ui/separator';
 import { getAuthHeaders, getUser, logout } from '../utils/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
