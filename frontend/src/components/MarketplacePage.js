@@ -644,7 +644,7 @@ const MarketplacePage = () => {
       alert('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
       
       // Redirect to Buyer Dashboard with Requested Offers tab active
-      navigate('/buyer-dashboard?tab=requested-offers');
+      navigate('/buyer/dashboard?tab=requested-offers');
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
