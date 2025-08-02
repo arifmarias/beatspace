@@ -253,20 +253,29 @@ const MarketplacePage = () => {
   };
 
   const handleRequestBestOffer = async (asset) => {
+    console.log('🎯 handleRequestBestOffer function called with asset:', asset);
+    console.log('🎯 Current user check:', currentUser);
+    
     if (!currentUser) {
+      console.log('❌ No current user, showing alert');
       alert('Please sign in to request offers.');
       return;
     }
     
+    console.log('✅ User authenticated, proceeding with asset selection');
     setSelectedAssetForOffer(asset);
     
+    console.log('🚀 About to call fetchExistingCampaigns...');
     // Fetch campaigns first
     await fetchExistingCampaigns(); 
+    console.log('✅ fetchExistingCampaigns completed');
     
     // Check both URL parameter and sessionStorage for campaign context
     const urlParams = new URLSearchParams(location.search);
     const campaignIdFromUrl = urlParams.get('campaign');
     const campaignFromSession = sessionStorage.getItem('selectedCampaignForOffer');
+    
+    console.log('🔍 Checking campaign context:', { campaignIdFromUrl, campaignFromSession });
     
     let campaignToPreselect = null;
     
