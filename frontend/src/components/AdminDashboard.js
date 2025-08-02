@@ -1292,8 +1292,11 @@ const AdminDashboard = () => {
                     </Button>
                     <Input
                       placeholder="Search assets..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={assetSearchTerm}
+                      onChange={(e) => {
+                        setAssetSearchTerm(e.target.value);
+                        setCurrentPage(1); // Reset to first page when searching
+                      }}
                       className="w-64"
                     />
                     <Select value={assetFilter} onValueChange={setAssetFilter}>
