@@ -88,6 +88,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </NotificationProvider>
   );
 }
 
