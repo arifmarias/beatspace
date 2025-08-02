@@ -205,6 +205,43 @@ const AdminDashboard = () => {
     }
   };
 
+  // Offer Request Management Functions
+  const updateOfferRequestStatus = async (offerId, newStatus) => {
+    try {
+      const headers = getAuthHeaders();
+      await axios.patch(`${API}/admin/offer-requests/${offerId}/status`, {
+        status: newStatus
+      }, { headers });
+      
+      alert(`Offer request status updated to ${newStatus}`);
+      fetchDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error updating offer request status:', error);
+      alert('Failed to update offer request status: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const deleteOfferRequest = async (offerRequest) => {
+    const confirmMessage = `Are you sure you want to delete the offer request for "${offerRequest.asset_name}"?\n\nThis action cannot be undone.`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.delete(`${API}/offers/requests/${offerRequest.id}`, { headers });
+      alert(`Offer request for "${offerRequest.asset_name}" deleted successfully!`);
+      
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error deleting offer request:', error);
+      alert('Failed to delete offer request: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const updateUserStatus = async (userId, status, reason = '') => {
     try {
       const headers = getAuthHeaders();
