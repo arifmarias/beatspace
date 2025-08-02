@@ -1867,7 +1867,20 @@ const AdminDashboard = () => {
                 Cancel
               </Button>
               <Button 
-                onClick={handleCreateCampaign}
+                onClick={() => {
+                  console.log('🔥 CREATE CAMPAIGN BUTTON CLICKED!');
+                  alert('Create Campaign button clicked! Check console for details.');
+                  console.log('Button disabled status:', (!campaignForm.name || !campaignForm.buyer_id || !campaignForm.start_date || !campaignForm.end_date));
+                  console.log('Form validation details:');
+                  console.log('- Name:', campaignForm.name ? '✅' : '❌', campaignForm.name);
+                  console.log('- Buyer ID:', campaignForm.buyer_id ? '✅' : '❌', campaignForm.buyer_id);
+                  console.log('- Start Date:', campaignForm.start_date ? '✅' : '❌', campaignForm.start_date);
+                  console.log('- End Date:', campaignForm.end_date ? '✅' : '❌', campaignForm.end_date);
+                  console.log('- Budget:', campaignForm.budget || 'Not required');
+                  console.log('- Campaign Assets:', campaignForm.campaign_assets.length, 'assets');
+                  
+                  handleCreateCampaign();
+                }}
                 className="bg-green-600 hover:bg-green-700"
                 disabled={!campaignForm.name || !campaignForm.buyer_id || !campaignForm.start_date || !campaignForm.end_date}
               >
