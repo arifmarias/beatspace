@@ -304,12 +304,8 @@ const AdminDashboard = () => {
 
   // Campaign CRUD Functions
   const handleCreateCampaign = async () => {
-    console.log('🔥 CREATE CAMPAIGN FUNCTION CALLED!');
-    console.log('Campaign Form Data:', campaignForm);
-    
     try {
       const headers = getAuthHeaders();
-      console.log('Auth Headers:', headers);
       
       const campaignData = {
         ...campaignForm,
@@ -318,12 +314,7 @@ const AdminDashboard = () => {
         end_date: campaignForm.end_date ? new Date(campaignForm.end_date).toISOString() : null
       };
 
-      console.log('Sending Campaign Data:', campaignData);
-      console.log('API URL:', `${API}/admin/campaigns`);
-      
       const response = await axios.post(`${API}/admin/campaigns`, campaignData, { headers });
-      console.log('Campaign creation response:', response.data);
-      
       alert('Campaign created successfully!');
       
       setShowAddCampaign(false);
@@ -331,7 +322,6 @@ const AdminDashboard = () => {
       fetchDashboardData();
     } catch (error) {
       console.error('Error creating campaign:', error);
-      console.error('Error response:', error.response?.data);
       alert('Failed to create campaign: ' + (error.response?.data?.detail || error.message));
     }
   };
