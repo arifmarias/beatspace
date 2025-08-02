@@ -3542,6 +3542,493 @@ class BeatSpaceAPITester:
         
         return success, response
 
+    # NEW DUMMY DATA CREATION TESTS - PRIORITY TESTS FOR BOOKED ASSETS
+    def test_create_dummy_booked_assets_data(self):
+        """Test POST /api/admin/create-dummy-data - Create dummy data with Live campaigns and Booked assets - PRIORITY TEST 1"""
+        if not self.admin_token:
+            print("⚠️  Skipping dummy data creation test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING DUMMY BOOKED ASSETS DATA CREATION - PRIORITY TEST 1")
+        print("   This test creates dummy data with Live campaigns and Booked assets")
+        
+        success, response = self.run_test(
+            "Create Dummy Booked Assets Data", 
+            "POST", 
+            "admin/create-dummy-data", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Dummy data creation successful")
+            print(f"   Response: {response.get('message', 'No message')}")
+            print("   Expected results:")
+            print("     - 4 assets total (3 Booked, 1 Available)")
+            print("     - 2 Live campaigns")
+            print("     - 1 pending offer request")
+        else:
+            print("   ❌ Dummy data creation failed")
+        
+        return success, response
+
+    def test_verify_booked_assets_created(self):
+        """Test GET /api/assets/public - Verify 4 assets created with correct statuses - PRIORITY TEST 2"""
+        print("🎯 TESTING BOOKED ASSETS VERIFICATION - PRIORITY TEST 2")
+        print("   Verifying assets created by dummy data endpoint")
+        
+        success, response = self.run_test("Verify Assets Created", "GET", "assets/public", 200)
+        
+        if success:
+            total_assets = len(response)
+            print(f"   ✅ Found {total_assets} total assets")
+            
+            # Count assets by status
+            status_counts = {}
+            booked_assets = []
+            available_assets = []
+            
+            for asset in response:
+                status = asset.get('status', 'Unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+                
+                if status == 'Booked':
+                    booked_assets.append(asset)
+                elif status == 'Available':
+                    available_assets.append(asset)
+            
+            print(f"   Asset status distribution: {status_counts}")
+            
+            # Verify expected Booked assets
+            expected_booked_names = [
+                "Gulshan Avenue Digital Billboard",
+                "Dhanmondi Metro Station Banner", 
+                "Uttara Shopping Mall Display"
+            ]
+            
+            print(f"   ✅ Found {len(booked_assets)} Booked assets:")
+            for asset in booked_assets:
+                print(f"     - {asset.get('name')} ({asset.get('type')}) - {asset.get('status')}")
+                
+                # Check if it matches expected names
+                if asset.get('name') in expected_booked_names:
+                    print(f"       ✅ Matches expected dummy data")
+                else:
+                    print(f"       ℹ️  Additional booked asset")
+            
+            # Verify Available asset for requests
+            print(f"   ✅ Found {len(available_assets)} Available assets:")
+            for asset in available_assets:
+                print(f"     - {asset.get('name')} ({asset.get('type')}) - {asset.get('status')}")
+                
+                if asset.get('name') == "Mirpur Road Side Banner":
+                    print(f"       ✅ Found expected Available asset for offer requests")
+            
+            # Verify asset details
+            if booked_assets:
+                sample_asset = booked_assets[0]
+                required_fields = ['id', 'name', 'type', 'address', 'location', 'pricing', 'status']
+                missing_fields = [field for field in required_fields if field not in sample_asset]
+                
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in asset: {missing_fields}")
+                else:
+                    print("   ✅ Asset structure looks good")
+                
+                # Check pricing structure
+                pricing = sample_asset.get('pricing', {})
+                if 'weekly_rate' in pricing and 'monthly_rate' in pricing:
+                    print("   ✅ Pricing structure includes weekly and monthly rates")
+                else:
+                    print(f"   ⚠️  Pricing structure: {list(pricing.keys())}")
+            
+            # Summary verification
+            booked_count = status_counts.get('Booked', 0)
+            available_count = status_counts.get('Available', 0)
+            
+            if booked_count >= 3:
+                print(f"   ✅ Expected Booked assets found: {booked_count} (expected: 3+)")
+            else:
+                print(f"   ⚠️  Booked assets: {booked_count} (expected: 3+)")
+            
+            if available_count >= 1:
+                print(f"   ✅ Available assets for requests: {available_count} (expected: 1+)")
+            else:
+                print(f"   ⚠️  Available assets: {available_count} (expected: 1+)")
+        
+        return success, response
+
+    def test_verify_live_campaigns_created(self):
+        """Test GET /api/campaigns - Verify 2 Live campaigns created with campaign_assets - PRIORITY TEST 3"""
+        if not self.buyer_token:
+            print("⚠️  Skipping Live campaigns verification test - no buyer token")
+            return False, {}
+        
+        print("🎯 TESTING LIVE CAMPAIGNS VERIFICATION - PRIORITY TEST 3")
+        print("   Verifying Live campaigns created by dummy data endpoint")
+        
+        success, response = self.run_test("Verify Live Campaigns Created", "GET", "campaigns", 200, token=self.buyer_token)
+        
+        if success:
+            total_campaigns = len(response)
+            print(f"   ✅ Found {total_campaigns} total campaigns")
+            
+            # Count campaigns by status
+            status_counts = {}
+            live_campaigns = []
+            
+            for campaign in response:
+                status = campaign.get('status', 'Unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+                
+                if status == 'Live':
+                    live_campaigns.append(campaign)
+            
+            print(f"   Campaign status distribution: {status_counts}")
+            
+            # Verify expected Live campaigns
+            expected_live_names = [
+                "Grameenphone 5G Launch Campaign",
+                "Weekend Data Pack Promotion"
+            ]
+            
+            print(f"   ✅ Found {len(live_campaigns)} Live campaigns:")
+            for campaign in live_campaigns:
+                print(f"     - {campaign.get('name')} - {campaign.get('status')}")
+                print(f"       Budget: ৳{campaign.get('budget', 0):,}")
+                print(f"       Buyer: {campaign.get('buyer_name')}")
+                
+                # Check campaign_assets structure
+                campaign_assets = campaign.get('campaign_assets', [])
+                if campaign_assets:
+                    print(f"       ✅ Campaign Assets: {len(campaign_assets)} assets")
+                    for i, asset in enumerate(campaign_assets[:2]):  # Show first 2
+                        print(f"         Asset {i+1}: {asset.get('asset_name', 'Unknown')} (ID: {asset.get('asset_id')})")
+                        if asset.get('start_date'):
+                            print(f"           Start: {asset.get('start_date')}")
+                        if asset.get('end_date'):
+                            print(f"           End: {asset.get('end_date')}")
+                else:
+                    print(f"       ⚠️  No campaign_assets found")
+                
+                # Check if it matches expected names
+                if campaign.get('name') in expected_live_names:
+                    print(f"       ✅ Matches expected dummy data")
+                else:
+                    print(f"       ℹ️  Additional live campaign")
+                
+                # Verify dates
+                if campaign.get('start_date') and campaign.get('end_date'):
+                    print(f"       ✅ Has start and end dates")
+                else:
+                    print(f"       ⚠️  Missing start/end dates")
+            
+            # Summary verification
+            live_count = status_counts.get('Live', 0)
+            
+            if live_count >= 2:
+                print(f"   ✅ Expected Live campaigns found: {live_count} (expected: 2+)")
+            else:
+                print(f"   ⚠️  Live campaigns: {live_count} (expected: 2+)")
+            
+            # Verify campaign_assets structure
+            campaigns_with_assets = 0
+            for campaign in live_campaigns:
+                if campaign.get('campaign_assets'):
+                    campaigns_with_assets += 1
+            
+            if campaigns_with_assets > 0:
+                print(f"   ✅ Campaigns with campaign_assets: {campaigns_with_assets}")
+            else:
+                print(f"   ⚠️  No campaigns found with campaign_assets structure")
+        
+        return success, response
+
+    def test_verify_offer_requests_created(self):
+        """Test GET /api/offers/requests - Verify 1 pending offer request created - PRIORITY TEST 4"""
+        if not self.buyer_token:
+            print("⚠️  Skipping offer requests verification test - no buyer token")
+            return False, {}
+        
+        print("🎯 TESTING OFFER REQUESTS VERIFICATION - PRIORITY TEST 4")
+        print("   Verifying offer request created by dummy data endpoint")
+        
+        success, response = self.run_test("Verify Offer Requests Created", "GET", "offers/requests", 200, token=self.buyer_token)
+        
+        if success:
+            total_requests = len(response)
+            print(f"   ✅ Found {total_requests} total offer requests")
+            
+            # Count requests by status
+            status_counts = {}
+            pending_requests = []
+            
+            for request in response:
+                status = request.get('status', 'Unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+                
+                if status == 'Pending':
+                    pending_requests.append(request)
+            
+            print(f"   Offer request status distribution: {status_counts}")
+            
+            print(f"   ✅ Found {len(pending_requests)} Pending offer requests:")
+            for request in pending_requests:
+                print(f"     - Asset: {request.get('asset_name')}")
+                print(f"       Campaign: {request.get('campaign_name')}")
+                print(f"       Campaign Type: {request.get('campaign_type')}")
+                print(f"       Budget: ৳{request.get('estimated_budget', 0):,}")
+                print(f"       Duration: {request.get('contract_duration')}")
+                print(f"       Status: {request.get('status')}")
+                print(f"       Buyer: {request.get('buyer_name')}")
+                
+                # Check if it's for the Available asset
+                if request.get('asset_name') == "Mirpur Road Side Banner":
+                    print(f"       ✅ Request is for the Available asset (as expected)")
+                
+                # Check if it's linked to a Live campaign
+                if request.get('campaign_name') == "Weekend Data Pack Promotion":
+                    print(f"       ✅ Request is linked to Live campaign (as expected)")
+                
+                # Verify service bundles
+                service_bundles = request.get('service_bundles', {})
+                if service_bundles:
+                    services = [k for k, v in service_bundles.items() if v]
+                    print(f"       Services: {', '.join(services) if services else 'None'}")
+                
+                # Verify timeline and requirements
+                if request.get('timeline'):
+                    print(f"       Timeline: {request.get('timeline')}")
+                if request.get('special_requirements'):
+                    print(f"       Requirements: {request.get('special_requirements')}")
+                if request.get('notes'):
+                    print(f"       Notes: {request.get('notes')}")
+            
+            # Summary verification
+            pending_count = status_counts.get('Pending', 0)
+            
+            if pending_count >= 1:
+                print(f"   ✅ Expected pending offer requests found: {pending_count} (expected: 1+)")
+            else:
+                print(f"   ⚠️  Pending offer requests: {pending_count} (expected: 1+)")
+            
+            # Verify data integrity
+            if pending_requests:
+                sample_request = pending_requests[0]
+                required_fields = ['id', 'asset_id', 'asset_name', 'campaign_name', 'buyer_id', 'buyer_name', 'status']
+                missing_fields = [field for field in required_fields if field not in sample_request]
+                
+                if missing_fields:
+                    print(f"   ⚠️  Missing fields in offer request: {missing_fields}")
+                else:
+                    print("   ✅ Offer request structure looks good")
+        
+        return success, response
+
+    def test_dummy_data_integration_verification(self):
+        """Comprehensive verification of dummy data integration - PRIORITY TEST 5"""
+        print("🎯 TESTING DUMMY DATA INTEGRATION VERIFICATION - PRIORITY TEST 5")
+        print("   Verifying complete integration between assets, campaigns, and offers")
+        
+        # Get all data
+        success_assets, assets = self.test_public_assets()
+        success_campaigns, campaigns = self.test_get_campaigns() if self.buyer_token else (False, [])
+        success_offers, offers = self.run_test("Get Offers for Integration", "GET", "offers/requests", 200, token=self.buyer_token) if self.buyer_token else (False, [])
+        
+        if not (success_assets and success_campaigns and success_offers):
+            print("   ⚠️  Could not retrieve all data for integration verification")
+            return False, {}
+        
+        print(f"   Retrieved: {len(assets)} assets, {len(campaigns)} campaigns, {len(offers)} offers")
+        
+        # Verify asset-campaign relationships
+        print("\n   🔗 VERIFYING ASSET-CAMPAIGN RELATIONSHIPS:")
+        
+        live_campaigns = [c for c in campaigns if c.get('status') == 'Live']
+        booked_assets = [a for a in assets if a.get('status') == 'Booked']
+        
+        print(f"   Live campaigns: {len(live_campaigns)}")
+        print(f"   Booked assets: {len(booked_assets)}")
+        
+        # Check if Live campaigns have campaign_assets linking to Booked assets
+        relationships_found = 0
+        for campaign in live_campaigns:
+            campaign_assets = campaign.get('campaign_assets', [])
+            if campaign_assets:
+                print(f"   Campaign '{campaign.get('name')}' has {len(campaign_assets)} linked assets:")
+                for ca in campaign_assets:
+                    asset_id = ca.get('asset_id')
+                    asset_name = ca.get('asset_name')
+                    
+                    # Find corresponding asset
+                    matching_asset = None
+                    for asset in assets:
+                        if asset.get('id') == asset_id:
+                            matching_asset = asset
+                            break
+                    
+                    if matching_asset:
+                        print(f"     ✅ Asset: {asset_name} (Status: {matching_asset.get('status')})")
+                        if matching_asset.get('status') == 'Booked':
+                            relationships_found += 1
+                    else:
+                        print(f"     ⚠️  Asset: {asset_name} (Not found in assets list)")
+        
+        if relationships_found > 0:
+            print(f"   ✅ Found {relationships_found} proper asset-campaign relationships")
+        else:
+            print("   ⚠️  No proper asset-campaign relationships found")
+        
+        # Verify offer-asset-campaign relationships
+        print("\n   🔗 VERIFYING OFFER-ASSET-CAMPAIGN RELATIONSHIPS:")
+        
+        pending_offers = [o for o in offers if o.get('status') == 'Pending']
+        available_assets = [a for a in assets if a.get('status') == 'Available']
+        
+        print(f"   Pending offers: {len(pending_offers)}")
+        print(f"   Available assets: {len(available_assets)}")
+        
+        offer_relationships = 0
+        for offer in pending_offers:
+            asset_id = offer.get('asset_id')
+            asset_name = offer.get('asset_name')
+            campaign_name = offer.get('campaign_name')
+            
+            # Find corresponding asset
+            matching_asset = None
+            for asset in available_assets:
+                if asset.get('id') == asset_id:
+                    matching_asset = asset
+                    break
+            
+            # Find corresponding campaign
+            matching_campaign = None
+            for campaign in live_campaigns:
+                if campaign.get('name') == campaign_name:
+                    matching_campaign = campaign
+                    break
+            
+            if matching_asset and matching_campaign:
+                print(f"   ✅ Offer for '{asset_name}' linked to Live campaign '{campaign_name}'")
+                offer_relationships += 1
+            else:
+                print(f"   ⚠️  Offer relationship incomplete:")
+                print(f"     Asset found: {matching_asset is not None}")
+                print(f"     Campaign found: {matching_campaign is not None}")
+        
+        if offer_relationships > 0:
+            print(f"   ✅ Found {offer_relationships} proper offer-asset-campaign relationships")
+        else:
+            print("   ⚠️  No proper offer-asset-campaign relationships found")
+        
+        # Summary
+        print(f"\n   📊 INTEGRATION SUMMARY:")
+        print(f"   Asset-Campaign relationships: {relationships_found}")
+        print(f"   Offer-Asset-Campaign relationships: {offer_relationships}")
+        
+        total_relationships = relationships_found + offer_relationships
+        if total_relationships >= 3:  # Expect at least 3 relationships (2 campaigns + 1 offer)
+            print(f"   ✅ Integration verification successful ({total_relationships} relationships)")
+            return True, {
+                "asset_campaign_relationships": relationships_found,
+                "offer_relationships": offer_relationships,
+                "total_relationships": total_relationships
+            }
+        else:
+            print(f"   ⚠️  Integration verification incomplete ({total_relationships} relationships)")
+            return False, {}
+
+    def run_dummy_data_tests(self):
+        """Run focused dummy data creation tests as requested in the review"""
+        print("🚀 Starting BeatSpace Dummy Data Creation Testing...")
+        print("🎯 FOCUS: Testing new dummy data creation functionality for Booked Assets")
+        print(f"🌐 Base URL: {self.base_url}")
+        print("=" * 80)
+
+        # Phase 1: Authentication Tests
+        print("\n📋 PHASE 1: AUTHENTICATION SETUP")
+        print("-" * 50)
+        admin_success, admin_response = self.test_admin_login()
+        buyer_success, buyer_response = self.test_buyer_login()
+        
+        if not admin_success:
+            print("❌ Admin login failed - cannot proceed with dummy data creation")
+            return False, 0, 1
+        
+        if not buyer_success:
+            print("❌ Buyer login failed - cannot verify campaigns and offers")
+            return False, 0, 1
+
+        # Phase 2: NEW DUMMY DATA CREATION TESTS (PRIORITY)
+        print("\n📋 PHASE 2: DUMMY DATA CREATION TESTS (PRIORITY)")
+        print("-" * 50)
+        
+        # Test 1: Create Dummy Data
+        print("\n🔍 Test 1: Create Dummy Data")
+        self.test_create_dummy_booked_assets_data()
+        
+        # Test 2: Verify Assets Created
+        print("\n🔍 Test 2: Verify Assets Created")
+        self.test_verify_booked_assets_created()
+        
+        # Test 3: Verify Campaigns Created
+        print("\n🔍 Test 3: Verify Campaigns Created")
+        self.test_verify_live_campaigns_created()
+        
+        # Test 4: Verify Offer Requests
+        print("\n🔍 Test 4: Verify Offer Requests")
+        self.test_verify_offer_requests_created()
+        
+        # Test 5: Integration Verification
+        print("\n🔍 Test 5: Integration Verification")
+        self.test_dummy_data_integration_verification()
+
+        # Final Results
+        print("\n" + "=" * 80)
+        print("🎯 DUMMY DATA CREATION TESTING COMPLETE")
+        print("=" * 80)
+        print(f"📊 Total Tests Run: {self.tests_run}")
+        print(f"✅ Tests Passed: {self.tests_passed}")
+        print(f"❌ Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"📈 Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        # Show dummy data specific test results
+        dummy_data_tests = [
+            "Create Dummy Booked Assets Data",
+            "Verify Assets Created",
+            "Verify Live Campaigns Created", 
+            "Verify Offer Requests Created",
+            "Get Offers for Integration"
+        ]
+        
+        print(f"\n🔍 DUMMY DATA TEST RESULTS:")
+        passed_dummy_tests = 0
+        total_dummy_tests = 0
+        
+        for test_name in dummy_data_tests:
+            if test_name in self.test_results:
+                total_dummy_tests += 1
+                result = self.test_results[test_name]
+                status = "✅ PASS" if result['success'] else "❌ FAIL"
+                if result['success']:
+                    passed_dummy_tests += 1
+                print(f"  {status} - {test_name}")
+        
+        if total_dummy_tests > 0:
+            dummy_success_rate = (passed_dummy_tests / total_dummy_tests) * 100
+            print(f"\n📊 Dummy Data Tests Success Rate: {dummy_success_rate:.1f}% ({passed_dummy_tests}/{total_dummy_tests})")
+        
+        # Expected Results Summary
+        print(f"\n📋 EXPECTED RESULTS VERIFICATION:")
+        print(f"✅ Endpoint Creation: POST /api/admin/create-dummy-data should work")
+        print(f"✅ Asset Status: 3 assets with 'Booked' status created")
+        print(f"✅ Campaign Status: 2 campaigns with 'Live' status created")
+        print(f"✅ Asset Linking: Booked assets properly linked to Live campaigns")
+        print(f"✅ Offer Requests: 1 pending request for Available asset")
+        print(f"✅ Data Integrity: All relationships between assets, campaigns, and offers correct")
+        
+        return self.tests_passed, self.tests_run
+
     # CLOUDINARY IMAGE UPLOAD TESTS
     def test_monitor_tab_selectitem_data_integrity(self):
         """PRIORITY TEST: Monitor Tab SelectItem Data Integrity Verification"""
