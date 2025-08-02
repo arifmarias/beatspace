@@ -611,7 +611,9 @@ const MarketplacePage = () => {
       };
 
       // Submit offer request
-      await axios.post(`${API}/offers/request`, offerRequestData, { headers });
+      console.log('🚀 About to submit offer request:', offerRequestData);
+      const response = await axios.post(`${API}/offers/request`, offerRequestData, { headers });
+      console.log('✅ Offer request submitted successfully:', response.data);
       
       // Close dialog and reset form
       setShowOfferDialog(false);
@@ -640,11 +642,16 @@ const MarketplacePage = () => {
       // Refresh assets to show updated status
       fetchAssets();
       
+      console.log('🔄 About to redirect to buyer dashboard...');
+      
       // Show success message and redirect to Buyer Dashboard → Requested Offers tab
       alert('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
       
-      // Redirect to Buyer Dashboard with Requested Offers tab active
-      navigate('/buyer/dashboard?tab=requested-offers');
+      // Use setTimeout to ensure the alert is shown before redirect
+      setTimeout(() => {
+        console.log('🎯 Executing redirect to /buyer/dashboard?tab=requested-offers');
+        navigate('/buyer/dashboard?tab=requested-offers');
+      }, 1000);
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
