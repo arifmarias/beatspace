@@ -5862,15 +5862,89 @@ def run_offer_mediation_tests():
     
     tester = BeatSpaceAPITester()
     
-    # Run offer mediation tests
-    success, passed = tester.run_offer_mediation_tests()
+    # Authentication setup
+    print("\n📋 AUTHENTICATION SETUP")
+    print("-" * 40)
+    tester.test_admin_login()
+    tester.test_buyer_login()
+    tester.test_seller_login()
     
-    if success:
-        print("\n🎉 OFFER MEDIATION FUNCTIONALITY VERIFIED!")
-        print("The complete Offer Mediation workflow is working for the Admin Dashboard.")
+    if not tester.admin_token:
+        print("❌ Cannot proceed without admin authentication")
+        return 1
+    
+    # Run individual offer mediation tests
+    print("\n📋 TEST 1: GET ALL OFFER REQUESTS FOR ADMIN REVIEW")
+    print("-" * 40)
+    success1, response1 = tester.test_admin_get_offer_requests()
+    
+    print("\n📋 TEST 2: UPDATE OFFER REQUEST STATUS (NEWLY IMPLEMENTED)")
+    print("-" * 40)
+    success2, response2 = tester.test_admin_update_offer_request_status()
+    
+    print("\n📋 TEST 3: STATUS WORKFLOW TRANSITIONS")
+    print("-" * 40)
+    success3, response3 = tester.test_offer_status_workflow()
+    
+    print("\n📋 TEST 4: ASSET STATUS INTEGRATION")
+    print("-" * 40)
+    success4, response4 = tester.test_asset_status_integration()
+    
+    print("\n📋 TEST 5: DATA VALIDATION")
+    print("-" * 40)
+    success5, response5 = tester.test_offer_mediation_data_validation()
+    
+    print("\n📋 TEST 6: AUTHENTICATION REQUIREMENTS")
+    print("-" * 40)
+    success6, response6 = tester.test_offer_mediation_authentication()
+    
+    # Final Summary
+    print("\n" + "=" * 80)
+    print("🎯 COMPLETE OFFER MEDIATION TESTING SUMMARY")
+    print("=" * 80)
+    
+    tests = [
+        ("GET /api/admin/offer-requests", success1),
+        ("PATCH /api/admin/offer-requests/{id}/status", success2),
+        ("Status Workflow Transitions", success3),
+        ("Asset Status Integration", success4),
+        ("Data Validation", success5),
+        ("Authentication Requirements", success6)
+    ]
+    
+    passed_tests = sum(1 for _, success in tests if success)
+    total_tests = len(tests)
+    
+    for test_name, success in tests:
+        status = "✅ PASSED" if success else "❌ FAILED"
+        print(f"   {status} - {test_name}")
+    
+    print(f"\n📊 RESULTS: {passed_tests}/{total_tests} tests passed ({(passed_tests/total_tests)*100:.1f}%)")
+    print(f"✅ Tests Passed: {tester.tests_passed}")
+    print(f"❌ Tests Failed: {tester.tests_run - tester.tests_passed}")
+    print(f"📈 Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    
+    # Expected Results Verification
+    print(f"\n🎯 EXPECTED RESULTS VERIFICATION:")
+    if success1:
+        print("✅ Admin can retrieve all offer requests from all buyers")
+    if success2:
+        print("✅ Admin can update offer request statuses with proper validation")
+    if success4:
+        print("✅ Asset status automatically updates based on offer approval/rejection")
+    if success5:
+        print("✅ Proper error handling for invalid requests")
+    
+    if passed_tests == total_tests:
+        print("\n🎉 COMPLETE OFFER MEDIATION FUNCTIONALITY IS WORKING!")
+        print("✅ Admin Dashboard can manage offer requests effectively")
+        print("✅ Status workflow (Pending → In Process → On Hold → Approved) working")
+        print("✅ Asset status integration working correctly")
+        print("✅ Proper authentication and validation in place")
+        print("✅ The complete Offer Mediation workflow is verified for Admin Dashboard")
         return 0
     else:
-        print("\n⚠️  Offer Mediation functionality has issues that need attention")
+        print("\n⚠️  Some offer mediation functionality has issues that need attention")
         return 1
 
 if __name__ == "__main__":
