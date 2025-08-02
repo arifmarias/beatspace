@@ -304,6 +304,41 @@ const AdminDashboard = () => {
     const filtered = getFilteredCampaigns();
     return Math.ceil(filtered.length / itemsPerPage);
   };
+
+  // User filtering and pagination
+  const getFilteredUsers = () => {
+    if (!users) return [];
+    
+    let filtered = users.filter(user => {
+      const searchLower = userSearchTerm.toLowerCase();
+      return (
+        user.company_name?.toLowerCase().includes(searchLower) ||
+        user.contact_name?.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        user.role?.toLowerCase().includes(searchLower) ||
+        user.status?.toLowerCase().includes(searchLower)
+      );
+    });
+
+    // Apply user filter (all, pending, approved, etc.)
+    if (userFilter !== 'all') {
+      filtered = filtered.filter(user => user.status === userFilter);
+    }
+
+    return filtered;
+  };
+
+  const getPaginatedUsers = () => {
+    const filtered = getFilteredUsers();
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filtered.slice(startIndex, endIndex);
+  };
+
+  const getUsersTotalPages = () => {
+    const filtered = getFilteredUsers();
+    return Math.ceil(filtered.length / itemsPerPage);
+  };
   const updateOfferRequestStatus = async (offerId, newStatus) => {
     try {
       const headers = getAuthHeaders();
