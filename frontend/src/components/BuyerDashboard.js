@@ -1008,6 +1008,22 @@ const BuyerDashboard = () => {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuItem
+                                  onClick={() => {
+                                    // Store campaign context and navigate to marketplace
+                                    sessionStorage.setItem('selectedCampaignForOffer', JSON.stringify({
+                                      id: campaign.id,
+                                      name: campaign.name,
+                                      end_date: campaign.end_date
+                                    }));
+                                    navigate(`/marketplace?campaign=${campaign.id}`);
+                                  }}
+                                  className="cursor-pointer text-orange-600"
+                                >
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Add Asset
+                                </DropdownMenuItem>
+                                
+                                <DropdownMenuItem
                                   onClick={async () => {
                                     setSelectedCampaign(campaign);
                                     await fetchCampaignAssets(campaign);
