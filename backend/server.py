@@ -1895,10 +1895,13 @@ async def create_campaign_admin(
     if not buyer:
         raise HTTPException(status_code=404, detail="Buyer not found")
     
+    # Set default status to Draft if not provided
+    if "status" not in campaign_data or not campaign_data["status"]:
+        campaign_data["status"] = CampaignStatus.DRAFT
+    
     campaign = Campaign(
         **campaign_data,
-        buyer_name=buyer["company_name"],
-        status=CampaignStatus.DRAFT
+        buyer_name=buyer["company_name"]
     )
     
     await db.campaigns.insert_one(campaign.dict())
