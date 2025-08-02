@@ -732,6 +732,7 @@ const BuyerDashboard = () => {
       
       console.log('🚨 ABOUT TO REFRESH DATA...');
       await fetchBuyerData();
+      fetchLiveAssets(); // Refresh live assets as well
       console.log('🚨 DATA REFRESH COMPLETED');
       
     } catch (error) {
