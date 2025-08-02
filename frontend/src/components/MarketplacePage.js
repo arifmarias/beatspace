@@ -982,7 +982,19 @@ const MarketplacePage = () => {
                           Cancel
                         </Button>
                         <Button 
-                          onClick={handleOfferSubmit}
+                          onClick={() => {
+                            console.log('🚨 Submit button clicked!');
+                            console.log('🚨 Form validation state:', {
+                              estimatedBudget: offerDetails.estimatedBudget,
+                              campaignType: offerDetails.campaignType,
+                              campaignName: offerDetails.campaignName,
+                              existingCampaignId: offerDetails.existingCampaignId,
+                              isDisabled: !offerDetails.estimatedBudget.trim() || 
+                                         (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) ||
+                                         (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId)
+                            });
+                            handleOfferSubmit();
+                          }}
                           className="bg-orange-600 hover:bg-orange-700"
                           disabled={
                             !offerDetails.estimatedBudget.trim() || 
