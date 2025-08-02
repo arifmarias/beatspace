@@ -64,6 +64,19 @@ const BuyerDashboard = () => {
     return tabFromUrl === 'requested-offers' ? 'requested-offers' : 'campaigns';
   });
 
+  // Pagination and search state for Campaigns
+  const [campaignSearch, setCampaignSearch] = useState('');
+  const [campaignCurrentPage, setCampaignCurrentPage] = useState(1);
+  const [campaignItemsPerPage] = useState(5);
+
+  // Pagination and search state for Requested Offers  
+  const [offerSearch, setOfferSearch] = useState('');
+  const [offerCurrentPage, setOfferCurrentPage] = useState(1);
+  const [offerItemsPerPage] = useState(5);
+
+  // Collapsible state for Requested Offers
+  const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
+
   // Edit offer form state - same structure as MarketplacePage
   const [editOfferDetails, setEditOfferDetails] = useState({
     campaignType: 'existing', // Default to existing for edits
