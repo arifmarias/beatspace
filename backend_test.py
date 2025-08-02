@@ -7231,6 +7231,119 @@ def run_offer_mediation_tests():
     
     return passed_tests, total_tests
 
+def run_campaign_delete_tests():
+    """Main function to run Campaign DELETE functionality tests"""
+    print("🚀 STARTING CAMPAIGN DELETE FUNCTIONALITY TESTING")
+    print("=" * 80)
+    print("🎯 NEW FEATURE TESTING: Campaign DELETE endpoint for BeatSpace")
+    print("🔍 Testing: DELETE /api/campaigns/{campaign_id} for buyers")
+    print("🔑 Buyer Credentials: marketing@grameenphone.com / buyer123")
+    print("=" * 80)
+    print("🎯 BUSINESS RULES TO VERIFY:")
+    print("1. ✅ Only campaign owner (buyer) can delete their own campaigns")
+    print("2. ✅ Only Draft campaigns can be deleted (not Live, Completed, etc.)")
+    print("3. ✅ Cannot delete campaigns that have associated offer requests")
+    print("4. ✅ Successful deletion for Draft campaigns with no offer requests")
+    print("5. ✅ Proper error handling for all validation failures")
+    print("=" * 80)
+    
+    tester = BeatSpaceAPITester()
+    
+    # Authentication Tests
+    print("\n📋 AUTHENTICATION SETUP")
+    print("-" * 40)
+    admin_success, admin_response = tester.test_admin_login()
+    buyer_success, buyer_response = tester.test_buyer_login()
+    
+    if not buyer_success:
+        print("❌ Buyer authentication failed - cannot proceed with campaign DELETE tests")
+        return 1
+    
+    print("✅ Authentication successful - ready to test campaign DELETE functionality")
+    
+    # Test 1: Authentication and Permissions
+    print("\n📋 TEST 1: AUTHENTICATION AND PERMISSIONS")
+    print("-" * 40)
+    success1, response1 = tester.test_campaign_delete_authentication_and_permissions()
+    
+    # Test 2: Campaign Status Restrictions
+    print("\n📋 TEST 2: CAMPAIGN STATUS RESTRICTIONS")
+    print("-" * 40)
+    success2, response2 = tester.test_campaign_delete_status_restrictions()
+    
+    # Test 3: Associated Offer Requests Check
+    print("\n📋 TEST 3: ASSOCIATED OFFER REQUESTS CHECK")
+    print("-" * 40)
+    success3, response3 = tester.test_campaign_delete_offer_requests_check()
+    
+    # Test 4: Error Handling
+    print("\n📋 TEST 4: ERROR HANDLING")
+    print("-" * 40)
+    success4, response4 = tester.test_campaign_delete_error_handling()
+    
+    # Test 5: Successful Deletion Scenario
+    print("\n📋 TEST 5: SUCCESSFUL DELETION SCENARIO")
+    print("-" * 40)
+    success5, response5 = tester.test_campaign_delete_successful_deletion()
+    
+    # Test 6: Comprehensive Workflow
+    print("\n📋 TEST 6: COMPREHENSIVE WORKFLOW")
+    print("-" * 40)
+    success6, response6 = tester.test_campaign_delete_comprehensive_workflow()
+    
+    # Summary
+    print("\n" + "=" * 80)
+    print("🎯 CAMPAIGN DELETE FUNCTIONALITY TESTING SUMMARY")
+    print("=" * 80)
+    
+    tests = [
+        ("Authentication and Permissions", success1),
+        ("Campaign Status Restrictions", success2),
+        ("Associated Offer Requests Check", success3),
+        ("Error Handling", success4),
+        ("Successful Deletion Scenario", success5),
+        ("Comprehensive Workflow", success6)
+    ]
+    
+    passed_tests = sum(1 for _, success in tests if success)
+    total_tests = len(tests)
+    
+    for test_name, success in tests:
+        status = "✅ PASSED" if success else "❌ FAILED"
+        print(f"   {status} - {test_name}")
+    
+    print(f"\n📊 RESULTS: {passed_tests}/{total_tests} tests passed ({(passed_tests/total_tests)*100:.1f}%)")
+    print(f"✅ Tests Passed: {tester.tests_passed}")
+    print(f"❌ Tests Failed: {tester.tests_run - tester.tests_passed}")
+    print(f"📈 Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    
+    # Business Rules Verification
+    print(f"\n🎯 BUSINESS RULES VERIFICATION:")
+    if success1:
+        print("✅ Only campaign owner (buyer) can delete their own campaigns")
+    if success2:
+        print("✅ Only Draft campaigns can be deleted (not Live, Completed, etc.)")
+    if success3:
+        print("✅ Cannot delete campaigns that have associated offer requests")
+    if success5:
+        print("✅ Successful deletion for Draft campaigns with no offer requests")
+    if success4:
+        print("✅ Proper error handling for all validation failures")
+    
+    if passed_tests == total_tests:
+        print("\n🎉 ALL CAMPAIGN DELETE FUNCTIONALITY TESTS PASSED!")
+        print("✅ DELETE /api/campaigns/{campaign_id} endpoint is working correctly")
+        print("✅ All business rules are properly implemented and enforced")
+        print("✅ Authentication and authorization working correctly")
+        print("✅ Error handling is comprehensive and user-friendly")
+        print("✅ Campaign DELETE functionality is production-ready")
+        print("\n🔍 CONCLUSION: Campaign DELETE functionality is fully functional and ready for use!")
+        return 0
+    else:
+        print("\n⚠️  Some campaign DELETE functionality tests failed - see details above")
+        print("❌ Campaign DELETE functionality may need additional work")
+        return 1
+
 if __name__ == "__main__":
     tester = BeatSpaceAPITester()
     
@@ -7238,7 +7351,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         test_type = sys.argv[1].lower()
         
-        if test_type == "offer_mediation":
+        if test_type == "campaign-delete":
+            # Run Campaign DELETE functionality tests
+            exit_code = run_campaign_delete_tests()
+            sys.exit(exit_code)
+        elif test_type == "offer_mediation":
             # Run FIXED Offer Mediation and Campaign Details tests
             run_offer_mediation_tests()
         elif test_type == "admin_asset":
@@ -7255,8 +7372,9 @@ if __name__ == "__main__":
             tester.run_cloudinary_tests()
         else:
             print(f"Unknown test type: {test_type}")
-            print("Available test types: offer_mediation, admin_asset, delete, delete_simple, cloudinary")
+            print("Available test types: campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
             tester.run_comprehensive_tests()
     else:
-        # Run all comprehensive tests
-        tester.run_comprehensive_tests()
+        # Run campaign DELETE tests by default
+        exit_code = run_campaign_delete_tests()
+        sys.exit(exit_code)
