@@ -179,6 +179,22 @@ const AdminDashboard = () => {
       const availableAssetsData = availableAssetsResponse.data.filter(asset => asset.status === 'Available');
       setAvailableAssets(availableAssetsData);
 
+      // Fetch offer requests for admin mediation
+      try {
+        const offerRequestsResponse = await axios.get(`${API}/admin/offer-requests`, { headers });
+        setOfferRequests(offerRequestsResponse.data || []);
+      } catch (error) {
+        console.error('Error fetching offer requests:', error);
+        // If admin endpoint doesn't exist, try the general offers endpoint
+        try {
+          const fallbackResponse = await axios.get(`${API}/offers/requests`, { headers });
+          setOfferRequests(fallbackResponse.data || []);
+        } catch (fallbackError) {
+          console.error('Error fetching offer requests (fallback):', fallbackError);
+          setOfferRequests([]);
+        }
+      }
+
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       if (error.response?.status === 401) {
