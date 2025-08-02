@@ -674,9 +674,6 @@ const MarketplacePage = () => {
                               <p className="text-sm text-gray-600">{selectedAssetForOffer.address}</p>
                               <div className="flex items-center space-x-4 mt-1">
                                 <span className="text-sm font-medium">{selectedAssetForOffer.type}</span>
-                                <span className="text-sm text-blue-600">
-                                  ৳{selectedAssetForOffer.pricing?.['3_months']?.toLocaleString()}/3mo
-                                </span>
                               </div>
                             </div>
                           </div>
