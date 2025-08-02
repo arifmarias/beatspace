@@ -1197,6 +1197,12 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    No users found matching your criteria.
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
