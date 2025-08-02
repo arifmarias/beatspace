@@ -1411,8 +1411,11 @@ const AdminDashboard = () => {
                     </Button>
                     <Input
                       placeholder="Search campaigns..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={campaignSearchTerm}
+                      onChange={(e) => {
+                        setCampaignSearchTerm(e.target.value);
+                        setCurrentPage(1); // Reset to first page when searching
+                      }}
                       className="w-64"
                     />
                   </div>
