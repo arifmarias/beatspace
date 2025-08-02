@@ -482,15 +482,18 @@ frontend:
 
   - task: "Campaign management restrictions in Buyer Dashboard"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/BuyerDashboard.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented Live vs Draft campaign restrictions - Live campaigns only allow adding new assets, Draft campaigns allow full asset management (edit/delete/update)"
+        - working: true
+          agent: "testing"
+          comment: "✅ CAMPAIGN MANAGEMENT RESTRICTIONS VERIFIED - The campaign management restrictions are properly implemented in BuyerDashboard.js. The code correctly handles Live vs Draft campaign restrictions, allowing Live campaigns to only add new assets while Draft campaigns support full asset management (edit/delete/update). The UI properly reflects these restrictions based on campaign status."
 
   - task: "HomePage stats loading"
     implemented: true
