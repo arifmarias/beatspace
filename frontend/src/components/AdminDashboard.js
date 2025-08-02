@@ -1501,25 +1501,25 @@ const AdminDashboard = () => {
                 {getAssetsTotalPages() > 1 && (
                   <div className="flex items-center justify-between mt-4">
                     <div className="text-sm text-gray-500">
-                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredAssets().length)} of {getFilteredAssets().length} assets
+                      Showing {((assetCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(assetCurrentPage * itemsPerPage, getFilteredAssets().length)} of {getFilteredAssets().length} assets
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
+                        onClick={() => setAssetCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={assetCurrentPage === 1}
                       >
                         Previous
                       </Button>
                       <span className="text-sm text-gray-600">
-                        Page {currentPage} of {getAssetsTotalPages()}
+                        Page {assetCurrentPage} of {getAssetsTotalPages()}
                       </span>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, getAssetsTotalPages()))}
-                        disabled={currentPage === getAssetsTotalPages()}
+                        onClick={() => setAssetCurrentPage(prev => Math.min(prev + 1, getAssetsTotalPages()))}
+                        disabled={assetCurrentPage === getAssetsTotalPages()}
                       >
                         Next
                       </Button>
