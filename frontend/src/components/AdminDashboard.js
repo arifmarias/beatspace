@@ -1576,7 +1576,10 @@ const AdminDashboard = () => {
                     <Input
                       placeholder="Search offer requests..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1); // Reset to first page when searching
+                      }}
                       className="w-64"
                     />
                   </div>
