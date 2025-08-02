@@ -81,6 +81,7 @@ const AdminDashboard = () => {
   const [itemsPerPage] = useState(10); // Items per page for pagination
   const [campaignSearchTerm, setCampaignSearchTerm] = useState('');
   const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [assetSearchTerm, setAssetSearchTerm] = useState('');
 
   // Bangladesh districts and divisions data
   const [bangladeshDistricts] = useState([
