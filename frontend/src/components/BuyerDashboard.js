@@ -23,7 +23,11 @@ import {
   MoreVertical,
   Search,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  List,
+  Map,
+  FolderOpen,
+  Activity
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
