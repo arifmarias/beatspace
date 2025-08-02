@@ -50,6 +50,7 @@ const BuyerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentUser = getUser();
+  const { notify } = useNotification();
   const [campaigns, setCampaigns] = useState([]);
   const [requestedOffers, setRequestedOffers] = useState([]);
   const [stats, setStats] = useState({});
