@@ -227,8 +227,8 @@ const BuyerDashboard = () => {
       // Filter only Live campaigns
       const liveCampaigns = buyerCampaigns.filter(campaign => campaign.status === 'Live');
       
-      // Collect all assets from Live campaigns
-      const liveAssetsData = [];
+      // Collect all BOOKED assets from Live campaigns
+      const bookedAssetsData = [];
       
       for (const campaign of liveCampaigns) {
         // Fetch campaign assets (both selected and requested ones)
@@ -240,8 +240,9 @@ const BuyerDashboard = () => {
               const allAssets = assetResponse.data || [];
               const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
               
-              if (asset) {
-                liveAssetsData.push({
+              // Only include assets with BOOKED status
+              if (asset && asset.status === 'Booked') {
+                bookedAssetsData.push({
                   ...asset,
                   campaignName: campaign.name,
                   campaignId: campaign.id,
@@ -250,7 +251,7 @@ const BuyerDashboard = () => {
                   assetEndDate: campaignAsset.end_date,
                   duration: calculateDuration(campaignAsset.start_date, campaignAsset.end_date),
                   expiryDate: campaignAsset.end_date,
-                  lastStatus: asset.status || 'Active'
+                  lastStatus: asset.status // Will be 'Booked'
                 });
               }
             } catch (error) {
@@ -260,10 +261,10 @@ const BuyerDashboard = () => {
         }
       }
       
-      setLiveAssets(liveAssetsData);
+      setLiveAssets(bookedAssetsData);
     } catch (error) {
-      console.error('Error fetching live assets:', error);
-      notify.error('Failed to load live assets');
+      console.error('Error fetching booked assets:', error);
+      notify.error('Failed to load booked assets');
       setLiveAssets([]);
     } finally {
       setAssetsLoading(false);
