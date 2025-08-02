@@ -183,13 +183,55 @@ const AdminDashboard = () => {
       // Fetch offer requests for admin mediation
       try {
         const offerRequestsResponse = await axios.get(`${API}/admin/offer-requests`, { headers });
-        setOfferRequests(offerRequestsResponse.data || []);
+        const offerRequestsData = offerRequestsResponse.data || [];
+        
+        // Fetch asset prices for each offer request
+        const enrichedOfferRequests = await Promise.all(
+          offerRequestsData.map(async (offer) => {
+            try {
+              const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
+              return {
+                ...offer,
+                asset_price: assetResponse.data.pricing?.weekly_rate || 0
+              };
+            } catch (error) {
+              console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
+              return {
+                ...offer,
+                asset_price: 0
+              };
+            }
+          })
+        );
+        
+        setOfferRequests(enrichedOfferRequests);
       } catch (error) {
         console.error('Error fetching offer requests:', error);
         // If admin endpoint doesn't exist, try the general offers endpoint
         try {
           const fallbackResponse = await axios.get(`${API}/offers/requests`, { headers });
-          setOfferRequests(fallbackResponse.data || []);
+          const fallbackData = fallbackResponse.data || [];
+          
+          // Fetch asset prices for fallback data too
+          const enrichedFallbackRequests = await Promise.all(
+            fallbackData.map(async (offer) => {
+              try {
+                const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
+                return {
+                  ...offer,
+                  asset_price: assetResponse.data.pricing?.weekly_rate || 0
+                };
+              } catch (error) {
+                console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
+                return {
+                  ...offer,
+                  asset_price: 0
+                };
+              }
+            })
+          );
+          
+          setOfferRequests(enrichedFallbackRequests);
         } catch (fallbackError) {
           console.error('Error fetching offer requests (fallback):', fallbackError);
           setOfferRequests([]);
