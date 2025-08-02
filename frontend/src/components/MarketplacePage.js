@@ -773,7 +773,9 @@ const MarketplacePage = () => {
                             <Select 
                               value={offerDetails.existingCampaignId || ''} 
                               onValueChange={(value) => {
+                                console.log('🎯 Campaign selected:', value);
                                 const selectedCampaign = existingCampaigns.find(c => c.id === value);
+                                console.log('🎯 Found campaign:', selectedCampaign);
                                 setOfferDetails({
                                   ...offerDetails, 
                                   campaignType: 'existing',
@@ -784,14 +786,27 @@ const MarketplacePage = () => {
                               }}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Select an existing campaign" />
+                                <SelectValue placeholder={
+                                  existingCampaigns.length > 0 
+                                    ? `Select from ${existingCampaigns.length} campaigns` 
+                                    : "Loading campaigns..."
+                                } />
                               </SelectTrigger>
                               <SelectContent>
-                                {existingCampaigns.map(campaign => (
-                                  <SelectItem key={campaign.id} value={campaign.id}>
-                                    📁 {campaign.name} ({(campaign.assets || []).length} assets)
+                                {existingCampaigns.length === 0 ? (
+                                  <SelectItem value="" disabled>
+                                    No campaigns available
                                   </SelectItem>
-                                ))}
+                                ) : (
+                                  existingCampaigns.map(campaign => {
+                                    console.log('🎯 Rendering campaign option:', campaign);
+                                    return (
+                                      <SelectItem key={campaign.id} value={campaign.id}>
+                                        📁 {campaign.name} ({(campaign.assets || []).length} assets)
+                                      </SelectItem>
+                                    );
+                                  })
+                                )}
                               </SelectContent>
                             </Select>
                           </div>
