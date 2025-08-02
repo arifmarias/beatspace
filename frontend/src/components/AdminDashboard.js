@@ -277,6 +277,32 @@ const AdminDashboard = () => {
     const filtered = getFilteredOfferRequests();
     return Math.ceil(filtered.length / itemsPerPage);
   };
+
+  // Campaign filtering and pagination
+  const getFilteredCampaigns = () => {
+    if (!campaigns) return [];
+    
+    return campaigns.filter(campaign => {
+      const searchLower = campaignSearchTerm.toLowerCase();
+      return (
+        campaign.name?.toLowerCase().includes(searchLower) ||
+        campaign.buyer_name?.toLowerCase().includes(searchLower) ||
+        campaign.status?.toLowerCase().includes(searchLower)
+      );
+    });
+  };
+
+  const getPaginatedCampaigns = () => {
+    const filtered = getFilteredCampaigns();
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filtered.slice(startIndex, endIndex);
+  };
+
+  const getCampaignsTotalPages = () => {
+    const filtered = getFilteredCampaigns();
+    return Math.ceil(filtered.length / itemsPerPage);
+  };
   const updateOfferRequestStatus = async (offerId, newStatus) => {
     try {
       const headers = getAuthHeaders();
