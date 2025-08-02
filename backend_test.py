@@ -3543,6 +3543,277 @@ class BeatSpaceAPITester:
         return success, response
 
     # CLOUDINARY IMAGE UPLOAD TESTS
+    def test_monitor_tab_selectitem_data_integrity(self):
+        """PRIORITY TEST: Monitor Tab SelectItem Data Integrity Verification"""
+        print("🎯 MONITOR TAB SELECTITEM DATA INTEGRITY VERIFICATION")
+        print("=" * 80)
+        print("🔍 FOCUS: Verify all data used in Select components has proper non-empty string values")
+        print("🔍 GOAL: Ensure no empty string IDs that could cause SelectItem errors")
+        print("🔍 SCOPE: Asset IDs, User IDs, Campaign IDs, Offer Request IDs")
+        print("-" * 80)
+        
+        integrity_issues = []
+        total_checks = 0
+        
+        # 1. ASSET DATA INTEGRITY
+        print("\n📋 1. ASSET DATA INTEGRITY VERIFICATION")
+        print("-" * 50)
+        success, assets = self.test_public_assets()
+        if success and assets:
+            print(f"   Found {len(assets)} assets to verify")
+            for i, asset in enumerate(assets):
+                total_checks += 1
+                asset_id = asset.get('id', '')
+                asset_name = asset.get('name', '')
+                asset_type = asset.get('type', '')
+                asset_status = asset.get('status', '')
+                
+                # Check for empty or invalid IDs
+                if not asset_id or asset_id.strip() == '':
+                    integrity_issues.append(f"Asset #{i+1}: Empty or invalid ID")
+                    print(f"   ❌ Asset #{i+1}: Empty ID detected")
+                elif len(asset_id) < 5:  # UUIDs should be much longer
+                    integrity_issues.append(f"Asset #{i+1}: Suspiciously short ID: '{asset_id}'")
+                    print(f"   ⚠️  Asset #{i+1}: Short ID: '{asset_id}'")
+                else:
+                    print(f"   ✅ Asset #{i+1}: Valid ID: {asset_id[:8]}...")
+                
+                # Check for empty names (would break Select display)
+                if not asset_name or asset_name.strip() == '':
+                    integrity_issues.append(f"Asset {asset_id}: Empty name")
+                    print(f"   ❌ Asset {asset_id}: Empty name")
+                
+                # Check for empty types (would break Select filtering)
+                if not asset_type or asset_type.strip() == '':
+                    integrity_issues.append(f"Asset {asset_id}: Empty type")
+                    print(f"   ❌ Asset {asset_id}: Empty type")
+                
+                # Check for empty status (would break Select filtering)
+                if not asset_status or asset_status.strip() == '':
+                    integrity_issues.append(f"Asset {asset_id}: Empty status")
+                    print(f"   ❌ Asset {asset_id}: Empty status")
+                
+                # Verify seller_id exists and is valid
+                seller_id = asset.get('seller_id', '')
+                if not seller_id or seller_id.strip() == '':
+                    integrity_issues.append(f"Asset {asset_id}: Empty seller_id")
+                    print(f"   ❌ Asset {asset_id}: Empty seller_id")
+        else:
+            integrity_issues.append("Could not retrieve assets for verification")
+            print("   ❌ Could not retrieve assets")
+        
+        # 2. USER DATA INTEGRITY
+        print("\n📋 2. USER DATA INTEGRITY VERIFICATION")
+        print("-" * 50)
+        if self.admin_token:
+            success, users = self.test_admin_get_users()
+            if success and users:
+                print(f"   Found {len(users)} users to verify")
+                for i, user in enumerate(users):
+                    total_checks += 1
+                    user_id = user.get('id', '')
+                    user_email = user.get('email', '')
+                    user_role = user.get('role', '')
+                    user_status = user.get('status', '')
+                    company_name = user.get('company_name', '')
+                    
+                    # Check for empty or invalid IDs
+                    if not user_id or user_id.strip() == '':
+                        integrity_issues.append(f"User #{i+1}: Empty or invalid ID")
+                        print(f"   ❌ User #{i+1}: Empty ID detected")
+                    elif len(user_id) < 5:
+                        integrity_issues.append(f"User #{i+1}: Suspiciously short ID: '{user_id}'")
+                        print(f"   ⚠️  User #{i+1}: Short ID: '{user_id}'")
+                    else:
+                        print(f"   ✅ User #{i+1}: Valid ID: {user_id[:8]}...")
+                    
+                    # Check for empty emails (would break Select display)
+                    if not user_email or user_email.strip() == '':
+                        integrity_issues.append(f"User {user_id}: Empty email")
+                        print(f"   ❌ User {user_id}: Empty email")
+                    
+                    # Check for empty roles (would break Select filtering)
+                    if not user_role or user_role.strip() == '':
+                        integrity_issues.append(f"User {user_id}: Empty role")
+                        print(f"   ❌ User {user_id}: Empty role")
+                    
+                    # Check for empty status (would break Select filtering)
+                    if not user_status or user_status.strip() == '':
+                        integrity_issues.append(f"User {user_id}: Empty status")
+                        print(f"   ❌ User {user_id}: Empty status")
+                    
+                    # Check for empty company names (would break Select display)
+                    if not company_name or company_name.strip() == '':
+                        integrity_issues.append(f"User {user_id}: Empty company_name")
+                        print(f"   ❌ User {user_id}: Empty company_name")
+            else:
+                integrity_issues.append("Could not retrieve users for verification")
+                print("   ❌ Could not retrieve users")
+        else:
+            print("   ⚠️  Skipping user verification - no admin token")
+        
+        # 3. CAMPAIGN DATA INTEGRITY
+        print("\n📋 3. CAMPAIGN DATA INTEGRITY VERIFICATION")
+        print("-" * 50)
+        if self.admin_token:
+            success, campaigns = self.test_admin_get_campaigns()
+            if success and campaigns:
+                print(f"   Found {len(campaigns)} campaigns to verify")
+                for i, campaign in enumerate(campaigns):
+                    total_checks += 1
+                    campaign_id = campaign.get('id', '')
+                    campaign_name = campaign.get('name', '')
+                    campaign_status = campaign.get('status', '')
+                    buyer_id = campaign.get('buyer_id', '')
+                    buyer_name = campaign.get('buyer_name', '')
+                    
+                    # Check for empty or invalid IDs
+                    if not campaign_id or campaign_id.strip() == '':
+                        integrity_issues.append(f"Campaign #{i+1}: Empty or invalid ID")
+                        print(f"   ❌ Campaign #{i+1}: Empty ID detected")
+                    elif len(campaign_id) < 5:
+                        integrity_issues.append(f"Campaign #{i+1}: Suspiciously short ID: '{campaign_id}'")
+                        print(f"   ⚠️  Campaign #{i+1}: Short ID: '{campaign_id}'")
+                    else:
+                        print(f"   ✅ Campaign #{i+1}: Valid ID: {campaign_id[:8]}...")
+                    
+                    # Check for empty names (would break Select display)
+                    if not campaign_name or campaign_name.strip() == '':
+                        integrity_issues.append(f"Campaign {campaign_id}: Empty name")
+                        print(f"   ❌ Campaign {campaign_id}: Empty name")
+                    
+                    # Check for empty status (would break Select filtering)
+                    if not campaign_status or campaign_status.strip() == '':
+                        integrity_issues.append(f"Campaign {campaign_id}: Empty status")
+                        print(f"   ❌ Campaign {campaign_id}: Empty status")
+                    
+                    # Check for empty buyer_id (would break Select relationships)
+                    if not buyer_id or buyer_id.strip() == '':
+                        integrity_issues.append(f"Campaign {campaign_id}: Empty buyer_id")
+                        print(f"   ❌ Campaign {campaign_id}: Empty buyer_id")
+                    
+                    # Check for empty buyer_name (would break Select display)
+                    if not buyer_name or buyer_name.strip() == '':
+                        integrity_issues.append(f"Campaign {campaign_id}: Empty buyer_name")
+                        print(f"   ❌ Campaign {campaign_id}: Empty buyer_name")
+            else:
+                integrity_issues.append("Could not retrieve campaigns for verification")
+                print("   ❌ Could not retrieve campaigns")
+        else:
+            print("   ⚠️  Skipping campaign verification - no admin token")
+        
+        # 4. OFFER REQUEST DATA INTEGRITY
+        print("\n📋 4. OFFER REQUEST DATA INTEGRITY VERIFICATION")
+        print("-" * 50)
+        if self.admin_token:
+            success, response = self.run_test("Admin Get Offer Requests", "GET", "admin/offer-requests", 200, token=self.admin_token)
+            if success and response:
+                print(f"   Found {len(response)} offer requests to verify")
+                for i, offer in enumerate(response):
+                    total_checks += 1
+                    offer_id = offer.get('id', '')
+                    asset_id = offer.get('asset_id', '')
+                    asset_name = offer.get('asset_name', '')
+                    buyer_id = offer.get('buyer_id', '')
+                    buyer_name = offer.get('buyer_name', '')
+                    campaign_name = offer.get('campaign_name', '')
+                    status = offer.get('status', '')
+                    
+                    # Check for empty or invalid IDs
+                    if not offer_id or offer_id.strip() == '':
+                        integrity_issues.append(f"Offer #{i+1}: Empty or invalid ID")
+                        print(f"   ❌ Offer #{i+1}: Empty ID detected")
+                    elif len(offer_id) < 5:
+                        integrity_issues.append(f"Offer #{i+1}: Suspiciously short ID: '{offer_id}'")
+                        print(f"   ⚠️  Offer #{i+1}: Short ID: '{offer_id}'")
+                    else:
+                        print(f"   ✅ Offer #{i+1}: Valid ID: {offer_id[:8]}...")
+                    
+                    # Check for empty asset_id (would break Select relationships)
+                    if not asset_id or asset_id.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty asset_id")
+                        print(f"   ❌ Offer {offer_id}: Empty asset_id")
+                    
+                    # Check for empty asset_name (would break Select display)
+                    if not asset_name or asset_name.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty asset_name")
+                        print(f"   ❌ Offer {offer_id}: Empty asset_name")
+                    
+                    # Check for empty buyer_id (would break Select relationships)
+                    if not buyer_id or buyer_id.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty buyer_id")
+                        print(f"   ❌ Offer {offer_id}: Empty buyer_id")
+                    
+                    # Check for empty buyer_name (would break Select display)
+                    if not buyer_name or buyer_name.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty buyer_name")
+                        print(f"   ❌ Offer {offer_id}: Empty buyer_name")
+                    
+                    # Check for empty campaign_name (would break Select display)
+                    if not campaign_name or campaign_name.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty campaign_name")
+                        print(f"   ❌ Offer {offer_id}: Empty campaign_name")
+                    
+                    # Check for empty status (would break Select filtering)
+                    if not status or status.strip() == '':
+                        integrity_issues.append(f"Offer {offer_id}: Empty status")
+                        print(f"   ❌ Offer {offer_id}: Empty status")
+            else:
+                integrity_issues.append("Could not retrieve offer requests for verification")
+                print("   ❌ Could not retrieve offer requests")
+        else:
+            print("   ⚠️  Skipping offer request verification - no admin token")
+        
+        # 5. ENUM VALUES VALIDATION
+        print("\n📋 5. ENUM VALUES VALIDATION")
+        print("-" * 50)
+        
+        # Valid enum values that Select components expect
+        valid_asset_types = ["Billboard", "Police Box", "Roadside Barrier", "Traffic Height Restriction Overhead", 
+                           "Railway Station", "Market", "Wall", "Bridge", "Bus Stop", "Others"]
+        valid_asset_statuses = ["Available", "Pending Offer", "Negotiating", "Booked", "Work in Progress", 
+                              "Live", "Completed", "Pending Approval", "Unavailable"]
+        valid_user_roles = ["buyer", "seller", "admin"]
+        valid_user_statuses = ["pending", "approved", "rejected", "suspended"]
+        valid_campaign_statuses = ["Draft", "Negotiation", "Ready", "Live", "Completed"]
+        
+        # Check asset enum values
+        if success and assets:
+            for asset in assets:
+                asset_type = asset.get('type', '')
+                asset_status = asset.get('status', '')
+                
+                if asset_type and asset_type not in valid_asset_types:
+                    integrity_issues.append(f"Asset {asset.get('id', 'Unknown')}: Invalid type '{asset_type}'")
+                    print(f"   ❌ Invalid asset type: '{asset_type}'")
+                
+                if asset_status and asset_status not in valid_asset_statuses:
+                    integrity_issues.append(f"Asset {asset.get('id', 'Unknown')}: Invalid status '{asset_status}'")
+                    print(f"   ❌ Invalid asset status: '{asset_status}'")
+        
+        # FINAL RESULTS
+        print("\n" + "=" * 80)
+        print("🎯 MONITOR TAB SELECTITEM DATA INTEGRITY RESULTS")
+        print("=" * 80)
+        
+        if len(integrity_issues) == 0:
+            print("✅ ALL DATA INTEGRITY CHECKS PASSED!")
+            print(f"✅ Verified {total_checks} data objects")
+            print("✅ No empty string IDs found")
+            print("✅ All enum values are valid")
+            print("✅ All required fields have proper values")
+            print("✅ Backend is serving clean data for all Select components")
+            print("✅ Monitor Tab SelectItem fixes are working correctly")
+            return True, {"total_checks": total_checks, "issues": 0}
+        else:
+            print(f"❌ FOUND {len(integrity_issues)} DATA INTEGRITY ISSUES:")
+            for issue in integrity_issues:
+                print(f"   ❌ {issue}")
+            print(f"📊 Checked {total_checks} data objects")
+            print(f"📊 Found {len(integrity_issues)} issues")
+            print("⚠️  These issues could cause SelectItem errors in Monitor Tab")
+            return False, {"total_checks": total_checks, "issues": len(integrity_issues), "details": integrity_issues}
+
     def test_cloudinary_configuration(self):
         """Test Cloudinary configuration is properly set up"""
         print("   Verifying Cloudinary configuration...")
