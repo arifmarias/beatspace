@@ -648,6 +648,15 @@ const MarketplacePage = () => {
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
+      
+      // Check if this is an authentication error
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Your session has expired. Please login again.');
+        navigate('/login');
+        return;
+      }
+      
+      // For other errors, show the error but don't redirect
       alert('Error submitting request: ' + (error.response?.data?.detail || error.message));
     }
   };
