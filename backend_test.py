@@ -6001,7 +6001,14 @@ def run_offer_mediation_tests():
     success5 = True
     try:
         # Test invalid status
-        success_get, offer_requests = tester.test_get_offer_requests_admin()
+        success_get, offer_requests = tester.run_test(
+            "Get Offer Requests for Validation Test", 
+            "GET", 
+            "admin/offer-requests", 
+            200, 
+            token=tester.admin_token
+        )
+        
         if success_get and offer_requests:
             request_id = offer_requests[0]['id']
             invalid_status_update = {"status": "InvalidStatus"}
