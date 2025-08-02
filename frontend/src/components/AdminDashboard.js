@@ -1292,7 +1292,7 @@ const AdminDashboard = () => {
                       value={assetSearchTerm}
                       onChange={(e) => {
                         setAssetSearchTerm(e.target.value);
-                        setCurrentPage(1); // Reset to first page when searching
+                        setAssetCurrentPage(1); // Reset to first page when searching
                       }}
                       className="w-64"
                     />
