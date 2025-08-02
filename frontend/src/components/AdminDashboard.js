@@ -1422,23 +1422,24 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {(campaigns || []).length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Campaign</TableHead>
-                        <TableHead>Buyer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Budget</TableHead>
-                        <TableHead>Assets</TableHead>
-                        <TableHead>Start Date</TableHead>
-                        <TableHead>End Date</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(campaigns || []).map((campaign) => (
+                {getFilteredCampaigns().length > 0 ? (
+                  <div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Campaign</TableHead>
+                          <TableHead>Buyer</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Budget</TableHead>
+                          <TableHead>Assets</TableHead>
+                          <TableHead>Start Date</TableHead>
+                          <TableHead>End Date</TableHead>
+                          <TableHead>Created</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getPaginatedCampaigns().map((campaign) => (
                         <TableRow key={campaign.id}>
                           <TableCell>
                             <div>
