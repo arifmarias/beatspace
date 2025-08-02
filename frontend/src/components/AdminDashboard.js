@@ -274,7 +274,7 @@ const AdminDashboard = () => {
 
   const getPaginatedOfferRequests = () => {
     const filtered = getFilteredOfferRequests();
-    const startIndex = (currentPage - 1) * itemsPerPage;
+    const startIndex = (offerCurrentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filtered.slice(startIndex, endIndex);
   };
