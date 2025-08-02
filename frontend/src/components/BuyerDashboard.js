@@ -923,31 +923,52 @@ const BuyerDashboard = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Campaign Name</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Budget</TableHead>
-                        <TableHead>Assets</TableHead>
-                        <TableHead>Start Date</TableHead>
-                        <TableHead>End Date</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(campaigns || []).map((campaign) => (
-                        <TableRow key={campaign.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{campaign.name}</div>
-                              <div className="text-sm text-gray-500">{campaign.description}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={getStatusColor(campaign.status)}>
-                              {campaign.status}
+                  <div className="space-y-4">
+                    {/* Search Bar */}
+                    <div className="flex items-center space-x-2">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search campaigns by name, description, or status..."
+                          value={campaignSearch}
+                          onChange={(e) => {
+                            setCampaignSearch(e.target.value);
+                            setCampaignCurrentPage(1); // Reset to first page when searching
+                          }}
+                          className="pl-10"
+                        />
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {getFilteredCampaigns().length} of {(campaigns || []).length} campaigns
+                      </div>
+                    </div>
+
+                    {/* Campaigns Table */}
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Campaign Name</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Budget</TableHead>
+                          <TableHead>Assets</TableHead>
+                          <TableHead>Start Date</TableHead>
+                          <TableHead>End Date</TableHead>
+                          <TableHead>Created</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getPaginatedCampaigns().map((campaign) => (
+                          <TableRow key={campaign.id}>
+                            <TableCell>
+                              <div>
+                                <div className="font-medium">{campaign.name}</div>
+                                <div className="text-sm text-gray-500">{campaign.description}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={getStatusColor(campaign.status)}>
+                                {campaign.status}
                             </Badge>
                           </TableCell>
                           <TableCell>৳{campaign.budget?.toLocaleString()}</TableCell>
