@@ -548,8 +548,14 @@ const MarketplacePage = () => {
   }, [offerDetails.tentativeStartDate, offerDetails.contractDuration, offerDetails.existingCampaignId, offerDetails.selectedCampaignEndDate]);
 
   const handleOfferSubmit = async () => {
+    console.log('🚀 handleOfferSubmit function called!');
+    console.log('🚀 Current offerDetails:', offerDetails);
+    console.log('🚀 Selected asset:', selectedAssetForOffer);
+    console.log('🚀 Current user:', currentUser);
+    
     try {
       if (!currentUser) {
+        console.log('❌ No current user, redirecting to login');
         alert('Please sign in to submit a campaign request.');
         navigate('/login');
         return;
@@ -557,6 +563,7 @@ const MarketplacePage = () => {
 
       // Validation for campaign selection
       if (!offerDetails.existingCampaignId) {
+        console.log('❌ No campaign selected');
         alert('Please select an existing campaign.');
         return;
       }
