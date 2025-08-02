@@ -214,6 +214,81 @@ const BuyerDashboard = () => {
     }
   };
 
+  const fetchLiveAssets = async () => {
+    setAssetsLoading(true);
+    try {
+      const headers = getAuthHeaders();
+      
+      // Fetch all campaigns for this buyer
+      const campaignsResponse = await axios.get(`${API}/campaigns`, { headers });
+      const buyerCampaigns = campaignsResponse.data || [];
+      
+      // Filter only Live campaigns
+      const liveCampaigns = buyerCampaigns.filter(campaign => campaign.status === 'Live');
+      
+      // Collect all assets from Live campaigns
+      const liveAssetsData = [];
+      
+      for (const campaign of liveCampaigns) {
+        // Fetch campaign assets (both selected and requested ones)
+        if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+          for (const campaignAsset of campaign.campaign_assets) {
+            // Fetch full asset details
+            try {
+              const assetResponse = await axios.get(`${API}/assets/public`);
+              const allAssets = assetResponse.data || [];
+              const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+              
+              if (asset) {
+                liveAssetsData.push({
+                  ...asset,
+                  campaignName: campaign.name,
+                  campaignId: campaign.id,
+                  campaignStatus: campaign.status,
+                  assetStartDate: campaignAsset.start_date,
+                  assetEndDate: campaignAsset.end_date,
+                  duration: calculateDuration(campaignAsset.start_date, campaignAsset.end_date),
+                  expiryDate: campaignAsset.end_date,
+                  lastStatus: asset.status || 'Active'
+                });
+              }
+            } catch (error) {
+              console.error(`Error fetching asset ${campaignAsset.asset_id}:`, error);
+            }
+          }
+        }
+      }
+      
+      setLiveAssets(liveAssetsData);
+    } catch (error) {
+      console.error('Error fetching live assets:', error);
+      notify.error('Failed to load live assets');
+      setLiveAssets([]);
+    } finally {
+      setAssetsLoading(false);
+    }
+  };
+
+  const calculateDuration = (startDate, endDate) => {
+    if (!startDate || !endDate) return 'N/A';
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+      return `${diffDays} days`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} month${months > 1 ? 's' : ''}`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      const remainingMonths = Math.floor((diffDays % 365) / 30);
+      return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
+    }
+  };
+
   const updateCampaignStatus = async (campaignId, newStatus) => {
     try {
       const headers = getAuthHeaders();
