@@ -1001,7 +1001,7 @@ const BuyerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">
                     <Activity className="w-5 h-5" />
-                    <span>My Live Assets</span>
+                    <span>My Booked Assets</span>
                   </CardTitle>
                   
                   {/* View Toggle Buttons */}
