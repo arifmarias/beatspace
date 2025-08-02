@@ -355,14 +355,14 @@ const BuyerDashboard = () => {
       });
       
       // Show success message and redirect to marketplace
-      alert(`Campaign "${newCampaign.name}" created successfully! Let's add your first asset...`);
+      notify.success(`Campaign "${newCampaign.name}" created successfully! Let's add your first asset...`);
       
       // Redirect to marketplace with campaign context for immediate asset selection
       navigate(`/marketplace?campaign=${newCampaign.id}&newCampaign=true`);
       
     } catch (error) {
       console.error('Error creating campaign:', error);
-      alert('Failed to create campaign. Please try again.');
+      notify.error('Failed to create campaign. Please try again.');
     }
   };
 
