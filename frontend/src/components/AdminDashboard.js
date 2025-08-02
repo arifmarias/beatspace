@@ -2036,25 +2036,25 @@ const AdminDashboard = () => {
                   {getTotalPages() > 1 && (
                     <div className="flex items-center justify-between mt-4">
                       <div className="text-sm text-gray-500">
-                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredOfferRequests().length)} of {getFilteredOfferRequests().length} offer requests
+                        Showing {((offerCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(offerCurrentPage * itemsPerPage, getFilteredOfferRequests().length)} of {getFilteredOfferRequests().length} offer requests
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                          disabled={currentPage === 1}
+                          onClick={() => setOfferCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={offerCurrentPage === 1}
                         >
                           Previous
                         </Button>
                         <span className="text-sm text-gray-600">
-                          Page {currentPage} of {getTotalPages()}
+                          Page {offerCurrentPage} of {getTotalPages()}
                         </span>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
-                          disabled={currentPage === getTotalPages()}
+                          onClick={() => setOfferCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
+                          disabled={offerCurrentPage === getTotalPages()}
                         >
                           Next
                         </Button>
