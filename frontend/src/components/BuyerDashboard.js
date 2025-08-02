@@ -1063,7 +1063,7 @@ const BuyerDashboard = () => {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <p className="text-sm text-gray-600">
-                            Showing {liveAssets.length} live asset{liveAssets.length > 1 ? 's' : ''}
+                            Showing {liveAssets.length} booked asset{liveAssets.length > 1 ? 's' : ''}
                           </p>
                         </div>
                         
