@@ -1114,7 +1114,7 @@ const BuyerDashboard = () => {
                           <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                           <h3 className="text-lg font-medium text-gray-700 mb-2">Map View</h3>
                           <p className="text-gray-500">
-                            Interactive map showing locations of your {liveAssets.length} live assets
+                            Interactive map showing locations of your {liveAssets.length} booked assets
                           </p>
                           <p className="text-sm text-gray-400 mt-2">
                             Map integration coming soon...
