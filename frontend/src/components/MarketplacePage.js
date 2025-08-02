@@ -1142,24 +1142,6 @@ const MarketplacePage = () => {
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">Price Range (BDT)</label>
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium mb-2 text-gray-500">Min Price (৳)</label>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        value={filters.minPrice}
-                        onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium mb-2 text-gray-500">Max Price (৳)</label>
-                      <Input
-                        type="number"
-                        placeholder="∞"
-                        value={filters.maxPrice}
-                        onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
-                      />
-                    </div>
                   </div>
                 </div>
 
