@@ -4806,7 +4806,6 @@ def run_create_campaign_fix_tests():
         print("❌ Backend may still be returning 500 errors")
         return 1
 
-
     # OFFER MEDIATION TESTS - PRIORITY TESTS FOR ADMIN DASHBOARD
     def test_admin_get_offer_requests(self):
         """Test GET /api/admin/offer-requests - List all offer requests for admin review - PRIORITY TEST 1"""
