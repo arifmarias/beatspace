@@ -1462,7 +1462,11 @@ const MarketplacePage = () => {
                 <Button 
                   variant="outline"
                   className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
-                  onClick={() => handleRequestBestOffer(selectedAsset)}
+                  onClick={() => {
+                    console.log('🚨 Request Best Offer button clicked!');
+                    console.log('🚨 Selected asset:', selectedAsset);
+                    handleRequestBestOffer(selectedAsset);
+                  }}
                   disabled={selectedAsset.status !== 'Available'}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
