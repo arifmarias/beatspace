@@ -1197,6 +1197,36 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+                  
+                  {/* Users Pagination Controls */}
+                  {getUsersTotalPages() > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="text-sm text-gray-500">
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredUsers().length)} of {getFilteredUsers().length} users
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </Button>
+                        <span className="text-sm text-gray-600">
+                          Page {currentPage} of {getUsersTotalPages()}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, getUsersTotalPages()))}
+                          disabled={currentPage === getUsersTotalPages()}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
