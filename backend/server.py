@@ -2087,6 +2087,43 @@ async def update_campaign(
     
     return Campaign(**updated_campaign)
 
+@api_router.delete("/campaigns/{campaign_id}")
+async def delete_campaign(
+    campaign_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete campaign - Only allowed for Draft campaigns with no associated offer requests"""
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Check permissions - only campaign owner can delete their campaigns
+    if current_user.role == UserRole.BUYER and campaign["buyer_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only delete your own campaigns")
+    
+    # Business rule: Only allow deletion of Draft campaigns
+    if campaign.get("status") != "Draft":
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete campaign with status '{campaign.get('status')}'. Only Draft campaigns can be deleted."
+        )
+    
+    # Business rule: Check for associated offer requests
+    offer_requests = await db.offer_requests.find({"existing_campaign_id": campaign_id}).to_list(None)
+    if offer_requests:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete campaign. There are {len(offer_requests)} associated offer request(s). Please remove all offer requests first."
+        )
+    
+    # Delete the campaign
+    result = await db.campaigns.delete_one({"id": campaign_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    return {"message": f"Campaign '{campaign.get('name')}' deleted successfully"}
+
 @api_router.get("/")
 async def root():
     return {"message": "BeatSpace API v3.0 - Advanced Features Ready", "version": "3.0.0"}
