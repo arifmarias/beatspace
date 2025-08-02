@@ -224,44 +224,68 @@ const BuyerDashboard = () => {
       const campaignsResponse = await axios.get(`${API}/campaigns`, { headers });
       const buyerCampaigns = campaignsResponse.data || [];
       
+      console.log('📊 Fetched buyer campaigns:', buyerCampaigns.length);
+      
       // Filter only Live campaigns
       const liveCampaigns = buyerCampaigns.filter(campaign => campaign.status === 'Live');
+      console.log('📊 Live campaigns found:', liveCampaigns.length);
+      
+      // Fetch all assets first
+      const assetResponse = await axios.get(`${API}/assets/public`);
+      const allAssets = assetResponse.data || [];
+      console.log('📊 All assets fetched:', allAssets.length);
       
       // Collect all BOOKED assets from Live campaigns
       const bookedAssetsData = [];
       
       for (const campaign of liveCampaigns) {
-        // Fetch campaign assets (both selected and requested ones)
+        console.log('🔍 Processing campaign:', campaign.name, 'with assets:', campaign.campaign_assets?.length || 0);
+        
+        // Check campaign assets
         if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
           for (const campaignAsset of campaign.campaign_assets) {
-            // Fetch full asset details
-            try {
-              const assetResponse = await axios.get(`${API}/assets/public`);
-              const allAssets = assetResponse.data || [];
-              const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+            console.log('🔍 Processing campaign asset:', campaignAsset.asset_id);
+            
+            // Find the asset details
+            const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+            
+            if (asset) {
+              console.log('✅ Found asset:', asset.name, 'with status:', asset.status);
               
               // Only include assets with BOOKED status
-              if (asset && asset.status === 'Booked') {
-                bookedAssetsData.push({
+              if (asset.status === 'Booked') {
+                const bookedAsset = {
                   ...asset,
                   campaignName: campaign.name,
                   campaignId: campaign.id,
                   campaignStatus: campaign.status,
-                  assetStartDate: campaignAsset.start_date,
-                  assetEndDate: campaignAsset.end_date,
-                  duration: calculateDuration(campaignAsset.start_date, campaignAsset.end_date),
-                  expiryDate: campaignAsset.end_date,
+                  assetStartDate: campaignAsset.asset_start_date || campaignAsset.start_date,
+                  assetEndDate: campaignAsset.asset_expiration_date || campaignAsset.end_date,
+                  duration: calculateDuration(
+                    campaignAsset.asset_start_date || campaignAsset.start_date, 
+                    campaignAsset.asset_expiration_date || campaignAsset.end_date
+                  ),
+                  expiryDate: campaignAsset.asset_expiration_date || campaignAsset.end_date,
                   lastStatus: asset.status // Will be 'Booked'
-                });
+                };
+                
+                bookedAssetsData.push(bookedAsset);
+                console.log('✅ Added booked asset:', asset.name);
+              } else {
+                console.log('⚠️ Asset not booked, status:', asset.status);
               }
-            } catch (error) {
-              console.error(`Error fetching asset ${campaignAsset.asset_id}:`, error);
+            } else {
+              console.error('❌ Asset not found for ID:', campaignAsset.asset_id);
             }
           }
+        } else {
+          console.log('⚠️ Campaign has no assets:', campaign.name);
         }
       }
       
+      console.log('📊 Final booked assets count:', bookedAssetsData.length);
       setLiveAssets(bookedAssetsData);
+      
     } catch (error) {
       console.error('Error fetching booked assets:', error);
       notify.error('Failed to load booked assets');
