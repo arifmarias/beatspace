@@ -330,9 +330,17 @@ const BuyerDashboard = () => {
         end_date: campaignForm.endDate ? campaignForm.endDate.toISOString() : null
       };
 
-      await axios.post(`${API}/campaigns`, campaignData, { headers });
-      alert('Campaign created successfully!');
+      const response = await axios.post(`${API}/campaigns`, campaignData, { headers });
+      const newCampaign = response.data;
       
+      // Store campaign context for marketplace pre-population
+      sessionStorage.setItem('selectedCampaignForOffer', JSON.stringify({
+        id: newCampaign.id,
+        name: newCampaign.name,
+        end_date: newCampaign.end_date
+      }));
+      
+      // Close dialog and reset form
       setShowCreateCampaign(false);
       setCampaignForm({
         name: '',
@@ -342,7 +350,13 @@ const BuyerDashboard = () => {
         startDate: null,
         endDate: null
       });
-      fetchBuyerData();
+      
+      // Show success message and redirect to marketplace
+      alert(`Campaign "${newCampaign.name}" created successfully! Let's add your first asset...`);
+      
+      // Redirect to marketplace with campaign context for immediate asset selection
+      navigate(`/marketplace?campaign=${newCampaign.id}&newCampaign=true`);
+      
     } catch (error) {
       console.error('Error creating campaign:', error);
       alert('Failed to create campaign. Please try again.');
