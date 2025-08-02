@@ -923,77 +923,85 @@ async def create_dummy_booked_assets_data():
         {
             "id": str(uuid.uuid4()),
             "name": "Gulshan Avenue Digital Billboard",
-            "type": "Digital Billboard",
+            "type": "Billboard",  # Fixed: Use valid enum value
             "address": "Gulshan Avenue, Dhaka",
-            "size": "20ft x 10ft",
+            "dimensions": "20ft x 10ft",  # Added missing field
             "condition": "Excellent",
             "location": {"lat": 23.780153, "lng": 90.414230},
             "district": "Dhaka",
             "division": "Dhaka",
             "seller_id": "seller123",
             "seller_name": "Dhaka Digital Media",
-            "pricing": {"weekly_rate": 25000, "monthly_rate": 90000},
+            "pricing": {"3_months": 75000, "6_months": 135000, "12_months": 240000},  # Fixed pricing structure
             "status": "Booked",  # Booked status
-            "images": ["https://example.com/image1.jpg"],
-            "visibility": "High",
-            "foot_traffic": "Very High",
+            "photos": ["https://example.com/image1.jpg"],
+            "description": "Prime location digital billboard at Gulshan Avenue with high visibility",
+            "specifications": {"lighting": "LED backlit", "material": "Digital display"},
+            "visibility_score": 9,
+            "traffic_volume": "Very High",
             "created_at": datetime.utcnow()
         },
         {
             "id": str(uuid.uuid4()),  
             "name": "Dhanmondi Metro Station Banner",
-            "type": "Banner",
+            "type": "Railway Station",  # Fixed: Use valid enum value
             "address": "Dhanmondi Metro Station, Dhaka",
-            "size": "15ft x 8ft", 
+            "dimensions": "15ft x 8ft",  # Added missing field
             "condition": "Good",
             "location": {"lat": 23.746466, "lng": 90.376015},
             "district": "Dhaka",
             "division": "Dhaka", 
             "seller_id": "seller456",
             "seller_name": "Metro Advertising Co",
-            "pricing": {"weekly_rate": 15000, "monthly_rate": 50000},
+            "pricing": {"3_months": 45000, "6_months": 80000, "12_months": 150000},  # Fixed pricing structure
             "status": "Booked",  # Booked status
-            "images": ["https://example.com/image2.jpg"],
-            "visibility": "High",
-            "foot_traffic": "High", 
+            "photos": ["https://example.com/image2.jpg"],
+            "description": "High-traffic banner at Dhanmondi Metro Station",
+            "specifications": {"lighting": "Standard", "material": "Vinyl banner"},
+            "visibility_score": 8,
+            "traffic_volume": "High", 
             "created_at": datetime.utcnow()
         },
         {
             "id": str(uuid.uuid4()),
             "name": "Uttara Shopping Mall Display",
-            "type": "Digital Display",
+            "type": "Market",  # Fixed: Use valid enum value (closest to shopping mall)
             "address": "Uttara Shopping Mall, Dhaka",
-            "size": "10ft x 6ft",
+            "dimensions": "10ft x 6ft",  # Added missing field
             "condition": "Excellent", 
             "location": {"lat": 23.875441, "lng": 90.396736},
             "district": "Dhaka",
             "division": "Dhaka",
             "seller_id": "seller789", 
             "seller_name": "Mall Media Solutions",
-            "pricing": {"weekly_rate": 18000, "monthly_rate": 65000},
+            "pricing": {"3_months": 54000, "6_months": 97200, "12_months": 180000},  # Fixed pricing structure
             "status": "Booked",  # Booked status
-            "images": ["https://example.com/image3.jpg"],
-            "visibility": "Medium",
-            "foot_traffic": "High",
+            "photos": ["https://example.com/image3.jpg"],
+            "description": "Digital display at Uttara Shopping Mall with high foot traffic",
+            "specifications": {"lighting": "LED display", "material": "Digital screen"},
+            "visibility_score": 7,
+            "traffic_volume": "High",
             "created_at": datetime.utcnow()
         },
         {
             "id": str(uuid.uuid4()),
             "name": "Mirpur Road Side Banner", 
-            "type": "Banner",
+            "type": "Billboard",  # Fixed: Use valid enum value
             "address": "Mirpur Road, Dhaka",
-            "size": "12ft x 8ft",
+            "dimensions": "12ft x 8ft",  # Added missing field
             "condition": "Good",
             "location": {"lat": 23.822249, "lng": 90.365420},
             "district": "Dhaka", 
             "division": "Dhaka",
             "seller_id": "seller101",
             "seller_name": "Road Banner Pro",
-            "pricing": {"weekly_rate": 12000, "monthly_rate": 40000},
+            "pricing": {"3_months": 36000, "6_months": 64800, "12_months": 120000},  # Fixed pricing structure
             "status": "Available",  # This one is available (for requested status)
-            "images": ["https://example.com/image4.jpg"],
-            "visibility": "Medium", 
-            "foot_traffic": "Medium",
+            "photos": ["https://example.com/image4.jpg"],
+            "description": "Roadside banner on busy Mirpur Road",
+            "specifications": {"lighting": "Standard", "material": "Vinyl banner"},
+            "visibility_score": 6, 
+            "traffic_volume": "Medium",
             "created_at": datetime.utcnow()
         }
     ]
