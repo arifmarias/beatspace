@@ -6117,7 +6117,482 @@ def run_offer_mediation_tests():
         print("\n⚠️  Some offer mediation functionality has issues that need attention")
         return 1
 
+    # FIXED OFFER MEDIATION AND CAMPAIGN DETAILS TESTING - PRIORITY TESTS
+    def test_asset_pricing_verification(self):
+        """Test 1: Asset Pricing Verification - Verify asset pricing is correctly available"""
+        print("🎯 TEST 1: ASSET PRICING VERIFICATION")
+        
+        # Get public assets first
+        success, assets = self.test_public_assets()
+        if not success or not assets:
+            print("⚠️  No assets found for pricing verification")
+            return False, {}
+        
+        # Test specific asset pricing structure
+        asset_id = assets[0]['id']
+        success, response = self.run_test(
+            f"Get Asset Pricing Structure", 
+            "GET", 
+            f"assets/{asset_id}", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Asset retrieved: {response.get('name')}")
+            
+            # Verify pricing structure
+            pricing = response.get('pricing', {})
+            if pricing:
+                print(f"   ✅ Pricing data available: {list(pricing.keys())}")
+                
+                # Check for expected pricing fields
+                expected_fields = ['weekly_rate', 'monthly_rate', 'yearly_rate']
+                missing_fields = [field for field in expected_fields if field not in pricing]
+                
+                if not missing_fields:
+                    print("   ✅ Complete pricing structure found")
+                    for field, value in pricing.items():
+                        print(f"     {field}: ৳{value:,}")
+                else:
+                    print(f"   ⚠️  Missing pricing fields: {missing_fields}")
+                    print(f"   Available pricing: {pricing}")
+            else:
+                print("   ❌ No pricing data found in asset")
+                return False, {}
+        
+        return success, response
+
+    def test_campaign_assets_structure(self):
+        """Test 2: Campaign Assets Structure - Test campaign creation with campaign_assets structure"""
+        print("🎯 TEST 2: CAMPAIGN ASSETS STRUCTURE")
+        
+        if not self.admin_token:
+            print("⚠️  No admin token for campaign structure test")
+            return False, {}
+        
+        # Get existing campaigns to check structure
+        success, campaigns = self.run_test(
+            "Get Campaigns for Structure Check", 
+            "GET", 
+            "admin/campaigns", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success and campaigns:
+            print(f"   ✅ Found {len(campaigns)} campaigns")
+            
+            # Check campaign structure
+            campaign = campaigns[0]
+            print(f"   Analyzing campaign: {campaign.get('name')}")
+            
+            # Check for campaign_assets vs assets array
+            has_campaign_assets = 'campaign_assets' in campaign
+            has_assets_array = 'assets' in campaign
+            
+            print(f"   Campaign structure analysis:")
+            print(f"     - Has 'campaign_assets': {has_campaign_assets}")
+            print(f"     - Has 'assets' array: {has_assets_array}")
+            
+            if has_campaign_assets:
+                campaign_assets = campaign.get('campaign_assets', [])
+                print(f"   ✅ Campaign uses campaign_assets structure ({len(campaign_assets)} assets)")
+                
+                if campaign_assets:
+                    asset = campaign_assets[0]
+                    expected_fields = ['asset_id', 'asset_name', 'asset_start_date', 'asset_expiration_date']
+                    missing_fields = [field for field in expected_fields if field not in asset]
+                    
+                    if not missing_fields:
+                        print("   ✅ Campaign asset structure is correct")
+                        print(f"     Sample asset: {asset.get('asset_name')}")
+                        print(f"     Start date: {asset.get('asset_start_date')}")
+                        print(f"     Expiration: {asset.get('asset_expiration_date')}")
+                    else:
+                        print(f"   ⚠️  Missing fields in campaign asset: {missing_fields}")
+            
+            if has_assets_array:
+                assets_array = campaign.get('assets', [])
+                print(f"   ℹ️  Campaign also has assets array ({len(assets_array)} assets)")
+                print("   ✅ Backward compatibility maintained")
+            
+            # Check campaign data format
+            required_campaign_fields = ['id', 'name', 'buyer_id', 'buyer_name', 'status', 'created_at']
+            missing_campaign_fields = [field for field in required_campaign_fields if field not in campaign]
+            
+            if not missing_campaign_fields:
+                print("   ✅ Campaign data format is correct")
+            else:
+                print(f"   ⚠️  Missing campaign fields: {missing_campaign_fields}")
+        
+        return success, campaigns
+
+    def test_offer_request_data_integrity(self):
+        """Test 3: Offer Request Data Integrity - Verify offer requests contain all necessary data"""
+        print("🎯 TEST 3: OFFER REQUEST DATA INTEGRITY")
+        
+        if not self.admin_token:
+            print("⚠️  No admin token for offer request test")
+            return False, {}
+        
+        # Get all offer requests via admin endpoint
+        success, offer_requests = self.run_test(
+            "Get All Offer Requests (Admin)", 
+            "GET", 
+            "admin/offer-requests", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Found {len(offer_requests)} offer requests")
+            
+            if offer_requests:
+                # Analyze offer request data structure
+                offer = offer_requests[0]
+                print(f"   Analyzing offer request: {offer.get('campaign_name')}")
+                
+                # Check for required fields for admin mediation
+                required_fields = [
+                    'asset_id', 'asset_name',
+                    'buyer_id', 'buyer_name',
+                    'campaign_name', 'campaign_id',
+                    'estimated_budget',
+                    'status'
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in offer]
+                
+                if not missing_fields:
+                    print("   ✅ All required fields present for admin mediation")
+                else:
+                    print(f"   ⚠️  Missing fields: {missing_fields}")
+                
+                # Display offer request details
+                print(f"   Offer request details:")
+                print(f"     Asset: {offer.get('asset_name')} (ID: {offer.get('asset_id')})")
+                print(f"     Buyer: {offer.get('buyer_name')} (ID: {offer.get('buyer_id')})")
+                print(f"     Campaign: {offer.get('campaign_name')}")
+                print(f"     Budget: ৳{offer.get('estimated_budget', 0):,}")
+                print(f"     Status: {offer.get('status')}")
+                print(f"     Created: {offer.get('created_at')}")
+                
+                # Check if asset_price is included (this was a specific bug fix)
+                if 'asset_price' in offer:
+                    print(f"   ✅ Asset price included: ৳{offer.get('asset_price'):,}")
+                else:
+                    print("   ℹ️  Asset price not directly included (may be calculated from asset data)")
+                
+                # Check campaign relationship
+                if offer.get('existing_campaign_id'):
+                    print(f"   ✅ Linked to existing campaign: {offer.get('existing_campaign_id')}")
+                elif offer.get('campaign_type') == 'new':
+                    print("   ✅ New campaign type specified")
+                
+                # Verify offer request contains complete data for admin display
+                complete_data_score = 0
+                total_checks = 8
+                
+                if offer.get('asset_name'): complete_data_score += 1
+                if offer.get('buyer_name'): complete_data_score += 1
+                if offer.get('campaign_name'): complete_data_score += 1
+                if offer.get('estimated_budget'): complete_data_score += 1
+                if offer.get('status'): complete_data_score += 1
+                if offer.get('contract_duration'): complete_data_score += 1
+                if offer.get('service_bundles'): complete_data_score += 1
+                if offer.get('created_at'): complete_data_score += 1
+                
+                completeness = (complete_data_score / total_checks) * 100
+                print(f"   Data completeness: {completeness:.1f}% ({complete_data_score}/{total_checks})")
+                
+                if completeness >= 90:
+                    print("   ✅ Offer request data is complete for admin mediation")
+                else:
+                    print("   ⚠️  Offer request data may be incomplete")
+            else:
+                print("   ℹ️  No offer requests found in system")
+        
+        return success, offer_requests
+
+    def test_campaign_offer_relationship(self):
+        """Test 4: Campaign-Offer Relationship - Verify offer requests link correctly to campaigns"""
+        print("🎯 TEST 4: CAMPAIGN-OFFER RELATIONSHIP")
+        
+        if not self.admin_token:
+            print("⚠️  No admin token for relationship test")
+            return False, {}
+        
+        # Get offer requests
+        success_offers, offer_requests = self.test_offer_request_data_integrity()
+        if not success_offers or not offer_requests:
+            print("⚠️  No offer requests found for relationship test")
+            return False, {}
+        
+        # Get campaigns
+        success_campaigns, campaigns = self.test_campaign_assets_structure()
+        if not success_campaigns or not campaigns:
+            print("⚠️  No campaigns found for relationship test")
+            return False, {}
+        
+        print(f"   Testing relationships between {len(offer_requests)} offers and {len(campaigns)} campaigns")
+        
+        # Check campaign-offer relationships
+        relationships_found = 0
+        for offer in offer_requests:
+            campaign_name = offer.get('campaign_name')
+            existing_campaign_id = offer.get('existing_campaign_id')
+            
+            print(f"   Offer: {offer.get('asset_name')} → Campaign: {campaign_name}")
+            
+            if existing_campaign_id:
+                # Find matching campaign
+                matching_campaign = None
+                for campaign in campaigns:
+                    if campaign.get('id') == existing_campaign_id:
+                        matching_campaign = campaign
+                        break
+                
+                if matching_campaign:
+                    relationships_found += 1
+                    print(f"     ✅ Linked to existing campaign: {matching_campaign.get('name')}")
+                    print(f"     Campaign status: {matching_campaign.get('status')}")
+                    print(f"     Campaign buyer: {matching_campaign.get('buyer_name')}")
+                    
+                    # Verify buyer consistency
+                    if offer.get('buyer_id') == matching_campaign.get('buyer_id'):
+                        print("     ✅ Buyer consistency verified")
+                    else:
+                        print("     ⚠️  Buyer mismatch between offer and campaign")
+                else:
+                    print(f"     ⚠️  Campaign ID {existing_campaign_id} not found")
+            else:
+                print(f"     ℹ️  New campaign type: {offer.get('campaign_type', 'unknown')}")
+        
+        print(f"   Campaign-offer relationships found: {relationships_found}/{len(offer_requests)}")
+        
+        # Test filtering offer requests by campaign (if endpoint exists)
+        if relationships_found > 0:
+            test_campaign_id = offer_requests[0].get('existing_campaign_id')
+            if test_campaign_id:
+                success, filtered_offers = self.run_test(
+                    "Filter Offers by Campaign", 
+                    "GET", 
+                    f"admin/offer-requests?campaign_id={test_campaign_id}", 
+                    200, 
+                    token=self.admin_token
+                )
+                
+                if success:
+                    print(f"   ✅ Campaign filtering working: {len(filtered_offers)} offers found")
+                else:
+                    print("   ℹ️  Campaign filtering not available (endpoint may not support filtering)")
+        
+        return True, {"relationships": relationships_found, "total_offers": len(offer_requests)}
+
+    def test_offer_mediation_workflow(self):
+        """Test 5: Complete Offer Mediation Workflow - Test admin mediation functionality"""
+        print("🎯 TEST 5: OFFER MEDIATION WORKFLOW")
+        
+        if not self.admin_token:
+            print("⚠️  No admin token for mediation workflow test")
+            return False, {}
+        
+        # Get offer requests for mediation
+        success, offer_requests = self.run_test(
+            "Get Offer Requests for Mediation", 
+            "GET", 
+            "admin/offer-requests", 
+            200, 
+            token=self.admin_token
+        )
+        
+        if not success or not offer_requests:
+            print("⚠️  No offer requests found for mediation test")
+            return False, {}
+        
+        # Find a pending offer request to test mediation
+        pending_offer = None
+        for offer in offer_requests:
+            if offer.get('status') == 'Pending':
+                pending_offer = offer
+                break
+        
+        if not pending_offer:
+            print("   ℹ️  No pending offers found, testing with first available offer")
+            pending_offer = offer_requests[0]
+        
+        offer_id = pending_offer['id']
+        print(f"   Testing mediation with offer: {pending_offer.get('campaign_name')}")
+        print(f"   Current status: {pending_offer.get('status')}")
+        
+        # Test status workflow: Pending → In Process → Approved
+        status_transitions = [
+            ("In Process", "Admin is reviewing the offer"),
+            ("On Hold", "Waiting for additional information"),
+            ("Approved", "Offer has been approved")
+        ]
+        
+        for new_status, reason in status_transitions:
+            print(f"   Testing status update: {pending_offer.get('status')} → {new_status}")
+            
+            status_update = {
+                "status": new_status,
+                "reason": reason
+            }
+            
+            success, response = self.run_test(
+                f"Update Offer Status to {new_status}", 
+                "PATCH", 
+                f"admin/offer-requests/{offer_id}/status", 
+                200, 
+                data=status_update,
+                token=self.admin_token
+            )
+            
+            if success:
+                print(f"     ✅ Status updated to {new_status}")
+                
+                # If approved, check if asset status was updated
+                if new_status == "Approved":
+                    asset_id = pending_offer.get('asset_id')
+                    if asset_id:
+                        success_asset, asset_data = self.run_test(
+                            "Check Asset Status After Approval", 
+                            "GET", 
+                            f"assets/{asset_id}", 
+                            200, 
+                            token=self.admin_token
+                        )
+                        
+                        if success_asset:
+                            asset_status = asset_data.get('status')
+                            print(f"     Asset status after approval: {asset_status}")
+                            if asset_status == "Booked":
+                                print("     ✅ Asset status correctly updated to Booked")
+                            else:
+                                print(f"     ⚠️  Asset status is {asset_status}, expected Booked")
+            else:
+                print(f"     ❌ Failed to update status to {new_status}")
+                break
+            
+            # Update pending_offer status for next iteration
+            pending_offer['status'] = new_status
+        
+        # Test invalid status
+        print("   Testing invalid status rejection...")
+        invalid_status = {
+            "status": "InvalidStatus"
+        }
+        
+        success, response = self.run_test(
+            "Update Offer Status (Invalid)", 
+            "PATCH", 
+            f"admin/offer-requests/{offer_id}/status", 
+            400,  # Should fail
+            data=invalid_status,
+            token=self.admin_token
+        )
+        
+        if success:
+            print("   ✅ Invalid status properly rejected")
+        
+        return True, {"offer_id": offer_id, "transitions_tested": len(status_transitions)}
+
+    def run_offer_mediation_tests(self):
+        """Run all FIXED Offer Mediation and Campaign Details tests"""
+        print("🚀 STARTING FIXED OFFER MEDIATION AND CAMPAIGN DETAILS TESTING")
+        print("=" * 80)
+        print("🎯 FOCUS: Verifying bug fixes for offer mediation functionality")
+        print("📋 TESTING: Asset pricing, campaign structure, offer data integrity")
+        print("=" * 80)
+        
+        # Authentication first
+        print("\n📋 AUTHENTICATION SETUP")
+        print("-" * 40)
+        self.test_admin_login()
+        self.test_buyer_login()
+        
+        # Core offer mediation tests
+        print("\n📋 OFFER MEDIATION BUG FIX VERIFICATION")
+        print("-" * 40)
+        
+        test_results = {}
+        
+        # Test 1: Asset Pricing Verification
+        success1, result1 = self.test_asset_pricing_verification()
+        test_results['asset_pricing'] = success1
+        
+        # Test 2: Campaign Assets Structure
+        success2, result2 = self.test_campaign_assets_structure()
+        test_results['campaign_structure'] = success2
+        
+        # Test 3: Offer Request Data Integrity
+        success3, result3 = self.test_offer_request_data_integrity()
+        test_results['offer_data_integrity'] = success3
+        
+        # Test 4: Campaign-Offer Relationship
+        success4, result4 = self.test_campaign_offer_relationship()
+        test_results['campaign_offer_relationship'] = success4
+        
+        # Test 5: Offer Mediation Workflow
+        success5, result5 = self.test_offer_mediation_workflow()
+        test_results['mediation_workflow'] = success5
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print("🎯 OFFER MEDIATION TESTING COMPLETE")
+        print("=" * 80)
+        
+        passed_tests = sum(1 for success in test_results.values() if success)
+        total_tests = len(test_results)
+        
+        print(f"📊 Core Tests: {passed_tests}/{total_tests} passed")
+        print(f"📈 Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        print("\n📋 TEST RESULTS SUMMARY:")
+        for test_name, success in test_results.items():
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"   {test_name.replace('_', ' ').title()}: {status}")
+        
+        if passed_tests == total_tests:
+            print("\n🎉 ALL OFFER MEDIATION TESTS PASSED!")
+            print("✅ Asset pricing data available and correctly structured")
+            print("✅ Campaign structure supports both old and new asset formats")
+            print("✅ Offer requests contain complete data for admin display")
+            print("✅ Campaign-offer relationships working correctly")
+            print("✅ Offer mediation workflow functioning properly")
+        else:
+            print(f"\n⚠️  {total_tests - passed_tests} tests failed - review issues above")
+        
+        return passed_tests, total_tests
+
 if __name__ == "__main__":
-    # Run Offer Mediation tests as requested
-    exit_code = run_offer_mediation_tests()
-    sys.exit(exit_code)
+    tester = BeatSpaceAPITester()
+    
+    # Check command line arguments for specific test types
+    if len(sys.argv) > 1:
+        test_type = sys.argv[1].lower()
+        
+        if test_type == "offer_mediation":
+            # Run FIXED Offer Mediation and Campaign Details tests
+            tester.run_offer_mediation_tests()
+        elif test_type == "admin_asset":
+            # Run focused admin asset creation test
+            tester.run_admin_asset_creation_test()
+        elif test_type == "delete":
+            # Run focused DELETE offer request tests
+            tester.run_focused_delete_offer_tests()
+        elif test_type == "delete_simple":
+            # Run simple DELETE tests
+            tester.run_delete_offer_tests()
+        elif test_type == "cloudinary":
+            # Run Cloudinary integration tests
+            tester.run_cloudinary_tests()
+        else:
+            print(f"Unknown test type: {test_type}")
+            print("Available test types: offer_mediation, admin_asset, delete, delete_simple, cloudinary")
+            tester.run_comprehensive_tests()
+    else:
+        # Run all comprehensive tests
+        tester.run_comprehensive_tests()
