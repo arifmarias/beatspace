@@ -640,7 +640,11 @@ const MarketplacePage = () => {
       // Refresh assets to show updated status
       fetchAssets();
       
-      alert('Your offer request has been submitted successfully! You will be notified when we have a quote ready.');
+      // Show success message and redirect to Buyer Dashboard → Requested Offers tab
+      alert('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
+      
+      // Redirect to Buyer Dashboard with Requested Offers tab active
+      navigate('/buyer-dashboard?tab=requested-offers');
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
