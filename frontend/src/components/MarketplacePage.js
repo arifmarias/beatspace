@@ -252,6 +252,37 @@ const MarketplacePage = () => {
     }
   };
 
+  const handleRequestBestOffer = async (asset) => {
+    if (!currentUser) {
+      alert('Please sign in to request offers.');
+      return;
+    }
+    
+    setSelectedAssetForOffer(asset);
+    await fetchExistingCampaigns(); // Fetch campaigns for dropdown
+    
+    // Check if there's a campaign parameter in the URL
+    const urlParams = new URLSearchParams(location.search);
+    const campaignId = urlParams.get('campaign');
+    
+    if (campaignId && existingCampaigns.length > 0) {
+      // Find the campaign from the fetched campaigns
+      const selectedCampaign = existingCampaigns.find(c => c.id === campaignId);
+      if (selectedCampaign) {
+        // Pre-populate the campaign selection
+        setOfferDetails({
+          ...offerDetails,
+          campaignType: 'existing',
+          existingCampaignId: campaignId,
+          campaignName: selectedCampaign.name,
+          selectedCampaignEndDate: selectedCampaign.end_date
+        });
+      }
+    }
+    
+    setShowOfferDialog(true);
+  };
+
   const fetchExistingCampaigns = async () => {
     if (!currentUser) return;
     
