@@ -74,6 +74,8 @@ const AdminDashboard = () => {
   const [userFilter, setUserFilter] = useState('all');
   const [assetFilter, setAssetFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [offerRequests, setOfferRequests] = useState([]);
+  const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
 
   // Bangladesh districts and divisions data
   const [bangladeshDistricts] = useState([
