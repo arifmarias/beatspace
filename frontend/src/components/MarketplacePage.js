@@ -263,37 +263,50 @@ const MarketplacePage = () => {
     // Fetch campaigns first
     await fetchExistingCampaigns(); 
     
-    // Check if there's a campaign parameter in the URL
+    // Check both URL parameter and sessionStorage for campaign context
     const urlParams = new URLSearchParams(location.search);
-    const campaignId = urlParams.get('campaign');
+    const campaignIdFromUrl = urlParams.get('campaign');
+    const campaignFromSession = sessionStorage.getItem('selectedCampaignForOffer');
     
-    // Set a timeout to allow state to update after fetchExistingCampaigns
-    setTimeout(() => {
-      if (campaignId) {
-        // Access the campaigns from the state by re-fetching them
+    let campaignToPreselect = null;
+    
+    // Try URL parameter first, then sessionStorage
+    if (campaignIdFromUrl) {
+      // Fetch campaign details for URL parameter
+      try {
         const headers = getAuthHeaders();
-        axios.get(`${API}/campaigns`, { headers })
-          .then(response => {
-            const campaigns = response.data || [];
-            const selectedCampaign = campaigns.find(c => c.id === campaignId);
-            if (selectedCampaign) {
-              // Pre-populate the campaign selection
-              setOfferDetails(prev => ({
-                ...prev,
-                campaignType: 'existing',
-                existingCampaignId: campaignId,
-                campaignName: selectedCampaign.name,
-                selectedCampaignEndDate: selectedCampaign.end_date
-              }));
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching campaign for pre-population:', error);
-          });
+        const response = await axios.get(`${API}/campaigns`, { headers });
+        const campaigns = response.data || [];
+        campaignToPreselect = campaigns.find(c => c.id === campaignIdFromUrl);
+      } catch (error) {
+        console.error('Error fetching campaign from URL parameter:', error);
       }
-      
-      setShowOfferDialog(true);
-    }, 100);
+    } else if (campaignFromSession) {
+      // Use sessionStorage data
+      try {
+        campaignToPreselect = JSON.parse(campaignFromSession);
+        // Clear it after use to prevent stale data
+        sessionStorage.removeItem('selectedCampaignForOffer');
+      } catch (error) {
+        console.error('Error parsing campaign from sessionStorage:', error);
+      }
+    }
+    
+    // Pre-populate if we found a campaign
+    if (campaignToPreselect) {
+      console.log('Pre-populating campaign:', campaignToPreselect);
+      setTimeout(() => {
+        setOfferDetails(prev => ({
+          ...prev,
+          campaignType: 'existing',
+          existingCampaignId: campaignToPreselect.id,
+          campaignName: campaignToPreselect.name,
+          selectedCampaignEndDate: campaignToPreselect.end_date
+        }));
+      }, 500); // Increased timeout for better reliability
+    }
+    
+    setShowOfferDialog(true);
   };
 
   const fetchExistingCampaigns = async () => {
