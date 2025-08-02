@@ -230,10 +230,30 @@ const BuyerDashboard = () => {
       const assetsResponse = await axios.get(`${API}/assets/public`);
       const allAssets = assetsResponse.data || [];
       
-      // Start with assets that are already in the campaign
-      let campaignAssetsList = allAssets.filter(asset => 
-        campaign.assets.includes(asset.id)
-      );
+      // Start with assets that are in the campaign_assets array (new structure)
+      let campaignAssetsList = [];
+      
+      // Check for new campaign_assets structure first
+      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+        campaignAssetsList = campaign.campaign_assets.map(campaignAsset => {
+          const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+          if (asset) {
+            return {
+              ...asset,
+              asset_start_date: campaignAsset.asset_start_date,
+              asset_expiration_date: campaignAsset.asset_expiration_date,
+              isInCampaign: true
+            };
+          }
+          return null;
+        }).filter(Boolean);
+      }
+      // Fallback to old assets array structure
+      else if (campaign.assets && campaign.assets.length > 0) {
+        campaignAssetsList = allAssets.filter(asset => 
+          campaign.assets.includes(asset.id)
+        );
+      }
       
       console.log('🚨 Direct campaign assets:', campaignAssetsList.length);
       
@@ -246,7 +266,7 @@ const BuyerDashboard = () => {
         // Find offer requests for this campaign
         const campaignOfferRequests = allOfferRequests.filter(offer => 
           offer.existing_campaign_id === campaign.id && 
-          (offer.status === 'Pending' || offer.status === 'Processing')
+          (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process')
         );
         
         console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
