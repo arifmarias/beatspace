@@ -881,14 +881,7 @@ const AdminDashboard = () => {
   };
 
   const filteredUsers = getFilteredUsers(); // Use the new pagination function
-
-  const filteredAssets = (assets || []).filter(asset => {
-    const matchesFilter = assetFilter === 'all' || asset.status === assetFilter;
-    const matchesSearch = !searchTerm ||
-      asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.address?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredAssets = getFilteredAssets(); // Use the new pagination function
 
   const getStatusColor = (status) => {
     const colors = {
