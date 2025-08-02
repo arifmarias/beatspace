@@ -1347,18 +1347,6 @@ const MarketplacePage = () => {
               </div>
               
               <div>
-                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                  <h4 className="font-semibold mb-3">Pricing Options</h4>
-                  <div className="space-y-2">
-                    {Object.entries(selectedAsset.pricing).map(([duration, price]) => (
-                      <div key={duration} className="flex justify-between items-center">
-                        <span className="capitalize">{duration.replace('_', ' ')}</span>
-                        <span className="font-semibold">৳{price.toLocaleString()}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
                 {selectedAsset.specifications && Object.keys(selectedAsset.specifications).length > 0 && (
                   <div className="bg-gray-50 p-4 rounded-lg mb-4">
                     <h4 className="font-semibold mb-3">Technical Details</h4>
