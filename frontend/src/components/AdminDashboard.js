@@ -1492,6 +1492,45 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+                
+                {/* Assets Pagination Controls */}
+                {getAssetsTotalPages() > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-sm text-gray-500">
+                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredAssets().length)} of {getFilteredAssets().length} assets
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-gray-600">
+                        Page {currentPage} of {getAssetsTotalPages()}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, getAssetsTotalPages()))}
+                        disabled={currentPage === getAssetsTotalPages()}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  {assetSearchTerm || assetFilter !== 'all' ? 
+                    "No assets match your search criteria. Try adjusting your filters." : 
+                    "No assets found. Create your first asset to get started."
+                  }
+                </div>
+              )}
               </CardContent>
             </Card>
           </TabsContent>
