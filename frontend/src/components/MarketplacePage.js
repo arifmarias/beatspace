@@ -259,28 +259,41 @@ const MarketplacePage = () => {
     }
     
     setSelectedAssetForOffer(asset);
-    await fetchExistingCampaigns(); // Fetch campaigns for dropdown
+    
+    // Fetch campaigns first
+    await fetchExistingCampaigns(); 
     
     // Check if there's a campaign parameter in the URL
     const urlParams = new URLSearchParams(location.search);
     const campaignId = urlParams.get('campaign');
     
-    if (campaignId && existingCampaigns.length > 0) {
-      // Find the campaign from the fetched campaigns
-      const selectedCampaign = existingCampaigns.find(c => c.id === campaignId);
-      if (selectedCampaign) {
-        // Pre-populate the campaign selection
-        setOfferDetails({
-          ...offerDetails,
-          campaignType: 'existing',
-          existingCampaignId: campaignId,
-          campaignName: selectedCampaign.name,
-          selectedCampaignEndDate: selectedCampaign.end_date
-        });
+    // Set a timeout to allow state to update after fetchExistingCampaigns
+    setTimeout(() => {
+      if (campaignId) {
+        // Access the campaigns from the state by re-fetching them
+        const headers = getAuthHeaders();
+        axios.get(`${API}/campaigns`, { headers })
+          .then(response => {
+            const campaigns = response.data || [];
+            const selectedCampaign = campaigns.find(c => c.id === campaignId);
+            if (selectedCampaign) {
+              // Pre-populate the campaign selection
+              setOfferDetails(prev => ({
+                ...prev,
+                campaignType: 'existing',
+                existingCampaignId: campaignId,
+                campaignName: selectedCampaign.name,
+                selectedCampaignEndDate: selectedCampaign.end_date
+              }));
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching campaign for pre-population:', error);
+          });
       }
-    }
-    
-    setShowOfferDialog(true);
+      
+      setShowOfferDialog(true);
+    }, 100);
   };
 
   const fetchExistingCampaigns = async () => {
