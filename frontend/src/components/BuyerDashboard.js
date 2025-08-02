@@ -63,12 +63,19 @@ const BuyerDashboard = () => {
   const [editingOffer, setEditingOffer] = useState(null);
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
   
-  // Initialize activeTab based on URL parameter, default to 'campaigns'
+  // Initialize activeTab based on URL parameter, default to 'my-assets'
   const [activeTab, setActiveTab] = useState(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
-    return tabFromUrl === 'requested-offers' ? 'requested-offers' : 'campaigns';
+    if (tabFromUrl === 'requested-offers') return 'requested-offers';
+    if (tabFromUrl === 'campaigns') return 'campaigns';
+    return 'my-assets'; // Default to My Assets tab
   });
+
+  // My Assets state
+  const [liveAssets, setLiveAssets] = useState([]);
+  const [myAssetsView, setMyAssetsView] = useState('list'); // 'list', 'map', 'campaign'
+  const [assetsLoading, setAssetsLoading] = useState(false);
 
   // Pagination and search state for Campaigns
   const [campaignSearch, setCampaignSearch] = useState('');
