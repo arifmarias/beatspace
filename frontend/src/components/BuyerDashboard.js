@@ -424,6 +424,75 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Helper functions for filtering and pagination
+  const getFilteredCampaigns = () => {
+    return (campaigns || []).filter(campaign =>
+      campaign.name.toLowerCase().includes(campaignSearch.toLowerCase()) ||
+      campaign.description?.toLowerCase().includes(campaignSearch.toLowerCase()) ||
+      campaign.status.toLowerCase().includes(campaignSearch.toLowerCase())
+    );
+  };
+
+  const getPaginatedCampaigns = () => {
+    const filtered = getFilteredCampaigns();
+    const start = (campaignCurrentPage - 1) * campaignItemsPerPage;
+    const end = start + campaignItemsPerPage;
+    return filtered.slice(start, end);
+  };
+
+  const getCampaignTotalPages = () => {
+    return Math.ceil(getFilteredCampaigns().length / campaignItemsPerPage);
+  };
+
+  const getFilteredOffers = () => {
+    return (requestedOffers || []).filter(offer =>
+      offer.asset_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
+      offer.campaign_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
+      offer.status.toLowerCase().includes(offerSearch.toLowerCase())
+    );
+  };
+
+  const getGroupedAndFilteredOffers = () => {
+    const filtered = getFilteredOffers();
+    const grouped = {};
+    
+    filtered.forEach(offer => {
+      const campaignName = offer.campaign_name || 'Unknown Campaign';
+      if (!grouped[campaignName]) {
+        grouped[campaignName] = [];
+      }
+      grouped[campaignName].push(offer);
+    });
+
+    // Apply pagination to grouped offers
+    const entries = Object.entries(grouped);
+    const start = (offerCurrentPage - 1) * offerItemsPerPage;
+    const end = start + offerItemsPerPage;
+    
+    return Object.fromEntries(entries.slice(start, end));
+  };
+
+  const getOfferTotalPages = () => {
+    const filtered = getFilteredOffers();
+    const grouped = {};
+    filtered.forEach(offer => {
+      const campaignName = offer.campaign_name || 'Unknown Campaign';
+      if (!grouped[campaignName]) {
+        grouped[campaignName] = [];
+      }
+      grouped[campaignName].push(offer);
+    });
+    
+    return Math.ceil(Object.keys(grouped).length / offerItemsPerPage);
+  };
+
+  const toggleCampaignCollapse = (campaignName) => {
+    setCollapsedCampaigns(prev => ({
+      ...prev,
+      [campaignName]: !prev[campaignName]
+    }));
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       'Draft': 'bg-gray-100 text-gray-800',
