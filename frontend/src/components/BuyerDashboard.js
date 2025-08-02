@@ -1026,6 +1026,34 @@ const BuyerDashboard = () => {
                       ))}
                     </TableBody>
                   </Table>
+
+                  {/* Pagination */}
+                  {getCampaignTotalPages() > 1 && (
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-gray-500">
+                        Page {campaignCurrentPage} of {getCampaignTotalPages()}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCampaignCurrentPage(Math.max(1, campaignCurrentPage - 1))}
+                          disabled={campaignCurrentPage === 1}
+                        >
+                          Previous
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCampaignCurrentPage(Math.min(getCampaignTotalPages(), campaignCurrentPage + 1))}
+                          disabled={campaignCurrentPage === getCampaignTotalPages()}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 )}
               </CardContent>
             </Card>
