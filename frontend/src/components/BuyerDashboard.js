@@ -943,108 +943,142 @@ const BuyerDashboard = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Asset Name</TableHead>
-                        <TableHead>Campaign</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>My Estimated Budget</TableHead>
-                        <TableHead>Duration</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Submitted</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(requestedOffers || []).map((offer) => {
-                        // Debug logging for each offer
-                        console.log('🚨 RENDERING OFFER IN TABLE:', {
-                          id: offer.id,
-                          campaign_name: offer.campaign_name,
-                          status: offer.status,
-                          asset_name: offer.asset_name
-                        });
+                  <div className="space-y-6">
+                    {/* Group offers by campaign */}
+                    {(() => {
+                      // Group offers by campaign
+                      const groupedOffers = {};
+                      (requestedOffers || []).forEach(offer => {
+                        const campaignName = offer.campaign_name || 'Unknown Campaign';
+                        if (!groupedOffers[campaignName]) {
+                          groupedOffers[campaignName] = [];
+                        }
+                        groupedOffers[campaignName].push(offer);
+                      });
+
+                      return Object.entries(groupedOffers).map(([campaignName, offers]) => {
+                        // Calculate total estimated budget for this campaign's offers
+                        const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.estimated_budget || 0), 0);
+                        
+                        // Find campaign budget (from the first offer in the group)
+                        const campaign = (campaigns || []).find(c => c.name === campaignName);
+                        const campaignBudget = campaign?.budget || 0;
                         
                         return (
-                          <TableRow key={`offer-${offer.id}`}>
-                            <TableCell>
-                              <div className="font-medium">{offer.asset_name}</div>
-                            </TableCell>
-                            <TableCell>{offer.campaign_name}</TableCell>
-                            <TableCell>
-                              <Badge 
-                                variant={
-                                  offer.status === 'Pending' ? 'secondary' :
-                                  offer.status === 'Processing' ? 'default' :
-                                  offer.status === 'Quoted' ? 'success' :
-                                  offer.status === 'Accepted' ? 'success' :
-                                  'destructive'
-                                }
-                              >
-                                {offer.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="font-medium text-blue-600">
-                                ৳{offer.estimated_budget ? offer.estimated_budget.toLocaleString() : 'N/A'}
+                          <div key={campaignName} className="border rounded-lg overflow-hidden">
+                            {/* Campaign Header with Budget Comparison */}
+                            <div className="bg-gray-50 p-4 border-b">
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
+                                  <p className="text-sm text-gray-600">{offers.length} asset{offers.length > 1 ? 's' : ''} requested</p>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-sm text-gray-600">Budget Overview</div>
+                                  <div className="flex items-center space-x-4">
+                                    <div className="text-right">
+                                      <div className="text-xs text-gray-500">Campaign Budget</div>
+                                      <div className="font-semibold text-gray-900">৳{campaignBudget.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-xs text-gray-500">Total Estimated</div>
+                                      <div className="font-semibold text-blue-600">৳{totalEstimatedBudget.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-xs text-gray-500">Difference</div>
+                                      <div className={`font-semibold ${(campaignBudget - totalEstimatedBudget) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {(campaignBudget - totalEstimatedBudget) >= 0 ? '+' : ''}৳{(campaignBudget - totalEstimatedBudget).toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </TableCell>
-                            <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
-                            <TableCell className="capitalize">{offer.campaign_type}</TableCell>
-                            <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                              {(() => {
-                                console.log('🚨 RENDERING ACTIONS for offer:', offer.id, 'status:', offer.status);
-                                return offer.status === 'Pending';
-                              })() ? (
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                                      <MoreVertical className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-40">
-                                    <DropdownMenuItem
-                                      onClick={(e) => {
-                                        alert('🚨 EDIT BUTTON CLICKED!');
-                                        console.log('🚨 EDIT BUTTON JSX RENDER - Button clicked!');
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        handleEditOffer(offer);
-                                      }}
-                                      className="cursor-pointer text-blue-600"
-                                    >
-                                      <Edit className="h-4 w-4 mr-2" />
-                                      Edit Offer
-                                    </DropdownMenuItem>
-                                    
-                                    <DropdownMenuItem
-                                      onClick={(e) => {
-                                        alert('🚨 DELETE BUTTON CLICKED!');
-                                        console.log('🚨 DELETE BUTTON JSX RENDER - Button clicked!');
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        handleDeleteOffer(offer.id, e);
-                                      }}
-                                      className="cursor-pointer text-red-600"
-                                    >
-                                      <X className="h-4 w-4 mr-2" />
-                                      Delete Offer
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              ) : (
-                                <span className="text-gray-500 text-sm">
-                                  No actions available (Status: {offer.status})
-                                </span>
-                              )}
-                            </TableCell>
-                          </TableRow>
+                            </div>
+                            
+                            {/* Assets Table for this Campaign */}
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Asset</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>My Estimated Budget</TableHead>
+                                  <TableHead>Duration</TableHead>
+                                  <TableHead>Type</TableHead>
+                                  <TableHead>Submitted</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {offers.map((offer) => {
+                                  console.log('🚨 RENDERING OFFER IN GROUPED TABLE:', {
+                                    id: offer.id,
+                                    campaign_name: offer.campaign_name,
+                                    status: offer.status,
+                                    asset_name: offer.asset_name
+                                  });
+                                  
+                                  return (
+                                    <TableRow key={`offer-${offer.id}`}>
+                                      <TableCell>
+                                        <div className="font-medium">{offer.asset_name}</div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge 
+                                          variant={
+                                            offer.status === 'Pending' ? 'secondary' :
+                                            offer.status === 'Processing' ? 'default' :
+                                            offer.status === 'Quoted' ? 'success' :
+                                            offer.status === 'Accepted' ? 'success' :
+                                            'destructive'
+                                          }
+                                        >
+                                          {offer.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="font-medium text-blue-600">
+                                          ৳{offer.estimated_budget ? offer.estimated_budget.toLocaleString() : 'N/A'}
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
+                                      <TableCell className="capitalize">{offer.campaign_type}</TableCell>
+                                      <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
+                                      <TableCell>
+                                        <DropdownMenu>
+                                          <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                              <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                          </DropdownMenuTrigger>
+                                          <DropdownMenuContent align="end" className="w-48">
+                                            <DropdownMenuItem 
+                                              onClick={() => handleEditOffer(offer)}
+                                              className="flex items-center cursor-pointer"
+                                            >
+                                              <Edit className="h-4 w-4 mr-2" />
+                                              Edit Request
+                                            </DropdownMenuItem>
+                                            
+                                            <DropdownMenuItem 
+                                              onClick={() => handleDeleteOffer(offer.id)}
+                                              className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            >
+                                              <X className="h-4 w-4 mr-2" />
+                                              Delete Request
+                                            </DropdownMenuItem>
+                                          </DropdownMenuContent>
+                                        </DropdownMenu>
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                })}
+                              </TableBody>
+                            </Table>
+                          </div>
                         );
-                      })}
-                    </TableBody>
-                  </Table>
+                      });
+                    })()}
+                  </div>
                 )}
               </CardContent>
             </Card>
