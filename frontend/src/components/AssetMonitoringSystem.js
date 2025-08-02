@@ -270,7 +270,7 @@ const AssetMonitoringSystem = () => {
                 <SelectValue placeholder="Condition" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Conditions</SelectItem>
+                <SelectItem value="all">All Conditions</SelectItem>
                 <SelectItem value="excellent">Excellent (8-10)</SelectItem>
                 <SelectItem value="good">Good (6-7)</SelectItem>
                 <SelectItem value="fair">Fair (4-5)</SelectItem>
