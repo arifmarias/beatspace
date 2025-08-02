@@ -1047,8 +1047,9 @@ async def create_dummy_booked_assets_data():
             "campaign_assets": [
                 {
                     "asset_id": booked_assets[2]["id"],  # Uttara Shopping Mall Display
-                    "start_date": datetime.utcnow() + timedelta(days=7),
-                    "end_date": datetime.utcnow() + timedelta(days=37)
+                    "asset_name": booked_assets[2]["name"],
+                    "asset_start_date": datetime.utcnow() + timedelta(days=7),
+                    "asset_expiration_date": datetime.utcnow() + timedelta(days=37)
                 }
             ],
             "created_at": datetime.utcnow() - timedelta(days=3),
