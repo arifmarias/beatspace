@@ -1092,7 +1092,7 @@ const BuyerDashboard = () => {
                                   </Badge>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant={asset.lastStatus === 'Active' ? 'success' : 'secondary'}>
+                                  <Badge variant={asset.lastStatus === 'Booked' ? 'success' : 'secondary'}>
                                     {asset.lastStatus}
                                   </Badge>
                                 </TableCell>
