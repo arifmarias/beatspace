@@ -707,26 +707,26 @@ const MarketplacePage = () => {
       console.log('🔄 About to redirect to buyer dashboard...');
       
       // Show success message and redirect to Buyer Dashboard → Requested Offers tab
-      alert('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
+      notify.success('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
       
-      // Use setTimeout to ensure the alert is shown before redirect
+      // Use setTimeout to ensure the notification is shown before redirect
       setTimeout(() => {
         console.log('🎯 Executing redirect to /buyer/dashboard?tab=requested-offers');
         navigate('/buyer/dashboard?tab=requested-offers');
-      }, 1000);
+      }, 1500); // Slightly longer to show notification
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
       
       // Check if this is an authentication error
       if (error.response?.status === 401 || error.response?.status === 403) {
-        alert('Your session has expired. Please login again.');
+        notify.error('Your session has expired. Please login again.');
         navigate('/login');
         return;
       }
       
       // For other errors, show the error but don't redirect
-      alert('Error submitting request: ' + (error.response?.data?.detail || error.message));
+      notify.error('Error submitting request: ' + (error.response?.data?.detail || error.message));
     }
   };
 
