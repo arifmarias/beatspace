@@ -9,6 +9,7 @@ import BuyerDashboard from './components/BuyerDashboard';
 import SellerDashboard from './components/SellerDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import { NotificationProvider } from './components/ui/notification';
 import './App.css';
 
 const UnauthorizedPage = () => (
