@@ -150,6 +150,32 @@ const MarketplacePage = () => {
     }
   }, [filteredAssets]);
 
+  useEffect(() => {
+    // Check if user is coming from new campaign creation
+    const urlParams = new URLSearchParams(location.search);
+    const isNewCampaign = urlParams.get('newCampaign') === 'true';
+    const campaignId = urlParams.get('campaign');
+    
+    if (isNewCampaign && campaignId) {
+      // Get campaign name from sessionStorage
+      const campaignFromSession = sessionStorage.getItem('selectedCampaignForOffer');
+      if (campaignFromSession) {
+        try {
+          const campaignData = JSON.parse(campaignFromSession);
+          setWelcomeCampaignName(campaignData.name);
+          setShowNewCampaignWelcome(true);
+          
+          // Remove newCampaign parameter to avoid showing banner on refresh
+          const newUrl = new URL(window.location);
+          newUrl.searchParams.delete('newCampaign');
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {
+          console.error('Error parsing campaign from session:', error);
+        }
+      }
+    }
+  }, [location.search]);
+
   const initializeMap = async () => {
     if (!mapRef.current || !GOOGLE_MAPS_API_KEY) {
       console.error('Map container or API key not available');
