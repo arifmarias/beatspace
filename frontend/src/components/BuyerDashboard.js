@@ -402,7 +402,7 @@ const BuyerDashboard = () => {
       };
 
       await axios.put(`${API}/campaigns/${editingCampaign.id}`, updateData, { headers });
-      alert('Campaign updated successfully!');
+      notify.success('Campaign updated successfully!');
       
       setShowEditCampaign(false);
       setEditingCampaign(null);
@@ -418,7 +418,7 @@ const BuyerDashboard = () => {
       
     } catch (error) {
       console.error('Error updating campaign:', error);
-      alert('Failed to update campaign. Please try again.');
+      notify.error('Failed to update campaign. Please try again.');
     }
   };
 
