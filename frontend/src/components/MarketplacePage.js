@@ -1199,6 +1199,33 @@ const MarketplacePage = () => {
         </div>
       </header>
 
+      {/* Welcome Banner for New Campaigns */}
+      {showNewCampaignWelcome && (
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="bg-white/20 rounded-full p-2">
+                  <CheckCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Campaign "{welcomeCampaignName}" Created Successfully! 🎉</h3>
+                  <p className="text-orange-100">Now let's add your first asset. Browse the marketplace below and click "Request Best Offer" on any asset.</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNewCampaignWelcome(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar - Fixed Left Position */}
