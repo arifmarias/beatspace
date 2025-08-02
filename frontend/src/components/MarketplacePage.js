@@ -273,9 +273,18 @@ const MarketplacePage = () => {
     // Check both URL parameter and sessionStorage for campaign context
     const urlParams = new URLSearchParams(location.search);
     const campaignIdFromUrl = urlParams.get('campaign');
+    const isNewCampaign = urlParams.get('newCampaign') === 'true';
     const campaignFromSession = sessionStorage.getItem('selectedCampaignForOffer');
     
-    console.log('🔍 Checking campaign context:', { campaignIdFromUrl, campaignFromSession });
+    console.log('🔍 Checking campaign context:', { campaignIdFromUrl, campaignFromSession, isNewCampaign });
+    
+    // Show special message for new campaigns
+    if (isNewCampaign && campaignIdFromUrl) {
+      // Remove the newCampaign parameter from URL to avoid showing message repeatedly
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('newCampaign');
+      window.history.replaceState({}, '', newUrl);
+    }
     
     let campaignToPreselect = null;
     
