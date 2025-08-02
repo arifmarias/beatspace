@@ -250,7 +250,32 @@ const AdminDashboard = () => {
     }
   };
 
-  // Offer Request Management Functions
+  // Filtering and pagination logic
+  const getFilteredOfferRequests = () => {
+    if (!offerRequests) return [];
+    
+    return offerRequests.filter(offer => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        offer.asset_name?.toLowerCase().includes(searchLower) ||
+        offer.buyer_name?.toLowerCase().includes(searchLower) ||
+        offer.campaign_name?.toLowerCase().includes(searchLower) ||
+        offer.status?.toLowerCase().includes(searchLower)
+      );
+    });
+  };
+
+  const getPaginatedOfferRequests = () => {
+    const filtered = getFilteredOfferRequests();
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filtered.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = () => {
+    const filtered = getFilteredOfferRequests();
+    return Math.ceil(filtered.length / itemsPerPage);
+  };
   const updateOfferRequestStatus = async (offerId, newStatus) => {
     try {
       const headers = getAuthHeaders();
