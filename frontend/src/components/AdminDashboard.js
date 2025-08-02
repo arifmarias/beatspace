@@ -6,6 +6,7 @@ import {
   CheckCircle, 
   XCircle, 
   Clock, 
+  Pause,
   Eye,
   Edit,
   X,
