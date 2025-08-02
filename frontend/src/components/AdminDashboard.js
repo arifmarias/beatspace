@@ -78,6 +78,10 @@ const AdminDashboard = () => {
   const [offerRequests, setOfferRequests] = useState([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [campaignCurrentPage, setCampaignCurrentPage] = useState(1);
+  const [userCurrentPage, setUserCurrentPage] = useState(1);
+  const [assetCurrentPage, setAssetCurrentPage] = useState(1);
+  const [offerCurrentPage, setOfferCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Items per page for pagination
   const [campaignSearchTerm, setCampaignSearchTerm] = useState('');
   const [userSearchTerm, setUserSearchTerm] = useState('');
