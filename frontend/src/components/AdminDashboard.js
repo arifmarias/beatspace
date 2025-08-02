@@ -1583,24 +1583,25 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {(offerRequests || []).length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Asset</TableHead>
-                        <TableHead>Buyer</TableHead>
-                        <TableHead>Campaign</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Offered Price</TableHead>
-                        <TableHead>Asset Price</TableHead>
-                        <TableHead>Difference</TableHead>
-                        <TableHead>Duration</TableHead>
-                        <TableHead>Submitted</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(offerRequests || []).map((offer) => {
+                {getFilteredOfferRequests().length > 0 ? (
+                  <div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Asset</TableHead>
+                          <TableHead>Buyer</TableHead>
+                          <TableHead>Campaign</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Offered Price</TableHead>
+                          <TableHead>Asset Price</TableHead>
+                          <TableHead>Difference</TableHead>
+                          <TableHead>Duration</TableHead>
+                          <TableHead>Submitted</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getPaginatedOfferRequests().map((offer) => {
                         // Calculate price difference
                         const assetPrice = offer.asset_price || 0;
                         const offeredPrice = offer.estimated_budget || 0;
