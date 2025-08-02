@@ -300,7 +300,7 @@ const AdminDashboard = () => {
 
   const getPaginatedCampaigns = () => {
     const filtered = getFilteredCampaigns();
-    const startIndex = (currentPage - 1) * itemsPerPage;
+    const startIndex = (campaignCurrentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filtered.slice(startIndex, endIndex);
   };
