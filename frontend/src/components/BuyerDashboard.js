@@ -1143,7 +1143,7 @@ const BuyerDashboard = () => {
                                 <div className="flex items-center justify-between">
                                   <div>
                                     <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
-                                    <p className="text-sm text-gray-600">{assets.length} live asset{assets.length > 1 ? 's' : ''}</p>
+                                    <p className="text-sm text-gray-600">{assets.length} booked asset{assets.length > 1 ? 's' : ''}</p>
                                   </div>
                                   <Badge className="bg-green-100 text-green-800 border-green-200">
                                     Live Campaign
