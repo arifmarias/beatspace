@@ -1084,20 +1084,29 @@ const BuyerDashboard = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    {/* Group offers by campaign */}
-                    {(() => {
-                      // Group offers by campaign
-                      const groupedOffers = {};
-                      (requestedOffers || []).forEach(offer => {
-                        const campaignName = offer.campaign_name || 'Unknown Campaign';
-                        if (!groupedOffers[campaignName]) {
-                          groupedOffers[campaignName] = [];
-                        }
-                        groupedOffers[campaignName].push(offer);
-                      });
+                  <div className="space-y-4">
+                    {/* Search Bar */}
+                    <div className="flex items-center space-x-2">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search offers by asset, campaign, or status..."
+                          value={offerSearch}
+                          onChange={(e) => {
+                            setOfferSearch(e.target.value);
+                            setOfferCurrentPage(1); // Reset to first page when searching
+                          }}
+                          className="pl-10"
+                        />
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {getFilteredOffers().length} of {(requestedOffers || []).length} offers
+                      </div>
+                    </div>
 
-                      return Object.entries(groupedOffers).map(([campaignName, offers]) => {
+                    {/* Grouped Offers with Collapsible View */}
+                    <div className="space-y-4">
+                      {Object.entries(getGroupedAndFilteredOffers()).map(([campaignName, offers]) => {
                         // Calculate total estimated budget for this campaign's offers
                         const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.estimated_budget || 0), 0);
                         
@@ -1105,19 +1114,154 @@ const BuyerDashboard = () => {
                         const campaign = (campaigns || []).find(c => c.name === campaignName);
                         const campaignBudget = campaign?.budget || 0;
                         
+                        const isCollapsed = collapsedCampaigns[campaignName];
+                        
                         return (
                           <div key={campaignName} className="border rounded-lg overflow-hidden">
-                            {/* Campaign Header with Budget Comparison */}
-                            <div className="bg-gray-50 p-4 border-b">
+                            {/* Collapsible Campaign Header with Budget Comparison */}
+                            <div 
+                              className="bg-gray-50 p-4 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+                              onClick={() => toggleCampaignCollapse(campaignName)}
+                            >
                               <div className="flex justify-between items-center">
-                                <div>
-                                  <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
-                                  <p className="text-sm text-gray-600">{offers.length} asset{offers.length > 1 ? 's' : ''} requested</p>
+                                <div className="flex items-center space-x-2">
+                                  {isCollapsed ? (
+                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                                  )}
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
+                                    <p className="text-sm text-gray-600">{offers.length} asset{offers.length > 1 ? 's' : ''} requested</p>
+                                  </div>
                                 </div>
                                 <div className="text-right">
                                   <div className="text-sm text-gray-600">Budget Overview</div>
                                   <div className="flex items-center space-x-4">
                                     <div className="text-right">
+                                      <div className="text-xs text-gray-500">Campaign Budget</div>
+                                      <div className="font-semibold text-gray-900">৳{campaignBudget.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-xs text-gray-500">Total Estimated</div>
+                                      <div className="font-semibold text-blue-600">৳{totalEstimatedBudget.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-xs text-gray-500">Difference</div>
+                                      <div className={`font-semibold ${(campaignBudget - totalEstimatedBudget) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {(campaignBudget - totalEstimatedBudget) >= 0 ? '+' : ''}৳{(campaignBudget - totalEstimatedBudget).toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Collapsible Assets Table */}
+                            {!isCollapsed && (
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Asset</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>My Estimated Budget</TableHead>
+                                    <TableHead>Duration</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Submitted</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {offers.map((offer) => (
+                                    <TableRow key={`offer-${offer.id}`}>
+                                      <TableCell>
+                                        <div className="font-medium">{offer.asset_name}</div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge 
+                                          variant={
+                                            offer.status === 'Pending' ? 'secondary' :
+                                            offer.status === 'Processing' ? 'default' :
+                                            offer.status === 'Quoted' ? 'success' :
+                                            offer.status === 'Accepted' ? 'success' :
+                                            'destructive'
+                                          }
+                                        >
+                                          {offer.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="font-medium text-blue-600">
+                                          ৳{offer.estimated_budget ? offer.estimated_budget.toLocaleString() : 'N/A'}
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
+                                      <TableCell className="capitalize">{offer.campaign_type}</TableCell>
+                                      <TableCell>{new Date(offer.created_at).toLocaleDateString()}</TableCell>
+                                      <TableCell>
+                                        <DropdownMenu>
+                                          <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                                              <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                          </DropdownMenuTrigger>
+                                          <DropdownMenuContent align="end" className="w-48">
+                                            <DropdownMenuItem 
+                                              onClick={() => handleEditOffer(offer)}
+                                              className="flex items-center cursor-pointer"
+                                            >
+                                              <Edit className="h-4 w-4 mr-2" />
+                                              Edit Request
+                                            </DropdownMenuItem>
+                                            
+                                            <DropdownMenuItem 
+                                              onClick={() => handleDeleteOffer(offer.id)}
+                                              className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            >
+                                              <X className="h-4 w-4 mr-2" />
+                                              Delete Request
+                                            </DropdownMenuItem>
+                                          </DropdownMenuContent>
+                                        </DropdownMenu>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Pagination for Grouped Offers */}
+                    {getOfferTotalPages() > 1 && (
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-500">
+                          Page {offerCurrentPage} of {getOfferTotalPages()}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setOfferCurrentPage(Math.max(1, offerCurrentPage - 1))}
+                            disabled={offerCurrentPage === 1}
+                          >
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setOfferCurrentPage(Math.min(getOfferTotalPages(), offerCurrentPage + 1))}
+                            disabled={offerCurrentPage === getOfferTotalPages()}
+                          >
+                            Next
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                                       <div className="text-xs text-gray-500">Campaign Budget</div>
                                       <div className="font-semibold text-gray-900">৳{campaignBudget.toLocaleString()}</div>
                                     </div>
