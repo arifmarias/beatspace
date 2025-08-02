@@ -1376,17 +1376,7 @@ const MarketplacePage = () => {
                 <Button 
                   variant="outline"
                   className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
-                  onClick={() => {
-                    if (!currentUser) {
-                      alert('Please sign in to request offers.');
-                      // Optionally redirect to login page
-                      // navigate('/login');
-                      return;
-                    }
-                    setSelectedAssetForOffer(selectedAsset);
-                    fetchExistingCampaigns(); // Fetch campaigns for dropdown
-                    setShowOfferDialog(true);
-                  }}
+                  onClick={() => handleRequestBestOffer(selectedAsset)}
                   disabled={selectedAsset.status !== 'Available'}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
