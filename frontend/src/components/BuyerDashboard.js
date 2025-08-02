@@ -985,11 +985,213 @@ const BuyerDashboard = () => {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="my-assets">My Assets</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="requested-offers">Requested Offers</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
+
+          {/* My Assets Tab */}
+          <TabsContent value="my-assets" className="space-y-6">
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="w-5 h-5" />
+                    <span>My Live Assets</span>
+                  </CardTitle>
+                  
+                  {/* View Toggle Buttons */}
+                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+                    <Button
+                      variant={myAssetsView === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMyAssetsView('list')}
+                      className="px-3 py-1"
+                    >
+                      <List className="w-4 h-4 mr-1" />
+                      List
+                    </Button>
+                    <Button
+                      variant={myAssetsView === 'map' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMyAssetsView('map')}
+                      className="px-3 py-1"
+                    >
+                      <Map className="w-4 h-4 mr-1" />
+                      Map
+                    </Button>
+                    <Button
+                      variant={myAssetsView === 'campaign' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMyAssetsView('campaign')}
+                      className="px-3 py-1"
+                    >
+                      <FolderOpen className="w-4 h-4 mr-1" />
+                      Campaign
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                {assetsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-600">Loading live assets...</p>
+                    </div>
+                  </div>
+                ) : liveAssets.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Live Assets Yet</h3>
+                    <p className="text-gray-500 mb-4">
+                      You don't have any live advertising assets yet. Start by creating campaigns and requesting assets.
+                    </p>
+                    <Button onClick={() => setActiveTab('campaigns')} className="bg-orange-600 hover:bg-orange-700">
+                      Create Campaign
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    {/* List View */}
+                    {myAssetsView === 'list' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-600">
+                            Showing {liveAssets.length} live asset{liveAssets.length > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Name</TableHead>
+                              <TableHead>Campaign</TableHead>
+                              <TableHead>Last Status</TableHead>
+                              <TableHead>Duration</TableHead>
+                              <TableHead>Expiry</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {liveAssets.map((asset) => (
+                              <TableRow key={asset.id}>
+                                <TableCell>
+                                  <div>
+                                    <div className="font-medium">{asset.name}</div>
+                                    <div className="text-sm text-gray-500">{asset.address}</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+                                    {asset.campaignName}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={asset.lastStatus === 'Active' ? 'success' : 'secondary'}>
+                                    {asset.lastStatus}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{asset.duration}</TableCell>
+                                <TableCell>
+                                  {asset.expiryDate ? new Date(asset.expiryDate).toLocaleDateString() : 'N/A'}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+
+                    {/* Map View */}
+                    {myAssetsView === 'map' && (
+                      <div className="space-y-4">
+                        <div className="bg-gray-100 rounded-lg p-8 text-center">
+                          <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-700 mb-2">Map View</h3>
+                          <p className="text-gray-500">
+                            Interactive map showing locations of your {liveAssets.length} live assets
+                          </p>
+                          <p className="text-sm text-gray-400 mt-2">
+                            Map integration coming soon...
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Campaign View */}
+                    {myAssetsView === 'campaign' && (
+                      <div className="space-y-6">
+                        {(() => {
+                          // Group assets by campaign
+                          const groupedAssets = {};
+                          liveAssets.forEach(asset => {
+                            const campaignName = asset.campaignName || 'Unknown Campaign';
+                            if (!groupedAssets[campaignName]) {
+                              groupedAssets[campaignName] = [];
+                            }
+                            groupedAssets[campaignName].push(asset);
+                          });
+
+                          return Object.entries(groupedAssets).map(([campaignName, assets]) => (
+                            <div key={campaignName} className="border rounded-lg overflow-hidden">
+                              <div className="bg-gray-50 p-4 border-b">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
+                                    <p className="text-sm text-gray-600">{assets.length} live asset{assets.length > 1 ? 's' : ''}</p>
+                                  </div>
+                                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                                    Live Campaign
+                                  </Badge>
+                                </div>
+                              </div>
+                              
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Asset Name</TableHead>
+                                    <TableHead>Location</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Duration</TableHead>
+                                    <TableHead>Expires</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {assets.map((asset) => (
+                                    <TableRow key={asset.id}>
+                                      <TableCell>
+                                        <div className="font-medium">{asset.name}</div>
+                                        <div className="text-sm text-gray-500">{asset.type}</div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="text-sm">{asset.address}</div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge variant={asset.lastStatus === 'Active' ? 'success' : 'secondary'}>
+                                          {asset.lastStatus}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>{asset.duration}</TableCell>
+                                      <TableCell>
+                                        {asset.expiryDate ? new Date(asset.expiryDate).toLocaleDateString() : 'N/A'}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Campaigns Tab */}
           <TabsContent value="campaigns" className="space-y-6">
