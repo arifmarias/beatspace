@@ -29,25 +29,26 @@ const UnauthorizedPage = () => (
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/marketplace" element={<MarketplacePage />} />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+    <NotificationProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-          {/* Protected Routes */}
-          <Route 
-            path="/buyer/dashboard" 
-            element={
-              <ProtectedRoute requiredRole="buyer">
-                <BuyerDashboard />
-              </ProtectedRoute>
-            } 
-          />
+            {/* Protected Routes */}
+            <Route 
+              path="/buyer/dashboard" 
+              element={
+                <ProtectedRoute requiredRole="buyer">
+                  <BuyerDashboard />
+                </ProtectedRoute>
+              } 
+            />
           
           <Route 
             path="/seller/dashboard" 
