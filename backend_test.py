@@ -5876,7 +5876,25 @@ def run_offer_mediation_tests():
     # Run individual offer mediation tests
     print("\n📋 TEST 1: GET ALL OFFER REQUESTS FOR ADMIN REVIEW")
     print("-" * 40)
-    success1, response1 = tester.test_get_offer_requests_admin()
+    success1, response1 = tester.run_test(
+        "Admin Get All Offer Requests", 
+        "GET", 
+        "admin/offer-requests", 
+        200, 
+        token=tester.admin_token
+    )
+    
+    if success1:
+        print(f"   ✅ Found {len(response1)} offer requests in system")
+        if response1:
+            for i, req in enumerate(response1[:3]):  # Show first 3 requests
+                print(f"   Request {i+1}: {req.get('campaign_name')} - {req.get('status')} - Buyer: {req.get('buyer_name')}")
+                print(f"     Asset: {req.get('asset_name')}")
+                print(f"     Budget: ৳{req.get('estimated_budget', 0):,}")
+        else:
+            print("   ℹ️  No offer requests found in system")
+    else:
+        print("   ❌ Failed to get offer requests")
     
     print("\n📋 TEST 2: UPDATE OFFER REQUEST STATUS (NEWLY IMPLEMENTED)")
     print("-" * 40)
