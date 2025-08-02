@@ -1050,7 +1050,7 @@ const AdminDashboard = () => {
                       value={userSearchTerm}
                       onChange={(e) => {
                         setUserSearchTerm(e.target.value);
-                        setCurrentPage(1); // Reset to first page when searching
+                        setUserCurrentPage(1); // Reset to first page when searching
                       }}
                       className="w-64"
                     />
