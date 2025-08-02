@@ -1561,7 +1561,7 @@ const AdminDashboard = () => {
                       value={campaignSearchTerm}
                       onChange={(e) => {
                         setCampaignSearchTerm(e.target.value);
-                        setCurrentPage(1); // Reset to first page when searching
+                        setCampaignCurrentPage(1); // Reset to first page when searching
                       }}
                       className="w-64"
                     />
