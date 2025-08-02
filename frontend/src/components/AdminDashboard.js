@@ -335,7 +335,7 @@ const AdminDashboard = () => {
 
   const getPaginatedUsers = () => {
     const filtered = getFilteredUsers();
-    const startIndex = (currentPage - 1) * itemsPerPage;
+    const startIndex = (userCurrentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filtered.slice(startIndex, endIndex);
   };
