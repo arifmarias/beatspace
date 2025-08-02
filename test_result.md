@@ -561,6 +561,30 @@ frontend:
           agent: "testing"
           comment: "✅ VERIFIED - Cross-page navigation working smoothly. Protected route access control functional - unauthorized access redirects appropriately. Consistent branding across all pages. Logout functionality working. Error handling for invalid login attempts functional."
 
+  - task: "Pre-populate campaign selection in Request Best Offer dialog"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/MarketplacePage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented pre-population of campaign selection in MarketplacePage.js 'Request Best Offer' dialog. Modified BuyerDashboard 'Add Asset' buttons to pass campaign context via URL parameter (?campaign=ID). Updated MarketplacePage to detect this parameter and pre-select the appropriate campaign in the dropdown when dialog opens. Created handleRequestBestOffer function to manage campaign pre-population logic with proper async handling."
+
+  - task: "Finalize campaign grouping in Buyer Dashboard"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ VERIFIED - Campaign grouping in BuyerDashboard.js is already properly implemented and working. Requested offers are grouped by campaign with budget comparison showing Campaign Budget vs Total Asset Estimated Budget. The grouping displays campaign names, asset counts, budget comparison with color coding (green/red for positive/negative differences), and individual asset tables within each campaign group."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
