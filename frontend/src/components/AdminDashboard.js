@@ -79,6 +79,7 @@ const AdminDashboard = () => {
   const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Items per page for pagination
+  const [campaignSearchTerm, setCampaignSearchTerm] = useState('');
 
   // Bangladesh districts and divisions data
   const [bangladeshDistricts] = useState([
