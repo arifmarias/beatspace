@@ -340,6 +340,41 @@ const AdminDashboard = () => {
     const filtered = getFilteredUsers();
     return Math.ceil(filtered.length / itemsPerPage);
   };
+
+  // Asset filtering and pagination
+  const getFilteredAssets = () => {
+    if (!assets) return [];
+    
+    let filtered = assets.filter(asset => {
+      const searchLower = assetSearchTerm.toLowerCase();
+      return (
+        asset.name?.toLowerCase().includes(searchLower) ||
+        asset.address?.toLowerCase().includes(searchLower) ||
+        asset.type?.toLowerCase().includes(searchLower) ||
+        asset.seller_name?.toLowerCase().includes(searchLower) ||
+        asset.status?.toLowerCase().includes(searchLower)
+      );
+    });
+
+    // Apply asset filter (all, Available, Booked, etc.)
+    if (assetFilter !== 'all') {
+      filtered = filtered.filter(asset => asset.status === assetFilter);
+    }
+
+    return filtered;
+  };
+
+  const getPaginatedAssets = () => {
+    const filtered = getFilteredAssets();
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filtered.slice(startIndex, endIndex);
+  };
+
+  const getAssetsTotalPages = () => {
+    const filtered = getFilteredAssets();
+    return Math.ceil(filtered.length / itemsPerPage);
+  };
   const updateOfferRequestStatus = async (offerId, newStatus) => {
     try {
       const headers = getAuthHeaders();
