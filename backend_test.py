@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class BeatSpaceAPITester:
-    def __init__(self, base_url="https://37418983-9503-4987-a0fc-a4c67a993362.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://5388771b-9f5d-4118-9be9-2e1201b45977.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -4685,7 +4685,7 @@ def main():
 def run_user_management_crud_tests():
     """Main function to run User Management CRUD tests"""
     print("🚀 Starting BeatSpace User Management CRUD Testing...")
-    print(f"🌐 Base URL: https://37418983-9503-4987-a0fc-a4c67a993362.preview.emergentagent.com/api")
+    print(f"🌐 Base URL: https://5388771b-9f5d-4118-9be9-2e1201b45977.preview.emergentagent.com/api")
     print("🔑 Admin Credentials: admin@beatspace.com / admin123")
     print("="*80)
     print("🎯 PRIORITY TESTS:")
@@ -6127,7 +6127,7 @@ def run_create_campaign_fix_tests():
 def run_offer_mediation_tests():
     """Main function to run Offer Mediation tests"""
     print("🚀 Starting BeatSpace Offer Mediation Testing...")
-    print(f"🌐 Base URL: https://37418983-9503-4987-a0fc-a4c67a993362.preview.emergentagent.com/api")
+    print(f"🌐 Base URL: https://5388771b-9f5d-4118-9be9-2e1201b45977.preview.emergentagent.com/api")
     print("🔑 Admin Credentials: admin@beatspace.com / admin123")
     print("=" * 80)
     
