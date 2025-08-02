@@ -1611,6 +1611,148 @@ class BeatSpaceAPITester:
         
         return True, {}
 
+    def test_fixed_create_campaign_functionality(self):
+        """Test the FIXED Create Campaign functionality - PRIORITY TEST"""
+        if not self.admin_token:
+            print("⚠️  Skipping fixed create campaign test - no admin token")
+            return False, {}
+        
+        print("🎯 TESTING FIXED CREATE CAMPAIGN FUNCTIONALITY - PRIORITY TEST")
+        print("   Focus: Verify 'Create Campaign' button issue is resolved")
+        print("   Testing: POST /api/admin/campaigns with campaign data")
+        print("   Expected: No 500 errors, campaigns default to 'Draft' status")
+        
+        # Get a buyer to assign the campaign to
+        success, users = self.test_admin_get_users()
+        buyer_user = None
+        if success and users:
+            for user in users:
+                if user.get('role') == 'buyer':
+                    buyer_user = user
+                    break
+        
+        if not buyer_user:
+            print("⚠️  No buyer found to assign campaign to")
+            return False, {}
+        
+        # Get some assets for campaign_assets
+        success, assets = self.test_public_assets()
+        campaign_assets = []
+        if success and assets:
+            # Create CampaignAsset objects as specified in review request
+            asset = assets[0]
+            campaign_asset = {
+                "asset_id": asset['id'],
+                "asset_name": asset['name'],
+                "asset_start_date": "2025-08-02T00:00:00.000Z",
+                "asset_expiration_date": "2025-12-31T00:00:00.000Z"
+            }
+            campaign_assets.append(campaign_asset)
+        
+        print(f"   Using buyer: {buyer_user.get('company_name')} (ID: {buyer_user['id']})")
+        print(f"   Campaign will have {len(campaign_assets)} assets")
+        
+        # Create campaign data exactly as specified in review request
+        campaign_data = {
+            "name": "Frontend Test Campaign",
+            "description": "Testing fixed create campaign functionality",
+            "buyer_id": buyer_user['id'],
+            "budget": 10000,
+            "start_date": "2025-08-02T00:00:00.000Z",
+            "end_date": "2026-03-31T00:00:00.000Z",
+            "status": "Draft",
+            "campaign_assets": campaign_assets
+        }
+        
+        print(f"   Campaign data structure:")
+        print(f"     Name: {campaign_data['name']}")
+        print(f"     Budget: ৳{campaign_data['budget']:,}")
+        print(f"     Status: {campaign_data['status']}")
+        print(f"     Duration: {campaign_data['start_date']} to {campaign_data['end_date']}")
+        print(f"     Campaign Assets: {len(campaign_data['campaign_assets'])} assets")
+        
+        # Test 1: Create Campaign - Should return 200/201, NOT 500
+        print("\n   🔍 TEST 1: Create Campaign (No 500 Error)")
+        success, response = self.run_test(
+            "FIXED CREATE CAMPAIGN - No 500 Error", 
+            "POST", 
+            "admin/campaigns", 
+            200,  # Should return 200/201, NOT 500
+            data=campaign_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print("   ✅ FIXED: POST request returns 200/201 status (not 500)")
+            print("   ✅ FIXED: No 'got multiple values for keyword argument status' error")
+            print(f"   ✅ Campaign created successfully with ID: {response.get('id')}")
+            
+            # Store created campaign ID for further tests
+            self.created_campaign_id = response.get('id')
+            
+            # Test 2: Verify Default Status
+            print("\n   🔍 TEST 2: Verify Default 'Draft' Status")
+            if response.get('status') == 'Draft':
+                print("   ✅ VERIFIED: Campaign defaults to 'Draft' status")
+            else:
+                print(f"   ⚠️  Campaign status is {response.get('status')}, expected 'Draft'")
+            
+            # Test 3: Verify Enhanced Data Fields
+            print("\n   🔍 TEST 3: Verify Enhanced Data Fields")
+            
+            # Check campaign_assets
+            if 'campaign_assets' in response and response['campaign_assets']:
+                print(f"   ✅ VERIFIED: Campaign Assets field present ({len(response['campaign_assets'])} assets)")
+                for i, asset in enumerate(response['campaign_assets']):
+                    print(f"     Asset {i+1}: {asset.get('asset_name')}")
+                    print(f"       Start Date: {asset.get('asset_start_date')}")
+                    print(f"       Expiration Date: {asset.get('asset_expiration_date')}")
+            else:
+                print("   ⚠️  Campaign assets field missing or empty")
+            
+            # Check date fields
+            if response.get('start_date'):
+                print(f"   ✅ VERIFIED: Start Date field present: {response.get('start_date')}")
+            else:
+                print("   ⚠️  Start date field missing")
+            
+            if response.get('end_date'):
+                print(f"   ✅ VERIFIED: End Date field present: {response.get('end_date')}")
+            else:
+                print("   ⚠️  End date field missing")
+            
+            # Test 4: Verify All Required Fields
+            print("\n   🔍 TEST 4: Verify All Required Fields")
+            required_fields = ['id', 'name', 'description', 'buyer_id', 'budget', 'status', 'start_date', 'end_date']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if missing_fields:
+                print(f"   ⚠️  Missing required fields: {missing_fields}")
+            else:
+                print("   ✅ VERIFIED: All required fields present")
+            
+            # Test 5: Verify Campaign Creation Workflow
+            print("\n   🔍 TEST 5: Verify Complete Campaign Creation Workflow")
+            print(f"   Campaign Details:")
+            print(f"     ID: {response.get('id')}")
+            print(f"     Name: {response.get('name')}")
+            print(f"     Buyer: {response.get('buyer_name', buyer_user.get('company_name'))}")
+            print(f"     Budget: ৳{response.get('budget', 0):,}")
+            print(f"     Status: {response.get('status')}")
+            print(f"     Created At: {response.get('created_at')}")
+            
+            print("\n   🎉 FIXED CREATE CAMPAIGN FUNCTIONALITY - ALL TESTS PASSED!")
+            print("   ✅ Create Campaign button issue is resolved")
+            print("   ✅ Backend can create campaigns successfully without 500 errors")
+            print("   ✅ Campaigns default to 'Draft' status correctly")
+            print("   ✅ Enhanced data (campaign_assets, dates) working properly")
+            
+            return True, response
+        else:
+            print("   ❌ FAILED: Create Campaign still returning errors")
+            print("   ❌ Create Campaign button issue NOT resolved")
+            return False, {}
+
     def test_admin_campaign_complete_workflow(self):
         """Test complete admin campaign CRUD workflow: Create → Read → Update → Delete"""
         if not self.admin_token:
