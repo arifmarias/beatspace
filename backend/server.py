@@ -910,6 +910,195 @@ async def init_bangladesh_sample_data():
         for offer in sample_offers:
             await db.offer_requests.insert_one(offer)
 
+async def create_dummy_booked_assets_data():
+    """Create dummy data with Live campaigns and Booked assets for testing"""
+    
+    # Get the existing buyer
+    buyer = await db.users.find_one({"email": "marketing@grameenphone.com"})
+    if not buyer:
+        return
+    
+    # Create some assets with "Booked" status
+    booked_assets = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Gulshan Avenue Digital Billboard",
+            "type": "Digital Billboard",
+            "address": "Gulshan Avenue, Dhaka",
+            "size": "20ft x 10ft",
+            "condition": "Excellent",
+            "location": {"lat": 23.780153, "lng": 90.414230},
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_id": "seller123",
+            "seller_name": "Dhaka Digital Media",
+            "pricing": {"weekly_rate": 25000, "monthly_rate": 90000},
+            "status": "Booked",  # Booked status
+            "images": ["https://example.com/image1.jpg"],
+            "visibility": "High",
+            "foot_traffic": "Very High",
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),  
+            "name": "Dhanmondi Metro Station Banner",
+            "type": "Banner",
+            "address": "Dhanmondi Metro Station, Dhaka",
+            "size": "15ft x 8ft", 
+            "condition": "Good",
+            "location": {"lat": 23.746466, "lng": 90.376015},
+            "district": "Dhaka",
+            "division": "Dhaka", 
+            "seller_id": "seller456",
+            "seller_name": "Metro Advertising Co",
+            "pricing": {"weekly_rate": 15000, "monthly_rate": 50000},
+            "status": "Booked",  # Booked status
+            "images": ["https://example.com/image2.jpg"],
+            "visibility": "High",
+            "foot_traffic": "High", 
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Uttara Shopping Mall Display",
+            "type": "Digital Display",
+            "address": "Uttara Shopping Mall, Dhaka",
+            "size": "10ft x 6ft",
+            "condition": "Excellent", 
+            "location": {"lat": 23.875441, "lng": 90.396736},
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_id": "seller789", 
+            "seller_name": "Mall Media Solutions",
+            "pricing": {"weekly_rate": 18000, "monthly_rate": 65000},
+            "status": "Booked",  # Booked status
+            "images": ["https://example.com/image3.jpg"],
+            "visibility": "Medium",
+            "foot_traffic": "High",
+            "created_at": datetime.utcnow()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Mirpur Road Side Banner", 
+            "type": "Banner",
+            "address": "Mirpur Road, Dhaka",
+            "size": "12ft x 8ft",
+            "condition": "Good",
+            "location": {"lat": 23.822249, "lng": 90.365420},
+            "district": "Dhaka", 
+            "division": "Dhaka",
+            "seller_id": "seller101",
+            "seller_name": "Road Banner Pro",
+            "pricing": {"weekly_rate": 12000, "monthly_rate": 40000},
+            "status": "Available",  # This one is available (for requested status)
+            "images": ["https://example.com/image4.jpg"],
+            "visibility": "Medium", 
+            "foot_traffic": "Medium",
+            "created_at": datetime.utcnow()
+        }
+    ]
+    
+    # Insert booked assets
+    for asset in booked_assets:
+        await db.assets.insert_one(asset)
+    
+    # Create Live campaigns with booked assets
+    campaign1_id = str(uuid.uuid4())
+    campaign2_id = str(uuid.uuid4())
+    
+    live_campaigns = [
+        {
+            "id": campaign1_id,
+            "name": "Grameenphone 5G Launch Campaign",
+            "description": "Major campaign for 5G service launch across Dhaka",
+            "buyer_id": buyer["id"],
+            "buyer_name": buyer["company_name"],
+            "budget": 150000,
+            "start_date": datetime.utcnow(),
+            "end_date": datetime.utcnow() + timedelta(days=60),
+            "status": "Live",  # Live campaign
+            "campaign_assets": [
+                {
+                    "asset_id": booked_assets[0]["id"],  # Gulshan Avenue Digital Billboard
+                    "start_date": datetime.utcnow(),
+                    "end_date": datetime.utcnow() + timedelta(days=60)
+                },
+                {
+                    "asset_id": booked_assets[1]["id"],  # Dhanmondi Metro Station Banner  
+                    "start_date": datetime.utcnow(),
+                    "end_date": datetime.utcnow() + timedelta(days=60)
+                }
+            ],
+            "created_at": datetime.utcnow() - timedelta(days=5),
+            "updated_at": datetime.utcnow()
+        },
+        {
+            "id": campaign2_id, 
+            "name": "Weekend Data Pack Promotion",
+            "description": "Promotional campaign for weekend data packages",
+            "buyer_id": buyer["id"],
+            "buyer_name": buyer["company_name"], 
+            "budget": 80000,
+            "start_date": datetime.utcnow() + timedelta(days=7),
+            "end_date": datetime.utcnow() + timedelta(days=37),
+            "status": "Live",  # Live campaign
+            "campaign_assets": [
+                {
+                    "asset_id": booked_assets[2]["id"],  # Uttara Shopping Mall Display
+                    "start_date": datetime.utcnow() + timedelta(days=7),
+                    "end_date": datetime.utcnow() + timedelta(days=37)
+                }
+            ],
+            "created_at": datetime.utcnow() - timedelta(days=3),
+            "updated_at": datetime.utcnow()
+        }
+    ]
+    
+    # Insert live campaigns
+    for campaign in live_campaigns:
+        await db.campaigns.insert_one(campaign)
+    
+    # Create some offer requests (for the Available asset)
+    offer_request = {
+        "id": str(uuid.uuid4()),
+        "buyer_id": buyer["id"],
+        "buyer_name": buyer["company_name"],
+        "asset_id": booked_assets[3]["id"],  # Mirpur Road Side Banner (Available)
+        "asset_name": booked_assets[3]["name"],
+        "campaign_type": "existing",
+        "campaign_name": "Weekend Data Pack Promotion",
+        "existing_campaign_id": campaign2_id,
+        "contract_duration": "1_month",
+        "estimated_budget": 45000,
+        "service_bundles": {
+            "printing": True,
+            "setup": True, 
+            "monitoring": False
+        },
+        "timeline": "Asset needed for weekend promotion campaign",
+        "special_requirements": "Weekend visibility focus",
+        "notes": "Part of existing weekend data pack campaign",
+        "status": "Pending",
+        "created_at": datetime.utcnow() - timedelta(hours=6)
+    }
+    
+    await db.offer_requests.insert_one(offer_request)
+    
+    print("✅ Dummy booked assets data created successfully!")
+    print(f"📊 Created {len(booked_assets)} assets (3 Booked, 1 Available)")
+    print(f"📊 Created {len(live_campaigns)} Live campaigns")
+    print(f"📊 Created 1 offer request")
+
+# Create dummy data endpoint for testing
+@api_router.post("/admin/create-dummy-data")
+async def create_dummy_data(current_user: User = Depends(get_current_user)):
+    """Create dummy booked assets data for testing"""
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    await create_dummy_booked_assets_data()
+    return {"message": "Dummy booked assets data created successfully"}
+
 # Initialize sample data on startup
 @app.on_event("startup")
 async def startup_event():
