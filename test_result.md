@@ -563,15 +563,18 @@ frontend:
 
   - task: "Pre-populate campaign selection in Request Best Offer dialog"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/MarketplacePage.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented pre-population of campaign selection in MarketplacePage.js 'Request Best Offer' dialog. Modified BuyerDashboard 'Add Asset' buttons to pass campaign context via URL parameter (?campaign=ID). Updated MarketplacePage to detect this parameter and pre-select the appropriate campaign in the dropdown when dialog opens. Created handleRequestBestOffer function to manage campaign pre-population logic with proper async handling."
+        - working: false
+          agent: "testing"
+          comment: "❌ CAMPAIGN PRE-POPULATION BUGS CONFIRMED - Comprehensive testing revealed both reported bugs are still present. RESULTS: 1) ❌ URL PARAMETER ISSUE: When navigating from Campaign Details → Add Asset → Marketplace, the URL parameter (?campaign=ID) is being lost during navigation. The page redirects to homepage instead of preserving the marketplace URL with campaign parameter. 2) ❌ CAMPAIGN PRE-POPULATION FAILURE: Due to URL parameter loss, the campaign selection dropdown in 'Request Best Offer' dialog shows default placeholder 'Select an existing campaign' instead of pre-populating with the intended campaign. 3) ❌ REDIRECT ISSUE: Could not test the redirect functionality due to authentication/session issues during testing, but based on code analysis, the handleOfferSubmit function in MarketplacePage.js does NOT include redirect logic to Buyer Dashboard → Requested Offers tab after successful submission. ROOT CAUSES: A) React Router navigation issue causing URL parameter loss, B) Authentication/session management affecting page routing, C) Missing redirect logic in offer submission handler. TECHNICAL FINDINGS: The implementation exists in code (handleRequestBestOffer function with URLSearchParams logic) but is not functioning due to routing/navigation issues. The BuyerDashboard Add Asset buttons correctly construct URLs with campaign parameters, but the navigation is failing."
 
   - task: "Finalize campaign grouping in Buyer Dashboard"
     implemented: true
