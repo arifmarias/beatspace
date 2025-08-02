@@ -1021,8 +1021,11 @@ const AdminDashboard = () => {
                     </Button>
                     <Input
                       placeholder="Search users..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={userSearchTerm}
+                      onChange={(e) => {
+                        setUserSearchTerm(e.target.value);
+                        setCurrentPage(1); // Reset to first page when searching
+                      }}
                       className="w-64"
                     />
                     <Select value={userFilter} onValueChange={setUserFilter}>
