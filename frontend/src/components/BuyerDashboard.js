@@ -434,13 +434,13 @@ const BuyerDashboard = () => {
       const headers = getAuthHeaders();
       
       await axios.delete(`${API}/campaigns/${campaign.id}`, { headers });
-      alert(`Campaign "${campaign.name}" deleted successfully!`);
+      notify.success(`Campaign "${campaign.name}" deleted successfully!`);
       
       fetchBuyerData(); // Refresh the campaign list
       
     } catch (error) {
       console.error('Error deleting campaign:', error);
-      alert('Failed to delete campaign: ' + (error.response?.data?.detail || error.message));
+      notify.error('Failed to delete campaign: ' + (error.response?.data?.detail || error.message));
     }
   };
 
