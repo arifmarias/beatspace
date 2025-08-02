@@ -1201,10 +1201,15 @@ const BuyerDashboard = () => {
                         <Button 
                           size="sm"
                           onClick={() => {
+                            // Store campaign context more reliably using sessionStorage
+                            sessionStorage.setItem('selectedCampaignForOffer', JSON.stringify({
+                              id: selectedCampaign.id,
+                              name: selectedCampaign.name,
+                              end_date: selectedCampaign.end_date
+                            }));
                             // Close current dialog and navigate to marketplace with campaign context
-                            const campaignContext = selectedCampaign.id;
                             setSelectedCampaign(null);
-                            navigate(`/marketplace?campaign=${campaignContext}`);
+                            navigate(`/marketplace?campaign=${selectedCampaign.id}`);
                           }}
                           className="bg-orange-600 hover:bg-orange-700"
                         >
