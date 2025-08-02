@@ -142,6 +142,7 @@ const BuyerDashboard = () => {
     };
     
     fetchBuyerData();
+    fetchLiveAssets(); // Fetch live assets when component mounts
   }, []);
 
   const fetchBuyerData = async () => {
