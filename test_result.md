@@ -596,8 +596,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Final verification completed - all critical bug fixes verified"
-  stuck_tasks: []
+    - "Campaign pre-population flow testing completed - bugs confirmed"
+  stuck_tasks:
+    - "Pre-populate campaign selection in Request Best Offer dialog"
   test_all: false
   test_priority: "high_first"
 
