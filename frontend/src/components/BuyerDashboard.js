@@ -43,6 +43,7 @@ const API = `${BACKEND_URL}/api`;
 
 const BuyerDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUser = getUser();
   const [campaigns, setCampaigns] = useState([]);
   const [requestedOffers, setRequestedOffers] = useState([]);
@@ -55,7 +56,13 @@ const BuyerDashboard = () => {
   const [campaignAssets, setCampaignAssets] = useState([]);
   const [editingOffer, setEditingOffer] = useState(null);
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('campaigns');
+  
+  // Initialize activeTab based on URL parameter, default to 'campaigns'
+  const [activeTab, setActiveTab] = useState(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get('tab');
+    return tabFromUrl === 'requested-offers' ? 'requested-offers' : 'campaigns';
+  });
 
   // Edit offer form state - same structure as MarketplacePage
   const [editOfferDetails, setEditOfferDetails] = useState({
