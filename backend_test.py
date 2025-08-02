@@ -4713,20 +4713,97 @@ def run_create_campaign_fix_tests():
     
     tester = BeatSpaceAPITester()
     
-    # Run the focused create campaign tests
-    passed, total = tester.run_create_campaign_fix_tests()
+    # Authentication Test
+    print("\n📋 AUTHENTICATION SETUP")
+    print("-" * 40)
+    admin_success, admin_response = tester.test_admin_login()
     
-    # Final determination
-    if passed >= total * 0.8:  # 80% pass rate
-        print("\n🎉 FIXED CREATE CAMPAIGN FUNCTIONALITY IS WORKING!")
-        print("✅ The Create Campaign button issue has been resolved")
-        print("✅ Backend can create campaigns successfully without 500 errors")
-        print("✅ Campaigns default to 'Draft' status correctly")
+    if not admin_success:
+        print("❌ Admin login failed - cannot proceed with create campaign test")
+        return 1
+
+    # Get users for campaign assignment
+    print("\n📋 USER DATA SETUP")
+    print("-" * 40)
+    users_success, users_response = tester.test_admin_get_users()
+    
+    if not users_success:
+        print("❌ Could not retrieve users - cannot proceed")
+        return 1
+
+    # Get assets for campaign assets
+    print("\n📋 ASSET DATA SETUP")
+    print("-" * 40)
+    assets_success, assets_response = tester.test_public_assets()
+    
+    if not assets_success:
+        print("❌ Could not retrieve assets - cannot proceed")
+        return 1
+
+    # Main Create Campaign Test
+    print("\n📋 FIXED CREATE CAMPAIGN FUNCTIONALITY TEST")
+    print("-" * 40)
+    create_success, create_response = tester.test_fixed_create_campaign_functionality()
+
+    # Additional verification tests
+    if create_success and tester.created_campaign_id:
+        print("\n📋 VERIFICATION TESTS")
+        print("-" * 40)
+        
+        # Verify campaign appears in admin campaigns list
+        print("🔍 Verifying campaign appears in admin campaigns list...")
+        list_success, campaigns_list = tester.test_admin_get_campaigns()
+        
+        if list_success:
+            campaign_found = False
+            for campaign in campaigns_list:
+                if campaign.get('id') == tester.created_campaign_id:
+                    campaign_found = True
+                    print(f"   ✅ Created campaign found in list: {campaign.get('name')}")
+                    print(f"   Status: {campaign.get('status')}")
+                    break
+            
+            if not campaign_found:
+                print("   ⚠️  Created campaign not found in campaigns list")
+        
+        # Test campaign status update
+        print("\n🔍 Testing campaign status update functionality...")
+        status_update = {"status": "Live"}
+        status_success, status_response = tester.run_test(
+            "Update Campaign Status", 
+            "PATCH", 
+            f"admin/campaigns/{tester.created_campaign_id}/status", 
+            200, 
+            data=status_update,
+            token=tester.admin_token
+        )
+        
+        if status_success:
+            print("   ✅ Campaign status update working")
+        else:
+            print("   ⚠️  Campaign status update may have issues")
+
+    # Summary
+    print("\n" + "=" * 80)
+    print("🎯 FIXED CREATE CAMPAIGN TEST SUMMARY")
+    print("=" * 80)
+    print(f"✅ Tests Passed: {tester.tests_passed}")
+    print(f"❌ Tests Failed: {tester.tests_run - tester.tests_passed}")
+    print(f"📊 Total Tests: {tester.tests_run}")
+    print(f"📈 Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    
+    if create_success:
+        print("\n🎉 FIXED CREATE CAMPAIGN FUNCTIONALITY VERIFIED!")
+        print("✅ Create Campaign button issue is RESOLVED")
+        print("✅ POST /api/admin/campaigns working correctly (no 500 errors)")
+        print("✅ Campaigns default to 'Draft' status as expected")
         print("✅ Enhanced data (campaign_assets, dates) working properly")
+        print("✅ Backend ready for frontend Create Campaign functionality")
         return 0
     else:
-        print("\n❌ CREATE CAMPAIGN FUNCTIONALITY STILL HAS ISSUES")
-        print("❌ The Create Campaign button issue is NOT resolved")
+        print("\n⚠️  CREATE CAMPAIGN FUNCTIONALITY STILL HAS ISSUES")
+        print("❌ Create Campaign button issue NOT resolved")
+        print("❌ Backend may still be returning 500 errors")
         return 1
 
 
