@@ -975,6 +975,45 @@ async def get_offer_requests(admin_user: User = Depends(require_admin)):
     requests = await db.offer_requests.find().to_list(1000)
     return [OfferRequest(**req) for req in requests]
 
+@api_router.patch("/admin/offer-requests/{request_id}/status")
+async def update_offer_request_status_admin(
+    request_id: str,
+    status_data: dict,
+    admin_user: User = Depends(require_admin)
+):
+    """Update offer request status (admin only)"""
+    offer_request = await db.offer_requests.find_one({"id": request_id})
+    if not offer_request:
+        raise HTTPException(status_code=404, detail="Offer request not found")
+    
+    new_status = status_data.get("status")
+    valid_statuses = ["Pending", "In Process", "On Hold", "Approved", "Rejected"]
+    
+    if new_status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Valid statuses: {valid_statuses}")
+    
+    # Update offer request status
+    await db.offer_requests.update_one(
+        {"id": request_id},
+        {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
+    )
+    
+    # If approved, update asset status to Booked
+    if new_status == "Approved":
+        await db.assets.update_one(
+            {"id": offer_request["asset_id"]},
+            {"$set": {"status": AssetStatus.BOOKED, "updated_at": datetime.utcnow()}}
+        )
+    
+    # If rejected or on hold, make asset available again
+    elif new_status in ["Rejected", "On Hold"]:
+        await db.assets.update_one(
+            {"id": offer_request["asset_id"]},
+            {"$set": {"status": AssetStatus.AVAILABLE, "updated_at": datetime.utcnow()}}
+        )
+    
+    return {"message": f"Offer request status updated to {new_status}"}
+
 @api_router.post("/admin/submit-final-offer")
 async def submit_final_offer(
     offer_data: FinalOfferCreate,
