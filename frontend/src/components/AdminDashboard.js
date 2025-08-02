@@ -844,14 +844,7 @@ const AdminDashboard = () => {
     });
   };
 
-  const filteredUsers = (users || []).filter(user => {
-    const matchesFilter = userFilter === 'all' || user.status === userFilter;
-    const matchesSearch = !searchTerm || 
-      user.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.contact_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredUsers = getFilteredUsers(); // Use the new pagination function
 
   const filteredAssets = (assets || []).filter(asset => {
     const matchesFilter = assetFilter === 'all' || asset.status === assetFilter;
