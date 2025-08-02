@@ -1543,13 +1543,11 @@ const AdminDashboard = () => {
                             <TableCell>
                               <div>
                                 <div className="font-medium">{offer.asset_name}</div>
-                                <div className="text-sm text-gray-500">ID: {offer.asset_id}</div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
                                 <div className="font-medium">{offer.buyer_name}</div>
-                                <div className="text-sm text-gray-500">ID: {offer.buyer_id}</div>
                               </div>
                             </TableCell>
                             <TableCell>
