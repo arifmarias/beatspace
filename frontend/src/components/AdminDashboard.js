@@ -1308,19 +1308,21 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Asset</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Seller</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredAssets.map((asset) => (
+                {getFilteredAssets().length > 0 ? (
+                  <div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Asset</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Seller</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getPaginatedAssets().map((asset) => (
                       <TableRow key={asset.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
