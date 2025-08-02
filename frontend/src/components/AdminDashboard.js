@@ -1737,25 +1737,25 @@ const AdminDashboard = () => {
                   {getCampaignsTotalPages() > 1 && (
                     <div className="flex items-center justify-between mt-4">
                       <div className="text-sm text-gray-500">
-                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredCampaigns().length)} of {getFilteredCampaigns().length} campaigns
+                        Showing {((campaignCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(campaignCurrentPage * itemsPerPage, getFilteredCampaigns().length)} of {getFilteredCampaigns().length} campaigns
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                          disabled={currentPage === 1}
+                          onClick={() => setCampaignCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={campaignCurrentPage === 1}
                         >
                           Previous
                         </Button>
                         <span className="text-sm text-gray-600">
-                          Page {currentPage} of {getCampaignsTotalPages()}
+                          Page {campaignCurrentPage} of {getCampaignsTotalPages()}
                         </span>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, getCampaignsTotalPages()))}
-                          disabled={currentPage === getCampaignsTotalPages()}
+                          onClick={() => setCampaignCurrentPage(prev => Math.min(prev + 1, getCampaignsTotalPages()))}
+                          disabled={campaignCurrentPage === getCampaignsTotalPages()}
                         >
                           Next
                         </Button>
