@@ -101,7 +101,7 @@ const LoginPage = () => {
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <img 
-                src="https://customer-assets.emergentagent.com/job_brandspotbd/artifacts/deqoe0i1_BeatSpace%20Transparent%20Logo.png" 
+                src="https://customer-assets.emergentagent.com/job_campaign-nexus-4/artifacts/tui73r6o_BeatSpace%20Icon%20Only.png" 
                 alt="BeatSpace Logo" 
                 className="w-16 h-16"
               />
