@@ -196,6 +196,21 @@ backend:
           agent: "testing"
           comment: "✅ PASSED - Campaign status management working correctly! Backend properly handles campaign status transitions and enforces business logic. PUT /campaigns/{id}/status endpoint successfully updates campaign status and triggers asset status changes. Verified with realistic sample data showing 4 campaigns (2 Live, 2 Draft) with proper asset associations. Campaign CRUD operations (GET, POST, PUT) all functional for buyers."
 
+  - task: "Campaign DELETE functionality for buyers"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented DELETE /api/campaigns/{campaign_id} endpoint with business rules: only campaign owner (buyer) can delete their own campaigns, only Draft campaigns can be deleted (not Live/Completed), cannot delete campaigns with associated offer requests, proper error handling for all validation failures."
+        - working: true
+          agent: "testing"
+          comment: "🎉 CAMPAIGN DELETE FUNCTIONALITY FULLY TESTED AND WORKING! ✅ Conducted comprehensive testing of the newly implemented Campaign DELETE endpoint (DELETE /api/campaigns/{campaign_id}) with 100% success rate (6/6 test categories passed). ✅ AUTHENTICATION & PERMISSIONS: DELETE endpoint properly requires authentication (401/403 for unauthenticated requests), only campaign owners (buyers) can delete their own campaigns, admin users can also delete campaigns with proper authorization. ✅ STATUS RESTRICTIONS: Only Draft campaigns can be deleted - Live campaigns correctly rejected with 400 error and proper message 'Cannot delete campaign with status Live. Only Draft campaigns can be deleted', status validation working perfectly. ✅ OFFER REQUESTS CHECK: Campaigns with associated offer requests cannot be deleted (proper business rule enforcement), campaigns without offer requests can be deleted successfully, found 6 campaigns with associated offer requests properly protected from deletion. ✅ ERROR HANDLING: Non-existent campaigns return proper 404 errors with 'Campaign not found' message, malformed campaign IDs handled correctly, comprehensive error responses for all validation failures. ✅ SUCCESSFUL DELETION: Created test Draft campaigns successfully deleted with proper success message 'Campaign deleted successfully', deleted campaigns properly removed from system (verified via GET /api/campaigns), campaign deletion workflow working end-to-end. ✅ BUSINESS RULES VERIFIED: All 5 specified business rules working correctly: 1) Only campaign owner can delete, 2) Only Draft campaigns deletable, 3) Cannot delete campaigns with offer requests, 4) Successful deletion for valid Draft campaigns, 5) Proper error handling. AUTHENTICATION: Buyer credentials (marketing@grameenphone.com/buyer123) and admin credentials working perfectly. CONCLUSION: Campaign DELETE functionality is production-ready and fully functional with all business rules properly implemented and enforced."
+
 backend:
   - task: "Implement missing /api/stats/public endpoint"
     implemented: true
