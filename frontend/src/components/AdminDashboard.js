@@ -370,7 +370,7 @@ const AdminDashboard = () => {
 
   const getPaginatedAssets = () => {
     const filtered = getFilteredAssets();
-    const startIndex = (currentPage - 1) * itemsPerPage;
+    const startIndex = (assetCurrentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filtered.slice(startIndex, endIndex);
   };
