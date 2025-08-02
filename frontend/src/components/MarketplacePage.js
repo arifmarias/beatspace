@@ -1253,9 +1253,6 @@ const MarketplacePage = () => {
                           
                           <div className="flex justify-between items-center mb-3">
                             <Badge variant="secondary">{asset.type}</Badge>
-                            <span className="text-lg font-bold text-blue-600">
-                              ৳{pricing.toLocaleString()}
-                            </span>
                           </div>
                           
                           <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
