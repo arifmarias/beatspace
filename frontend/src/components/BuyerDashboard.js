@@ -1175,9 +1175,10 @@ const BuyerDashboard = () => {
                       <Button 
                         size="sm" 
                         onClick={() => {
-                          // Close current dialog and navigate to marketplace
+                          // Close current dialog and navigate to marketplace with campaign context
+                          const campaignContext = selectedCampaign.id;
                           setSelectedCampaign(null);
-                          navigate('/marketplace');
+                          navigate(`/marketplace?campaign=${campaignContext}`);
                         }}
                         className="bg-orange-600 hover:bg-orange-700"
                       >
