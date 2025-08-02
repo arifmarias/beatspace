@@ -44,8 +44,8 @@ const AssetMonitoringSystem = () => {
   const [loading, setLoading] = useState(true);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [filters, setFilters] = useState({
-    asset_type: '',
-    status: '',
+    asset_type: 'all',
+    status: 'all',
     date_range: '30_days',
     search: ''
   });
