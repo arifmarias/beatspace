@@ -563,9 +563,9 @@ frontend:
 
   - task: "Pre-populate campaign selection in Request Best Offer dialog"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/MarketplacePage.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -578,6 +578,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ CAMPAIGN PRE-POPULATION FIXES VERIFIED THROUGH CODE ANALYSIS - Comprehensive code review confirms all three reported bug fixes have been properly implemented: 1) ✅ ENHANCED CAMPAIGN CONTEXT STORAGE: BuyerDashboard 'Add Asset' buttons now use BOTH URL parameters AND sessionStorage for reliable campaign context passing. Lines 1186-1193 and 1212-1219 store campaign data in sessionStorage with full campaign object (id, name, end_date) AND navigate with URL parameter (?campaign=ID). 2) ✅ IMPROVED CAMPAIGN PRE-POPULATION LOGIC: MarketplacePage handleRequestBestOffer function (lines 255-310) now checks BOTH URL parameters and sessionStorage with enhanced error handling and timeout logic. Function first tries URL parameter, then falls back to sessionStorage, with proper JSON parsing and error handling. 3) ✅ ADDED REDIRECT AFTER REQUEST SUBMISSION: handleOfferSubmit function (lines 550-653) includes redirect logic to navigate('/buyer-dashboard?tab=requested-offers') after successful submission (line 647). BuyerDashboard properly reads 'tab' URL parameter and switches to Requested Offers tab (lines 61-65). AUTHENTICATION ISSUES: Unable to complete end-to-end UI testing due to authentication/session management issues in test environment, but code implementation is correct and comprehensive. All three bug fixes are properly implemented and should resolve the reported issues."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL BUG CONFIRMED - REDIRECT FIX NOT WORKING! ❌ Conducted comprehensive testing of the REDIRECT FIX for campaign pre-population flow as specifically requested in the review. RESULTS: The reported bug is STILL PRESENT and the fixes are NOT working. ✅ VERIFIED WORKING COMPONENTS: 1) Login functionality working correctly (marketing@grameenphone.com/buyer123), 2) Marketplace loading with 7 assets successfully, 3) List View toggle working, 4) View Details buttons found (7 available), 5) Request Best Offer dialog opens correctly, 6) Form shows 'Dhanmondi Lake Billboard' selected asset, 7) Console shows campaigns being fetched successfully. ❌ CRITICAL FAILURE CONFIRMED: After attempting to submit the 'Request Best Offer' form, the page redirects to the HOMEPAGE (/) instead of the expected '/buyer/dashboard?tab=requested-offers'. This confirms the exact bug described in the review request. ❌ ROOT CAUSE ANALYSIS: 1) The redirect logic in MarketplacePage.js handleOfferSubmit function (lines 647-653) appears to be implemented but is NOT executing properly, 2) No debug console logs were captured during submission, indicating the form submission may be failing silently, 3) No network requests to /api/offers/request were detected, suggesting the API call is not being made, 4) The route path fix from '/buyer-dashboard' to '/buyer/dashboard' is correct but irrelevant if the redirect code isn't executing. CONCLUSION: The redirect fix implementation exists in the code but is not functioning. The bug persists and requires immediate attention from the main agent to debug why the handleOfferSubmit function is not executing the redirect logic properly."
 
   - task: "Finalize campaign grouping in Buyer Dashboard"
     implemented: true
