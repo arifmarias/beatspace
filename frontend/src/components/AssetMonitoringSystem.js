@@ -254,7 +254,7 @@ const AssetMonitoringSystem = () => {
                 <SelectValue placeholder="Asset Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="Billboard">Billboard</SelectItem>
                 <SelectItem value="Police Box">Police Box</SelectItem>
                 <SelectItem value="Railway Station">Railway Station</SelectItem>
