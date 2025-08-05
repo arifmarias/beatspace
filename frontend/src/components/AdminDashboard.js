@@ -891,6 +891,51 @@ const AdminDashboard = () => {
     });
   };
 
+  const submitQuote = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const quoteData = {
+        quoted_price: parseFloat(quoteForm.quotedPrice),
+        admin_notes: quoteForm.notes,
+        valid_until: quoteForm.validUntil ? quoteForm.validUntil.toISOString() : null
+      };
+
+      await axios.put(`${API}/admin/offers/${quoteForm.offerId}/quote`, quoteData, { headers });
+      
+      notify.success('Price quote submitted successfully!');
+      
+      // Reset form and close dialog
+      setShowQuoteDialog(false);
+      setQuoteForm({
+        offerId: '',
+        quotedPrice: '',
+        notes: '',
+        validUntil: null
+      });
+      
+      // Refresh offer requests
+      fetchOfferRequests();
+      
+    } catch (error) {
+      console.error('Error submitting quote:', error);
+      notify.error('Failed to submit quote: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const handleQuoteOffer = (offer) => {
+    setQuoteForm({
+      offerId: offer.id,
+      quotedPrice: '',
+      notes: '',
+      validUntil: null
+    });
+    setSelectedOfferRequest(offer);
+    setShowQuoteDialog(true);
+  };
+
+  const adminAssetOperations = {
+  };
+
   const filteredUsers = getFilteredUsers(); // Use the new pagination function
   const filteredAssets = getFilteredAssets(); // Use the new pagination function
 
