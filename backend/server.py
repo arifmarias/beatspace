@@ -368,24 +368,33 @@ async def update_assets_status_for_campaign(campaign_id: str, campaign_status: s
     if not campaign:
         return
     
-    asset_ids = campaign.get("assets", [])
+    # Get asset IDs from both legacy and new structure
+    asset_ids = campaign.get("assets", [])  # Legacy structure
+    
+    # Check for new campaign_assets structure
+    if campaign.get("campaign_assets"):
+        asset_ids.extend([ca.get("asset_id") for ca in campaign["campaign_assets"] if ca.get("asset_id")])
+    
+    # Remove duplicates and None values
+    asset_ids = list(set([aid for aid in asset_ids if aid]))
+    
     if not asset_ids:
         return
     
     # Set asset status based on campaign status
     if campaign_status == "Live":
-        new_asset_status = AssetStatus.LIVE
+        new_asset_status = AssetStatus.BOOKED  # Changed: Live campaigns mean Booked assets
     elif campaign_status == "Draft":
         new_asset_status = AssetStatus.AVAILABLE
-    elif campaign_status == "Booked":
-        new_asset_status = AssetStatus.BOOKED
+    elif campaign_status == "Completed":
+        new_asset_status = AssetStatus.AVAILABLE  # Assets become available again
     else:
         return  # Don't change asset status for other campaign statuses
     
     # Update all assets in the campaign
     await db.assets.update_many(
         {"id": {"$in": asset_ids}},
-        {"$set": {"status": new_asset_status}}
+        {"$set": {"status": new_asset_status, "updated_at": datetime.utcnow()}}
     )
     
     logger.info(f"Updated {len(asset_ids)} assets to status '{new_asset_status}' for campaign {campaign_id}")
