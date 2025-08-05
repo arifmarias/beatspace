@@ -629,12 +629,6 @@ const MarketplacePage = () => {
         return;
       }
 
-      // Mandatory budget validation
-      if (!offerDetails.estimatedBudget || !offerDetails.estimatedBudget.trim()) {
-        notify.warning('Estimated budget is required to process your offer request.');
-        return;
-      }
-
       if (!selectedAssetForOffer) {
         notify.error('No asset selected for offer request.');
         return;
