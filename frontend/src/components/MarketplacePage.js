@@ -361,6 +361,14 @@ const MarketplacePage = () => {
     setShowOfferDialog(true);
   };
 
+  // Calculate custom duration days
+  const calculateCustomDuration = (startDate, endDate) => {
+    if (!startDate || !endDate) return null;
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   const fetchExistingCampaigns = async () => {
     if (!currentUser) {
       console.log('❌ No current user, cannot fetch campaigns');
