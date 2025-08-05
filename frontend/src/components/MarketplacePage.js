@@ -684,7 +684,6 @@ const MarketplacePage = () => {
         existingCampaignId: '',
         assetId: '',
         contractDuration: '3_months',
-        estimatedBudget: '',
         serviceBundles: {
           printing: false,
           setup: false,
