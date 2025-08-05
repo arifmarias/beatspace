@@ -1940,6 +1940,14 @@ const AdminDashboard = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48">
+                                  <DropdownMenuItem 
+                                    onClick={() => handleQuoteOffer(offer)}
+                                    className="flex items-center cursor-pointer text-blue-600"
+                                  >
+                                    <DollarSign className="h-4 w-4 mr-2" />
+                                    Price Quotation
+                                  </DropdownMenuItem>
+                                  
                                   <DropdownMenuItem asChild>
                                     <Dialog>
                                       <DialogTrigger asChild>
