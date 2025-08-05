@@ -1260,6 +1260,17 @@ const AdminDashboard = () => {
                                 </Dialog>
                               </DropdownMenuItem>
                               
+                              {/* Quick Approve User Button */}
+                              {user.status === 'pending' && (
+                                <DropdownMenuItem 
+                                  onClick={() => updateUserStatus(user.id, 'approved', 'User approved by admin')}
+                                  className="flex items-center cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50"
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Approve User
+                                </DropdownMenuItem>
+                              )}
+                              
                               <DropdownMenuItem 
                                 onClick={() => editUser(user)}
                                 className="flex items-center cursor-pointer"
