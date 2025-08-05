@@ -893,19 +893,6 @@ const MarketplacePage = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        
-                        <div>
-                          <label className="block text-sm font-semibold mb-2">Estimated Budget (৳) *</label>
-                          <Input
-                            type="number"
-                            value={offerDetails.estimatedBudget}
-                            onChange={(e) => setOfferDetails({...offerDetails, estimatedBudget: e.target.value})}
-                            placeholder="Enter your budget (required)"
-                            required
-                            className="border-2 border-orange-200 focus:border-orange-400"
-                          />
-                          <p className="text-xs text-orange-600 mt-1">* Budget is required for offer processing</p>
-                        </div>
                       </div>
 
                       {/* Asset Starting Date */}
