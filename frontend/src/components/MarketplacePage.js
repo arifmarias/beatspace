@@ -890,12 +890,21 @@ const MarketplacePage = () => {
                           <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
                           <Select 
                             value={offerDetails.contractDuration} 
-                            onValueChange={(value) => setOfferDetails({...offerDetails, contractDuration: value})}
+                            onValueChange={(value) => {
+                              setOfferDetails({
+                                ...offerDetails, 
+                                contractDuration: value,
+                                customStartDate: value === 'custom' ? offerDetails.customStartDate : null,
+                                customEndDate: value === 'custom' ? offerDetails.customEndDate : null,
+                                customDurationDays: value === 'custom' ? offerDetails.customDurationDays : null
+                              });
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="1_month">1 Month</SelectItem>
                               <SelectItem value="3_months">3 Months</SelectItem>
                               <SelectItem value="6_months">6 Months</SelectItem>
                               <SelectItem value="12_months">12 Months</SelectItem>
@@ -903,6 +912,87 @@ const MarketplacePage = () => {
                             </SelectContent>
                           </Select>
                         </div>
+
+                        {/* Custom Duration Date Fields */}
+                        {offerDetails.contractDuration === 'custom' && (
+                          <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="text-sm font-semibold text-blue-800">Custom Duration Settings</h4>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {/* Custom Start Date */}
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-blue-700">Start Date *</label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className="w-full justify-start text-left font-normal border-blue-300"
+                                    >
+                                      <Calendar className="mr-2 h-4 w-4" />
+                                      {offerDetails.customStartDate ? offerDetails.customStartDate.toLocaleDateString() : "Select start date"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0">
+                                    <CalendarComponent
+                                      mode="single"
+                                      selected={offerDetails.customStartDate}
+                                      onSelect={(date) => {
+                                        const updatedDetails = {
+                                          ...offerDetails, 
+                                          customStartDate: date,
+                                          customDurationDays: calculateCustomDuration(date, offerDetails.customEndDate)
+                                        };
+                                        setOfferDetails(updatedDetails);
+                                      }}
+                                      disabled={(date) => date < new Date()}
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+
+                              {/* Custom End Date */}
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-blue-700">End Date *</label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className="w-full justify-start text-left font-normal border-blue-300"
+                                    >
+                                      <Calendar className="mr-2 h-4 w-4" />
+                                      {offerDetails.customEndDate ? offerDetails.customEndDate.toLocaleDateString() : "Select end date"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0">
+                                    <CalendarComponent
+                                      mode="single"
+                                      selected={offerDetails.customEndDate}
+                                      onSelect={(date) => {
+                                        const updatedDetails = {
+                                          ...offerDetails, 
+                                          customEndDate: date,
+                                          customDurationDays: calculateCustomDuration(offerDetails.customStartDate, date)
+                                        };
+                                        setOfferDetails(updatedDetails);
+                                      }}
+                                      disabled={(date) => date < (offerDetails.customStartDate || new Date())}
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            </div>
+
+                            {/* Duration Display */}
+                            {offerDetails.customDurationDays && (
+                              <div className="bg-white p-3 rounded border border-blue-200">
+                                <p className="text-sm font-medium text-blue-800">
+                                  📅 Duration: {offerDetails.customDurationDays} days 
+                                  ({Math.floor(offerDetails.customDurationDays / 30)} months, {offerDetails.customDurationDays % 30} days)
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Asset Starting Date */}
