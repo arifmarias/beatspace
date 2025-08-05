@@ -73,21 +73,21 @@ const MarketplacePage = () => {
   const [showNewCampaignWelcome, setShowNewCampaignWelcome] = useState(false);
   const [welcomeCampaignName, setWelcomeCampaignName] = useState('');
   const [offerDetails, setOfferDetails] = useState({
-    campaignType: 'new', // 'new' or 'existing'
+    campaignType: 'existing',
     campaignName: '',
     existingCampaignId: '',
     assetId: '',
     contractDuration: '3_months',
-    estimatedBudget: '',
     serviceBundles: {
       printing: false,
       setup: false,
       monitoring: false
     },
     timeline: '',
-    tentativeStartDate: null, // For new campaigns
-    selectedCampaignEndDate: null, // For existing campaigns
-    assetExpirationDate: null, // Auto-calculated
+    tentativeStartDate: null,
+    selectedCampaignEndDate: null,
+    assetExpirationDate: null,
+    expirationWarning: null,
     specialRequirements: '',
     notes: ''
   });
