@@ -316,6 +316,34 @@ const BuyerDashboard = () => {
     }
   };
 
+  const downloadCampaignPDF = async (campaign) => {
+    try {
+      // Fetch campaign assets
+      const headers = getAuthHeaders();
+      const assetsResponse = await axios.get(`${API}/assets/public`, { headers });
+      const allAssets = assetsResponse.data || [];
+      
+      // Get assets for this campaign
+      const campaignAssets = [];
+      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+        for (const campaignAsset of campaign.campaign_assets) {
+          const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+          if (asset) {
+            campaignAssets.push(asset);
+          }
+        }
+      }
+      
+      // Generate PDF
+      generateCampaignPDF(campaign, campaignAssets);
+      notify.success('Campaign draft PDF downloaded successfully!');
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      notify.error('Failed to generate PDF. Please try again.');
+    }
+  };
+
   const updateCampaignStatus = async (campaignId, newStatus) => {
     try {
       const headers = getAuthHeaders();
