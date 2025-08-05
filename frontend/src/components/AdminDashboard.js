@@ -77,6 +77,13 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [offerRequests, setOfferRequests] = useState([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [quoteForm, setQuoteForm] = useState({
+    offerId: '',
+    quotedPrice: '',
+    notes: '',
+    validUntil: null
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [campaignCurrentPage, setCampaignCurrentPage] = useState(1);
   const [userCurrentPage, setUserCurrentPage] = useState(1);
