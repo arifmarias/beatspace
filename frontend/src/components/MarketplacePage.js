@@ -654,16 +654,20 @@ const MarketplacePage = () => {
       
       // Prepare offer request data
       const offerRequestData = {
+        buyer_id: currentUser.id,
+        buyer_name: currentUser.company_name,
         asset_id: selectedAssetForOffer.id,
-        campaign_name: offerDetails.campaignName.trim(),
-        campaign_type: 'existing',
+        asset_name: selectedAssetForOffer.name,
+        campaign_type: offerDetails.campaignType,
+        campaign_name: offerDetails.campaignName,
         existing_campaign_id: offerDetails.existingCampaignId,
         contract_duration: offerDetails.contractDuration,
-        estimated_budget: parseFloat(offerDetails.estimatedBudget),
         service_bundles: offerDetails.serviceBundles,
-        timeline: `Asset starts from ${offerDetails.tentativeStartDate.toLocaleDateString()}`,
-        special_requirements: offerDetails.specialRequirements || null,
-        notes: offerDetails.notes || null
+        timeline: offerDetails.timeline,
+        asset_start_date: offerDetails.tentativeStartDate ? offerDetails.tentativeStartDate.toISOString() : null,
+        asset_expiration_date: offerDetails.assetExpirationDate ? offerDetails.assetExpirationDate.toISOString() : null,
+        special_requirements: offerDetails.specialRequirements,
+        notes: offerDetails.notes
       };
 
       // Submit offer request
