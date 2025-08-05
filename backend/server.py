@@ -1113,7 +1113,41 @@ async def create_dummy_data(current_user: User = Depends(get_current_user)):
 # Initialize sample data on startup
 @app.on_event("startup")
 async def startup_event():
-    await init_bangladesh_sample_data()
+    # Only initialize essential admin user, no dummy data
+    await init_essential_users_only()
+
+async def init_essential_users_only():
+    """Initialize only essential admin user for production"""
+    
+    # Check if admin exists
+    existing_admin = await db.users.find_one({"email": "admin@beatspace.com"})
+    
+    if not existing_admin:
+        # Create admin user only
+        admin_user = {
+            "id": str(uuid.uuid4()),
+            "email": "admin@beatspace.com",
+            "password_hash": hash_password("admin123"),
+            "company_name": "BeatSpace Admin",
+            "contact_name": "System Administrator",
+            "phone": "+8801234567890",
+            "role": "admin",
+            "status": "approved",
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.users.insert_one(admin_user)
+        print("✅ Essential admin user created")
+    else:
+        print("✅ Admin user already exists")
+    
+    # Clear any existing dummy data
+    await db.assets.delete_many({"seller_name": {"$in": ["Dhaka Digital Media", "Metro Advertising Co", "Mall Media Solutions", "Road Banner Pro"]}})
+    await db.campaigns.delete_many({"buyer_name": "Grameenphone Ltd."})
+    await db.offer_requests.delete_many({"buyer_name": "Grameenphone Ltd."})
+    
+    print("✅ Dummy data cleared, production ready!")
 
 # Authentication Routes (same as before)
 @api_router.post("/auth/register", response_model=dict)
