@@ -56,6 +56,7 @@ const API = `${BACKEND_URL}/api`;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { notify } = useNotification();
   const [users, setUsers] = useState([]);
   const [assets, setAssets] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
