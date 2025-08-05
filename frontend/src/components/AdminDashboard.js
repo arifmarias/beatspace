@@ -1773,6 +1773,17 @@ const AdminDashboard = () => {
                                   </Dialog>
                                 </DropdownMenuItem>
                                 
+                                {/* Quick Make Live Button */}
+                                {campaign.status === 'Draft' && (
+                                  <DropdownMenuItem 
+                                    onClick={() => updateCampaignStatus(campaign.id, 'Live')}
+                                    className="flex items-center cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  >
+                                    <TrendingUp className="h-4 w-4 mr-2" />
+                                    Make Live
+                                  </DropdownMenuItem>
+                                )}
+                                
                                 <DropdownMenuItem 
                                   onClick={() => editCampaign(campaign)}
                                   className="flex items-center cursor-pointer"
