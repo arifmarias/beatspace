@@ -902,7 +902,7 @@ const AdminDashboard = () => {
 
       await axios.put(`${API}/admin/offers/${quoteForm.offerId}/quote`, quoteData, { headers });
       
-      notify.success('Price quote submitted successfully!');
+      alert('Price quote submitted successfully!');
       
       // Reset form and close dialog
       setShowQuoteDialog(false);
@@ -914,11 +914,11 @@ const AdminDashboard = () => {
       });
       
       // Refresh offer requests
-      fetchOfferRequests();
+      fetchDashboardData();
       
     } catch (error) {
       console.error('Error submitting quote:', error);
-      notify.error('Failed to submit quote: ' + (error.response?.data?.detail || error.message));
+      alert('Failed to submit quote: ' + (error.response?.data?.detail || error.message));
     }
   };
 
