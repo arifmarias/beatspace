@@ -2372,7 +2372,7 @@ const BuyerDashboard = () => {
               <Button 
                 onClick={handleUpdateCampaign}
                 className="bg-blue-600 hover:bg-blue-700"
-                disabled={!campaignForm.name || !campaignForm.budget}
+                disabled={!campaignForm.name}
               >
                 Update Campaign
               </Button>
