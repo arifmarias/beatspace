@@ -902,7 +902,7 @@ const AdminDashboard = () => {
       );
       
       notify.success(`Campaign status updated to ${newStatus} successfully!`);
-      fetchCampaigns(); // Refresh campaigns list
+      fetchDashboardData(); // Refresh dashboard data
       
     } catch (error) {
       console.error('Error updating campaign status:', error);
