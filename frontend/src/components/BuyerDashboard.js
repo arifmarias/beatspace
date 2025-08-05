@@ -1382,6 +1382,14 @@ const BuyerDashboard = () => {
                                   Edit Campaign
                                 </DropdownMenuItem>
                                 
+                                <DropdownMenuItem
+                                  onClick={() => downloadCampaignPDF(campaign)}
+                                  className="cursor-pointer text-purple-600"
+                                >
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Campaign Planning PDF
+                                </DropdownMenuItem>
+                                
                                 {/* Only show delete for Draft campaigns */}
                                 {campaign.status === 'Draft' && (
                                   <DropdownMenuItem
