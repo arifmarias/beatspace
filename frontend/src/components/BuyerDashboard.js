@@ -1970,7 +1970,7 @@ const BuyerDashboard = () => {
               <Button 
                 onClick={handleCreateCampaign}
                 className="bg-orange-600 hover:bg-orange-700"
-                disabled={!campaignForm.name || !campaignForm.budget}
+                disabled={!campaignForm.name}
               >
                 Create Campaign
               </Button>
