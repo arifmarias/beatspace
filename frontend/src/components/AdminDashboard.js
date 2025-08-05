@@ -46,6 +46,7 @@ import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { getAuthHeaders, logout } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from './ui/notification';
 import OfferMediationPanel from './OfferMediationPanel';
 import AssetMonitoringSystem from './AssetMonitoringSystem';
 import AdvancedAnalytics from './AdvancedAnalytics';
