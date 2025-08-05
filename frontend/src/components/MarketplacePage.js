@@ -698,6 +698,9 @@ const MarketplacePage = () => {
         existingCampaignId: '',
         assetId: '',
         contractDuration: '3_months',
+        customStartDate: null,
+        customEndDate: null,
+        customDurationDays: null,
         serviceBundles: {
           printing: false,
           setup: false,
