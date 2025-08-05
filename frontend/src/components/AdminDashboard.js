@@ -3586,6 +3586,123 @@ const AdminDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Price Quotation Dialog */}
+        <Dialog open={showQuoteDialog} onOpenChange={setShowQuoteDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <DollarSign className="w-5 h-5 text-blue-600" />
+                <span>Provide Price Quotation</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedOfferRequest && (
+              <div className="space-y-6">
+                {/* Offer Request Summary */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Request Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-600">Asset:</span>
+                      <p className="text-gray-900">{selectedOfferRequest.asset_name}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-600">Buyer:</span>
+                      <p className="text-gray-900">{selectedOfferRequest.buyer_name}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-600">Campaign:</span>
+                      <p className="text-gray-900">{selectedOfferRequest.campaign_name}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-600">Duration:</span>
+                      <p className="text-gray-900">{selectedOfferRequest.contract_duration?.replace('_', ' ')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quote Form */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Quoted Price (৳) *
+                    </label>
+                    <Input
+                      type="number"
+                      value={quoteForm.quotedPrice}
+                      onChange={(e) => setQuoteForm({...quoteForm, quotedPrice: e.target.value})}
+                      placeholder="Enter your price quote"
+                      className="border-2 border-blue-200 focus:border-blue-400"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      This will be the final price offered to the buyer
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Admin Notes
+                    </label>
+                    <Textarea
+                      value={quoteForm.notes}
+                      onChange={(e) => setQuoteForm({...quoteForm, notes: e.target.value})}
+                      placeholder="Add any notes or terms for this quote..."
+                      rows={3}
+                      className="border-2 border-blue-200 focus:border-blue-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Quote Valid Until
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal border-2 border-blue-200"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {quoteForm.validUntil ? quoteForm.validUntil.toLocaleDateString() : "Select expiry date (optional)"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={quoteForm.validUntil}
+                          onSelect={(date) => setQuoteForm({...quoteForm, validUntil: date})}
+                          disabled={(date) => date < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Optional: Set when this quote expires unclaimed
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQuoteDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={submitQuote}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={!quoteForm.quotedPrice}
+                  >
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Submit Quote
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
