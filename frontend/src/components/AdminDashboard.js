@@ -891,6 +891,23 @@ const AdminDashboard = () => {
     });
   };
 
+  const updateCampaignStatus = async (campaignId, newStatus) => {
+    try {
+      const headers = getAuthHeaders();
+      await axios.patch(`${API}/admin/campaigns/${campaignId}/status`, 
+        { status: newStatus }, 
+        { headers }
+      );
+      
+      notify.success(`Campaign status updated to ${newStatus} successfully!`);
+      fetchCampaigns(); // Refresh campaigns list
+      
+    } catch (error) {
+      console.error('Error updating campaign status:', error);
+      notify.error('Failed to update campaign status: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const submitQuote = async () => {
     try {
       const headers = getAuthHeaders();
