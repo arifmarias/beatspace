@@ -296,9 +296,9 @@ const AdminDashboard = () => {
   const getActiveOffersByBuyer = () => {
     console.log('🔍 DEBUG: All offer requests:', offerRequests);
     
-    // Show ALL offers except fully Approved/Rejected - this ensures quoted offers stay visible
+    // Show ALL offers except fully Approved/Rejected/Accepted - this ensures quoted offers stay visible
     const activeOffers = getFilteredOfferRequests().filter(offer => {
-      const isActive = offer.status !== 'Approved' && offer.status !== 'Rejected';
+      const isActive = offer.status !== 'Approved' && offer.status !== 'Rejected' && offer.status !== 'Accepted';
       console.log(`🔍 Offer ${offer.id} - Status: ${offer.status}, Active: ${isActive}`);
       return isActive;
     });
