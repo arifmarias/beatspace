@@ -809,7 +809,7 @@ const MarketplacePage = () => {
       // Delete all offer requests from backend
       const deletePromises = assetBasket.map(asset => {
         if (asset.offerRequestId) {
-          return axios.delete(`${API}/offers/request/${asset.offerRequestId}`, { headers });
+          return axios.delete(`${API}/offers/requests/${asset.offerRequestId}`, { headers });
         }
         return Promise.resolve();
       });
