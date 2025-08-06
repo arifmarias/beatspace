@@ -1687,7 +1687,9 @@ const BuyerDashboard = () => {
                         />
                       </div>
                       <div className="text-sm text-gray-500">
-                        {getFilteredOffers().length} of {(requestedOffers || []).length} offers
+                        {getFilteredOffers().length} of {(requestedOffers || []).filter(offer => 
+                          offer.status !== 'Approved' && offer.status !== 'Accepted'
+                        ).length} offers
                       </div>
                     </div>
 
