@@ -1788,19 +1788,7 @@ const MarketplacePage = () => {
                       </div>
                     )}
                     
-                    {selectedAsset.traffic_volume && (
-                      <div>
-                        <span className="text-gray-500">Traffic:</span>
-                        <div className="font-medium">{selectedAsset.traffic_volume}</div>
-                      </div>
-                    )}
-                    
-                    {selectedAsset.visibility_score && (
-                      <div>
-                        <span className="text-gray-500">Visibility:</span>
-                        <div className="font-medium">{selectedAsset.visibility_score}/10</div>
-                      </div>
-                    )}
+
                   </div>
                 </div>
 
