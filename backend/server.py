@@ -822,13 +822,14 @@ async def update_offer_request_status_admin(
         # Update campaign status to "Live" if asset gets booked
         campaign_id = offer_request.get("existing_campaign_id")
         if campaign_id:
-            await db.campaigns.update_one(
-                {"id": campaign_id},
-                {"$set": {
-                    "status": "Live",
-                    "updated_at": datetime.utcnow()
-                }}
-            )
+            # Check if campaign should be marked as Live
+            campaign = await db.campaigns.find_one({"id": campaign_id})
+            if campaign and campaign.get("status") == "Draft":
+                # If campaign has at least one booked asset, mark as Live
+                await db.campaigns.update_one(
+                    {"id": campaign_id},
+                    {"$set": {"status": "Live", "updated_at": datetime.utcnow()}}
+                )
     
     # If rejected or on hold, make asset available again and clear buyer information
     elif new_status in ["Rejected", "On Hold"]:
