@@ -1590,21 +1590,47 @@ const BuyerDashboard = () => {
                                             </Button>
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent align="end" className="w-48">
-                                            <DropdownMenuItem 
-                                              onClick={() => handleEditOffer(offer)}
-                                              className="flex items-center cursor-pointer"
-                                            >
-                                              <Edit className="h-4 w-4 mr-2" />
-                                              Edit Request
-                                            </DropdownMenuItem>
+                                            {/* Show Approve/Reject for Quoted offers */}
+                                            {offer.status === 'Quoted' && (
+                                              <>
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleApproveOffer(offer)}
+                                                  className="flex items-center cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                >
+                                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                                  Approve Offer
+                                                </DropdownMenuItem>
+                                                
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleRejectOffer(offer)}
+                                                  className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                >
+                                                  <XCircle className="h-4 w-4 mr-2" />
+                                                  Reject Offer
+                                                </DropdownMenuItem>
+                                              </>
+                                            )}
                                             
-                                            <DropdownMenuItem 
-                                              onClick={() => handleDeleteOffer(offer.id)}
-                                              className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            >
-                                              <X className="h-4 w-4 mr-2" />
-                                              Delete Request
-                                            </DropdownMenuItem>
+                                            {/* Show Edit/Delete for Pending offers only */}
+                                            {offer.status === 'Pending' && (
+                                              <>
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleEditOffer(offer)}
+                                                  className="flex items-center cursor-pointer"
+                                                >
+                                                  <Edit className="h-4 w-4 mr-2" />
+                                                  Edit Request
+                                                </DropdownMenuItem>
+                                                
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleDeleteOffer(offer.id)}
+                                                  className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                >
+                                                  <X className="h-4 w-4 mr-2" />
+                                                  Delete Request
+                                                </DropdownMenuItem>
+                                              </>
+                                            )}
                                           </DropdownMenuContent>
                                         </DropdownMenu>
                                       </TableCell>
