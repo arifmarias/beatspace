@@ -146,12 +146,16 @@ const BuyerDashboard = () => {
     fetchBuyerData();
   }, []);
 
-  // Fetch live assets when component mounts or when user is authenticated
+  // State to track if we've fetched assets for this session
+  const [assetsFetched, setAssetsFetched] = useState(false);
+
+  // Fetch live assets only when My Assets tab is accessed
   useEffect(() => {
-    if (isAuthenticated()) {
+    if (activeTab === 'my-assets' && isAuthenticated() && !assetsFetched) {
       fetchLiveAssets();
+      setAssetsFetched(true);
     }
-  }, [currentUser]);
+  }, [activeTab, assetsFetched]);
 
   const fetchBuyerData = async () => {
     try {
