@@ -771,6 +771,101 @@ class BeatSpaceAPITester:
         
         return True, {}
 
+    def test_booked_assets_endpoint(self):
+        """Test GET /api/assets/booked endpoint for buyer - PRIORITY TEST"""
+        if not self.buyer_token:
+            print("⚠️  Skipping booked assets test - no buyer token")
+            return False, {}
+        
+        print("🎯 TESTING BOOKED ASSETS ENDPOINT - PRIORITY TEST")
+        print("   Testing GET /api/assets/booked for buyer: marketing@grameenphone.com")
+        
+        success, response = self.run_test(
+            "Get Booked Assets for Buyer", 
+            "GET", 
+            "assets/booked", 
+            200, 
+            token=self.buyer_token
+        )
+        
+        if success:
+            print(f"   ✅ Found {len(response)} booked assets for buyer")
+            
+            if response:
+                print("   📊 BOOKED ASSETS DETAILS:")
+                for i, asset in enumerate(response):
+                    print(f"   Asset {i+1}: {asset.get('name', 'Unknown')}")
+                    print(f"     ID: {asset.get('id', 'N/A')}")
+                    print(f"     Address: {asset.get('address', 'N/A')}")
+                    print(f"     Campaign Name: {asset.get('campaignName', 'N/A')}")
+                    print(f"     Last Status: {asset.get('lastStatus', 'N/A')}")
+                    print(f"     Duration: {asset.get('duration', 'N/A')}")
+                    print(f"     Asset Start Date: {asset.get('assetStartDate', 'N/A')}")
+                    print(f"     Asset End Date: {asset.get('assetEndDate', 'N/A')}")
+                    print(f"     Expiry Date: {asset.get('expiryDate', 'N/A')}")
+                    print(f"     Type: {asset.get('type', 'N/A')}")
+                    print(f"     Location: {asset.get('location', {})}")
+                    print(f"     Images: {len(asset.get('images', []))} images")
+                    print()
+                
+                # Verify required fields are present
+                required_fields = ['id', 'name', 'address', 'campaignName', 'lastStatus']
+                missing_fields_count = 0
+                
+                for asset in response:
+                    missing_fields = [field for field in required_fields if field not in asset or not asset[field]]
+                    if missing_fields:
+                        missing_fields_count += 1
+                        print(f"   ⚠️  Asset {asset.get('name', 'Unknown')} missing fields: {missing_fields}")
+                
+                if missing_fields_count == 0:
+                    print("   ✅ All booked assets have required fields: id, name, address, campaignName, lastStatus")
+                else:
+                    print(f"   ⚠️  {missing_fields_count} assets missing required fields")
+                
+                # Check if assets have "Approved" status offers (this means they should be booked)
+                approved_assets = [asset for asset in response if asset.get('lastStatus') == 'Booked']
+                print(f"   📈 APPROVED STATUS ANALYSIS:")
+                print(f"     Total booked assets: {len(response)}")
+                print(f"     Assets with 'Booked' status: {len(approved_assets)}")
+                
+                if len(approved_assets) == len(response):
+                    print("   ✅ All returned assets have 'Booked' status as expected")
+                elif len(approved_assets) > 0:
+                    print(f"   ⚠️  {len(response) - len(approved_assets)} assets don't have 'Booked' status")
+                else:
+                    print("   ⚠️  No assets have 'Booked' status")
+                
+                # Verify data structure completeness
+                print(f"   📋 DATA STRUCTURE VERIFICATION:")
+                structure_score = 0
+                total_checks = len(required_fields) * len(response)
+                
+                for asset in response:
+                    for field in required_fields:
+                        if field in asset and asset[field]:
+                            structure_score += 1
+                
+                if total_checks > 0:
+                    completeness_percentage = (structure_score / total_checks) * 100
+                    print(f"     Data completeness: {completeness_percentage:.1f}% ({structure_score}/{total_checks} fields)")
+                    
+                    if completeness_percentage >= 90:
+                        print("   ✅ Excellent data structure completeness")
+                    elif completeness_percentage >= 70:
+                        print("   ⚠️  Good data structure completeness")
+                    else:
+                        print("   ❌ Poor data structure completeness")
+                
+            else:
+                print("   ℹ️  No booked assets found for this buyer")
+                print("   💡 This could be normal if:")
+                print("     - Buyer has no approved offers")
+                print("     - No assets have been set to 'Booked' status")
+                print("     - Offer requests haven't been processed by admin")
+        
+        return success, response
+
     def test_admin_get_assets(self):
         """Test admin getting all assets"""
         if not self.admin_token:
