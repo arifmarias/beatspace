@@ -1398,8 +1398,8 @@ const BuyerDashboard = () => {
                                         ৳{totalCost.toLocaleString()}
                                       </p>
                                     </div>
-                                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                                      Campaign Assets
+                                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                      Live
                                     </Badge>
                                   </div>
                                 </div>
