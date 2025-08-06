@@ -1659,14 +1659,6 @@ const MarketplacePage = () => {
                           
                           <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
                             <span>{asset.dimensions}</span>
-                            <div className="flex items-center space-x-1">
-                              <Car className="w-4 h-4" />
-                              <span>{asset.traffic_volume}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Star className="w-4 h-4" />
-                              <span>{asset.visibility_score}/10</span>
-                            </div>
                           </div>
                           
                           <p className="text-sm text-gray-700 mb-3 line-clamp-2">
