@@ -779,6 +779,7 @@ const MarketplacePage = () => {
 
   // Handle individual asset removal from basket
   const handleRemoveFromBasket = async (asset, index) => {
+    setBasketLoading(true);
     try {
       const headers = getAuthHeaders();
       
@@ -799,6 +800,8 @@ const MarketplacePage = () => {
     } catch (error) {
       console.error('❌ Error removing asset from basket:', error);
       notify.error('Error removing asset request: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setBasketLoading(false);
     }
   };
 
