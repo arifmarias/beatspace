@@ -1569,9 +1569,15 @@ const BuyerDashboard = () => {
                                         </Badge>
                                       </TableCell>
                                       <TableCell>
-                                        <div className="font-medium text-blue-600">
-                                          ৳{offer.estimated_budget ? offer.estimated_budget.toLocaleString() : 'N/A'}
-                                        </div>
+                                        {offer.admin_quoted_price ? (
+                                          <div className="font-medium text-green-600">
+                                            ৳{offer.admin_quoted_price.toLocaleString()}
+                                          </div>
+                                        ) : (
+                                          <div className="text-sm text-gray-500">
+                                            Pending Quote
+                                          </div>
+                                        )}
                                       </TableCell>
                                       <TableCell>{offer.contract_duration?.replace('_', ' ')}</TableCell>
                                       <TableCell className="capitalize">{offer.campaign_type}</TableCell>
