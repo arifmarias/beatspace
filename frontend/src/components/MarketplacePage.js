@@ -1760,21 +1760,21 @@ const MarketplacePage = () => {
                       </Button>
                     </div>
                   )}
-                  
-                  {/* Results info */}
-                  <div className="text-center text-sm text-gray-600 mt-4">
-                    {(() => {
-                      const startIndex = (currentPage - 1) * itemsPerPage + 1;
-                      const endIndex = Math.min(currentPage * itemsPerPage, filteredAssets.length);
-                      const totalResults = filteredAssets.length;
-                      
-                      if (totalResults === 0) {
-                        return "No assets found";
-                      }
-                      
-                      return `Showing ${startIndex}-${endIndex} of ${totalResults} assets`;
-                    })()}
-                  </div>
+                </div>
+                
+                {/* Results info - Always fixed at bottom */}
+                <div className="text-center text-sm text-gray-600 mt-4 py-4 border-t bg-gray-50">
+                  {(() => {
+                    const startIndex = (currentPage - 1) * itemsPerPage + 1;
+                    const endIndex = Math.min(currentPage * itemsPerPage, filteredAssets.length);
+                    const totalResults = filteredAssets.length;
+                    
+                    if (totalResults === 0) {
+                      return "No assets found";
+                    }
+                    
+                    return `Showing ${startIndex}-${endIndex} of ${totalResults} assets`;
+                  })()}
                 </div>
               </TabsContent>
             </Tabs>
