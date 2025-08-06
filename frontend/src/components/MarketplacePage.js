@@ -1614,7 +1614,11 @@ const MarketplacePage = () => {
                     const isInCampaign = campaign.find(item => item.id === asset.id);
                     
                     return (
-                      <Card key={asset.id} className="hover:shadow-lg transition-shadow">
+                      <Card 
+                        key={asset.id} 
+                        className="hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => setSelectedAsset(asset)}
+                      >
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex items-center space-x-2">
