@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 import time
 
 class ProductionVerificationTester:
-    def __init__(self, base_url="https://f8fa48fe-bad7-45f4-81a4-6c50da76cfaf.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://71c1ac61-23cf-4f2e-903a-5e28da40e6f0.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
