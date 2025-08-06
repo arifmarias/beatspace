@@ -682,6 +682,7 @@ const MarketplacePage = () => {
         campaign_name: offerDetails.campaignName,
         existing_campaign_id: offerDetails.existingCampaignId,
         contract_duration: offerDetails.contractDuration,
+        estimated_budget: null, // Removed from buyer input as per requirements
         custom_start_date: offerDetails.contractDuration === 'custom' ? (offerDetails.customStartDate ? offerDetails.customStartDate.toISOString() : null) : null,
         custom_end_date: offerDetails.contractDuration === 'custom' ? (offerDetails.customEndDate ? offerDetails.customEndDate.toISOString() : null) : null,
         custom_duration_days: offerDetails.contractDuration === 'custom' ? offerDetails.customDurationDays : null,
