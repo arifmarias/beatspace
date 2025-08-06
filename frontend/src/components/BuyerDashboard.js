@@ -1633,12 +1633,22 @@ const BuyerDashboard = () => {
                                           variant={
                                             offer.status === 'Pending' ? 'secondary' :
                                             offer.status === 'Processing' ? 'default' :
-                                            offer.status === 'Quoted' ? 'success' :
+                                            offer.status === 'Quoted' ? 'default' :
                                             offer.status === 'Accepted' ? 'success' :
+                                            offer.status === 'Rejected' ? 'destructive' :
                                             'destructive'
                                           }
+                                          className={
+                                            offer.status === 'Quoted' ? 'bg-blue-100 text-blue-800 border-blue-300' :
+                                            offer.status === 'Accepted' ? 'bg-green-100 text-green-800 border-green-300' :
+                                            offer.status === 'Rejected' ? 'bg-red-100 text-red-800 border-red-300' :
+                                            ''
+                                          }
                                         >
-                                          {offer.status}
+                                          {offer.status === 'Quoted' ? '💰 Quoted - Action Needed' :
+                                           offer.status === 'Accepted' ? '✅ Approved & Booked' :
+                                           offer.status === 'Rejected' ? '❌ Rejected' :
+                                           offer.status}
                                         </Badge>
                                       </TableCell>
                                       <TableCell>
