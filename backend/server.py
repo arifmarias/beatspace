@@ -772,11 +772,16 @@ async def update_offer_request_status_admin(
         {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
     )
     
-    # If approved, update asset status to Booked
+    # If approved, update asset status to Booked and set buyer information
     if new_status == "Approved":
         await db.assets.update_one(
             {"id": offer_request["asset_id"]},
-            {"$set": {"status": AssetStatus.BOOKED, "updated_at": datetime.utcnow()}}
+            {"$set": {
+                "status": AssetStatus.BOOKED,
+                "buyer_id": offer_request["buyer_id"],
+                "buyer_name": offer_request["buyer_name"],
+                "updated_at": datetime.utcnow()
+            }}
         )
     
     # If rejected or on hold, make asset available again
