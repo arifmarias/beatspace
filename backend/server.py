@@ -1241,10 +1241,15 @@ async def respond_to_offer(
             {"$set": {"status": "Accepted"}}
         )
         
-        # Update asset status to Booked
+        # Update asset status to Booked and set buyer information
         await db.assets.update_one(
             {"id": request["asset_id"]},
-            {"$set": {"status": AssetStatus.BOOKED}}
+            {"$set": {
+                "status": AssetStatus.BOOKED,
+                "buyer_id": current_user.id,
+                "buyer_name": current_user.company_name,
+                "updated_at": datetime.utcnow()
+            }}
         )
         
         # Add asset to campaign if it's linked to an existing campaign
