@@ -146,9 +146,9 @@ const BuyerDashboard = () => {
     fetchBuyerData();
   }, []);
 
-  // Fetch live assets when currentUser is available
+  // Fetch live assets when component mounts or when user is authenticated
   useEffect(() => {
-    if (currentUser?.email) {
+    if (isAuthenticated()) {
       fetchLiveAssets();
     }
   }, [currentUser]);
