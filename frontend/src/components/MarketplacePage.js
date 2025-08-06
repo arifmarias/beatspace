@@ -1858,9 +1858,10 @@ const MarketplacePage = () => {
                       onClick={handleClearBasket}
                       className="bg-red-600 hover:bg-red-700 flex-1 text-white"
                       title="Cancel all asset requests"
+                      disabled={basketLoading}
                     >
                       <X className="w-3 h-3 mr-1" />
-                      Cancel All
+                      {basketLoading ? 'Cancelling...' : 'Cancel All'}
                     </Button>
                   </div>
                 </div>
