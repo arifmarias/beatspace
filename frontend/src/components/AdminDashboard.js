@@ -294,10 +294,16 @@ const AdminDashboard = () => {
 
   // Get offers that need admin action (not yet approved) grouped by buyer
   const getActiveOffersByBuyer = () => {
-    // Show offers that are: Pending, Quoted, In Process - anything not fully Approved/Rejected
-    const activeOffers = getFilteredOfferRequests().filter(offer => 
-      offer.status !== 'Approved' && offer.status !== 'Rejected'
-    );
+    console.log('🔍 DEBUG: All offer requests:', offerRequests);
+    
+    // Show ALL offers except fully Approved/Rejected - this ensures quoted offers stay visible
+    const activeOffers = getFilteredOfferRequests().filter(offer => {
+      const isActive = offer.status !== 'Approved' && offer.status !== 'Rejected';
+      console.log(`🔍 Offer ${offer.id} - Status: ${offer.status}, Active: ${isActive}`);
+      return isActive;
+    });
+    
+    console.log('🔍 DEBUG: Active offers after filtering:', activeOffers);
     
     const buyerGroups = activeOffers.reduce((groups, offer) => {
       const buyerKey = `${offer.buyer_name}-${offer.buyer_email}`;
@@ -314,7 +320,9 @@ const AdminDashboard = () => {
       return groups;
     }, {});
     
-    return Object.values(buyerGroups);
+    const result = Object.values(buyerGroups);
+    console.log('🔍 DEBUG: Final buyer groups:', result);
+    return result;
   };
 
   const getPaginatedOfferRequests = () => {
