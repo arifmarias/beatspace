@@ -54,6 +54,8 @@ const MarketplacePage = () => {
   const [assets, setAssets] = useState([]);
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [selectedAsset, setSelectedAsset] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [campaign, setCampaign] = useState([]);
   const [filters, setFilters] = useState({
     type: 'all',
