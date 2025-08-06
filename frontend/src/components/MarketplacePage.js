@@ -1158,8 +1158,8 @@ const MarketplacePage = () => {
                               campaignType: offerDetails.campaignType,
                               campaignName: offerDetails.campaignName,
                               existingCampaignId: offerDetails.existingCampaignId,
-                              isDisabled: !offerDetails.estimatedBudget.trim() || 
-                                         (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) ||
+                              isDisabled: !(offerDetails.estimatedBudget || '').trim() || 
+                                         (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
                                          (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId)
                             });
                             handleOfferSubmit();
