@@ -1190,29 +1190,38 @@ const MarketplacePage = () => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex justify-end space-x-3 pt-4 border-t">
+                      <div className="flex space-x-3 pt-4 border-t">
                         <Button 
                           variant="outline" 
                           onClick={() => setShowOfferDialog(false)}
                         >
                           Cancel
                         </Button>
+                        
                         <Button 
                           onClick={() => {
-                            console.log('🚨 Submit button clicked!');
-                            console.log('🚨 Form validation state:', {
-                              estimatedBudget: offerDetails.estimatedBudget,
-                              campaignType: offerDetails.campaignType,
-                              campaignName: offerDetails.campaignName,
-                              existingCampaignId: offerDetails.existingCampaignId,
-                              isDisabled: !offerDetails.tentativeStartDate ||
-                                         (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
-                                         (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) ||
-                                         (offerDetails.contractDuration === 'custom' && (!offerDetails.customStartDate || !offerDetails.customEndDate))
-                            });
-                            handleOfferSubmit();
+                            console.log('🚨 Request More Assets button clicked!');
+                            handleOfferSubmit(false); // Don't redirect to dashboard
                           }}
-                          className="bg-orange-600 hover:bg-orange-700"
+                          variant="outline"
+                          className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50"
+                          disabled={
+                            !offerDetails.tentativeStartDate ||
+                            (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
+                            (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) ||
+                            (offerDetails.contractDuration === 'custom' && (!offerDetails.customStartDate || !offerDetails.customEndDate))
+                          }
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add & Request More
+                        </Button>
+                        
+                        <Button 
+                          onClick={() => {
+                            console.log('🚨 Submit & Complete button clicked!');
+                            handleOfferSubmit(true); // Redirect to dashboard
+                          }}
+                          className="bg-orange-600 hover:bg-orange-700 flex-1"
                           disabled={
                             !offerDetails.tentativeStartDate ||
                             (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
@@ -1221,7 +1230,7 @@ const MarketplacePage = () => {
                           }
                         >
                           <MessageSquare className="w-4 h-4 mr-2" />
-                          Submit Request
+                          Submit & Complete
                         </Button>
                       </div>
                     </div>
