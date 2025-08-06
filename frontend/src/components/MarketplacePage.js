@@ -864,7 +864,7 @@ const MarketplacePage = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 {existingCampaigns.length === 0 ? (
-                                  <SelectItem value="" disabled>
+                                  <SelectItem value="no-campaigns" disabled>
                                     No campaigns available
                                   </SelectItem>
                                 ) : (
