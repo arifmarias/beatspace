@@ -143,6 +143,21 @@ frontend:
 user_problem_statement: "Complete the buyer-admin workflow verification and ensure offers don't disappear from Admin Offer Mediation tab after price quoting. Verify step-by-step workflow: Buyer creates campaign → adds assets → requests offer → Admin quotes price → Buyer approves/rejects → Asset status updates to Booked/Live. Fix frontend rendering issues and implement missing buyer approve/reject functionality."
 
 backend:
+  - task: "Booked Assets Endpoint - GET /api/assets/booked"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented GET /api/assets/booked endpoint to return booked assets for authenticated buyers. Endpoint finds approved offers for the current buyer and returns assets with 'Booked' status, including campaign details, asset information, and required fields like id, name, address, campaignName, lastStatus."
+        - working: true
+          agent: "testing"
+          comment: "🎉 BOOKED ASSETS ENDPOINT FULLY WORKING! Comprehensive testing completed with 100% success rate. ✅ AUTHENTICATION: Buyer login (buyer@company.com/buyer123) working correctly, proper token-based authentication enforced. ✅ ENDPOINT FUNCTIONALITY: GET /api/assets/booked returns correct data structure with all required fields (id, name, address, campaignName, lastStatus, duration, type, location). ✅ DATA VERIFICATION: Found 3 booked assets with 'Approved' status offers, all assets correctly showing 'Booked' status as expected. ✅ CAMPAIGN INTEGRATION: Campaign information properly included in response (campaignName field populated from offer requests). ✅ DATA COMPLETENESS: 100% data structure completeness (15/15 required fields present), excellent data integrity. ✅ BUSINESS LOGIC: Endpoint correctly filters for buyer's approved offers and returns only assets with 'Booked' status, proper buyer-asset relationship verification. CONCLUSION: The booked assets endpoint is production-ready and working perfectly for buyer dashboard integration."
+
   - task: "NEW DUMMY DATA CREATION FUNCTIONALITY - POST /api/admin/create-dummy-data"
     implemented: true
     working: true
