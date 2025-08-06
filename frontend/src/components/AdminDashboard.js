@@ -2042,64 +2042,43 @@ const AdminDashboard = () => {
                                         
                                         {/* Actions - 3 cols */}
                                         <div className="col-span-3 flex justify-end space-x-2">
-                                          <Button
-                                            size="sm"
-                                            onClick={() => handleQuoteOffer(offer)}
-                                            className={`flex-1 ${
-                                              offer.status === 'Pending' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                                              offer.status === 'Quoted' || offer.status === 'In Process' ? 'bg-green-600 hover:bg-green-700 text-white' :
-                                              'bg-gray-600 hover:bg-gray-700 text-white'
-                                            }`}
-                                          >
-                                            <DollarSign className="w-3 h-3 mr-1" />
-                                            {offer.status === 'Pending' ? 'Quote Price' :
-                                             offer.status === 'Quoted' || offer.status === 'In Process' ? 'Approve Asset' :
-                                             'Update Status'
-                                            }
-                                          </Button>
-                                          
-                                          <Dialog>
-                                            <DialogTrigger asChild>
+                                          {offer.status === 'Pending' ? (
+                                            // Show Quote Price button for pending offers
+                                            <Button
+                                              size="sm"
+                                              onClick={() => handleQuoteOffer(offer)}
+                                              className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                                            >
+                                              <DollarSign className="w-3 h-3 mr-1" />
+                                              Quote Price
+                                            </Button>
+                                          ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
+                                            // Show both Quote Price (to update) and Approve buttons for quoted offers
+                                            <>
                                               <Button
-                                                variant="outline"
                                                 size="sm"
-                                                onClick={() => setSelectedOfferRequest(offer)}
-                                                className="flex-1"
+                                                onClick={() => handleQuoteOffer(offer)}
+                                                variant="outline"
+                                                className="border-blue-300 text-blue-600 hover:bg-blue-50"
                                               >
-                                                <Eye className="w-3 h-3 mr-1" />
-                                                Details
+                                                <DollarSign className="w-3 h-3 mr-1" />
+                                                Update Price
                                               </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="max-w-2xl">
-                                              <DialogHeader>
-                                                <DialogTitle>Offer Request Details</DialogTitle>
-                                              </DialogHeader>
-                                              {selectedOfferRequest && (
-                                                <div className="grid grid-cols-2 gap-4">
-                                                  <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Asset</label>
-                                                    <p className="text-sm">{selectedOfferRequest.asset_name}</p>
-                                                  </div>
-                                                  <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Buyer</label>
-                                                    <p className="text-sm">{selectedOfferRequest.buyer_name} ({selectedOfferRequest.buyer_email})</p>
-                                                  </div>
-                                                  <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
-                                                    <p className="text-sm">{selectedOfferRequest.campaign_name}</p>
-                                                  </div>
-                                                  <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                                    <p className="text-sm">{selectedOfferRequest.contract_duration || 'Not specified'}</p>
-                                                  </div>
-                                                  <div className="col-span-2">
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
-                                                    <p className="text-sm">{selectedOfferRequest.special_requirements || 'None'}</p>
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </DialogContent>
-                                          </Dialog>
+                                              <Button
+                                                size="sm"
+                                                onClick={() => handleApproveOffer(offer)}
+                                                className="bg-green-600 hover:bg-green-700 text-white"
+                                              >
+                                                <CheckCircle className="w-3 h-3 mr-1" />
+                                                Approve Asset
+                                              </Button>
+                                            </>
+                                          ) : (
+                                            // Show status for completed offers
+                                            <Badge className="bg-gray-100 text-gray-800">
+                                              {offer.status}
+                                            </Badge>
+                                          )}
                                         </div>
                                       </div>
                                     </CardContent>
