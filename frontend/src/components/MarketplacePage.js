@@ -1824,10 +1824,9 @@ const MarketplacePage = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          setAssetBasket(prev => prev.filter((_, i) => i !== index));
-                        }}
+                        onClick={() => handleRemoveFromBasket(asset, index)}
                         className="p-1 text-gray-400 hover:text-red-500"
+                        title="Remove this asset request"
                       >
                         <X className="w-3 h-3" />
                       </Button>
