@@ -1456,42 +1456,44 @@ async def refresh_application_data(current_user: User = Depends(require_admin)):
 
 @api_router.get("/assets/booked")
 async def get_booked_assets(current_user: User = Depends(get_current_user)):
-    """Get all assets with Booked status for the current buyer"""
+    """Get all assets booked by the current buyer"""
     try:
-        # Get all assets with "Booked" status
-        booked_assets = await db.assets.find({"status": "Booked"}).to_list(None)
+        # Directly query assets with "Booked" status and current buyer's ID
+        booked_assets = await db.assets.find({
+            "status": "Booked",
+            "buyer_id": current_user.id
+        }).to_list(None)
         
-        # Get approved offers for this buyer to match campaign details
+        # Get approved offers for campaign details
         approved_offers = await db.offer_requests.find({
             "buyer_id": current_user.id,
             "status": "Approved"
         }).to_list(None)
         
-        # Create lookup for offers by asset_id
+        # Create lookup for offers by asset_id for campaign details
         offers_by_asset = {offer["asset_id"]: offer for offer in approved_offers}
         
         booked_assets_data = []
         
         for asset in booked_assets:
-            # Check if this booked asset belongs to the current buyer through approved offers
-            if asset["id"] in offers_by_asset:
-                offer = offers_by_asset[asset["id"]]
-                
-                booked_asset = {
-                    "id": asset["id"],
-                    "name": asset["name"],
-                    "address": asset.get("address", "Address not available"),
-                    "type": asset.get("type", "Billboard"),
-                    "campaignName": offer.get("campaign_name", "Unknown Campaign"),
-                    "assetStartDate": offer.get("asset_start_date") or offer.get("tentative_start_date"),
-                    "assetEndDate": offer.get("asset_expiration_date"),
-                    "duration": offer.get("contract_duration", "1 month"),
-                    "expiryDate": offer.get("asset_expiration_date"),
-                    "lastStatus": "Booked",
-                    "location": asset.get("location", {}),
-                    "images": asset.get("images", [])
-                }
-                booked_assets_data.append(booked_asset)
+            # Get campaign details from the corresponding offer
+            offer = offers_by_asset.get(asset["id"])
+            
+            booked_asset = {
+                "id": asset["id"],
+                "name": asset["name"],
+                "address": asset.get("address", "Address not available"),
+                "type": asset.get("type", "Billboard"),
+                "campaignName": offer.get("campaign_name", "Unknown Campaign") if offer else "Unknown Campaign",
+                "assetStartDate": offer.get("asset_start_date") or offer.get("tentative_start_date") if offer else None,
+                "assetEndDate": offer.get("asset_expiration_date") if offer else None,
+                "duration": offer.get("contract_duration", "1 month") if offer else "N/A",
+                "expiryDate": offer.get("asset_expiration_date") if offer else None,
+                "lastStatus": "Booked",
+                "location": asset.get("location", {}),
+                "images": asset.get("images", [])
+            }
+            booked_assets_data.append(booked_asset)
         
         return booked_assets_data
         
