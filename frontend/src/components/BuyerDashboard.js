@@ -1306,6 +1306,18 @@ const BuyerDashboard = () => {
                           </TableBody>
                         </Table>
 
+                        {/* Total Cost Summary */}
+                        {liveAssets.length > 0 && (
+                          <div className="flex justify-end items-center p-4 bg-gray-50 rounded-lg border">
+                            <div className="text-right">
+                              <p className="text-sm text-gray-600 mb-1">Total Investment</p>
+                              <p className="text-xl font-bold text-green-600">
+                                ৳{liveAssets.reduce((total, asset) => total + (asset.cost || 0), 0).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Pagination for List View */}
                         {getAssetsTotalPages() > 1 && (
                           <div className="flex items-center justify-between">
