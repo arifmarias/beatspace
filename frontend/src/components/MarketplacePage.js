@@ -256,7 +256,7 @@ const MarketplacePage = () => {
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           scale: 8,
-          fillColor: asset.status === 'Available' ? '#10b981' : '#f59e0b',
+          fillColor: asset.status === 'Booked' ? '#f59e0b' : '#10b981',
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 2
