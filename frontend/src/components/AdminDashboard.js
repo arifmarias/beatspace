@@ -1069,6 +1069,7 @@ const AdminDashboard = () => {
       description: '',
       google_map_link: '', // Reset the new field
       address: '',
+      location: { lat: '', lng: '' }, // Reset location coordinates
       district: '',
       division: '',
       type: 'Billboard',
