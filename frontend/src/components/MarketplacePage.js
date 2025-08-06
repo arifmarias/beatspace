@@ -1701,7 +1701,7 @@ const MarketplacePage = () => {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${statusColors[selectedAsset.status]}`} />
+                <div className={`w-3 h-3 rounded-full ${statusColors[selectedAsset.status === 'Booked' ? 'Booked' : 'Available']}`} />
                 <span>{selectedAsset.name}</span>
                 <Badge variant="secondary">{selectedAsset.type}</Badge>
               </DialogTitle>
