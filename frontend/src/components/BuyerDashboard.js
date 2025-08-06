@@ -930,9 +930,13 @@ const BuyerDashboard = () => {
   // Helper function to get total asset count for a campaign (including offers)
   const getCampaignAssetCount = (campaign) => {
     const campaignAssets = (campaign.campaign_assets || []).length;
-    const groupedOffers = getGroupedAndFilteredOffers();
-    const offerRequests = groupedOffers[campaign.name] ? groupedOffers[campaign.name].length : 0;
-    return campaignAssets + offerRequests; // Add both counts together
+    
+    // Count ALL offers for this campaign (including approved ones)
+    const allCampaignOffers = (requestedOffers || []).filter(offer => 
+      offer.campaign_name === campaign.name
+    );
+    
+    return campaignAssets + allCampaignOffers.length; // Add both counts together
   };
 
   if (loading) {
