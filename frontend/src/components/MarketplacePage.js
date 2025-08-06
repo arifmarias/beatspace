@@ -704,6 +704,13 @@ const MarketplacePage = () => {
       const response = await axios.post(`${API}/offers/request`, offerRequestData, { headers });
       console.log('✅ Offer request submitted successfully:', response.data);
       
+      // Add to asset basket
+      setAssetBasket(prev => [...prev, {
+        ...selectedAssetForOffer,
+        campaign: offerDetails.campaignName || 'Selected Campaign',
+        requestDate: new Date().toLocaleDateString()
+      }]);
+      
       // Close dialog and reset form
       setShowOfferDialog(false);
       setSelectedAssetForOffer(null);
@@ -733,16 +740,22 @@ const MarketplacePage = () => {
       // Refresh assets to show updated status
       fetchAssets();
       
-      console.log('🔄 About to redirect to buyer dashboard...');
-      
-      // Show success message and redirect to Buyer Dashboard → Requested Offers tab
-      notify.success('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
-      
-      // Use setTimeout to ensure the notification is shown before redirect
-      setTimeout(() => {
-        console.log('🎯 Executing redirect to /buyer/dashboard?tab=requested-offers');
-        navigate('/buyer/dashboard?tab=requested-offers');
-      }, 1500); // Slightly longer to show notification
+      if (redirectToDashboard) {
+        console.log('🔄 About to redirect to buyer dashboard...');
+        
+        // Show success message and redirect to Buyer Dashboard → Requested Offers tab
+        notify.success('Your offer request has been submitted successfully! Redirecting to your Requested Offers...');
+        
+        // Use setTimeout to ensure the notification is shown before redirect
+        setTimeout(() => {
+          console.log('🎯 Executing redirect to /buyer/dashboard?tab=requested-offers');
+          navigate('/buyer/dashboard?tab=requested-offers');
+        }, 1500); // Slightly longer to show notification
+      } else {
+        // Show success message for continue shopping
+        notify.success('Asset added to your requests! You can continue adding more assets.');
+        setShowAssetBasket(true); // Show basket after adding
+      }
       
     } catch (error) {
       console.error('Error submitting offer request:', error);
