@@ -135,7 +135,9 @@ class OfferRequest(BaseModel):
     status: str = "Pending"  # Pending, Processing, Quoted, Accepted, Rejected
     created_at: datetime = Field(default_factory=datetime.utcnow)
     admin_response: Optional[str] = None
-    final_offer: Optional[dict] = None
+    admin_quoted_price: Optional[float] = None  # Add this field
+    admin_notes: Optional[str] = None  # Add this field
+    final_offer: Optional[float] = None  # Change from dict to float
     quoted_at: Optional[datetime] = None
 
 class OfferRequestCreate(BaseModel):
