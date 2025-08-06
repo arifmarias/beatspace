@@ -1591,12 +1591,19 @@ const MarketplacePage = () => {
 
               <TabsContent value="list">
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {(() => {
+                      // Sort assets to show Available first, then Booked
+                      const sortedAssets = [...filteredAssets].sort((a, b) => {
+                        if (a.status === 'Available' && b.status !== 'Available') return -1;
+                        if (a.status !== 'Available' && b.status === 'Available') return 1;
+                        return 0;
+                      });
+                      
                       // Calculate pagination
                       const startIndex = (currentPage - 1) * itemsPerPage;
                       const endIndex = startIndex + itemsPerPage;
-                      const paginatedAssets = filteredAssets.slice(startIndex, endIndex);
+                      const paginatedAssets = sortedAssets.slice(startIndex, endIndex);
                       
                       return paginatedAssets.map((asset) => {
                         const IconComponent = assetTypeIcons[asset.type] || MapPin;
