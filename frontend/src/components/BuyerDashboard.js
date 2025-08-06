@@ -292,7 +292,7 @@ const BuyerDashboard = () => {
       // Find approved/accepted offers for this buyer
       const bookedOffers = allOffers.filter(offer => 
         (offer.status === 'Approved' || offer.status === 'Accepted') &&
-        offer.buyer_email === user?.email
+        offer.buyer_email === currentUser?.email
       );
       
       console.log('📊 Found booked offers:', bookedOffers.length);
