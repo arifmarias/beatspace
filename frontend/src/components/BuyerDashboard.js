@@ -227,8 +227,8 @@ const BuyerDashboard = () => {
     }
   };
 
-  const fetchLiveAssets = async () => {
-    console.log('🔄 fetchLiveAssets called');
+  const fetchLiveAssets = async (isManualRefresh = false) => {
+    console.log('🔄 fetchLiveAssets called', isManualRefresh ? '(manual refresh)' : '');
     setAssetsLoading(true);
     
     // Set a timeout to prevent infinite loading
