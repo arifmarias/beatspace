@@ -3704,6 +3704,139 @@ const AdminDashboard = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Group Quote Dialog */}
+        <Dialog open={showGroupQuoteDialog} onOpenChange={setShowGroupQuoteDialog}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                <span>Group Quote - {groupQuoteForm.buyerEmail}</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            {groupQuoteForm.offers.length > 0 && (
+              <div className="space-y-6">
+                {/* Group Summary */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h3 className="font-medium text-blue-900 mb-2">
+                    Quoting {groupQuoteForm.offers.length} Assets for Bundle Discount
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-blue-700 font-medium">Individual Total:</span>
+                      <div className="text-lg font-bold text-blue-900">
+                        ৳{Object.values(groupQuoteForm.individualPrices)
+                          .reduce((sum, price) => sum + (parseFloat(price) || 0), 0)
+                          .toLocaleString()}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-green-700 font-medium">Group Price:</span>
+                      <div className="text-lg font-bold text-green-900">
+                        ৳{(parseFloat(groupQuoteForm.groupPrice) || 0).toLocaleString()}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-orange-700 font-medium">Bundle Savings:</span>
+                      <div className="text-lg font-bold text-orange-900">
+                        ৳{Math.max(0, Object.values(groupQuoteForm.individualPrices)
+                          .reduce((sum, price) => sum + (parseFloat(price) || 0), 0) - 
+                          (parseFloat(groupQuoteForm.groupPrice) || 0)).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Individual Asset Pricing */}
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-3">Individual Asset Pricing</h3>
+                  <div className="space-y-3">
+                    {groupQuoteForm.offers.map((offer, index) => (
+                      <div key={offer.id} className="flex items-center space-x-4 p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{offer.asset_name}</div>
+                          <div className="text-sm text-gray-600">{offer.campaign_name}</div>
+                        </div>
+                        <div className="w-32">
+                          <Input
+                            type="number"
+                            placeholder="Individual price"
+                            value={groupQuoteForm.individualPrices[offer.id] || ''}
+                            onChange={(e) => setGroupQuoteForm({
+                              ...groupQuoteForm,
+                              individualPrices: {
+                                ...groupQuoteForm.individualPrices,
+                                [offer.id]: e.target.value
+                              }
+                            })}
+                            className="text-right"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Group Price */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Bundle Group Price (Discounted Total) *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">৳</span>
+                    <Input
+                      type="number"
+                      placeholder="Enter group bundle price"
+                      value={groupQuoteForm.groupPrice}
+                      onChange={(e) => setGroupQuoteForm({...groupQuoteForm, groupPrice: e.target.value})}
+                      className="pl-8 text-right font-medium text-lg border-2 border-green-200 focus:border-green-400"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-green-600 mt-1">
+                    Recommended: Offer 10-20% discount from individual total for bulk purchase
+                  </p>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Group Quote Notes
+                  </label>
+                  <Textarea
+                    value={groupQuoteForm.notes}
+                    onChange={(e) => setGroupQuoteForm({...groupQuoteForm, notes: e.target.value})}
+                    placeholder="Add notes about the group discount, bundle terms, or special conditions..."
+                    rows={3}
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowGroupQuoteDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      // Submit group quote logic here
+                      notify.success('Group quote feature will be implemented!');
+                      setShowGroupQuoteDialog(false);
+                    }}
+                    className="bg-green-600 hover:bg-green-700"
+                    disabled={!groupQuoteForm.groupPrice}
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    Submit Group Quote
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
