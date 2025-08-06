@@ -627,7 +627,7 @@ const MarketplacePage = () => {
     updateAssetExpirationDate();
   }, [offerDetails.tentativeStartDate, offerDetails.contractDuration, offerDetails.existingCampaignId, offerDetails.selectedCampaignEndDate]);
 
-  const handleOfferSubmit = async () => {
+  const handleOfferSubmit = async (redirectToDashboard = true) => {
     console.log('🚀 handleOfferSubmit function called!');
     console.log('🚀 Current offerDetails:', offerDetails);
     console.log('🚀 Selected asset:', selectedAssetForOffer);
