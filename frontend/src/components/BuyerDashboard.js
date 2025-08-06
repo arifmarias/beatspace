@@ -584,7 +584,7 @@ const BuyerDashboard = () => {
   const toggleCampaignCollapse = (campaignName) => {
     setCollapsedCampaigns(prev => ({
       ...prev,
-      [campaignName]: !prev[campaignName]
+      [campaignName]: prev[campaignName] === false ? true : false // Toggle between collapsed (true) and expanded (false)
     }));
   };
 
