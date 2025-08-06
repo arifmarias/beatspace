@@ -784,11 +784,16 @@ async def update_offer_request_status_admin(
             }}
         )
     
-    # If rejected or on hold, make asset available again
+    # If rejected or on hold, make asset available again and clear buyer information
     elif new_status in ["Rejected", "On Hold"]:
         await db.assets.update_one(
             {"id": offer_request["asset_id"]},
-            {"$set": {"status": AssetStatus.AVAILABLE, "updated_at": datetime.utcnow()}}
+            {"$set": {
+                "status": AssetStatus.AVAILABLE,
+                "buyer_id": None,
+                "buyer_name": None,
+                "updated_at": datetime.utcnow()
+            }}
         )
     
     return {"message": f"Offer request status updated to {new_status}"}
