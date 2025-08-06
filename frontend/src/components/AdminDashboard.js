@@ -992,7 +992,7 @@ const AdminDashboard = () => {
       notify.success(`Asset "${offer.asset_name}" approved successfully!`);
       
       // Refresh the offer requests list
-      fetchData();
+      fetchDashboardData();
       
     } catch (error) {
       console.error('Error approving offer:', error);
