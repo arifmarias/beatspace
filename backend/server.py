@@ -1890,22 +1890,27 @@ async def get_public_assets():
 
 @api_router.get("/assets/booked")
 async def get_booked_assets(current_user: User = Depends(get_current_user)):
-    """Get all booked assets for the current buyer with campaign details"""
+    """Get all assets with Booked status for the current buyer"""
     try:
-        # Find approved offers for this buyer using buyer_id
+        # Get all assets with "Booked" status
+        booked_assets = await db.assets.find({"status": "Booked"}).to_list(None)
+        
+        # Get approved offers for this buyer to match campaign details
         approved_offers = await db.offer_requests.find({
             "buyer_id": current_user.id,
             "status": "Approved"
         }).to_list(None)
         
+        # Create lookup for offers by asset_id
+        offers_by_asset = {offer["asset_id"]: offer for offer in approved_offers}
+        
         booked_assets_data = []
         
-        for offer in approved_offers:
-            # Find the asset details
-            asset = await db.assets.find_one({"id": offer["asset_id"]})
-            
-            if asset and asset.get("status") == "Booked":
-                # Create booked asset data with campaign info
+        for asset in booked_assets:
+            # Check if this booked asset belongs to the current buyer through approved offers
+            if asset["id"] in offers_by_asset:
+                offer = offers_by_asset[asset["id"]]
+                
                 booked_asset = {
                     "id": asset["id"],
                     "name": asset["name"],
