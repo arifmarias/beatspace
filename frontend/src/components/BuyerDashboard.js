@@ -421,9 +421,9 @@ const BuyerDashboard = () => {
         const allOfferRequests = offersResponse.data || [];
         
         // Find offer requests for this campaign (include all active statuses)
-        // Match by either campaign ID or campaign name (for backward compatibility)
+        // Match by campaign name only (simplified for debugging)
         const campaignOfferRequests = allOfferRequests.filter(offer => 
-          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) && 
+          offer.campaign_name === campaign.name && 
           (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
            offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
         );
