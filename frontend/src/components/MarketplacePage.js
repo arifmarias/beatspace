@@ -55,6 +55,10 @@ const MarketplacePage = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const [campaign, setCampaign] = useState([]);
   const [filters, setFilters] = useState({
     type: 'all',
