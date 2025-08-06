@@ -1280,19 +1280,46 @@ async def respond_to_offer(
     response_action = response_data.get("action")  # "accept", "reject", "modify"
     
     if response_action == "accept":
-        # Update request status
+        # Calculate confirmed dates based on tentative dates or contract duration
+        tentative_start = request.get("tentative_start_date")
+        tentative_end = request.get("tentative_end_date")
+        
+        # If no tentative dates, calculate from current date + contract duration
+        if not tentative_start:
+            tentative_start = datetime.utcnow()
+        
+        if not tentative_end:
+            # Calculate end date based on contract duration
+            contract_duration = request.get("contract_duration", "1_month")
+            if contract_duration == "1_month":
+                tentative_end = tentative_start + timedelta(days=30)
+            elif contract_duration == "3_months":
+                tentative_end = tentative_start + timedelta(days=90)
+            elif contract_duration == "6_months":
+                tentative_end = tentative_start + timedelta(days=180)
+            elif contract_duration == "12_months":
+                tentative_end = tentative_start + timedelta(days=365)
+            else:
+                tentative_end = tentative_start + timedelta(days=30)  # Default to 1 month
+        
+        # Update request status with confirmed dates
         await db.offer_requests.update_one(
             {"id": request_id},
-            {"$set": {"status": "Accepted"}}
+            {"$set": {
+                "status": "Accepted",
+                "confirmed_start_date": tentative_start,
+                "confirmed_end_date": tentative_end
+            }}
         )
         
-        # Update asset status to Booked and set buyer information
+        # Update asset status to Booked and set buyer information + next_available_date
         await db.assets.update_one(
             {"id": request["asset_id"]},
             {"$set": {
                 "status": AssetStatus.BOOKED,
                 "buyer_id": current_user.id,
                 "buyer_name": current_user.company_name,
+                "next_available_date": tentative_end,  # Asset becomes available after booking ends
                 "updated_at": datetime.utcnow()
             }}
         )
