@@ -979,6 +979,27 @@ const AdminDashboard = () => {
     setShowQuoteDialog(true);
   };
 
+  const handleApproveOffer = async (offer) => {
+    try {
+      const headers = getAuthHeaders();
+      
+      // Approve the offer by updating its status to 'Approved'
+      await axios.patch(`${API}/admin/offer-requests/${offer.id}/status`, 
+        { status: 'Approved' },
+        { headers }
+      );
+      
+      notify.success(`Asset "${offer.asset_name}" approved successfully!`);
+      
+      // Refresh the offer requests list
+      fetchData();
+      
+    } catch (error) {
+      console.error('Error approving offer:', error);
+      notify.error('Error approving offer: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const adminAssetOperations = {
   };
 
