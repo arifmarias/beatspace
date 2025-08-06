@@ -1445,8 +1445,10 @@ const BuyerDashboard = () => {
                                   ))}
                                 </TableBody>
                               </Table>
+                              )}
                             </div>
-                          ));
+                          );
+                          });
                         })()}
                         
                         {/* Pagination for Campaign View */}
