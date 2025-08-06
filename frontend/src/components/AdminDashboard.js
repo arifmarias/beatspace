@@ -1902,9 +1902,9 @@ const AdminDashboard = () => {
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center space-x-2">
                     <MessageSquare className="w-5 h-5 text-blue-600" />
-                    <span>Pending Offers by Buyer</span>
+                    <span>Active Offers by Buyer</span>
                     <Badge variant="secondary" className="ml-2">
-                      {getFilteredOfferRequests().filter(offer => offer.status === 'Pending').length} Pending
+                      {getFilteredOfferRequests().filter(offer => offer.status !== 'Approved' && offer.status !== 'Rejected').length} Active
                     </Badge>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
