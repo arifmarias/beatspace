@@ -232,54 +232,83 @@ const BuyerDashboard = () => {
       
       const headers = getAuthHeaders();
       
-      // Fetch assets - simple approach
+      // Fetch assets
       const assetResponse = await axios.get(`${API}/assets/public`);
       const allAssets = assetResponse.data || [];
-      console.log('📊 Fetched assets:', allAssets.length);
+      console.log('📊 Total assets fetched:', allAssets.length);
       
-      // Fetch offers - simple approach
+      // Fetch offers
       const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
       const allOffers = offersResponse.data || [];
-      console.log('📊 Fetched offers:', allOffers.length);
+      console.log('📊 Total offers fetched:', allOffers.length);
+      
+      // DEBUG: Show what we actually have
+      console.log('🔍 Current user email:', currentUser?.email);
+      console.log('🔍 Booked assets in system:');
+      const bookedAssets = allAssets.filter(asset => asset.status === 'Booked');
+      bookedAssets.forEach(asset => {
+        console.log(`  - ${asset.name} (ID: ${asset.id}, Status: ${asset.status})`);
+      });
+      
+      console.log('🔍 Approved offers for current buyer:');
+      const approvedOffers = allOffers.filter(offer => 
+        offer.buyer_email === currentUser?.email && offer.status === 'Approved'
+      );
+      approvedOffers.forEach(offer => {
+        console.log(`  - ${offer.asset_name} (Asset ID: ${offer.asset_id}, Status: ${offer.status}, Buyer: ${offer.buyer_email})`);
+      });
       
       const bookedAssetsData = [];
       
-      // Find assets with Booked status
-      for (const asset of allAssets) {
-        if (asset.status === 'Booked') {
-          console.log('🔍 Found booked asset:', asset.name);
+      // Try to match them
+      for (const asset of bookedAssets) {
+        console.log(`🔍 Processing booked asset: ${asset.name} (ID: ${asset.id})`);
+        
+        const matchedOffer = approvedOffers.find(offer => offer.asset_id === asset.id);
+        
+        if (matchedOffer) {
+          console.log(`✅ MATCH FOUND! ${asset.name} matches offer from ${matchedOffer.campaign_name}`);
           
-          // Find the approved offer for this asset and current buyer
-          const matchedOffer = allOffers.find(offer => 
-            offer.asset_id === asset.id && 
-            offer.buyer_email === currentUser?.email &&
-            offer.status === 'Approved'
-          );
+          // Create the display data
+          const displayAsset = {
+            id: asset.id,
+            name: asset.name,
+            address: asset.address || 'Address not available',
+            type: asset.type || 'Unknown',
+            campaignName: matchedOffer.campaign_name || 'Unknown Campaign',
+            assetStartDate: matchedOffer.asset_start_date || null,
+            assetEndDate: matchedOffer.asset_expiration_date || null,
+            duration: '1 month', // Simplified
+            expiryDate: matchedOffer.asset_expiration_date || null,
+            lastStatus: 'Booked'
+          };
           
-          if (matchedOffer) {
-            console.log('✅ Matched offer found for:', asset.name);
-            
-            // Create display data
-            const displayAsset = {
-              id: asset.id,
-              name: asset.name,
-              address: asset.address || 'Address not available',
-              type: asset.type || 'Unknown',
-              campaignName: matchedOffer.campaign_name || 'Unknown Campaign',
-              assetStartDate: matchedOffer.asset_start_date || null,
-              assetEndDate: matchedOffer.asset_expiration_date || null,
-              duration: '1 month', // Simplified for now
-              expiryDate: matchedOffer.asset_expiration_date || null,
-              lastStatus: 'Booked'
-            };
-            
-            bookedAssetsData.push(displayAsset);
-            console.log('✅ Added to display:', asset.name);
-          }
+          bookedAssetsData.push(displayAsset);
+          console.log(`✅ Added ${asset.name} to display list`);
+        } else {
+          console.log(`❌ NO MATCH for ${asset.name} - no approved offer found for this asset`);
         }
       }
       
-      console.log('📊 Total booked assets found:', bookedAssetsData.length);
+      console.log('📊 FINAL RESULT: Found', bookedAssetsData.length, 'booked assets to display');
+      
+      // Force add a test asset if we have the data but no matches (for debugging)
+      if (bookedAssets.length > 0 && approvedOffers.length > 0 && bookedAssetsData.length === 0) {
+        console.log('🧪 DEBUG: We have booked assets and approved offers but no matches - adding test asset');
+        bookedAssetsData.push({
+          id: 'debug-asset',
+          name: 'DEBUG: Test Billboard',
+          address: '123 Test Street, Dhaka',
+          type: 'Billboard',
+          campaignName: 'Test Marketing Campaign',
+          assetStartDate: '2025-08-15',
+          assetEndDate: '2025-09-15',
+          duration: '1 month',
+          expiryDate: '2025-09-15',
+          lastStatus: 'Booked'
+        });
+      }
+      
       setLiveAssets(bookedAssetsData);
       
     } catch (error) {
