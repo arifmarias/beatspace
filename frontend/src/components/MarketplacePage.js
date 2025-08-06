@@ -1710,7 +1710,11 @@ const MarketplacePage = () => {
 
       {/* Asset Detail Modal */}
       {selectedAsset && (
-        <Dialog open={!!selectedAsset} onOpenChange={() => setSelectedAsset(null)}>
+        <Dialog open={!!selectedAsset} onOpenChange={() => {
+          setSelectedAsset(null);
+          setSelectedImageIndex(0); // Reset image index when dialog closes
+          setShowImageModal(false); // Close image modal if open
+        }}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
