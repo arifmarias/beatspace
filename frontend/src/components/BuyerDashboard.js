@@ -295,6 +295,26 @@ const BuyerDashboard = () => {
       }
       
       console.log('📊 Final booked assets for UI:', bookedAssetsData.length);
+      
+      // TEMPORARY: Add a test asset if no real assets found, to confirm UI works
+      if (bookedAssetsData.length === 0) {
+        console.log('🧪 No real booked assets found - adding test asset for UI verification');
+        bookedAssetsData.push({
+          id: 'test-asset-ui-check',
+          name: 'UI Test: Test Billboard', 
+          address: '123 Test Street, Dhaka',
+          type: 'Billboard',
+          campaignName: 'Test Marketing Campaign',
+          campaignId: 'test-campaign-id',
+          campaignStatus: 'Live',
+          assetStartDate: '2025-08-15',
+          assetEndDate: '2025-09-15', 
+          duration: '1 month',
+          expiryDate: '2025-09-15',
+          lastStatus: 'Booked'
+        });
+      }
+      
       setLiveAssets(bookedAssetsData);
       
       // Ensure loading state is cleared even if no assets found
