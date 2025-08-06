@@ -807,6 +807,7 @@ const MarketplacePage = () => {
 
   // Handle clearing all assets from basket
   const handleClearBasket = async () => {
+    setBasketLoading(true);
     try {
       const headers = getAuthHeaders();
       
@@ -832,6 +833,8 @@ const MarketplacePage = () => {
     } catch (error) {
       console.error('❌ Error clearing basket:', error);
       notify.error('Error clearing requests: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setBasketLoading(false);
     }
   };
 
