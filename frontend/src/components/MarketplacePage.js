@@ -22,6 +22,7 @@ import {
   MessageSquare,
   CheckCircle,
   ChevronDown,
+  ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
