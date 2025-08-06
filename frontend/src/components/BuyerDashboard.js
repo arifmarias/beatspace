@@ -1135,6 +1135,15 @@ const BuyerDashboard = () => {
                     <div className="text-center">
                       <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                       <p className="text-gray-600">Loading booked assets...</p>
+                      <button 
+                        onClick={() => {
+                          console.log('🔄 Manual refresh clicked');
+                          fetchLiveAssets();
+                        }}
+                        className="mt-2 text-sm text-orange-600 hover:text-orange-700 underline"
+                      >
+                        Having trouble? Click to retry
+                      </button>
                     </div>
                   </div>
                 ) : liveAssets.length === 0 ? (
