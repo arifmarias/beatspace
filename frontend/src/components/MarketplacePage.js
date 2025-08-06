@@ -993,6 +993,7 @@ const MarketplacePage = () => {
                                         const updatedDetails = {
                                           ...offerDetails, 
                                           customEndDate: date,
+                                          assetExpirationDate: date, // Auto-sync Asset Expiration Date
                                           customDurationDays: calculateCustomDuration(offerDetails.customStartDate, date)
                                         };
                                         setOfferDetails(updatedDetails);
