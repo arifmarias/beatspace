@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix critical missing API endpoints and complete CRUD operations to make BeatSpace fully functional. Frontend calls /api/stats/public and /api/assets/public but these endpoints don't exist in backend, causing app to appear broken. Additionally, implement proper campaign management with asset status lifecycle and remove Add to Campaign buttons from list view."
+user_problem_statement: "Complete the buyer-admin workflow verification and ensure offers don't disappear from Admin Offer Mediation tab after price quoting. Verify step-by-step workflow: Buyer creates campaign → adds assets → requests offer → Admin quotes price → Buyer approves/rejects → Asset status updates to Booked/Live. Fix frontend rendering issues and implement missing buyer approve/reject functionality."
 
 backend:
   - task: "NEW DUMMY DATA CREATION FUNCTIONALITY - POST /api/admin/create-dummy-data"
