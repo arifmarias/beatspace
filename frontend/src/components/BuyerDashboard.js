@@ -1529,20 +1529,10 @@ const BuyerDashboard = () => {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-sm text-gray-600">Budget Overview</div>
-                                  <div className="flex items-center space-x-4">
-                                    <div className="text-right">
-                                      <div className="text-xs text-gray-500">Campaign Budget</div>
-                                      <div className="font-semibold text-gray-900">৳{campaignBudget.toLocaleString()}</div>
-                                    </div>
+                                  <div className="flex items-center justify-end">
                                     <div className="text-right">
                                       <div className="text-xs text-gray-500">Total Estimated</div>
                                       <div className="font-semibold text-blue-600">৳{totalEstimatedBudget.toLocaleString()}</div>
-                                    </div>
-                                    <div className="text-right">
-                                      <div className="text-xs text-gray-500">Difference</div>
-                                      <div className={`font-semibold ${(campaignBudget - totalEstimatedBudget) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                        {(campaignBudget - totalEstimatedBudget) >= 0 ? '+' : ''}৳{(campaignBudget - totalEstimatedBudget).toLocaleString()}
-                                      </div>
                                     </div>
                                   </div>
                                 </div>
