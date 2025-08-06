@@ -1542,7 +1542,7 @@ const BuyerDashboard = () => {
                                   <TableRow>
                                     <TableHead>Asset</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead>My Estimated Budget</TableHead>
+                                    <TableHead>Offered Price</TableHead>
                                     <TableHead>Duration</TableHead>
                                     <TableHead>Type</TableHead>
                                     <TableHead>Submitted</TableHead>
