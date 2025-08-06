@@ -1889,6 +1889,15 @@ async def get_public_assets():
         logger.error(f"Error fetching public assets: {e}")
         return []
 
+@api_router.post("/admin/refresh-data")
+async def refresh_application_data(current_user: User = Depends(require_admin)):
+    """Refresh all application data with fresh sample data - Admin only"""
+    try:
+        await init_bangladesh_sample_data()
+        return {"message": "Application data refreshed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error refreshing data: {str(e)}")
+
 @api_router.get("/assets/booked")
 async def get_booked_assets(current_user: User = Depends(get_current_user)):
     """Get all assets with Booked status for the current buyer"""
