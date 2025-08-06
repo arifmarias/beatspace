@@ -1186,8 +1186,7 @@ const MarketplacePage = () => {
                               campaignType: offerDetails.campaignType,
                               campaignName: offerDetails.campaignName,
                               existingCampaignId: offerDetails.existingCampaignId,
-                              isDisabled: !(offerDetails.estimatedBudget || '').trim() || 
-                                         !offerDetails.tentativeStartDate ||
+                              isDisabled: !offerDetails.tentativeStartDate ||
                                          (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
                                          (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) ||
                                          (offerDetails.contractDuration === 'custom' && (!offerDetails.customStartDate || !offerDetails.customEndDate))
