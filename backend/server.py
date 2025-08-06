@@ -433,89 +433,29 @@ async def update_campaign_status(
 
 # Enhanced sample data initialization
 async def init_bangladesh_sample_data():
-    """Initialize comprehensive sample data"""
+    """Initialize application with admin credentials only"""
     
-    # Clear existing data to ensure fresh start
+    # Clear all existing data
     await db.assets.delete_many({})
     await db.campaigns.delete_many({})
     await db.offer_requests.delete_many({})
+    await db.users.delete_many({})
     
-    # Only keep essential users (admin and demo accounts)
-    existing_admin = await db.users.find_one({"email": "admin@beatspace.com"})
-    existing_seller = await db.users.find_one({"email": "dhaka.media@example.com"})
-    existing_buyer = await db.users.find_one({"email": "marketing@grameenphone.com"})
-    
-    if not existing_admin or not existing_seller or not existing_buyer:
-        # Clear all users and recreate essential ones
-        await db.users.delete_many({})
-        
-        # Create admin user
-        admin_user = {
-            "id": str(uuid.uuid4()),
-            "email": "admin@beatspace.com",
-            "password_hash": hash_password("admin123"),
-            "company_name": "BeatSpace Admin",
-            "contact_name": "System Administrator",
-            "phone": "+8801234567890",
-            "role": "admin",
-            "status": "approved",
-            "created_at": datetime.utcnow(),
-            "verified_at": datetime.utcnow(),
-            "subscription_plan": "enterprise"
-        }
-        await db.users.insert_one(admin_user)
-        
-        # Create sample seller users
-        sample_sellers = [
-            {
-                "id": "seller_bd_001",
-                "email": "dhaka.media@example.com",
-                "password_hash": hash_password("seller123"),
-                "company_name": "Dhaka Outdoor Media Ltd.",
-                "contact_name": "Rahman Ahmed",
-                "phone": "+8801712345678",
-                "role": "seller",
-                "status": "approved",
-                "created_at": datetime.utcnow(),
-                "verified_at": datetime.utcnow(),
-                "address": "Dhanmondi, Dhaka",
-                "subscription_plan": "premium"
-            },
-            {
-                "id": "seller_bd_002", 
-                "email": "ctg.ads@example.com",
-                "password_hash": hash_password("seller123"),
-                "company_name": "Chittagong Advertising Solutions",
-                "contact_name": "Fatima Khan",
-                "phone": "+8801812345678",
-                "role": "seller",
-                "status": "approved",
-                "created_at": datetime.utcnow(),
-                "verified_at": datetime.utcnow(),
-                "address": "Chittagong City",
-                "subscription_plan": "basic"
-            }
-        ]
-        
-        for seller in sample_sellers:
-            await db.users.insert_one(seller)
-        
-        # Create sample buyer user
-        sample_buyer = {
-            "id": "buyer_bd_001",
-            "email": "marketing@grameenphone.com",
-            "password_hash": hash_password("buyer123"),
-            "company_name": "Grameenphone Ltd.",
-            "contact_name": "Sarah Rahman",
-            "phone": "+8801912345678",
-            "role": "buyer",
-            "status": "approved",
-            "created_at": datetime.utcnow(),
-            "verified_at": datetime.utcnow(),
-            "address": "Gulshan, Dhaka",
-            "subscription_plan": "enterprise"
-        }
-        await db.users.insert_one(sample_buyer)
+    # Create only admin user
+    admin_user = {
+        "id": str(uuid.uuid4()),
+        "email": "admin@beatspace.com",
+        "password_hash": hash_password("admin123"),
+        "company_name": "BeatSpace Admin",
+        "contact_name": "System Administrator",
+        "phone": "+8801234567890",
+        "role": "admin",
+        "status": "approved",
+        "created_at": datetime.utcnow(),
+        "verified_at": datetime.utcnow(),
+        "subscription_plan": "enterprise"
+    }
+    await db.users.insert_one(admin_user)
     
     # Sample assets (Enhanced with complete data) - only create if none exist
     existing_assets = await db.assets.count_documents({})
