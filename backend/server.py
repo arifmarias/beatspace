@@ -1553,6 +1553,7 @@ async def get_booked_assets(current_user: User = Depends(get_current_user)):
                 "assetEndDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else None,
                 "duration": offer.get("contract_duration", "1 month") if offer else "N/A",
                 "expiryDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else asset.get("next_available_date"),
+                "cost": offer.get("final_offer") or offer.get("admin_quoted_price") if offer else 0,  # Final offered price
                 "lastStatus": "Booked",
                 "location": asset.get("location", {}),
                 "images": asset.get("images", [])
