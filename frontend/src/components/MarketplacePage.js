@@ -860,9 +860,8 @@ const MarketplacePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <Button
-                variant="ghost"
-                size="sm"
+              <div 
+                className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => {
                   const user = getUser();
                   if (user) {
@@ -880,19 +879,16 @@ const MarketplacePage = () => {
                     navigate('/');
                   }
                 }}
-                className="text-gray-600 hover:text-gray-900"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Home
-              </Button>
-              <img 
-                src="https://customer-assets.emergentagent.com/job_campaign-nexus-4/artifacts/tui73r6o_BeatSpace%20Icon%20Only.png" 
-                alt="BeatSpace Logo" 
-                className="w-8 h-8"
-              />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">BeatSpace</h1>
-                <p className="text-xs text-gray-500">Bangladesh Marketplace</p>
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_campaign-nexus-4/artifacts/tui73r6o_BeatSpace%20Icon%20Only.png" 
+                  alt="BeatSpace Logo" 
+                  className="w-8 h-8"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">BeatSpace</h1>
+                  <p className="text-xs text-gray-500">Bangladesh Marketplace</p>
+                </div>
               </div>
             </div>
             
