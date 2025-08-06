@@ -251,7 +251,9 @@ const BuyerDashboard = () => {
         // Find the asset for this offer
         const asset = allAssets.find(a => a.id === offer.asset_id);
         
-        if (asset && asset.status === 'Booked') {
+        if (asset) { // Temporarily remove && asset.status === 'Booked' check
+          console.log('✅ Processing asset:', asset.name, 'Status:', asset.status);
+          
           const bookedAsset = {
             ...asset,
             campaignName: offer.campaign_name || 'Unknown Campaign',
