@@ -227,6 +227,12 @@ const BuyerDashboard = () => {
     console.log('🔄 fetchLiveAssets called');
     setAssetsLoading(true);
     
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('⏰ API call timeout - stopping loading');
+      setAssetsLoading(false);
+    }, 10000); // 10 seconds timeout
+    
     try {
       const token = getToken();
       if (!token) {
@@ -249,11 +255,17 @@ const BuyerDashboard = () => {
       
       setLiveAssets(bookedAssetsData);
       
+      // Clear timeout on success
+      clearTimeout(timeoutId);
+      
     } catch (error) {
       console.error('❌ Error in fetchLiveAssets:', error);
       console.error('❌ Error response:', error.response);
       console.error('❌ Error data:', error.response?.data);
       setLiveAssets([]);
+      
+      // Clear timeout on error
+      clearTimeout(timeoutId);
     } finally {
       setAssetsLoading(false);
     }
