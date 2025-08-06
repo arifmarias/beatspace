@@ -1956,12 +1956,18 @@ const BuyerDashboard = () => {
                                   </div>
                                 )}
                                 
-                                {/* For requested assets, show different info */}
+                                {/* For requested assets, show different info based on status */}
                                 {asset.isRequested && (
                                   <div className="mt-2">
-                                    <p className="text-xs text-orange-600">
-                                      📋 Offer request submitted - waiting for admin response
-                                    </p>
+                                    {asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? (
+                                      <p className="text-xs text-green-600">
+                                        ✅ Asset successfully booked for your campaign
+                                      </p>
+                                    ) : (
+                                      <p className="text-xs text-orange-600">
+                                        📋 Offer request submitted - waiting for admin response
+                                      </p>
+                                    )}
                                   </div>
                                 )}
                                 
