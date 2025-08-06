@@ -994,6 +994,18 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Helper function to get total asset count for a campaign (including offers)
+  const getCampaignAssetCount = (campaign) => {
+    const campaignAssets = (campaign.campaign_assets || []).length;
+    const offerRequests = offerRequestGroups.reduce((count, group) => {
+      if (group.campaignName === campaign.name) {
+        return count + group.offers.length;
+      }
+      return count;
+    }, 0);
+    return Math.max(campaignAssets, offerRequests);
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
