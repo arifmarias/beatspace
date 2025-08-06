@@ -1494,7 +1494,7 @@ const BuyerDashboard = () => {
                         const campaign = (campaigns || []).find(c => c.name === campaignName);
                         const campaignBudget = campaign?.budget || 0;
                         
-                        const isCollapsed = collapsedCampaigns[campaignName];
+                        const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed (true)
                         
                         return (
                           <div key={campaignName} className="border rounded-lg overflow-hidden">
