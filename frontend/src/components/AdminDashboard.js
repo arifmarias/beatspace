@@ -1009,6 +1009,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleGroupQuote = (buyerGroup) => {
+    setGroupQuoteForm({
+      buyerEmail: buyerGroup.buyer.email,
+      offers: buyerGroup.offers,
+      groupPrice: '',
+      individualPrices: buyerGroup.offers.reduce((acc, offer) => {
+        acc[offer.id] = '';
+        return acc;
+      }, {}),
+      notes: '',
+      validUntil: null
+    });
+    setShowGroupQuoteDialog(true);
+  };
+
   const adminAssetOperations = {
   };
 
