@@ -1588,89 +1588,191 @@ const MarketplacePage = () => {
               </TabsContent>
 
               <TabsContent value="list">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredAssets.map((asset) => {
-                    const IconComponent = assetTypeIcons[asset.type] || MapPin;
-                    const pricing = asset.pricing[filters.duration] || Object.values(asset.pricing)[0];
-                    const isInCampaign = campaign.find(item => item.id === asset.id);
-                    
-                    return (
-                      <Card 
-                        key={asset.id} 
-                        className="hover:shadow-lg transition-shadow cursor-pointer"
-                        onClick={() => setSelectedAsset(asset)}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(() => {
+                      // Calculate pagination
+                      const startIndex = (currentPage - 1) * itemsPerPage;
+                      const endIndex = startIndex + itemsPerPage;
+                      const paginatedAssets = filteredAssets.slice(startIndex, endIndex);
+                      
+                      return paginatedAssets.map((asset) => {
+                        const IconComponent = assetTypeIcons[asset.type] || MapPin;
+                        const pricing = asset.pricing[filters.duration] || Object.values(asset.pricing)[0];
+                        const isInCampaign = campaign.find(item => item.id === asset.id);
+                        
+                        return (
+                          <Card 
+                            key={asset.id} 
+                            className="hover:shadow-lg transition-shadow cursor-pointer"
+                            onClick={() => setSelectedAsset(asset)}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex justify-between items-start mb-3">
+                                <div className="flex items-center space-x-2">
+                                  <IconComponent className="w-5 h-5 text-gray-600" />
+                                  <h3 className="font-semibold text-lg">{asset.name}</h3>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <div className={`w-3 h-3 rounded-full ${statusColors[asset.status === 'Booked' ? 'Booked' : 'Available']}`} />
+                                  <span className="text-sm text-gray-600">{asset.status === 'Booked' ? 'Booked' : 'Available'}</span>
+                                </div>
+                              </div>
+                              
+                              <p className="text-gray-600 text-sm mb-2 flex items-center">
+                                <MapPin className="w-4 h-4 mr-1" />
+                                {asset.address}
+                              </p>
+                              
+                              {asset.division && (
+                                <p className="text-gray-500 text-xs mb-2">
+                                  {asset.district}, {asset.division} Division
+                                </p>
+                              )}
+                              
+                              {asset.photos && asset.photos.length > 0 && (
+                                <div className="mb-3">
+                                  <img 
+                                    src={asset.photos[0]} 
+                                    alt={asset.name}
+                                    className="w-full h-32 object-cover rounded-md"
+                                  />
+                                </div>
+                              )}
+                              
+                              <div className="flex justify-between items-center mb-3">
+                                <Badge variant="secondary">{asset.type}</Badge>
+                              </div>
+                              
+                              <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
+                                <span>{asset.dimensions}</span>
+                              </div>
+                              
+                              <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                                {asset.description}
+                              </p>
+                              
+                              <div className="flex justify-end space-x-2">
+                                <Button
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRequestBestOffer(asset);
+                                  }}
+                                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                                >
+                                  Request Best Offer
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedAsset(asset);
+                                  }}
+                                >
+                                  View Details
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      });
+                    })()}
+                  </div>
+                  
+                  {/* Pagination Controls */}
+                  {filteredAssets.length > itemsPerPage && (
+                    <div className="flex justify-center items-center space-x-2 mt-6">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="flex items-center space-x-1"
                       >
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex items-center space-x-2">
-                              <IconComponent className="w-5 h-5 text-gray-600" />
-                              <h3 className="font-semibold text-lg">{asset.name}</h3>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-3 h-3 rounded-full ${statusColors[asset.status === 'Booked' ? 'Booked' : 'Available']}`} />
-                              <span className="text-sm text-gray-600">{asset.status === 'Booked' ? 'Booked' : 'Available'}</span>
-                            </div>
-                          </div>
+                        <ChevronLeft className="w-4 h-4" />
+                        <span>Previous</span>
+                      </Button>
+                      
+                      <div className="flex items-center space-x-2">
+                        {(() => {
+                          const totalPages = Math.ceil(filteredAssets.length / itemsPerPage);
+                          const pages = [];
                           
-                          <p className="text-gray-600 text-sm mb-2 flex items-center">
-                            <MapPin className="w-4 h-4 mr-1" />
-                            {asset.address}
-                          </p>
+                          // Always show first page
+                          if (totalPages > 0) {
+                            pages.push(1);
+                          }
                           
-                          {asset.division && (
-                            <p className="text-gray-500 text-xs mb-2">
-                              {asset.district}, {asset.division} Division
-                            </p>
-                          )}
+                          // Show pages around current page
+                          const startPage = Math.max(2, currentPage - 1);
+                          const endPage = Math.min(totalPages - 1, currentPage + 1);
                           
-                          {asset.photos && asset.photos.length > 0 && (
-                            <div className="mb-3">
-                              <img 
-                                src={asset.photos[0]} 
-                                alt={asset.name}
-                                className="w-full h-32 object-cover rounded-md"
-                              />
-                            </div>
-                          )}
+                          // Add ellipsis if needed
+                          if (startPage > 2) {
+                            pages.push('...');
+                          }
                           
-                          <div className="flex justify-between items-center mb-3">
-                            <Badge variant="secondary">{asset.type}</Badge>
-                          </div>
+                          // Add middle pages
+                          for (let i = startPage; i <= endPage; i++) {
+                            if (i !== 1 && i !== totalPages) {
+                              pages.push(i);
+                            }
+                          }
                           
-                          <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
-                            <span>{asset.dimensions}</span>
-                          </div>
+                          // Add ellipsis if needed
+                          if (endPage < totalPages - 1) {
+                            pages.push('...');
+                          }
                           
-                          <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                            {asset.description}
-                          </p>
+                          // Always show last page (if more than 1 page)
+                          if (totalPages > 1) {
+                            pages.push(totalPages);
+                          }
                           
-                          <div className="flex justify-end space-x-2">
+                          return pages.map((page, index) => (
                             <Button
+                              key={index}
+                              variant={page === currentPage ? "default" : "outline"}
                               size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRequestBestOffer(asset);
-                              }}
-                              className="bg-orange-600 hover:bg-orange-700 text-white"
+                              onClick={() => typeof page === 'number' && setCurrentPage(page)}
+                              disabled={typeof page !== 'number'}
+                              className={`w-8 h-8 p-0 ${page === currentPage ? 'bg-orange-600 hover:bg-orange-700 text-white' : ''}`}
                             >
-                              Request Best Offer
+                              {page}
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedAsset(asset);
-                              }}
-                            >
-                              View Details
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                          ));
+                        })()}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.min(Math.ceil(filteredAssets.length / itemsPerPage), currentPage + 1))}
+                        disabled={currentPage >= Math.ceil(filteredAssets.length / itemsPerPage)}
+                        className="flex items-center space-x-1"
+                      >
+                        <span>Next</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Results info */}
+                  <div className="text-center text-sm text-gray-600 mt-4">
+                    {(() => {
+                      const startIndex = (currentPage - 1) * itemsPerPage + 1;
+                      const endIndex = Math.min(currentPage * itemsPerPage, filteredAssets.length);
+                      const totalResults = filteredAssets.length;
+                      
+                      if (totalResults === 0) {
+                        return "No assets found";
+                      }
+                      
+                      return `Showing ${startIndex}-${endIndex} of ${totalResults} assets`;
+                    })()}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
