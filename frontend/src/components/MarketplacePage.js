@@ -776,6 +776,61 @@ const MarketplacePage = () => {
     }
   };
 
+  // Handle individual asset removal from basket
+  const handleRemoveFromBasket = async (asset, index) => {
+    try {
+      const headers = getAuthHeaders();
+      
+      // Delete the offer request from backend
+      if (asset.offerRequestId) {
+        await axios.delete(`${API}/offers/request/${asset.offerRequestId}`, { headers });
+        console.log(`✅ Deleted offer request ${asset.offerRequestId} for asset ${asset.name}`);
+      }
+      
+      // Remove from basket
+      setAssetBasket(prev => prev.filter((_, i) => i !== index));
+      
+      // Refresh assets to show updated status
+      fetchAssets();
+      
+      notify.success(`Removed "${asset.name}" from your requests`);
+      
+    } catch (error) {
+      console.error('❌ Error removing asset from basket:', error);
+      notify.error('Error removing asset request: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  // Handle clearing all assets from basket
+  const handleClearBasket = async () => {
+    try {
+      const headers = getAuthHeaders();
+      
+      // Delete all offer requests from backend
+      const deletePromises = assetBasket.map(asset => {
+        if (asset.offerRequestId) {
+          return axios.delete(`${API}/offers/request/${asset.offerRequestId}`, { headers });
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(deletePromises);
+      console.log(`✅ Deleted ${assetBasket.length} offer requests`);
+      
+      // Clear basket
+      setAssetBasket([]);
+      
+      // Refresh assets to show updated status
+      fetchAssets();
+      
+      notify.success('All asset requests have been cancelled');
+      
+    } catch (error) {
+      console.error('❌ Error clearing basket:', error);
+      notify.error('Error clearing requests: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
