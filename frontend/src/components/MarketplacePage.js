@@ -783,7 +783,7 @@ const MarketplacePage = () => {
       
       // Delete the offer request from backend
       if (asset.offerRequestId) {
-        await axios.delete(`${API}/offers/request/${asset.offerRequestId}`, { headers });
+        await axios.delete(`${API}/offers/requests/${asset.offerRequestId}`, { headers });
         console.log(`✅ Deleted offer request ${asset.offerRequestId} for asset ${asset.name}`);
       }
       
