@@ -247,6 +247,18 @@ const BuyerDashboard = () => {
       const bookedAssets = allAssets.filter(asset => asset.status === 'Booked');
       console.log('📊 Found assets with Booked status:', bookedAssets.length);
       
+      if (bookedAssets.length > 0) {
+        console.log('📊 Booked assets:', bookedAssets.map(a => ({name: a.name, id: a.id, status: a.status})));
+      }
+      
+      console.log('📊 Current user email for matching:', currentUser?.email);
+      console.log('📊 Sample offers for debugging:', allOffers.slice(0, 3).map(o => ({
+        asset_name: o.asset_name,
+        asset_id: o.asset_id, 
+        buyer_email: o.buyer_email,
+        status: o.status
+      })));
+      
       for (const asset of bookedAssets) {
         console.log('🔍 Checking booked asset:', asset.name);
         
