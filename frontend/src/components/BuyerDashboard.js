@@ -1318,7 +1318,19 @@ const BuyerDashboard = () => {
                       </TableHeader>
                       <TableBody>
                         {getPaginatedCampaigns().map((campaign) => (
-                          <TableRow key={campaign.id}>
+                          <TableRow 
+                            key={campaign.id}
+                            className="cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={async (e) => {
+                              // Prevent row click when clicking on action buttons
+                              if (e.target.closest('button') || e.target.closest('[role="button"]')) {
+                                return;
+                              }
+                              
+                              setSelectedCampaign(campaign);
+                              await fetchCampaignAssets(campaign);
+                            }}
+                          >
                             <TableCell>
                               <div>
                                 <div className="font-medium">{campaign.name}</div>
