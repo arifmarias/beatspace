@@ -1304,10 +1304,15 @@ async def respond_to_offer(
             {"$set": {"status": "Rejected"}}
         )
         
-        # Return asset to Available status
+        # Return asset to Available status and clear buyer information
         await db.assets.update_one(
             {"id": request["asset_id"]},
-            {"$set": {"status": AssetStatus.AVAILABLE}}
+            {"$set": {
+                "status": AssetStatus.AVAILABLE,
+                "buyer_id": None,
+                "buyer_name": None,
+                "updated_at": datetime.utcnow()
+            }}
         )
         
         logger.info(f"Offer rejected: {request_id}")
