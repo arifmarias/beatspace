@@ -93,7 +93,7 @@ const BuyerDashboard = () => {
   const [offerCurrentPage, setOfferCurrentPage] = useState(1);
   const [offerItemsPerPage] = useState(5);
 
-  // Collapsible state for Requested Offers
+  // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
   // Edit offer form state - same structure as MarketplacePage
