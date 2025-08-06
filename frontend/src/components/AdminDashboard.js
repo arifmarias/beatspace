@@ -159,6 +159,7 @@ const AdminDashboard = () => {
   const [assetForm, setAssetForm] = useState({
     name: '',
     description: '',
+    google_map_link: '', // NEW: Google Maps link field
     address: '',
     district: '',
     division: '',
