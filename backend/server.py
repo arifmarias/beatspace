@@ -1716,6 +1716,29 @@ async def respond_to_offer(
             {"$set": {"status": AssetStatus.BOOKED}}
         )
         
+        # Add asset to campaign if it's linked to an existing campaign
+        if request.get("existing_campaign_id"):
+            campaign_id = request["existing_campaign_id"]
+            asset_data = await db.assets.find_one({"id": request["asset_id"]})
+            
+            if asset_data:
+                campaign_asset = {
+                    "asset_id": request["asset_id"],
+                    "asset_name": asset_data.get("name", ""),
+                    "asset_start_date": request.get("tentative_start_date"),
+                    "asset_expiration_date": request.get("asset_expiration_date")
+                }
+                
+                # Add asset to campaign's assets array
+                await db.campaigns.update_one(
+                    {"id": campaign_id},
+                    {
+                        "$addToSet": {"campaign_assets": campaign_asset},
+                        "$set": {"updated_at": datetime.utcnow()}
+                    }
+                )
+                logger.info(f"Added asset {request['asset_id']} to campaign {campaign_id}")
+        
         logger.info(f"Offer accepted: {request_id}")
         
     elif response_action == "reject":
