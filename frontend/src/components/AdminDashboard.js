@@ -1766,125 +1766,15 @@ const AdminDashboard = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                              <DropdownMenuItem asChild>
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <div 
-                                      className="flex items-center cursor-pointer px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm w-full"
-                                      onClick={() => setSelectedAsset(asset)}
-                                    >
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      View Details
-                                    </div>
-                                  </DialogTrigger>
-                                  <DialogContent className="max-w-4xl">
-                                    <DialogHeader>
-                                      <DialogTitle>Asset Details</DialogTitle>
-                                    </DialogHeader>
-                                    {selectedAsset && (
-                                      <div className="space-y-6">
-                                        <div className="grid grid-cols-2 gap-6">
-                                          <div>
-                                            {selectedAsset.photos && selectedAsset.photos[0] && (
-                                              <img 
-                                                src={selectedAsset.photos[0]} 
-                                                alt={selectedAsset.name}
-                                                className="w-full h-48 object-cover rounded-lg mb-4"
-                                              />
-                                            )}
-                                            <h3 className="font-semibold text-lg mb-2">{selectedAsset.name}</h3>
-                                            <p className="text-gray-600 mb-4">{selectedAsset.description}</p>
-                                            
-                                            <div className="space-y-3">
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Location:</span>
-                                                <span className="font-medium">{selectedAsset.district}, {selectedAsset.division}</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Type:</span>
-                                                <span className="font-medium">{selectedAsset.type}</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Dimensions:</span>
-                                                <span className="font-medium">{selectedAsset.dimensions}</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Traffic Volume:</span>
-                                                <span className="font-medium">{selectedAsset.traffic_volume?.toLocaleString()}/day</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Visibility Score:</span>
-                                                <span className="font-medium">{selectedAsset.visibility_score}/10</span>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          
-                                          <div>
-                                            <h4 className="font-semibold mb-3">Pricing Information</h4>
-                                            <div className="space-y-3">
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Weekly Rate:</span>
-                                                <span className="font-medium">৳{selectedAsset.pricing?.weekly_rate?.toLocaleString()}</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Monthly Rate:</span>
-                                                <span className="font-medium">৳{selectedAsset.pricing?.monthly_rate?.toLocaleString()}</span>
-                                              </div>
-                                              <div className="flex justify-between">
-                                                <span className="text-gray-500">Yearly Rate:</span>
-                                                <span className="font-medium">৳{selectedAsset.pricing?.yearly_rate?.toLocaleString()}</span>
-                                              </div>
-                                            </div>
-                                            
-                                            <div className="mt-6">
-                                              <h4 className="font-semibold mb-3">Status</h4>
-                                              <Badge className={getStatusColor(selectedAsset.status)}>
-                                                {selectedAsset.status}
-                                              </Badge>
-                                            </div>
-                                            
-                                            <div className="mt-6">
-                                              <h4 className="font-semibold mb-3">Seller Information</h4>
-                                              <p className="font-medium">{selectedAsset.seller_name}</p>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        {selectedAsset.status === 'Pending Approval' && (
-                                          <div className="flex space-x-3 pt-4 border-t">
-                                            <Button
-                                              onClick={() => updateAssetStatus(selectedAsset.id, 'Available')}
-                                              className="bg-green-600 hover:bg-green-700"
-                                            >
-                                              <CheckCircle className="w-4 h-4 mr-2" />
-                                              Approve Asset
-                                            </Button>
-                                            <Button
-                                              onClick={() => updateAssetStatus(selectedAsset.id, 'Unavailable', 'Rejected by admin')}
-                                              variant="destructive"
-                                            >
-                                              <XCircle className="w-4 h-4 mr-2" />
-                                              Reject Asset
-                                            </Button>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </DialogContent>
-                                </Dialog>
-                              </DropdownMenuItem>
-                              
-                              <DropdownMenuItem
-                                onClick={() => editAsset(asset)}
-                                className="cursor-pointer text-blue-600"
+                              <DropdownMenuItem 
+                                onClick={() => setEditingAsset(asset)}
                               >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit Asset
                               </DropdownMenuItem>
-                              
-                              <DropdownMenuItem
-                                onClick={() => deleteAsset(asset)}
-                                className="cursor-pointer text-red-600"
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteAsset(asset.id)}
+                                className="text-red-600"
                               >
                                 <X className="h-4 w-4 mr-2" />
                                 Delete Asset
