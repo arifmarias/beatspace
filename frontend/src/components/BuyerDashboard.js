@@ -1913,8 +1913,15 @@ const BuyerDashboard = () => {
                                 <div className="flex items-center space-x-2 mb-1">
                                   <h4 className="font-medium text-gray-900">{asset.name}</h4>
                                   {asset.isRequested && (
-                                    <Badge variant="outline" className="text-orange-600 border-orange-300">
-                                      Requested
+                                    <Badge 
+                                      variant="outline" 
+                                      className={
+                                        asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' 
+                                          ? "text-green-600 border-green-300 bg-green-50" 
+                                          : "text-orange-600 border-orange-300"
+                                      }
+                                    >
+                                      {asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? 'Booked' : 'Requested'}
                                     </Badge>
                                   )}
                                 </div>
