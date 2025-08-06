@@ -31,6 +31,7 @@ import {
   MessageSquare,
   TrendingUp,
   DollarSign,
+  HelpCircle,
   Activity
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
