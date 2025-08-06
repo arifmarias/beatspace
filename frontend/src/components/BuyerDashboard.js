@@ -1213,6 +1213,7 @@ const BuyerDashboard = () => {
                               <TableHead>Campaign</TableHead>
                               <TableHead>Last Status</TableHead>
                               <TableHead>Duration</TableHead>
+                              <TableHead>Cost</TableHead>
                               <TableHead>Expiry</TableHead>
                             </TableRow>
                           </TableHeader>
