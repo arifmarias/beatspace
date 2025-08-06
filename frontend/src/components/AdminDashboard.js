@@ -439,7 +439,7 @@ const AdminDashboard = () => {
         status: newStatus
       }, { headers });
       
-      alert(`Offer request status updated to ${newStatus}`);
+      notify.success(`Offer request status updated to ${newStatus}`);
       fetchDashboardData(); // Refresh data
     } catch (error) {
       console.error('Error updating offer request status:', error);
