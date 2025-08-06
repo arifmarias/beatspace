@@ -277,23 +277,18 @@ const BuyerDashboard = () => {
       
       console.log('📊 Final booked assets count:', bookedAssetsData.length);
       
-      // TEMPORARY DEBUG: Add a test asset to verify UI is working
+      // DEBUG: Log the specific details we're looking for
       if (bookedAssetsData.length === 0) {
-        console.log('🧪 DEBUG: Adding test asset since no real assets found');
-        bookedAssetsData.push({
-          id: 'test-debug-asset',
-          name: 'DEBUG: Test Billboard',
-          address: '123 Debug Street, Dhaka',
-          type: 'Billboard',
-          campaignName: 'Test Marketing Campaign',
-          campaignId: 'debug-campaign',
-          campaignStatus: 'Live',
-          assetStartDate: '2025-08-15',
-          assetEndDate: '2025-09-15',
-          duration: '1 month',
-          expiryDate: '2025-09-15',
-          lastStatus: 'Booked'
-        });
+        console.log('🔍 DEBUG: No booked assets found. Details:');
+        console.log('- Approved offers:', bookedOffers.length);
+        for (const offer of bookedOffers) {
+          console.log(`  - ${offer.asset_name}: Looking for asset ID ${offer.asset_id}`);
+          const asset = allAssets.find(a => a.id === offer.asset_id);
+          console.log(`  - Asset found:`, !!asset);
+          if (asset) {
+            console.log(`  - Asset status: ${asset.status} (looking for 'Booked')`);
+          }
+        }
       }
       
       setLiveAssets(bookedAssetsData);
