@@ -1742,16 +1742,17 @@ const MarketplacePage = () => {
                     
                     {/* Dot navigation if more than one image */}
                     {selectedAsset.photos.length > 1 && (
-                      <div className="flex justify-center space-x-2 mt-3">
+                      <div className="flex justify-center space-x-3 mt-3">
                         {selectedAsset.photos.map((_, index) => (
                           <button
                             key={index}
-                            className={`w-2 h-2 rounded-full transition-all ${
+                            className={`w-3 h-3 rounded-full transition-all duration-200 ${
                               index === selectedImageIndex 
-                                ? 'bg-orange-500 w-6' 
-                                : 'bg-gray-300 hover:bg-gray-400'
+                                ? 'bg-orange-500 transform scale-125' 
+                                : 'bg-gray-400 hover:bg-gray-600'
                             }`}
                             onClick={() => setSelectedImageIndex(index)}
+                            aria-label={`View image ${index + 1}`}
                           />
                         ))}
                       </div>
