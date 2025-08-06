@@ -1834,6 +1834,7 @@ const MarketplacePage = () => {
                         onClick={() => handleRemoveFromBasket(asset, index)}
                         className="p-1 text-gray-400 hover:text-red-500"
                         title="Remove this asset request"
+                        disabled={basketLoading}
                       >
                         <X className="w-3 h-3" />
                       </Button>
