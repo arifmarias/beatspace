@@ -82,9 +82,18 @@ const AdminDashboard = () => {
   const [offerRequests, setOfferRequests] = useState([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [showGroupQuoteDialog, setShowGroupQuoteDialog] = useState(false);
   const [quoteForm, setQuoteForm] = useState({
     offerId: '',
     quotedPrice: '',
+    notes: '',
+    validUntil: null
+  });
+  const [groupQuoteForm, setGroupQuoteForm] = useState({
+    buyerEmail: '',
+    offers: [],
+    groupPrice: '',
+    individualPrices: {},
     notes: '',
     validUntil: null
   });
