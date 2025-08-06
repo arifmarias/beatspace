@@ -1001,25 +1001,56 @@ const AdminDashboard = () => {
         const addressComponents = result.address_components || [];
         const formattedAddress = result.formatted_address || '';
         
+        // Extract coordinates
+        const geometry = result.geometry;
+        let latitude = null;
+        let longitude = null;
+        
+        if (geometry && geometry.location) {
+          latitude = geometry.location.lat;
+          longitude = geometry.location.lng;
+        } else if (coords) {
+          // Use extracted coords from URL if API doesn't provide geometry
+          latitude = coords.lat;
+          longitude = coords.lng;
+        }
+        
         // Extract district and division for Bangladesh
         let district = '';
         let division = '';
         
         for (const component of addressComponents) {
           const types = component.types;
-          if (types.includes('administrative_area_level_2')) {
-            district = component.long_name;
+          // Try multiple types for district (Bangladesh specific)
+          if (types.includes('administrative_area_level_2') || 
+              types.includes('locality') || 
+              types.includes('sublocality_level_1')) {
+            if (!district) { // Take the first match
+              district = component.long_name;
+            }
           } else if (types.includes('administrative_area_level_1')) {
             division = component.long_name.replace(' Division', '');
           }
         }
 
+        // Update form with all extracted data
         setAssetForm(prev => ({
           ...prev,
           address: formattedAddress,
           district: district,
-          division: division
+          division: division,
+          location: latitude && longitude ? {
+            lat: latitude,
+            lng: longitude
+          } : prev.location // Keep existing location if coords not found
         }));
+
+        console.log('Geocoding success:', {
+          address: formattedAddress,
+          district,
+          division,
+          coordinates: latitude && longitude ? {lat: latitude, lng: longitude} : 'Not found'
+        });
 
         notify.success('Address information populated successfully!');
       } else {
