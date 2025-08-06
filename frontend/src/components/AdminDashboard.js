@@ -4046,16 +4046,43 @@ const AdminDashboard = () => {
                   {/* Image Gallery */}
                   {selectedAsset.photos && selectedAsset.photos.length > 0 && (
                     <div>
-                      <img 
-                        src={selectedAsset.photos[0]} 
-                        alt={selectedAsset.name}
-                        className="w-full h-64 object-cover rounded-lg shadow-sm"
-                      />
+                      {/* Main selected image */}
+                      <div 
+                        className="mb-3 cursor-pointer relative"
+                        onClick={() => setShowImageModal(true)}
+                      >
+                        <img 
+                          src={selectedAsset.photos[selectedImageIndex || 0]} 
+                          alt={`${selectedAsset.name} - Image ${(selectedImageIndex || 0) + 1}`}
+                          className="w-full h-64 object-cover rounded-lg shadow-sm"
+                        />
+                      </div>
+                      
+                      {/* Dot navigation if more than one image */}
                       {selectedAsset.photos.length > 1 && (
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          {selectedAsset.photos.length} images available
-                        </p>
+                        <div className="flex justify-center space-x-3 mt-3">
+                          {selectedAsset.photos.map((_, index) => (
+                            <button
+                              key={index}
+                              className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                                index === (selectedImageIndex || 0)
+                                  ? 'bg-orange-500 transform scale-125' 
+                                  : 'bg-gray-400 hover:bg-gray-600'
+                              }`}
+                              onClick={() => setSelectedImageIndex(index)}
+                              aria-label={`View image ${index + 1}`}
+                            />
+                          ))}
+                        </div>
                       )}
+                      
+                      {/* Image counter */}
+                      <p className="text-xs text-gray-500 mt-2 text-center">
+                        {selectedAsset.photos.length > 1 
+                          ? `Image ${(selectedImageIndex || 0) + 1} of ${selectedAsset.photos.length} • Click to view larger`
+                          : 'Click to view larger'
+                        }
+                      </p>
                     </div>
                   )}
 
