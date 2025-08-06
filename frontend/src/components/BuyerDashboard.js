@@ -235,11 +235,13 @@ const BuyerDashboard = () => {
       console.log('📊 All offers fetched:', allOffers.length);
       
       // Find approved/accepted offers for this buyer
+      const buyerEmail = 'buyer@company.com'; // Temporarily hardcode for debugging
       const bookedOffers = allOffers.filter(offer => 
         (offer.status === 'Approved' || offer.status === 'Accepted') &&
-        offer.buyer_email === currentUser?.email
+        offer.buyer_email === buyerEmail
       );
       
+      console.log('📊 Buyer email:', buyerEmail);
       console.log('📊 Found booked offers for buyer:', bookedOffers.length);
       
       const bookedAssetsData = [];
