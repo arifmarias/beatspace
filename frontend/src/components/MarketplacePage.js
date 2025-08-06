@@ -1675,7 +1675,10 @@ const MarketplacePage = () => {
                           <div className="flex justify-end space-x-2">
                             <Button
                               size="sm"
-                              onClick={() => handleRequestBestOffer(asset)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRequestBestOffer(asset);
+                              }}
                               className="bg-orange-600 hover:bg-orange-700 text-white"
                             >
                               Request Best Offer
@@ -1683,7 +1686,10 @@ const MarketplacePage = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setSelectedAsset(asset)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedAsset(asset);
+                              }}
                             >
                               View Details
                             </Button>
