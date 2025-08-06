@@ -749,7 +749,12 @@ const AdminDashboard = () => {
         ...assetForm,
         traffic_volume: assetForm.traffic_volume || "Medium", // Keep as string, not parseInt
         visibility_score: parseInt(assetForm.visibility_score) || 5, // Keep as integer
-        location: { lat: 23.8103, lng: 90.4125 }, // Default Dhaka coordinates
+        location: assetForm.location && assetForm.location.lat && assetForm.location.lng 
+          ? { 
+              lat: parseFloat(assetForm.location.lat), 
+              lng: parseFloat(assetForm.location.lng) 
+            }
+          : { lat: 23.8103, lng: 90.4125 }, // Fallback to Dhaka coordinates only if no location provided
         pricing: {
           weekly_rate: parseFloat(assetForm.pricing.weekly_rate) || 0,
           monthly_rate: parseFloat(assetForm.pricing.monthly_rate) || 0,
