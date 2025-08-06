@@ -955,9 +955,16 @@ const MarketplacePage = () => {
                                         const updatedDetails = {
                                           ...offerDetails, 
                                           customStartDate: date,
+                                          tentativeStartDate: date, // Auto-sync Asset Starting Date
                                           customDurationDays: calculateCustomDuration(date, offerDetails.customEndDate)
                                         };
                                         setOfferDetails(updatedDetails);
+                                        
+                                        // Recalculate asset expiration date
+                                        if (date && offerDetails.customEndDate) {
+                                          updatedDetails.assetExpirationDate = offerDetails.customEndDate;
+                                          setOfferDetails(updatedDetails);
+                                        }
                                       }}
                                       disabled={(date) => date < new Date()}
                                     />
