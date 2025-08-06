@@ -1774,13 +1774,13 @@ const MarketplacePage = () => {
                     console.log('🚨 Selected asset:', selectedAsset);
                     handleRequestBestOffer(selectedAsset);
                   }}
-                  disabled={selectedAsset.status !== 'Available'}
+                  disabled={selectedAsset.status === 'Booked'}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  {selectedAsset.status === 'Available' ? 'Request Best Offer' : `${selectedAsset.status} - Not Available`}
+                  {selectedAsset.status === 'Booked' ? 'Booked - Not Available' : 'Request Best Offer'}
                 </Button>
                 
-                {!currentUser && selectedAsset.status === 'Available' && (
+                {!currentUser && selectedAsset.status !== 'Booked' && (
                   <p className="text-xs text-gray-600 mt-2 text-center">
                     Sign in to request offers for this asset
                   </p>
