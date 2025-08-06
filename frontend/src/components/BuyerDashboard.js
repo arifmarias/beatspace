@@ -431,10 +431,11 @@ const BuyerDashboard = () => {
         const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
         const allOfferRequests = offersResponse.data || [];
         
-        // Find offer requests for this campaign
+        // Find offer requests for this campaign (include all active statuses)
         const campaignOfferRequests = allOfferRequests.filter(offer => 
           offer.existing_campaign_id === campaign.id && 
-          (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process')
+          (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
+           offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
         );
         
         console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
