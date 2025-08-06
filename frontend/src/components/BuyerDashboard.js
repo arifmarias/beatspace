@@ -1558,8 +1558,8 @@ const BuyerDashboard = () => {
                     {/* Grouped Offers with Collapsible View */}
                     <div className="space-y-4">
                       {Object.entries(getGroupedAndFilteredOffers()).map(([campaignName, offers]) => {
-                        // Calculate total estimated budget for this campaign's offers
-                        const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.estimated_budget || 0), 0);
+                        // Calculate total offered price for this campaign's offers
+                        const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.admin_quoted_price || 0), 0);
                         
                         // Find campaign budget (from the first offer in the group)
                         const campaign = (campaigns || []).find(c => c.name === campaignName);
