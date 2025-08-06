@@ -206,6 +206,8 @@ class Asset(BaseModel):
     specifications: Dict[str, Any] = {}
     seller_id: str
     seller_name: str
+    buyer_id: Optional[str] = None  # Track which buyer booked this asset
+    buyer_name: Optional[str] = None  # Track buyer name for easy reference
     created_at: datetime = Field(default_factory=datetime.utcnow)
     approved_at: Optional[datetime] = None
     next_available_date: Optional[datetime] = None
