@@ -46,7 +46,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Alert, AlertDescription } from './ui/alert';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { getAuthHeaders, logout, getUser, isAuthenticated } from '../utils/auth';
+import { getAuthHeaders, logout, getUser, isAuthenticated, getToken } from '../utils/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
