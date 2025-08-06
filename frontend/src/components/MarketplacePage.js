@@ -20,7 +20,9 @@ import {
   ArrowLeft,
   Home,
   MessageSquare,
-  CheckCircle
+  CheckCircle,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
