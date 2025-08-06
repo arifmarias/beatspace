@@ -1547,10 +1547,10 @@ async def get_booked_assets(current_user: User = Depends(get_current_user)):
                 "address": asset.get("address", "Address not available"),
                 "type": asset.get("type", "Billboard"),
                 "campaignName": offer.get("campaign_name", "Unknown Campaign") if offer else "Unknown Campaign",
-                "assetStartDate": offer.get("asset_start_date") or offer.get("tentative_start_date") if offer else None,
-                "assetEndDate": offer.get("asset_expiration_date") if offer else None,
+                "assetStartDate": offer.get("confirmed_start_date") or offer.get("tentative_start_date") if offer else None,
+                "assetEndDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else None,
                 "duration": offer.get("contract_duration", "1 month") if offer else "N/A",
-                "expiryDate": offer.get("asset_expiration_date") if offer else None,
+                "expiryDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else asset.get("next_available_date"),
                 "lastStatus": "Booked",
                 "location": asset.get("location", {}),
                 "images": asset.get("images", [])
