@@ -1192,8 +1192,10 @@ const MarketplacePage = () => {
                           className="bg-orange-600 hover:bg-orange-700"
                           disabled={
                             !(offerDetails.estimatedBudget || '').trim() || 
+                            !offerDetails.tentativeStartDate ||
                             (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
-                            (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId)
+                            (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId) ||
+                            (offerDetails.contractDuration === 'custom' && (!offerDetails.customStartDate || !offerDetails.customEndDate))
                           }
                         >
                           <MessageSquare className="w-4 h-4 mr-2" />
