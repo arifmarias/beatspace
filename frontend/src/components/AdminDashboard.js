@@ -973,18 +973,42 @@ const AdminDashboard = () => {
           // Simple parsing for Bangladesh addresses
           const parts = addressFromUrl.split(',').map(part => part.trim());
           
+          // Try to identify district from address parts
+          let extractedDistrict = '';
+          let extractedDivision = '';
+          
+          // Look for known Bangladesh districts/areas
+          for (let part of parts) {
+            if (part.match(/\b(Dhaka|Mirpur|Gulshan|Dhanmondi|Uttara|Banani|Bashundhara|Wari|Tejgaon|Chittagong|Sylhet|Rajshahi|Khulna|Barisal|Rangpur|Mymensingh)\b/i)) {
+              if (!extractedDistrict) {
+                extractedDistrict = part;
+              }
+              if (part.match(/\b(Dhaka|Chittagong|Sylhet|Rajshahi|Khulna|Barisal|Rangpur|Mymensingh)\b/i)) {
+                extractedDivision = part;
+              }
+            }
+          }
+          
+          // Fallback to simple parsing
+          if (!extractedDistrict && parts.length > 1) {
+            extractedDistrict = parts[parts.length - 2];
+          }
+          if (!extractedDivision && parts.length > 2) {
+            extractedDivision = parts[parts.length - 1];
+          }
+          
           setAssetForm(prev => ({
             ...prev,
             address: addressFromUrl,
-            district: parts.length > 1 ? parts[parts.length - 2] : '',
-            division: parts.length > 2 ? parts[parts.length - 1] : '',
+            district: extractedDistrict,
+            division: extractedDivision,
             location: coords ? coords : prev.location // Use extracted coords if available
           }));
           
           console.log('URL parsing success:', {
             address: addressFromUrl,
-            district: parts.length > 1 ? parts[parts.length - 2] : '',
-            division: parts.length > 2 ? parts[parts.length - 1] : '',
+            district: extractedDistrict,
+            division: extractedDivision,
             coordinates: coords || 'Not found'
           });
           
