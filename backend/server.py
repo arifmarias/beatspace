@@ -438,6 +438,7 @@ async def init_bangladesh_sample_data():
     # Clear existing data to ensure fresh start
     await db.assets.delete_many({})
     await db.campaigns.delete_many({})
+    await db.offer_requests.delete_many({})
     
     # Only keep essential users (admin and demo accounts)
     existing_admin = await db.users.find_one({"email": "admin@beatspace.com"})
