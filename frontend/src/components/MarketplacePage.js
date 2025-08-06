@@ -142,6 +142,14 @@ const MarketplacePage = () => {
     if (user) {
       fetchExistingCampaigns();
     }
+    
+    // Set up automatic refresh every 30 seconds to keep asset status up-to-date
+    const refreshInterval = setInterval(() => {
+      fetchAssets();
+      fetchStats();
+    }, 30000);
+    
+    return () => clearInterval(refreshInterval);
   }, []);
 
   useEffect(() => {
