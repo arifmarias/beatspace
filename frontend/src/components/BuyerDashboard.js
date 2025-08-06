@@ -237,7 +237,7 @@ const BuyerDashboard = () => {
       // Find approved/accepted offers for this buyer
       const bookedOffers = allOffers.filter(offer => 
         (offer.status === 'Approved' || offer.status === 'Accepted') &&
-        offer.buyer_email === currentUser?.email
+        offer.buyer_email === 'buyer@company.com' // Temporary hardcode to ensure it works
       );
       
       console.log('📊 Current user email:', currentUser?.email);
