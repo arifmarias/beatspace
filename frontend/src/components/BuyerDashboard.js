@@ -1608,7 +1608,23 @@ const BuyerDashboard = () => {
                                 </TableHeader>
                                 <TableBody>
                                   {offers.map((offer) => (
-                                    <TableRow key={`offer-${offer.id}`}>
+                                    <TableRow 
+                                      key={`offer-${offer.id}`}
+                                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                      onClick={() => {
+                                        // Show offer details in a modal or expand row
+                                        console.log('🖱️ Clicked on offer:', offer.asset_name, offer.status);
+                                        if (offer.status === 'Quoted') {
+                                          // For quoted offers, show approve/reject options
+                                          const action = window.confirm(`Asset: ${offer.asset_name}\nStatus: ${offer.status}\nQuoted Price: ৳${offer.admin_quoted_price?.toLocaleString()}\n\nWould you like to approve this offer? (OK for Yes, Cancel for No)`);
+                                          if (action) {
+                                            handleApproveOffer(offer);
+                                          } else if (window.confirm('Would you like to reject this offer instead?')) {
+                                            handleRejectOffer(offer);
+                                          }
+                                        }
+                                      }}
+                                    >
                                       <TableCell>
                                         <div className="font-medium">{offer.asset_name}</div>
                                       </TableCell>
