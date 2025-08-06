@@ -1773,7 +1773,7 @@ const AdminDashboard = () => {
                                 Edit Asset
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                onClick={() => handleDeleteAsset(asset.id)}
+                                onClick={() => deleteAsset(asset)}
                                 className="text-red-600"
                               >
                                 <X className="h-4 w-4 mr-2" />
