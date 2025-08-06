@@ -8548,6 +8548,52 @@ def run_buyer_approve_reject_tests():
         print("\n⚠️  Buyer approve/reject workflow has issues that need attention")
         return 1
 
+def run_booked_assets_test():
+    """Run focused test for /api/assets/booked endpoint"""
+    print("🎯 RUNNING BOOKED ASSETS ENDPOINT TEST")
+    print("=" * 80)
+    
+    tester = BeatSpaceAPITester()
+    
+    # Step 1: Login as buyer
+    print("\n📋 STEP 1: BUYER AUTHENTICATION")
+    success, response = tester.test_buyer_login()
+    if not success:
+        print("❌ CRITICAL: Buyer login failed - cannot proceed with booked assets test")
+        return 1
+    
+    print(f"✅ Buyer authenticated: {response.get('user', {}).get('email', 'N/A')}")
+    
+    # Step 2: Test booked assets endpoint
+    print("\n📋 STEP 2: TESTING BOOKED ASSETS ENDPOINT")
+    success, response = tester.test_booked_assets_endpoint()
+    
+    # Step 3: Summary
+    print("\n" + "=" * 80)
+    print("📊 BOOKED ASSETS TEST SUMMARY")
+    print("=" * 80)
+    
+    if success:
+        print("✅ BOOKED ASSETS ENDPOINT TEST PASSED")
+        print(f"   - Endpoint accessible: ✅")
+        print(f"   - Authentication working: ✅")
+        print(f"   - Data structure valid: ✅")
+        print(f"   - Found {len(response)} booked assets")
+        
+        if response:
+            print(f"   - Assets with required fields: ✅")
+            print(f"   - Campaign information included: ✅")
+        else:
+            print("   - No booked assets found (this may be normal)")
+        
+        return 0
+    else:
+        print("❌ BOOKED ASSETS ENDPOINT TEST FAILED")
+        print("   - Check backend implementation")
+        print("   - Verify buyer has approved offers")
+        print("   - Ensure assets are set to 'Booked' status")
+        return 1
+
 if __name__ == "__main__":
     tester = BeatSpaceAPITester()
     
@@ -8555,7 +8601,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         test_type = sys.argv[1].lower()
         
-        if test_type == "buyer-approve-reject":
+        if test_type == "booked-assets":
+            # Run Booked Assets endpoint test
+            exit_code = run_booked_assets_test()
+            sys.exit(exit_code)
+        elif test_type == "buyer-approve-reject":
             # Run Buyer Approve/Reject Workflow tests
             exit_code = run_buyer_approve_reject_tests()
             sys.exit(exit_code)
@@ -8580,9 +8630,9 @@ if __name__ == "__main__":
             tester.run_cloudinary_tests()
         else:
             print(f"Unknown test type: {test_type}")
-            print("Available test types: buyer-approve-reject, campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
+            print("Available test types: booked-assets, buyer-approve-reject, campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
             tester.run_comprehensive_tests()
     else:
-        # Run buyer approve/reject tests by default
-        exit_code = run_buyer_approve_reject_tests()
+        # Run booked assets test by default as requested
+        exit_code = run_booked_assets_test()
         sys.exit(exit_code)
