@@ -2045,10 +2045,17 @@ const AdminDashboard = () => {
                                           <Button
                                             size="sm"
                                             onClick={() => handleQuoteOffer(offer)}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                                            className={`flex-1 ${
+                                              offer.status === 'Pending' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
+                                              offer.status === 'Quoted' || offer.status === 'In Process' ? 'bg-green-600 hover:bg-green-700 text-white' :
+                                              'bg-gray-600 hover:bg-gray-700 text-white'
+                                            }`}
                                           >
                                             <DollarSign className="w-3 h-3 mr-1" />
-                                            Quote Price
+                                            {offer.status === 'Pending' ? 'Quote Price' :
+                                             offer.status === 'Quoted' || offer.status === 'In Process' ? 'Approve Asset' :
+                                             'Update Status'
+                                            }
                                           </Button>
                                           
                                           <Dialog>
