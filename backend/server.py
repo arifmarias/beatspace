@@ -1892,9 +1892,9 @@ async def get_public_assets():
 async def get_booked_assets(current_user: User = Depends(get_current_user)):
     """Get all booked assets for the current buyer with campaign details"""
     try:
-        # Find approved offers for this buyer
+        # Find approved offers for this buyer using buyer_id
         approved_offers = await db.offer_requests.find({
-            "buyer_email": current_user.email,
+            "buyer_id": current_user.id,
             "status": "Approved"
         }).to_list(None)
         
