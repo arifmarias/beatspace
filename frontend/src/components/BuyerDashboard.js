@@ -1369,20 +1369,43 @@ const BuyerDashboard = () => {
                           // Use paginated campaign assets
                           const groupedAssets = getPaginatedCampaignAssets();
                           
-                          return Object.entries(groupedAssets).map(([campaignName, assets]) => (
+                          return Object.entries(groupedAssets).map(([campaignName, assets]) => {
+                            const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed (true)
+                            const totalCost = assets.reduce((sum, asset) => sum + (asset.cost || 0), 0);
+                            
+                            return (
                             <div key={campaignName} className="bg-white border rounded-lg overflow-hidden">
-                              <div className="bg-gray-50 px-6 py-4 border-b">
+                              <div 
+                                className="bg-gray-50 px-6 py-4 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+                                onClick={() => toggleCampaignCollapse(campaignName)}
+                              >
                                 <div className="flex items-center justify-between">
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900">{campaignName}</h4>
-                                    <p className="text-sm text-gray-500">{assets.length} asset{assets.length > 1 ? 's' : ''}</p>
+                                  <div className="flex items-center space-x-3">
+                                    {isCollapsed ? (
+                                      <ChevronRight className="w-4 h-4 text-gray-600" />
+                                    ) : (
+                                      <ChevronDown className="w-4 h-4 text-gray-600" />
+                                    )}
+                                    <div>
+                                      <h4 className="font-semibold text-gray-900">{campaignName}</h4>
+                                      <p className="text-sm text-gray-500">{assets.length} asset{assets.length > 1 ? 's' : ''}</p>
+                                    </div>
                                   </div>
-                                  <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                                    Campaign Assets
-                                  </Badge>
+                                  <div className="flex items-center space-x-4">
+                                    <div className="text-right">
+                                      <p className="text-sm text-gray-500">Total Cost</p>
+                                      <p className="font-semibold text-green-600">
+                                        ৳{totalCost.toLocaleString()}
+                                      </p>
+                                    </div>
+                                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                                      Campaign Assets
+                                    </Badge>
+                                  </div>
                                 </div>
                               </div>
                               
+                              {!isCollapsed && (
                               <Table>
                                 <TableHeader>
                                   <TableRow>
