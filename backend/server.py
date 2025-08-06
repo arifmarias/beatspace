@@ -1333,8 +1333,8 @@ async def respond_to_offer(
                 campaign_asset = {
                     "asset_id": request["asset_id"],
                     "asset_name": asset_data.get("name", ""),
-                    "asset_start_date": request.get("tentative_start_date"),
-                    "asset_expiration_date": request.get("asset_expiration_date")
+                    "asset_start_date": tentative_start,  # Use calculated confirmed dates
+                    "asset_expiration_date": tentative_end
                 }
                 
                 # Add asset to campaign's assets array
