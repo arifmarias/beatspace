@@ -1350,26 +1350,19 @@ const BuyerDashboard = () => {
                     {myAssetsView === 'campaign' && (
                       <div className="space-y-6">
                         {(() => {
-                          // Group assets by campaign
-                          const groupedAssets = {};
-                          liveAssets.forEach(asset => {
-                            const campaignName = asset.campaignName || 'Unknown Campaign';
-                            if (!groupedAssets[campaignName]) {
-                              groupedAssets[campaignName] = [];
-                            }
-                            groupedAssets[campaignName].push(asset);
-                          });
-
+                          // Use paginated campaign assets
+                          const groupedAssets = getPaginatedCampaignAssets();
+                          
                           return Object.entries(groupedAssets).map(([campaignName, assets]) => (
-                            <div key={campaignName} className="border rounded-lg overflow-hidden">
-                              <div className="bg-gray-50 p-4 border-b">
+                            <div key={campaignName} className="bg-white border rounded-lg overflow-hidden">
+                              <div className="bg-gray-50 px-6 py-4 border-b">
                                 <div className="flex items-center justify-between">
                                   <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">{campaignName}</h3>
-                                    <p className="text-sm text-gray-600">{assets.length} booked asset{assets.length > 1 ? 's' : ''}</p>
+                                    <h4 className="font-semibold text-gray-900">{campaignName}</h4>
+                                    <p className="text-sm text-gray-500">{assets.length} asset{assets.length > 1 ? 's' : ''}</p>
                                   </div>
-                                  <Badge className="bg-green-100 text-green-800 border-green-200">
-                                    Live Campaign
+                                  <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                                    Campaign Assets
                                   </Badge>
                                 </div>
                               </div>
@@ -1416,6 +1409,31 @@ const BuyerDashboard = () => {
                             </div>
                           ));
                         })()}
+                        
+                        {/* Pagination for Campaign View */}
+                        {getCampaignAssetsTotalPages() > 1 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-600">
+                              Page {assetsCurrentPage} of {getCampaignAssetsTotalPages()}
+                            </p>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => setAssetsCurrentPage(Math.max(1, assetsCurrentPage - 1))}
+                                disabled={assetsCurrentPage === 1}
+                                variant="outline"
+                              >
+                                Previous
+                              </Button>
+                              <Button
+                                onClick={() => setAssetsCurrentPage(Math.min(getCampaignAssetsTotalPages(), assetsCurrentPage + 1))}
+                                disabled={assetsCurrentPage === getCampaignAssetsTotalPages()}
+                                variant="outline"
+                              >
+                                Next
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </>
