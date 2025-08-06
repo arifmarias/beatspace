@@ -1725,6 +1725,83 @@ const MarketplacePage = () => {
           </DialogContent>
         </Dialog>
       )}
+      
+      {/* Floating Asset Basket */}
+      {assetBasket.length > 0 && (
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="w-80 shadow-xl border border-orange-200">
+            <CardHeader 
+              className="bg-gradient-to-r from-orange-50 to-orange-100 cursor-pointer p-3"
+              onClick={() => setShowAssetBasket(!showAssetBasket)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <ShoppingBag className="w-5 h-5 text-orange-600" />
+                  <CardTitle className="text-sm font-semibold text-orange-800">
+                    Asset Requests ({assetBasket.length})
+                  </CardTitle>
+                </div>
+                <Button variant="ghost" size="sm" className="p-1">
+                  {showAssetBasket ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </Button>
+              </div>
+            </CardHeader>
+            
+            {showAssetBasket && (
+              <CardContent className="p-0 max-h-96 overflow-y-auto">
+                {assetBasket.map((asset, index) => (
+                  <div key={`basket-${asset.id}-${index}`} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm text-gray-900">{asset.name}</div>
+                      <div className="text-xs text-gray-500">{asset.address}</div>
+                      <div className="text-xs text-orange-600 mt-1">
+                        Campaign: {asset.campaign}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="success" className="text-xs">
+                        Requested
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAssetBasket(prev => prev.filter((_, i) => i !== index));
+                        }}
+                        className="p-1 text-gray-400 hover:text-red-500"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="p-3 bg-gray-50 border-t">
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate('/buyer/dashboard?tab=requested-offers')}
+                      className="flex-1"
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      View All Requests
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => setAssetBasket([])}
+                      className="bg-orange-600 hover:bg-orange-700 flex-1"
+                    >
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
