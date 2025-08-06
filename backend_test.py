@@ -8460,7 +8460,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         test_type = sys.argv[1].lower()
         
-        if test_type == "campaign-delete":
+        if test_type == "buyer-approve-reject":
+            # Run Buyer Approve/Reject Workflow tests
+            exit_code = run_buyer_approve_reject_tests()
+            sys.exit(exit_code)
+        elif test_type == "campaign-delete":
             # Run Campaign DELETE functionality tests
             exit_code = run_campaign_delete_tests()
             sys.exit(exit_code)
@@ -8481,9 +8485,9 @@ if __name__ == "__main__":
             tester.run_cloudinary_tests()
         else:
             print(f"Unknown test type: {test_type}")
-            print("Available test types: campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
+            print("Available test types: buyer-approve-reject, campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
             tester.run_comprehensive_tests()
     else:
-        # Run campaign DELETE tests by default
-        exit_code = run_campaign_delete_tests()
+        # Run buyer approve/reject tests by default
+        exit_code = run_buyer_approve_reject_tests()
         sys.exit(exit_code)
