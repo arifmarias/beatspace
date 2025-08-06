@@ -1658,27 +1658,29 @@ async def update_offer_quote(
     if not request:
         raise HTTPException(status_code=404, detail="Offer request not found")
     
-    # Update offer request with quote
+    # Update offer request with quote - use consistent field names
     await db.offer_requests.update_one(
         {"id": request_id},
         {"$set": {
             "status": "Quoted",
-            "final_offer": quote_data.get("final_offer"),
-            "admin_response": quote_data.get("admin_response"),
+            "admin_quoted_price": quote_data.get("quoted_price"),  # Frontend sends quoted_price
+            "final_offer": quote_data.get("quoted_price"),  # Keep both for compatibility
+            "admin_response": quote_data.get("admin_notes"),
+            "admin_notes": quote_data.get("admin_notes"),
             "quoted_at": datetime.utcnow()
         }}
     )
     
-    # Update asset status to Negotiating
+    # Update asset status to negotiating
     await db.assets.update_one(
         {"id": request["asset_id"]},
         {"$set": {"status": AssetStatus.NEGOTIATING}}
     )
     
     # Send notification to buyer (placeholder)
-    logger.info(f"Quote provided for offer request: {request_id}")
+    logger.info(f"Quote provided for offer request: {request_id} - Price: {quote_data.get('quoted_price')}")
     
-    return {"message": "Quote added successfully"}
+    return {"message": "Quote added successfully", "quoted_price": quote_data.get("quoted_price")}
 
 @api_router.put("/offers/{request_id}/respond")
 async def respond_to_offer(
