@@ -544,13 +544,21 @@ const MarketplacePage = () => {
     }, 0);
   };
 
-  const calculateAssetExpirationDate = (startDate, contractDuration) => {
+  const calculateAssetExpirationDate = (startDate, contractDuration, customEndDate = null) => {
     if (!startDate) return null;
+    
+    // If custom duration is selected, use the custom end date
+    if (contractDuration === 'custom' && customEndDate) {
+      return customEndDate;
+    }
     
     const start = new Date(startDate);
     let expirationDate = new Date(start);
     
     switch (contractDuration) {
+      case '1_month':
+        expirationDate.setMonth(start.getMonth() + 1);
+        break;
       case '3_months':
         expirationDate.setMonth(start.getMonth() + 3);
         break;
