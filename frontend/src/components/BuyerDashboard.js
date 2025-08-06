@@ -202,7 +202,10 @@ const BuyerDashboard = () => {
       const activeCampaigns = campaignData.filter(c => c.status === 'Live').length;
       const pendingCampaigns = campaignData.filter(c => c.status === 'Pending Offer' || c.status === 'Negotiating').length;
       const totalBudget = campaignData.reduce((sum, c) => sum + (c.budget || 0), 0);
-      const totalOfferRequests = offerData.length;
+      // Only count pending/processing offers (not approved/accepted)
+      const totalOfferRequests = offerData.filter(offer => 
+        offer.status !== 'Approved' && offer.status !== 'Accepted'
+      ).length;
 
       setStats({
         totalCampaigns,
