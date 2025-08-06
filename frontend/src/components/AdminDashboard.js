@@ -778,7 +778,9 @@ const AdminDashboard = () => {
     setAssetForm({
       name: asset.name || '',
       description: asset.description || '',
+      google_map_link: asset.google_map_link || '', // Include google_map_link field
       address: asset.address || '',
+      location: asset.location || { lat: '', lng: '' }, // Include location coordinates
       district: asset.district || '',
       division: asset.division || '',
       type: asset.type || 'Billboard',
