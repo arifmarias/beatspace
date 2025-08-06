@@ -3109,20 +3109,6 @@ const AdminDashboard = () => {
                   </label>
                   
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Weekly Rate</label>
-                    <Input
-                      type="number"
-                      value={assetForm.pricing.weekly_rate}
-                      onChange={(e) => setAssetForm({
-                        ...assetForm, 
-                        pricing: {...assetForm.pricing, weekly_rate: e.target.value}
-                      })}
-                      placeholder="Weekly rate"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
                     <label className="block text-xs text-gray-500 mb-1">Monthly Rate</label>
                     <Input
                       type="number"
