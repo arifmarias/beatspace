@@ -170,6 +170,8 @@ const MarketplacePage = () => {
 
   useEffect(() => {
     applyFilters();
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [assets, filters, searchTerm]);
 
   useEffect(() => {
