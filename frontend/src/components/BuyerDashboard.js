@@ -1303,6 +1303,7 @@ const BuyerDashboard = () => {
                                     <TableHead>Location</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead>Duration</TableHead>
+                                    <TableHead>Cost</TableHead>
                                     <TableHead>Expires</TableHead>
                                   </TableRow>
                                 </TableHeader>
