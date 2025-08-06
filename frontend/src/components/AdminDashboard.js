@@ -1723,7 +1723,11 @@ const AdminDashboard = () => {
                       </TableHeader>
                       <TableBody>
                         {getPaginatedAssets().map((asset) => (
-                      <TableRow key={asset.id}>
+                      <TableRow 
+                        key={asset.id} 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => setSelectedAsset(asset)}
+                      >
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             {asset.photos && asset.photos[0] && (
