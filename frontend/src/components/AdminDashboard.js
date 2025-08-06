@@ -1922,7 +1922,7 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 {(() => {
-                  const buyerGroups = getPendingOffersByBuyer();
+                  const buyerGroups = getActiveOffersByBuyer();
                   
                   if (buyerGroups.length === 0) {
                     return (
