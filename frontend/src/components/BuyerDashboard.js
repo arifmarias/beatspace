@@ -1324,6 +1324,11 @@ const BuyerDashboard = () => {
                                       </TableCell>
                                       <TableCell>{asset.duration}</TableCell>
                                       <TableCell>
+                                        <span className="text-green-600 font-medium">
+                                          ৳{asset.cost ? asset.cost.toLocaleString() : '0'}
+                                        </span>
+                                      </TableCell>
+                                      <TableCell>
                                         {asset.expiryDate ? new Date(asset.expiryDate).toLocaleDateString() : 'N/A'}
                                       </TableCell>
                                     </TableRow>
