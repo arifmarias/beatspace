@@ -429,6 +429,20 @@ const BuyerDashboard = () => {
         );
         
         console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
+        console.log('🔍 Campaign details:', {name: campaign.name, id: campaign.id});
+        console.log('🔍 All offers for debugging:', allOfferRequests.map(o => ({
+          campaign_name: o.campaign_name,
+          existing_campaign_id: o.existing_campaign_id,
+          status: o.status,
+          asset_name: o.asset_name
+        })));
+        
+        // Also check if we need to filter by buyer
+        const buyerOfferRequests = campaignOfferRequests.filter(offer => 
+          !currentUser?.email || offer.buyer_email === currentUser.email
+        );
+        console.log('🔍 Buyer filtered offers:', buyerOfferRequests.length);
+        console.log('🔍 Current user email:', currentUser?.email);
         
         // Add assets from offer requests that aren't already in the campaign
         campaignOfferRequests.forEach(offer => {
