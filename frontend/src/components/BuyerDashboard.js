@@ -609,11 +609,17 @@ const BuyerDashboard = () => {
   };
 
   const getFilteredOffers = () => {
-    return (requestedOffers || []).filter(offer =>
-      offer.asset_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
-      offer.campaign_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
-      offer.status.toLowerCase().includes(offerSearch.toLowerCase())
-    );
+    return (requestedOffers || []).filter(offer => {
+      // Exclude approved/accepted offers from the requested offers list
+      const isNotApproved = offer.status !== 'Approved' && offer.status !== 'Accepted';
+      
+      // Apply search filter
+      const matchesSearch = offer.asset_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
+                           offer.campaign_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
+                           offer.status.toLowerCase().includes(offerSearch.toLowerCase());
+                           
+      return isNotApproved && matchesSearch;
+    });
   };
 
   const getGroupedAndFilteredOffers = () => {
