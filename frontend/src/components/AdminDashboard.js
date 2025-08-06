@@ -1035,6 +1035,7 @@ const AdminDashboard = () => {
     setAssetForm({
       name: '',
       description: '',
+      google_map_link: '', // Reset the new field
       address: '',
       district: '',
       division: '',
