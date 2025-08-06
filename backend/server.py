@@ -1374,6 +1374,7 @@ async def respond_to_offer(
                 "status": AssetStatus.AVAILABLE,
                 "buyer_id": None,
                 "buyer_name": None,
+                "next_available_date": None,  # Clear next available date when asset becomes available
                 "updated_at": datetime.utcnow()
             }}
         )
