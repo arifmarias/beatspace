@@ -666,6 +666,54 @@ const BuyerDashboard = () => {
     }));
   };
 
+  // Helper functions for My Assets pagination
+  const getPaginatedAssets = () => {
+    const start = (assetsCurrentPage - 1) * assetsItemsPerPage;
+    const end = start + assetsItemsPerPage;
+    return liveAssets.slice(start, end);
+  };
+
+  const getAssetsTotalPages = () => {
+    return Math.ceil(liveAssets.length / assetsItemsPerPage);
+  };
+
+  const getPaginatedCampaignAssets = () => {
+    // Group assets by campaign first
+    const groupedAssets = {};
+    liveAssets.forEach(asset => {
+      const campaignName = asset.campaignName || 'Unknown Campaign';
+      if (!groupedAssets[campaignName]) {
+        groupedAssets[campaignName] = [];
+      }
+      groupedAssets[campaignName].push(asset);
+    });
+
+    // Apply pagination to campaign groups
+    const campaignKeys = Object.keys(groupedAssets);
+    const start = (assetsCurrentPage - 1) * assetsItemsPerPage;
+    const end = start + assetsItemsPerPage;
+    const paginatedKeys = campaignKeys.slice(start, end);
+    
+    const paginatedGroups = {};
+    paginatedKeys.forEach(key => {
+      paginatedGroups[key] = groupedAssets[key];
+    });
+    
+    return paginatedGroups;
+  };
+
+  const getCampaignAssetsTotalPages = () => {
+    const groupedAssets = {};
+    liveAssets.forEach(asset => {
+      const campaignName = asset.campaignName || 'Unknown Campaign';
+      if (!groupedAssets[campaignName]) {
+        groupedAssets[campaignName] = [];
+      }
+      groupedAssets[campaignName].push(asset);
+    });
+    return Math.ceil(Object.keys(groupedAssets).length / assetsItemsPerPage);
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       'Draft': 'bg-gray-100 text-gray-800',
