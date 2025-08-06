@@ -1064,7 +1064,10 @@ const MarketplacePage = () => {
                               {offerDetails.assetExpirationDate.toLocaleDateString()}
                             </p>
                             <p className="text-xs text-gray-600 mt-1">
-                              Calculated based on start date + {offerDetails.contractDuration.replace('_', ' ')}
+                              {offerDetails.contractDuration === 'custom' 
+                                ? 'Based on custom duration end date'
+                                : `Calculated based on start date + ${offerDetails.contractDuration.replace('_', ' ')}`
+                              }
                             </p>
                             {offerDetails.expirationWarning && (
                               <p className="text-xs text-orange-600 mt-1">
