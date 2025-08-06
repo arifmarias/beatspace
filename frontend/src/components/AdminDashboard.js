@@ -4212,9 +4212,6 @@ const AdminDashboard = () => {
                     </h4>
                     <div className="text-sm space-y-1">
                       <div className="font-medium">{selectedAsset.seller_name}</div>
-                      {selectedAsset.seller_id && (
-                        <div className="text-gray-500 text-xs">ID: {selectedAsset.seller_id}</div>
-                      )}
                     </div>
                   </div>
 
