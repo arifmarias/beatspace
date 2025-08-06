@@ -1021,13 +1021,13 @@ const AdminDashboard = () => {
           division: division
         }));
 
-        notify('Address information populated successfully!', 'success');
+        notify.success('Address information populated successfully!');
       } else {
         throw new Error(data.error_message || 'Geocoding failed');
       }
     } catch (error) {
       console.error('Error processing Google Maps link:', error);
-      notify('Could not extract address from the link. Please fill in manually.', 'error');
+      notify.error('Could not extract address from the link. Please fill in manually.');
     }
   };
 
