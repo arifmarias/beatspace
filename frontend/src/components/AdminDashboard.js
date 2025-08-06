@@ -2001,13 +2001,11 @@ const AdminDashboard = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline"
-                                  onClick={() => {
-                                    group.offers.forEach(offer => handleQuoteOffer(offer));
-                                  }}
+                                  onClick={() => handleGroupQuote(group)}
                                   className="text-blue-600 border-blue-300 hover:bg-blue-50"
                                 >
                                   <DollarSign className="w-4 h-4 mr-1" />
-                                  Quote All ({group.offers.length})
+                                  Group Quote ({group.offers.length})
                                 </Button>
                               </div>
                             </div>
