@@ -2019,7 +2019,11 @@ const AdminDashboard = () => {
                                 const percentageDiff = assetPrice > 0 ? ((difference / assetPrice) * 100).toFixed(1) : 0;
                                 
                                 return (
-                                  <Card key={offer.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                                  <Card key={offer.id} className="border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                                        onClick={() => {
+                                          // Show offer details inline or expand the card
+                                          setSelectedOfferRequest(selectedOfferRequest?.id === offer.id ? null : offer);
+                                        }}>
                                     <CardContent className="p-4">
                                       <div className="grid grid-cols-12 gap-4 items-center">
                                         {/* Asset Info - 3 cols */}
@@ -2084,7 +2088,7 @@ const AdminDashboard = () => {
                                         </div>
                                         
                                         {/* Actions - 3 cols */}
-                                        <div className="col-span-3 flex justify-end space-x-2">
+                                        <div className="col-span-3 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
                                           {offer.status === 'Pending' ? (
                                             // Show Quote Price button for pending offers
                                             <Button
@@ -2124,6 +2128,37 @@ const AdminDashboard = () => {
                                           )}
                                         </div>
                                       </div>
+                                      
+                                      {/* Expandable Details Section */}
+                                      {selectedOfferRequest?.id === offer.id && (
+                                        <div className="mt-4 pt-4 border-t border-gray-200">
+                                          <div className="bg-gray-50 p-4 rounded-lg">
+                                            <h4 className="font-medium text-gray-900 mb-3">Offer Details</h4>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                              <div>
+                                                <span className="font-medium text-gray-700">Asset:</span>
+                                                <p>{offer.asset_name}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Buyer:</span>
+                                                <p>{offer.buyer_name} ({offer.buyer_email})</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Campaign:</span>
+                                                <p>{offer.campaign_name}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Duration:</span>
+                                                <p>{offer.contract_duration || 'Not specified'}</p>
+                                              </div>
+                                              <div className="col-span-2">
+                                                <span className="font-medium text-gray-700">Special Requirements:</span>
+                                                <p className="mt-1">{offer.special_requirements || 'None'}</p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
                                     </CardContent>
                                   </Card>
                                 );
