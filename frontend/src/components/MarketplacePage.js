@@ -72,6 +72,11 @@ const MarketplacePage = () => {
   const [selectedAssetForOffer, setSelectedAssetForOffer] = useState(null);
   const [showNewCampaignWelcome, setShowNewCampaignWelcome] = useState(false);
   const [welcomeCampaignName, setWelcomeCampaignName] = useState('');
+  
+  // Asset Basket/Cart state
+  const [assetBasket, setAssetBasket] = useState([]);
+  const [showAssetBasket, setShowAssetBasket] = useState(false);
+  
   const [offerDetails, setOfferDetails] = useState({
     campaignType: 'existing',
     campaignName: '',
