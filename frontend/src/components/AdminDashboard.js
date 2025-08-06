@@ -68,6 +68,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedAsset, setSelectedAsset] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
