@@ -229,43 +229,9 @@ const BuyerDashboard = () => {
     try {
       const headers = getAuthHeaders();
       
-      // Fetch assets and offers
-      const [assetResponse, offersResponse] = await Promise.all([
-        axios.get(`${API}/assets/public`).catch(err => ({ data: [] })),
-        axios.get(`${API}/offers/requests`, { headers }).catch(err => ({ data: [] }))
-      ]);
-      
-      const allAssets = assetResponse.data || [];
-      const allOffers = offersResponse.data || [];
-      
-      const bookedAssetsData = [];
-      
-      // Find booked assets for this buyer
-      const bookedAssets = allAssets.filter(asset => asset.status === 'Booked');
-      const userApprovedOffers = allOffers.filter(offer => 
-        offer.buyer_email === currentUser?.email && offer.status === 'Approved'
-      );
-      
-      // Match booked assets with approved offers
-      for (const asset of bookedAssets) {
-        const matchingOffer = userApprovedOffers.find(offer => offer.asset_id === asset.id);
-        if (matchingOffer) {
-          bookedAssetsData.push({
-            id: asset.id,
-            name: asset.name,
-            address: asset.address || 'Address not available',
-            type: asset.type || 'Billboard',
-            campaignName: matchingOffer.campaign_name || 'Unknown Campaign',
-            assetStartDate: matchingOffer.asset_start_date || matchingOffer.tentative_start_date,
-            assetEndDate: matchingOffer.asset_expiration_date,
-            duration: matchingOffer.asset_expiration_date ? 
-              calculateDuration(matchingOffer.asset_start_date || matchingOffer.tentative_start_date, matchingOffer.asset_expiration_date) : 
-              '1 month',
-            expiryDate: matchingOffer.asset_expiration_date,
-            lastStatus: 'Booked'
-          });
-        }
-      }
+      // Use the dedicated booked assets API
+      const response = await axios.get(`${API}/assets/booked`, { headers });
+      const bookedAssetsData = response.data || [];
       
       setLiveAssets(bookedAssetsData);
       
