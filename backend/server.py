@@ -772,19 +772,49 @@ async def update_offer_request_status_admin(
         raise HTTPException(status_code=400, detail=f"Invalid status. Valid statuses: {valid_statuses}")
     
     # Update offer request status
-    await db.offer_requests.update_one(
-        {"id": request_id},
-        {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
-    )
-    
     # If approved, update asset status to Booked and set buyer information
     if new_status == "Approved":
+        # Calculate confirmed dates based on tentative dates or contract duration
+        tentative_start = offer_request.get("tentative_start_date")
+        tentative_end = offer_request.get("tentative_end_date")
+        
+        # If no tentative dates, calculate from current date + contract duration
+        if not tentative_start:
+            tentative_start = datetime.utcnow()
+        
+        if not tentative_end:
+            # Calculate end date based on contract duration
+            contract_duration = offer_request.get("contract_duration", "1_month")
+            if contract_duration == "1_month":
+                tentative_end = tentative_start + timedelta(days=30)
+            elif contract_duration == "3_months":
+                tentative_end = tentative_start + timedelta(days=90)
+            elif contract_duration == "6_months":
+                tentative_end = tentative_start + timedelta(days=180)
+            elif contract_duration == "12_months":
+                tentative_end = tentative_start + timedelta(days=365)
+            else:
+                tentative_end = tentative_start + timedelta(days=30)  # Default to 1 month
+        
+        # Update offer request with confirmed dates
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {
+                "status": new_status,
+                "confirmed_start_date": tentative_start,
+                "confirmed_end_date": tentative_end,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        
+        # Update asset with booking info and next_available_date
         await db.assets.update_one(
             {"id": offer_request["asset_id"]},
             {"$set": {
                 "status": AssetStatus.BOOKED,
                 "buyer_id": offer_request["buyer_id"],
                 "buyer_name": offer_request["buyer_name"],
+                "next_available_date": tentative_end,  # Asset becomes available after booking ends
                 "updated_at": datetime.utcnow()
             }}
         )
