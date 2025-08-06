@@ -437,11 +437,9 @@ const BuyerDashboard = () => {
           asset_name: o.asset_name
         })));
         
-        // Also check if we need to filter by buyer
-        const buyerOfferRequests = campaignOfferRequests.filter(offer => 
-          !currentUser?.email || offer.buyer_email === currentUser.email
-        );
-        console.log('🔍 Buyer filtered offers:', buyerOfferRequests.length);
+        // Also check if we need to filter by buyer - REMOVED FOR TESTING
+        const buyerOfferRequests = campaignOfferRequests; // Don't filter by buyer for debugging
+        console.log('🔍 Buyer filtered offers (no filter applied):', buyerOfferRequests.length);
         console.log('🔍 Current user email:', currentUser?.email);
         
         // Add assets from offer requests that aren't already in the campaign
