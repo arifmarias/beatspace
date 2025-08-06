@@ -224,19 +224,35 @@ const BuyerDashboard = () => {
   };
 
   const fetchLiveAssets = async () => {
+    console.log('🔄 fetchLiveAssets called');
     setAssetsLoading(true);
     
     try {
+      const token = getToken();
+      if (!token) {
+        console.error('❌ No auth token found');
+        setLiveAssets([]);
+        return;
+      }
+      
       const headers = getAuthHeaders();
+      console.log('🔑 Auth headers:', headers);
+      
+      console.log('📡 Calling API:', `${API}/assets/booked`);
       
       // Use the dedicated booked assets API
       const response = await axios.get(`${API}/assets/booked`, { headers });
+      console.log('✅ API response:', response);
+      
       const bookedAssetsData = response.data || [];
+      console.log('📊 Booked assets data:', bookedAssetsData);
       
       setLiveAssets(bookedAssetsData);
       
     } catch (error) {
       console.error('❌ Error in fetchLiveAssets:', error);
+      console.error('❌ Error response:', error.response);
+      console.error('❌ Error data:', error.response?.data);
       setLiveAssets([]);
     } finally {
       setAssetsLoading(false);
