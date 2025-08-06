@@ -954,21 +954,30 @@ const AdminDashboard = () => {
     }
   };
 
-  const submitQuote = async () => {
+  const submitQuote = async (e) => {
+    e.preventDefault();
+    
     try {
       const headers = getAuthHeaders();
-      const quoteData = {
+      console.log('🚀 Submitting quote for offer:', quoteForm.offerId);
+      console.log('🚀 Quote data:', {
+        quoted_price: quoteForm.quotedPrice,
+        admin_notes: quoteForm.notes,
+        valid_until: quoteForm.validUntil ? quoteForm.validUntil.toISOString() : null
+      });
+      
+      const response = await axios.put(`${API}/admin/offers/${quoteForm.offerId}/quote`, {
         quoted_price: parseFloat(quoteForm.quotedPrice),
         admin_notes: quoteForm.notes,
         valid_until: quoteForm.validUntil ? quoteForm.validUntil.toISOString() : null
-      };
-
-      await axios.put(`${API}/admin/offers/${quoteForm.offerId}/quote`, quoteData, { headers });
+      }, { headers });
       
-      alert('Price quote submitted successfully!');
+      console.log('✅ Quote submission response:', response.data);
       
-      // Reset form and close dialog
+      notify.success('Quote submitted successfully!');
       setShowQuoteDialog(false);
+      
+      // Reset form
       setQuoteForm({
         offerId: '',
         quotedPrice: '',
@@ -976,12 +985,14 @@ const AdminDashboard = () => {
         validUntil: null
       });
       
-      // Refresh offer requests
-      fetchDashboardData();
+      console.log('🔄 Refreshing dashboard data...');
+      // Refresh the dashboard data to show updated offer
+      await fetchDashboardData();
+      console.log('✅ Dashboard data refreshed');
       
     } catch (error) {
-      console.error('Error submitting quote:', error);
-      alert('Failed to submit quote: ' + (error.response?.data?.detail || error.message));
+      console.error('❌ Error submitting quote:', error);
+      notify.error('Error submitting quote: ' + (error.response?.data?.detail || error.message));
     }
   };
 
