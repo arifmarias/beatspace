@@ -57,8 +57,8 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     - agent: "main"
+##       message: "Starting investigation of My Assets tab bug where booked assets are not displaying. The fetchLiveAssets function in BuyerDashboard.js appears correct - it fetches Live campaigns and looks for assets with 'Booked' status. Need to verify if: 1) Dummy data exists with proper Booked assets, 2) Live campaigns have campaign_assets with proper asset_id links, 3) Assets in DB actually have 'Booked' status. Please test POST /api/admin/create-dummy-data endpoint and then verify the data flow through the entire chain: campaigns → campaign_assets → assets with 'Booked' status."
 
 # Protocol Guidelines for Main agent
 #
