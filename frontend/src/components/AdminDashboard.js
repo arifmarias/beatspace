@@ -443,7 +443,7 @@ const AdminDashboard = () => {
       fetchDashboardData(); // Refresh data
     } catch (error) {
       console.error('Error updating offer request status:', error);
-      alert('Failed to update offer request status: ' + (error.response?.data?.detail || error.message));
+      notify.error('Failed to update offer request status: ' + (error.response?.data?.detail || error.message));
     }
   };
 
