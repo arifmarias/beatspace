@@ -1874,19 +1874,7 @@ const MarketplacePage = () => {
                   )}
                 </div>
 
-                {/* Seller Information */}
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 flex items-center mb-3">
-                    <Users className="w-4 h-4 mr-2" />
-                    Seller Information
-                  </h4>
-                  <div className="text-sm space-y-1">
-                    <div className="font-medium">{selectedAsset.seller_name}</div>
-                    {selectedAsset.seller_id && (
-                      <div className="text-gray-500 text-xs">ID: {selectedAsset.seller_id}</div>
-                    )}
-                  </div>
-                </div>
+
 
                 {/* Technical Specifications */}
                 {selectedAsset.specifications && Object.keys(selectedAsset.specifications).length > 0 && (
