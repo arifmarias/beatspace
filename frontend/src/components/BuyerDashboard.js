@@ -1659,7 +1659,9 @@ const BuyerDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {(requestedOffers || []).length === 0 ? (
+                {((requestedOffers || []).filter(offer => 
+                  offer.status !== 'Approved' && offer.status !== 'Accepted'
+                )).length === 0 ? (
                   <div className="text-center py-8">
                     <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Offer Requests Yet</h3>
