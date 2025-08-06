@@ -979,7 +979,7 @@ const AdminDashboard = () => {
             division: parts.length > 2 ? parts[parts.length - 1] : ''
           }));
           
-          notify('Address extracted from URL. Please verify and adjust if needed.', 'success');
+          notify.success('Address extracted from URL. Please verify and adjust if needed.');
           return;
         } else {
           throw new Error('Could not extract location information from the link');
