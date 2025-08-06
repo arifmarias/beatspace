@@ -226,87 +226,67 @@ const BuyerDashboard = () => {
 
   const fetchLiveAssets = async () => {
     setAssetsLoading(true);
+    
     try {
+      console.log('🚀 Starting fetchLiveAssets...');
+      
       const headers = getAuthHeaders();
       
-      console.log('🔍 Starting fetchLiveAssets for user:', currentUser?.email);
-      
-      // Fetch all offers first
-      const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
-      const allOffers = offersResponse.data || [];
-      console.log('📊 Total offers fetched:', allOffers.length);
-      
-      // Fetch all assets
+      // Fetch assets - simple approach
       const assetResponse = await axios.get(`${API}/assets/public`);
       const allAssets = assetResponse.data || [];
-      console.log('📊 Total assets fetched:', allAssets.length);
+      console.log('📊 Fetched assets:', allAssets.length);
+      
+      // Fetch offers - simple approach
+      const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+      const allOffers = offersResponse.data || [];
+      console.log('📊 Fetched offers:', allOffers.length);
       
       const bookedAssetsData = [];
       
-      // Simple logic: Find all assets with "Booked" status for this buyer
-      const bookedAssets = allAssets.filter(asset => asset.status === 'Booked');
-      console.log('📊 Found assets with Booked status:', bookedAssets.length);
-      
-      if (bookedAssets.length > 0) {
-        console.log('📊 Booked assets:', bookedAssets.map(a => ({name: a.name, id: a.id, status: a.status})));
-      }
-      
-      console.log('📊 Current user email for matching:', currentUser?.email);
-      console.log('📊 Sample offers for debugging:', allOffers.slice(0, 3).map(o => ({
-        asset_name: o.asset_name,
-        asset_id: o.asset_id, 
-        buyer_email: o.buyer_email,
-        status: o.status
-      })));
-      
-      for (const asset of bookedAssets) {
-        console.log('🔍 Checking booked asset:', asset.name);
-        
-        // Find the corresponding offer for this asset and this buyer
-        const relatedOffer = allOffers.find(offer => 
-          offer.asset_id === asset.id && 
-          offer.buyer_email === currentUser?.email &&
-          (offer.status === 'Approved' || offer.status === 'Accepted')
-        );
-        
-        if (relatedOffer) {
-          console.log('✅ Found matching offer for asset:', asset.name);
+      // Find assets with Booked status
+      for (const asset of allAssets) {
+        if (asset.status === 'Booked') {
+          console.log('🔍 Found booked asset:', asset.name);
           
-          const bookedAsset = {
-            ...asset,
-            campaignName: relatedOffer.campaign_name || 'Unknown Campaign',
-            campaignId: relatedOffer.campaign_id || relatedOffer.existing_campaign_id,
-            campaignStatus: 'Live',
-            assetStartDate: relatedOffer.asset_start_date || relatedOffer.tentative_start_date,
-            assetEndDate: relatedOffer.asset_expiration_date,
-            duration: calculateDuration(
-              relatedOffer.asset_start_date || relatedOffer.tentative_start_date, 
-              relatedOffer.asset_expiration_date
-            ),
-            expiryDate: relatedOffer.asset_expiration_date,
-            lastStatus: asset.status
-          };
+          // Find the approved offer for this asset and current buyer
+          const matchedOffer = allOffers.find(offer => 
+            offer.asset_id === asset.id && 
+            offer.buyer_email === currentUser?.email &&
+            offer.status === 'Approved'
+          );
           
-          bookedAssetsData.push(bookedAsset);
-          console.log('✅ Added booked asset:', asset.name, 'for campaign:', relatedOffer.campaign_name);
-        } else {
-          console.log('❌ No matching offer found for booked asset:', asset.name);
+          if (matchedOffer) {
+            console.log('✅ Matched offer found for:', asset.name);
+            
+            // Create display data
+            const displayAsset = {
+              id: asset.id,
+              name: asset.name,
+              address: asset.address || 'Address not available',
+              type: asset.type || 'Unknown',
+              campaignName: matchedOffer.campaign_name || 'Unknown Campaign',
+              assetStartDate: matchedOffer.asset_start_date || null,
+              assetEndDate: matchedOffer.asset_expiration_date || null,
+              duration: '1 month', // Simplified for now
+              expiryDate: matchedOffer.asset_expiration_date || null,
+              lastStatus: 'Booked'
+            };
+            
+            bookedAssetsData.push(displayAsset);
+            console.log('✅ Added to display:', asset.name);
+          }
         }
       }
       
-      console.log('📊 Final booked assets for UI:', bookedAssetsData.length);
+      console.log('📊 Total booked assets found:', bookedAssetsData.length);
       setLiveAssets(bookedAssetsData);
       
-      // Ensure loading state is cleared even if no assets found
-      console.log('✅ fetchLiveAssets successful - found', bookedAssetsData.length, 'booked assets');
-      
     } catch (error) {
-      console.error('❌ Error fetching booked assets:', error);
-      console.error('❌ Error details:', error.response?.data || error.message);
-      notify.error('Failed to load booked assets: ' + (error.response?.data?.detail || error.message));
+      console.error('❌ Error in fetchLiveAssets:', error);
       setLiveAssets([]);
     } finally {
-      console.log('🏁 fetchLiveAssets completed - setting loading to false');
+      console.log('🏁 Setting loading to false');
       setAssetsLoading(false);
     }
   };
