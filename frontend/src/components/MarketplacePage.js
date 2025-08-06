@@ -1567,7 +1567,14 @@ const MarketplacePage = () => {
                             {asset.description}
                           </p>
                           
-                          <div className="flex justify-end">
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleRequestBestOffer(asset)}
+                              className="bg-orange-600 hover:bg-orange-700 text-white"
+                            >
+                              Request Best Offer
+                            </Button>
                             <Button
                               variant="outline"
                               size="sm"
