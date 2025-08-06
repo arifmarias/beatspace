@@ -1968,7 +1968,7 @@ const AdminDashboard = () => {
                     <MessageSquare className="w-5 h-5 text-blue-600" />
                     <span>Active Offers by Buyer</span>
                     <Badge variant="secondary" className="ml-2">
-                      {getFilteredOfferRequests().filter(offer => offer.status !== 'Approved' && offer.status !== 'Rejected').length} Active
+                      {getFilteredOfferRequests().filter(offer => offer.status !== 'Approved' && offer.status !== 'Rejected' && offer.status !== 'Accepted').length} Active
                     </Badge>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
