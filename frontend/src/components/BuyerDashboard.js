@@ -421,26 +421,14 @@ const BuyerDashboard = () => {
         const allOfferRequests = offersResponse.data || [];
         
         // Find offer requests for this campaign (include all active statuses)
-        // Match by campaign name only (simplified for debugging)
+        // Match by either campaign ID or campaign name (for backward compatibility)
         const campaignOfferRequests = allOfferRequests.filter(offer => 
-          offer.campaign_name === campaign.name && 
+          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) && 
           (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
            offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
         );
         
         console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
-        console.log('🔍 Campaign details:', {name: campaign.name, id: campaign.id});
-        console.log('🔍 All offers for debugging:', allOfferRequests.map(o => ({
-          campaign_name: o.campaign_name,
-          existing_campaign_id: o.existing_campaign_id,
-          status: o.status,
-          asset_name: o.asset_name
-        })));
-        
-        // Also check if we need to filter by buyer - REMOVED FOR TESTING
-        const buyerOfferRequests = campaignOfferRequests; // Don't filter by buyer for debugging
-        console.log('🔍 Buyer filtered offers (no filter applied):', buyerOfferRequests.length);
-        console.log('🔍 Current user email:', currentUser?.email);
         
         // Add assets from offer requests that aren't already in the campaign
         buyerOfferRequests.forEach(offer => {
