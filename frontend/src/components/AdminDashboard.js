@@ -3107,6 +3107,30 @@ const AdminDashboard = () => {
                 </div>
 
                 <div>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Google Map Link
+                    </label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="w-4 h-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Paste the full Google Maps link to automatically populate address, district, and division</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    value={assetForm.google_map_link}
+                    onChange={(e) => setAssetForm({...assetForm, google_map_link: e.target.value})}
+                    onBlur={(e) => handleGoogleMapLink(e.target.value)}
+                    placeholder="https://maps.google.com/..."
+                  />
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Address *
                   </label>
