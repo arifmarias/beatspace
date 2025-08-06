@@ -222,72 +222,17 @@ const BuyerDashboard = () => {
     try {
       const headers = getAuthHeaders();
       
-      // Fetch all campaigns for this buyer
-      const campaignsResponse = await axios.get(`${API}/campaigns`, { headers });
-      const buyerCampaigns = campaignsResponse.data || [];
-      
-      console.log('📊 Fetched buyer campaigns:', buyerCampaigns.length);
-      
-      // Filter only Live campaigns
-      const liveCampaigns = buyerCampaigns.filter(campaign => campaign.status === 'Live');
-      console.log('📊 Live campaigns found:', liveCampaigns.length);
+      console.log('🔍 Fetching booked assets for buyer...');
       
       // Fetch all assets first
       const assetResponse = await axios.get(`${API}/assets/public`);
       const allAssets = assetResponse.data || [];
       console.log('📊 All assets fetched:', allAssets.length);
       
-      // Collect all BOOKED assets from Live campaigns
-      const bookedAssetsData = [];
-      
-      for (const campaign of liveCampaigns) {
-        console.log('🔍 Processing campaign:', campaign.name, 'with assets:', campaign.campaign_assets?.length || 0);
-        
-        // Check campaign assets
-        if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
-          for (const campaignAsset of campaign.campaign_assets) {
-            console.log('🔍 Processing campaign asset:', campaignAsset.asset_id);
-            
-            // Find the asset details
-            const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
-            
-            if (asset) {
-              console.log('✅ Found asset:', asset.name, 'with status:', asset.status);
-              
-              // Only include assets with BOOKED status
-              if (asset.status === 'Booked') {
-                const bookedAsset = {
-                  ...asset,
-                  campaignName: campaign.name,
-                  campaignId: campaign.id,
-                  campaignStatus: campaign.status,
-                  assetStartDate: campaignAsset.asset_start_date || campaignAsset.start_date,
-                  assetEndDate: campaignAsset.asset_expiration_date || campaignAsset.end_date,
-                  duration: calculateDuration(
-                    campaignAsset.asset_start_date || campaignAsset.start_date, 
-                    campaignAsset.asset_expiration_date || campaignAsset.end_date
-                  ),
-                  expiryDate: campaignAsset.asset_expiration_date || campaignAsset.end_date,
-                  lastStatus: asset.status // Will be 'Booked'
-                };
-                
-                bookedAssetsData.push(bookedAsset);
-                console.log('✅ Added booked asset:', asset.name);
-              } else {
-                console.log('⚠️ Asset not booked, status:', asset.status);
-              }
-            } else {
-              console.error('❌ Asset not found for ID:', campaignAsset.asset_id);
-            }
-          }
-        } else {
-          console.log('⚠️ Campaign has no assets:', campaign.name);
-        }
-      }
-      
-      // ALSO fetch booked assets from approved/accepted offers that might not be in campaign_assets yet
+      // Fetch booked assets from approved/accepted offers - this is the primary source
       const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
       const allOffers = offersResponse.data || [];
+      console.log('📊 All offers fetched:', allOffers.length);
       
       // Find approved/accepted offers for this buyer
       const bookedOffers = allOffers.filter(offer => 
@@ -295,35 +240,36 @@ const BuyerDashboard = () => {
         offer.buyer_email === currentUser?.email
       );
       
-      console.log('📊 Found booked offers:', bookedOffers.length);
+      console.log('📊 Found booked offers for buyer:', bookedOffers.length);
+      
+      const bookedAssetsData = [];
       
       for (const offer of bookedOffers) {
+        console.log('🔍 Processing booked offer:', offer.asset_name, 'Status:', offer.status);
+        
         // Find the asset for this offer
         const asset = allAssets.find(a => a.id === offer.asset_id);
         
         if (asset && asset.status === 'Booked') {
-          // Check if we already have this asset (to avoid duplicates)
-          const alreadyExists = bookedAssetsData.find(existing => existing.id === asset.id);
+          const bookedAsset = {
+            ...asset,
+            campaignName: offer.campaign_name || 'Unknown Campaign',
+            campaignId: offer.campaign_id || offer.existing_campaign_id,
+            campaignStatus: 'Live', // Approved offers are considered live
+            assetStartDate: offer.asset_start_date || offer.tentative_start_date,
+            assetEndDate: offer.asset_expiration_date,
+            duration: calculateDuration(
+              offer.asset_start_date || offer.tentative_start_date, 
+              offer.asset_expiration_date
+            ),
+            expiryDate: offer.asset_expiration_date,
+            lastStatus: asset.status // Will be 'Booked'
+          };
           
-          if (!alreadyExists) {
-            const bookedAsset = {
-              ...asset,
-              campaignName: offer.campaign_name || 'Unknown Campaign',
-              campaignId: offer.campaign_id || offer.existing_campaign_id,
-              campaignStatus: 'Live', // Approved offers are considered live
-              assetStartDate: offer.asset_start_date || offer.tentative_start_date,
-              assetEndDate: offer.asset_expiration_date,
-              duration: calculateDuration(
-                offer.asset_start_date || offer.tentative_start_date, 
-                offer.asset_expiration_date
-              ),
-              expiryDate: offer.asset_expiration_date,
-              lastStatus: asset.status // Will be 'Booked'
-            };
-            
-            bookedAssetsData.push(bookedAsset);
-            console.log('✅ Added booked asset from offer:', asset.name);
-          }
+          bookedAssetsData.push(bookedAsset);
+          console.log('✅ Added booked asset:', asset.name);
+        } else {
+          console.error('❌ Asset not found or not Booked:', offer.asset_name, 'Asset status:', asset?.status);
         }
       }
       
