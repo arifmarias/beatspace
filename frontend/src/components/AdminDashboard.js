@@ -917,6 +917,120 @@ const AdminDashboard = () => {
     }
   };
 
+  // Google Maps geocoding function
+  const handleGoogleMapLink = async (link) => {
+    if (!link || !link.trim()) return;
+
+    try {
+      // Extract place ID or coordinates from Google Maps link
+      let placeId = null;
+      let coords = null;
+
+      // Check for place ID in various Google Maps URL formats
+      const placeIdMatch = link.match(/place_id=([^&]+)/);
+      if (placeIdMatch) {
+        placeId = placeIdMatch[1];
+      }
+
+      // Check for coordinates
+      const coordsMatch = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (coordsMatch) {
+        coords = {
+          lat: parseFloat(coordsMatch[1]),
+          lng: parseFloat(coordsMatch[2])
+        };
+      }
+
+      // Use Geocoding API (you can use Google's or any other service)
+      let response;
+      if (placeId) {
+        // Using place ID (requires Google Places API)
+        const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+        if (GOOGLE_API_KEY) {
+          response = await fetch(
+            `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,address_components&key=${GOOGLE_API_KEY}`
+          );
+        } else {
+          throw new Error('Google Maps API key not configured');
+        }
+      } else if (coords) {
+        // Using reverse geocoding
+        const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+        if (GOOGLE_API_KEY) {
+          response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.lat},${coords.lng}&key=${GOOGLE_API_KEY}`
+          );
+        } else {
+          throw new Error('Google Maps API key not configured');
+        }
+      } else {
+        // Fallback: try to extract address from URL
+        const addressMatch = link.match(/\/([^\/,@]+)(?:,|\/@)/);
+        if (addressMatch) {
+          const addressFromUrl = decodeURIComponent(addressMatch[1].replace(/\+/g, ' '));
+          
+          // Simple parsing for Bangladesh addresses
+          const parts = addressFromUrl.split(',').map(part => part.trim());
+          
+          setAssetForm(prev => ({
+            ...prev,
+            address: addressFromUrl,
+            district: parts.length > 1 ? parts[parts.length - 2] : '',
+            division: parts.length > 2 ? parts[parts.length - 1] : ''
+          }));
+          
+          notify('Address extracted from URL. Please verify and adjust if needed.', 'success');
+          return;
+        } else {
+          throw new Error('Could not extract location information from the link');
+        }
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'OK') {
+        let result;
+        if (data.result) {
+          result = data.result; // Place details response
+        } else if (data.results && data.results.length > 0) {
+          result = data.results[0]; // Geocoding response
+        } else {
+          throw new Error('No location data found');
+        }
+
+        const addressComponents = result.address_components || [];
+        const formattedAddress = result.formatted_address || '';
+        
+        // Extract district and division for Bangladesh
+        let district = '';
+        let division = '';
+        
+        for (const component of addressComponents) {
+          const types = component.types;
+          if (types.includes('administrative_area_level_2')) {
+            district = component.long_name;
+          } else if (types.includes('administrative_area_level_1')) {
+            division = component.long_name.replace(' Division', '');
+          }
+        }
+
+        setAssetForm(prev => ({
+          ...prev,
+          address: formattedAddress,
+          district: district,
+          division: division
+        }));
+
+        notify('Address information populated successfully!', 'success');
+      } else {
+        throw new Error(data.error_message || 'Geocoding failed');
+      }
+    } catch (error) {
+      console.error('Error processing Google Maps link:', error);
+      notify('Could not extract address from the link. Please fill in manually.', 'error');
+    }
+  };
+
   const resetAssetForm = () => {
     setAssetForm({
       name: '',
