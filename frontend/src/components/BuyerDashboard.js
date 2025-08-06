@@ -285,6 +285,45 @@ const BuyerDashboard = () => {
         }
       }
       
+      // ALSO fetch booked assets from approved/accepted offers that might not be in campaign_assets yet
+      const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+      const allOffers = offersResponse.data || [];
+      
+      // Find approved/accepted offers for this buyer
+      const bookedOffers = allOffers.filter(offer => 
+        (offer.status === 'Approved' || offer.status === 'Accepted') &&
+        offer.buyer_email === user?.email
+      );
+      
+      console.log('📊 Found booked offers:', bookedOffers.length);
+      
+      for (const offer of bookedOffers) {
+        // Find the asset for this offer
+        const asset = allAssets.find(a => a.id === offer.asset_id);
+        
+        if (asset && asset.status === 'Booked') {
+          // Check if we already have this asset (to avoid duplicates)
+          const alreadyExists = bookedAssetsData.find(existing => existing.id === asset.id);
+          
+          if (!alreadyExists) {
+            const bookedAsset = {
+              ...asset,
+              campaignName: offer.campaign_name || 'Unknown Campaign',
+              campaignId: offer.existing_campaign_id,
+              campaignStatus: 'Live', // Approved offers are considered live
+              assetStartDate: offer.tentative_start_date,
+              assetEndDate: offer.asset_expiration_date,
+              duration: calculateDuration(offer.tentative_start_date, offer.asset_expiration_date),
+              expiryDate: offer.asset_expiration_date,
+              lastStatus: asset.status // Will be 'Booked'
+            };
+            
+            bookedAssetsData.push(bookedAsset);
+            console.log('✅ Added booked asset from offer:', asset.name);
+          }
+        }
+      }
+      
       console.log('📊 Final booked assets count:', bookedAssetsData.length);
       setLiveAssets(bookedAssetsData);
       
