@@ -1030,7 +1030,16 @@ const MarketplacePage = () => {
                             <CalendarComponent
                               mode="single"
                               selected={offerDetails.tentativeStartDate}
-                              onSelect={(date) => setOfferDetails({...offerDetails, tentativeStartDate: date})}
+                              onSelect={(date) => {
+                                const updatedDetails = {...offerDetails, tentativeStartDate: date};
+                                
+                                // Auto-populate Asset Starting Date when custom duration is selected
+                                if (offerDetails.contractDuration === 'custom' && offerDetails.customStartDate && !date) {
+                                  updatedDetails.tentativeStartDate = offerDetails.customStartDate;
+                                }
+                                
+                                setOfferDetails(updatedDetails);
+                              }}
                               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                               initialFocus
                             />
