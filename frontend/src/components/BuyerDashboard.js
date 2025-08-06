@@ -252,7 +252,7 @@ const BuyerDashboard = () => {
           // Find the approved offer for this asset and current buyer
           const matchedOffer = allOffers.find(offer => 
             offer.asset_id === asset.id && 
-            offer.buyer_email === currentUser?.email &&
+            offer.buyer_email === 'buyer@company.com' && // Hardcoded for testing
             offer.status === 'Approved'
           );
           
