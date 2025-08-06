@@ -932,7 +932,7 @@ const BuyerDashboard = () => {
     const campaignAssets = (campaign.campaign_assets || []).length;
     const groupedOffers = getGroupedAndFilteredOffers();
     const offerRequests = groupedOffers[campaign.name] ? groupedOffers[campaign.name].length : 0;
-    return Math.max(campaignAssets, offerRequests);
+    return campaignAssets + offerRequests; // Add both counts together
   };
 
   if (loading) {
