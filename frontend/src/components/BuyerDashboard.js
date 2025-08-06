@@ -1255,7 +1255,7 @@ const BuyerDashboard = () => {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <p className="text-sm text-gray-600">
-                            Showing {liveAssets.length} booked asset{liveAssets.length > 1 ? 's' : ''}
+                            Showing {getPaginatedAssets().length} of {liveAssets.length} booked asset{liveAssets.length > 1 ? 's' : ''}
                           </p>
                         </div>
                         
@@ -1271,7 +1271,7 @@ const BuyerDashboard = () => {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {liveAssets.map((asset) => (
+                            {getPaginatedAssets().map((asset) => (
                               <TableRow key={asset.id}>
                                 <TableCell>
                                   <div>
@@ -1302,6 +1302,31 @@ const BuyerDashboard = () => {
                             ))}
                           </TableBody>
                         </Table>
+
+                        {/* Pagination for List View */}
+                        {getAssetsTotalPages() > 1 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-600">
+                              Page {assetsCurrentPage} of {getAssetsTotalPages()}
+                            </p>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => setAssetsCurrentPage(Math.max(1, assetsCurrentPage - 1))}
+                                disabled={assetsCurrentPage === 1}
+                                variant="outline"
+                              >
+                                Previous
+                              </Button>
+                              <Button
+                                onClick={() => setAssetsCurrentPage(Math.min(getAssetsTotalPages(), assetsCurrentPage + 1))}
+                                disabled={assetsCurrentPage === getAssetsTotalPages()}
+                                variant="outline"
+                              >
+                                Next
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
