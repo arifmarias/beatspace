@@ -938,6 +938,62 @@ const BuyerDashboard = () => {
     }
   };
 
+  const handleApproveOffer = async (offer) => {
+    try {
+      const confirmMessage = `Are you sure you want to approve the offer for "${offer.asset_name}" at ৳${offer.admin_quoted_price?.toLocaleString()}?`;
+      
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+
+      console.log('🚨 APPROVING OFFER:', offer.id);
+      
+      const headers = getAuthHeaders();
+      
+      // Call backend endpoint to approve offer
+      await axios.put(`${API}/offers/${offer.id}/respond`, {
+        action: 'accept'
+      }, { headers });
+      
+      alert(`✅ Offer approved successfully! Asset "${offer.asset_name}" is now booked.`);
+      
+      // Refresh buyer data
+      await fetchBuyerData();
+      
+    } catch (error) {
+      console.error('🚨 Error approving offer:', error);
+      alert('Failed to approve offer: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const handleRejectOffer = async (offer) => {
+    try {
+      const confirmMessage = `Are you sure you want to reject the offer for "${offer.asset_name}"?\n\nThis will return the asset to available status.`;
+      
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+
+      console.log('🚨 REJECTING OFFER:', offer.id);
+      
+      const headers = getAuthHeaders();
+      
+      // Call backend endpoint to reject offer
+      await axios.put(`${API}/offers/${offer.id}/respond`, {
+        action: 'reject'
+      }, { headers });
+      
+      alert(`Offer rejected. Asset "${offer.asset_name}" is now available again.`);
+      
+      // Refresh buyer data
+      await fetchBuyerData();
+      
+    } catch (error) {
+      console.error('🚨 Error rejecting offer:', error);
+      alert('Failed to reject offer: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
