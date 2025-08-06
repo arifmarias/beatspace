@@ -225,39 +225,33 @@ const BuyerDashboard = () => {
   };
 
   const fetchLiveAssets = async () => {
-    console.log('🚀 fetchLiveAssets STARTED - minimal version');
+    console.log('🚀 fetchLiveAssets STARTED - fixed version');
     setAssetsLoading(true);
     
-    // Use setTimeout to ensure this completes
     setTimeout(async () => {
       try {
-        console.log('⏰ Running fetchLiveAssets after timeout');
-        
         const headers = getAuthHeaders();
         
-        // Try the API calls with shorter timeouts
         let allAssets = [];
         let allOffers = [];
         
+        // Fetch data with error handling
         try {
-          console.log('📡 Fetching assets...');
           const assetResponse = await axios.get(`${API}/assets/public`, { timeout: 5000 });
           allAssets = assetResponse.data || [];
           console.log('✅ Assets fetched:', allAssets.length);
-        } catch (assetError) {
-          console.error('❌ Assets API failed:', assetError.message);
+        } catch (error) {
+          console.error('❌ Assets API failed:', error.message);
         }
         
         try {
-          console.log('📡 Fetching offers...');
           const offersResponse = await axios.get(`${API}/offers/requests`, { headers, timeout: 5000 });
           allOffers = offersResponse.data || [];
           console.log('✅ Offers fetched:', allOffers.length);
-        } catch (offerError) {
-          console.error('❌ Offers API failed:', offerError.message);
+        } catch (error) {
+          console.error('❌ Offers API failed:', error.message);
         }
         
-        // Process the data
         const bookedAssetsData = [];
         
         // Find booked assets
@@ -265,60 +259,47 @@ const BuyerDashboard = () => {
         console.log('📊 Booked assets found:', bookedAssets.length);
         
         // Find approved offers for current user
-        const userOffers = allOffers.filter(offer => 
+        const userApprovedOffers = allOffers.filter(offer => 
           offer.buyer_email === currentUser?.email && offer.status === 'Approved'
         );
-        console.log('📊 User approved offers:', userOffers.length);
+        console.log('📊 User approved offers:', userApprovedOffers.length);
         console.log('📊 Current user email:', currentUser?.email);
         
-        // Match them
+        // Match booked assets with approved offers
         for (const asset of bookedAssets) {
-          const matchingOffer = userOffers.find(offer => offer.asset_id === asset.id);
+          const matchingOffer = userApprovedOffers.find(offer => offer.asset_id === asset.id);
           if (matchingOffer) {
-            console.log('✅ MATCHED:', asset.name);
+            console.log('✅ REAL MATCH:', asset.name, 'for campaign:', matchingOffer.campaign_name);
             bookedAssetsData.push({
               id: asset.id,
               name: asset.name,
               address: asset.address || 'Address not available',
               type: asset.type || 'Billboard',
               campaignName: matchingOffer.campaign_name || 'Unknown Campaign',
-              assetStartDate: matchingOffer.asset_start_date || '2025-08-15',
-              assetEndDate: matchingOffer.asset_expiration_date || '2025-09-15',
-              duration: '1 month',
-              expiryDate: matchingOffer.asset_expiration_date || '2025-09-15',
+              assetStartDate: matchingOffer.asset_start_date || matchingOffer.tentative_start_date,
+              assetEndDate: matchingOffer.asset_expiration_date,
+              duration: matchingOffer.asset_expiration_date ? 
+                calculateDuration(matchingOffer.asset_start_date || matchingOffer.tentative_start_date, matchingOffer.asset_expiration_date) : 
+                '1 month',
+              expiryDate: matchingOffer.asset_expiration_date,
               lastStatus: 'Booked'
             });
+          } else {
+            console.log('❌ No approved offer found for booked asset:', asset.name);
           }
         }
         
-        // Add test data if no matches but we have data
-        if (bookedAssetsData.length === 0 && bookedAssets.length > 0) {
-          console.log('🧪 Adding test data since we have booked assets but no matches');
-          bookedAssetsData.push({
-            id: 'test-working',
-            name: 'FIXED: Test Billboard',
-            address: '123 Test Street, Dhaka',
-            type: 'Billboard',
-            campaignName: 'Test Marketing Campaign',
-            assetStartDate: '2025-08-15',
-            assetEndDate: '2025-09-15',
-            duration: '1 month',
-            expiryDate: '2025-09-15',
-            lastStatus: 'Booked'
-          });
-        }
-        
-        console.log('📊 Final assets to display:', bookedAssetsData.length);
+        console.log('📊 REAL assets to display:', bookedAssetsData.length);
         setLiveAssets(bookedAssetsData);
         
       } catch (error) {
-        console.error('❌ Final error:', error.message);
+        console.error('❌ Error in fetchLiveAssets:', error.message);
         setLiveAssets([]);
       } finally {
-        console.log('🏁 DEFINITELY setting loading to false');
+        console.log('🏁 Setting loading to false');
         setAssetsLoading(false);
       }
-    }, 1000); // 1 second delay to ensure it runs
+    }, 1000);
   };
 
   const calculateDuration = (startDate, endDate) => {
