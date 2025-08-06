@@ -1539,30 +1539,6 @@ const MarketplacePage = () => {
 
                 <Separator />
 
-                <div>
-                  <label className="block text-sm font-semibold mb-3 text-gray-700">Contract Duration</label>
-                  <Select value={filters.duration} onValueChange={(value) => setFilters({...filters, duration: value})}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3_months">📅 3 Months</SelectItem>
-                      <SelectItem value="6_months">📅 6 Months</SelectItem>
-                      <SelectItem value="12_months">📅 12 Months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-gray-700">Price Range (BDT)</label>
-                  <div className="grid grid-cols-2 gap-3">
-                  </div>
-                </div>
-
-                <Separator />
-
                 <Button 
                   variant="outline" 
                   className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
