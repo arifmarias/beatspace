@@ -1028,19 +1028,47 @@ const AdminDashboard = () => {
         let district = '';
         let division = '';
         
+        console.log('Address components for debugging:', addressComponents);
+        
         for (const component of addressComponents) {
           const types = component.types;
+          console.log('Component:', component.long_name, 'Types:', types);
+          
           // Try multiple types for district (Bangladesh specific)
-          if (types.includes('administrative_area_level_2') || 
-              types.includes('locality') || 
-              types.includes('sublocality_level_1')) {
-            if (!district) { // Take the first match
+          if (types.includes('sublocality_level_1') || 
+              types.includes('sublocality') ||
+              types.includes('locality') ||
+              types.includes('administrative_area_level_2') ||
+              types.includes('neighborhood')) {
+            if (!district || component.long_name.length > district.length) { 
+              // Take the most specific/longest name
               district = component.long_name;
             }
           } else if (types.includes('administrative_area_level_1')) {
             division = component.long_name.replace(' Division', '');
           }
         }
+        
+        // If no district found from components, try to extract from formatted address
+        if (!district && formattedAddress) {
+          const addressParts = formattedAddress.split(',');
+          // For Bangladesh, district is often mentioned in the address
+          for (let part of addressParts) {
+            part = part.trim();
+            // Check if this part contains district-like keywords or is a known area
+            if (part.match(/\b(Dhaka|Mirpur|Gulshan|Dhanmondi|Uttara|Banani|Bashundhara|Wari|Tejgaon)\b/i)) {
+              if (!district) {
+                district = part;
+                break;
+              }
+            }
+          }
+        }
+        
+        console.log('Final extracted values:', {
+          district: district,
+          division: division
+        });
 
         // Update form with all extracted data
         setAssetForm(prev => ({
