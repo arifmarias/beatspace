@@ -1732,46 +1732,40 @@ const MarketplacePage = () => {
                   <div>
                     {/* Main selected image */}
                     <div 
-                      className="mb-3 cursor-pointer group"
+                      className="mb-3 cursor-pointer relative"
                       onClick={() => setShowImageModal(true)}
                     >
                       <img 
                         src={selectedAsset.photos[selectedImageIndex]} 
                         alt={`${selectedAsset.name} - Image ${selectedImageIndex + 1}`}
-                        className="w-full h-64 object-cover rounded-lg group-hover:opacity-90 transition-opacity shadow-sm"
+                        className="w-full h-64 object-cover rounded-lg shadow-sm"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-20 rounded-lg">
-                        <Eye className="w-8 h-8 text-white" />
-                      </div>
                     </div>
                     
-                    {/* Image thumbnails if more than one image */}
+                    {/* Dot navigation if more than one image */}
                     {selectedAsset.photos.length > 1 && (
-                      <div>
-                        <div className="flex space-x-2 overflow-x-auto pb-2">
-                          {selectedAsset.photos.map((photo, index) => (
-                            <div
-                              key={index}
-                              className={`flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${
-                                index === selectedImageIndex 
-                                  ? 'border-orange-500 ring-2 ring-orange-200' 
-                                  : 'border-gray-200 hover:border-gray-400'
-                              }`}
-                              onClick={() => setSelectedImageIndex(index)}
-                            >
-                              <img 
-                                src={photo} 
-                                alt={`${selectedAsset.name} - Thumbnail ${index + 1}`}
-                                className="w-16 h-16 object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1 text-center">
-                          {selectedAsset.photos.length} photos • Click to view larger
-                        </p>
+                      <div className="flex justify-center space-x-2 mt-3">
+                        {selectedAsset.photos.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              index === selectedImageIndex 
+                                ? 'bg-orange-500 w-6' 
+                                : 'bg-gray-300 hover:bg-gray-400'
+                            }`}
+                            onClick={() => setSelectedImageIndex(index)}
+                          />
+                        ))}
                       </div>
                     )}
+                    
+                    {/* Image counter */}
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      {selectedAsset.photos.length > 1 
+                        ? `Image ${selectedImageIndex + 1} of ${selectedAsset.photos.length} • Click to view larger`
+                        : 'Click to view larger'
+                      }
+                    </p>
                   </div>
                 )}
 
