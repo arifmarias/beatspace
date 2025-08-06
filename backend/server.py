@@ -139,6 +139,11 @@ class OfferRequest(BaseModel):
     admin_notes: Optional[str] = None  # Add this field
     final_offer: Optional[float] = None  # Change from dict to float
     quoted_at: Optional[datetime] = None
+    # NEW: Asset booking date fields
+    tentative_start_date: Optional[datetime] = None
+    tentative_end_date: Optional[datetime] = None
+    confirmed_start_date: Optional[datetime] = None
+    confirmed_end_date: Optional[datetime] = None
 
 class OfferRequestCreate(BaseModel):
     asset_id: str
