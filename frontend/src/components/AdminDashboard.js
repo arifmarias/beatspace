@@ -3628,7 +3628,7 @@ const AdminDashboard = () => {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
-                        <Calendar
+                        <CalendarComponent
                           mode="single"
                           selected={quoteForm.validUntil}
                           onSelect={(date) => setQuoteForm({...quoteForm, validUntil: date})}
