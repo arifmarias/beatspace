@@ -705,8 +705,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Function execution debug version testing completed successfully"
-  stuck_tasks: []
+    - "Debug My Assets tab - investigate why booked assets not showing"
+    - "Verify fetchLiveAssets function data flow"
+  stuck_tasks:
+    - "My Assets tab shows No Booked Assets Yet despite dummy data"
   test_all: false
   test_priority: "high_first"
 
