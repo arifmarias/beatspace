@@ -309,11 +309,14 @@ const BuyerDashboard = () => {
             const bookedAsset = {
               ...asset,
               campaignName: offer.campaign_name || 'Unknown Campaign',
-              campaignId: offer.existing_campaign_id,
+              campaignId: offer.campaign_id || offer.existing_campaign_id,
               campaignStatus: 'Live', // Approved offers are considered live
-              assetStartDate: offer.tentative_start_date,
+              assetStartDate: offer.asset_start_date || offer.tentative_start_date,
               assetEndDate: offer.asset_expiration_date,
-              duration: calculateDuration(offer.tentative_start_date, offer.asset_expiration_date),
+              duration: calculateDuration(
+                offer.asset_start_date || offer.tentative_start_date, 
+                offer.asset_expiration_date
+              ),
               expiryDate: offer.asset_expiration_date,
               lastStatus: asset.status // Will be 'Booked'
             };
