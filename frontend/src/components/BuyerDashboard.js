@@ -93,6 +93,10 @@ const BuyerDashboard = () => {
   const [offerCurrentPage, setOfferCurrentPage] = useState(1);
   const [offerItemsPerPage] = useState(5);
 
+  // Pagination and search state for My Assets
+  const [assetsCurrentPage, setAssetsCurrentPage] = useState(1);
+  const [assetsItemsPerPage] = useState(5);
+
   // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
