@@ -146,6 +146,13 @@ const BuyerDashboard = () => {
     fetchBuyerData();
   }, []);
 
+  // Fetch live assets when currentUser is available
+  useEffect(() => {
+    if (currentUser?.email) {
+      fetchLiveAssets();
+    }
+  }, [currentUser]);
+
   const fetchBuyerData = async () => {
     try {
       setLoading(true);
