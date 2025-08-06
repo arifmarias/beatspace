@@ -3447,21 +3447,6 @@ const AdminDashboard = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Visibility Score (1-10)
-                  </label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="10"
-                    step="0.1"
-                    value={assetForm.visibility_score}
-                    onChange={(e) => setAssetForm({...assetForm, visibility_score: e.target.value})}
-                    placeholder="Visibility score"
-                  />
-                </div>
-
                 <div className="space-y-3">
                   <label className="block text-sm font-medium text-gray-700">
                     Pricing (৳) *
