@@ -1888,6 +1888,45 @@ async def get_public_assets():
         logger.error(f"Error fetching public assets: {e}")
         return []
 
+@api_router.get("/assets/booked")
+async def get_booked_assets(current_user: User = Depends(get_current_user)):
+    """Get all booked assets for the current buyer with campaign details"""
+    try:
+        # Find approved offers for this buyer
+        approved_offers = await db.offer_requests.find({
+            "buyer_email": current_user.email,
+            "status": "Approved"
+        }).to_list(None)
+        
+        booked_assets_data = []
+        
+        for offer in approved_offers:
+            # Find the asset details
+            asset = await db.assets.find_one({"id": offer["asset_id"]})
+            
+            if asset and asset.get("status") == "Booked":
+                # Create booked asset data with campaign info
+                booked_asset = {
+                    "id": asset["id"],
+                    "name": asset["name"],
+                    "address": asset.get("address", "Address not available"),
+                    "type": asset.get("type", "Billboard"),
+                    "campaignName": offer.get("campaign_name", "Unknown Campaign"),
+                    "assetStartDate": offer.get("asset_start_date") or offer.get("tentative_start_date"),
+                    "assetEndDate": offer.get("asset_expiration_date"),
+                    "duration": offer.get("contract_duration", "1 month"),
+                    "expiryDate": offer.get("asset_expiration_date"),
+                    "lastStatus": "Booked",
+                    "location": asset.get("location", {}),
+                    "images": asset.get("images", [])
+                }
+                booked_assets_data.append(booked_asset)
+        
+        return booked_assets_data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching booked assets: {str(e)}")
+
 # Enhanced Asset CRUD Routes
 @api_router.get("/assets", response_model=List[Asset])
 async def get_assets(
