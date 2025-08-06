@@ -1112,12 +1112,11 @@ async def create_dummy_booked_assets_data():
 # Create dummy data endpoint for testing
 @api_router.post("/admin/create-dummy-data")
 async def create_dummy_data(current_user: User = Depends(get_current_user)):
-    """Create dummy booked assets data for testing"""
+    """DISABLED: Dummy data creation disabled for production"""
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    await create_dummy_booked_assets_data()
-    return {"message": "Dummy booked assets data created successfully"}
+    raise HTTPException(status_code=400, detail="Dummy data creation is disabled in production. Please create real data through the UI.")
 
 # Initialize sample data on startup
 @app.on_event("startup") 
