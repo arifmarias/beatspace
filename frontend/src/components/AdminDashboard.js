@@ -4031,7 +4031,11 @@ const AdminDashboard = () => {
         </Dialog>
 
         {/* Asset Details Dialog */}
-        <Dialog open={!!selectedAsset} onOpenChange={() => setSelectedAsset(null)}>
+        <Dialog open={!!selectedAsset} onOpenChange={() => {
+          setSelectedAsset(null);
+          setSelectedImageIndex(0);
+          setShowImageModal(false);
+        }}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
