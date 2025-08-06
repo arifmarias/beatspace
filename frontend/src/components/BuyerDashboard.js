@@ -445,14 +445,19 @@ const BuyerDashboard = () => {
         console.log('🔍 Current user email:', currentUser?.email);
         
         // Add assets from offer requests that aren't already in the campaign
-        campaignOfferRequests.forEach(offer => {
+        buyerOfferRequests.forEach(offer => {
           const requestedAsset = allAssets.find(asset => asset.id === offer.asset_id);
           if (requestedAsset && !campaignAssetsList.find(existing => existing.id === requestedAsset.id)) {
+            console.log('✅ Adding requested asset:', requestedAsset.name, 'with status:', offer.status);
             // Mark this asset as "requested" so we can display it differently
             requestedAsset.isRequested = true;
             requestedAsset.offerStatus = offer.status;
             requestedAsset.offerId = offer.id;
             campaignAssetsList.push(requestedAsset);
+          } else if (!requestedAsset) {
+            console.log('❌ Asset not found for offer:', offer.asset_name, 'ID:', offer.asset_id);
+          } else {
+            console.log('⚠️ Asset already in campaign:', offer.asset_name);
           }
         });
       }
