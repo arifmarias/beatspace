@@ -706,11 +706,13 @@ const MarketplacePage = () => {
       const response = await axios.post(`${API}/offers/request`, offerRequestData, { headers });
       console.log('✅ Offer request submitted successfully:', response.data);
       
-      // Add to asset basket
+      // Add to asset basket with offer request ID
       setAssetBasket(prev => [...prev, {
         ...selectedAssetForOffer,
         campaign: offerDetails.campaignName || 'Selected Campaign',
-        requestDate: new Date().toLocaleDateString()
+        requestDate: new Date().toLocaleDateString(),
+        offerRequestId: response.data.id, // Store the offer request ID for deletion
+        campaignId: offerDetails.existingCampaignId
       }]);
       
       // Close dialog and reset form
