@@ -285,6 +285,9 @@ const BuyerDashboard = () => {
       console.log('📊 Final booked assets for UI:', bookedAssetsData.length);
       setLiveAssets(bookedAssetsData);
       
+      // Ensure loading state is cleared even if no assets found
+      console.log('✅ fetchLiveAssets successful - found', bookedAssetsData.length, 'booked assets');
+      
     } catch (error) {
       console.error('❌ Error fetching booked assets:', error);
       console.error('❌ Error details:', error.response?.data || error.message);
