@@ -163,6 +163,7 @@ const AdminDashboard = () => {
     description: '',
     google_map_link: '', // NEW: Google Maps link field
     address: '',
+    location: { lat: '', lng: '' }, // NEW: Location coordinates
     district: '',
     division: '',
     type: 'Billboard',
