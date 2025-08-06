@@ -287,9 +287,11 @@ const BuyerDashboard = () => {
       
     } catch (error) {
       console.error('❌ Error fetching booked assets:', error);
-      notify.error('Failed to load booked assets: ' + error.message);
+      console.error('❌ Error details:', error.response?.data || error.message);
+      notify.error('Failed to load booked assets: ' + (error.response?.data?.detail || error.message));
       setLiveAssets([]);
     } finally {
+      console.log('🏁 fetchLiveAssets completed - setting loading to false');
       setAssetsLoading(false);
     }
   };
