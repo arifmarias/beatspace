@@ -955,14 +955,14 @@ const BuyerDashboard = () => {
         action: 'accept'
       }, { headers });
       
-      alert(`✅ Offer approved successfully! Asset "${offer.asset_name}" is now booked.`);
+      notify.success(`✅ Offer approved successfully! Asset "${offer.asset_name}" is now booked.`);
       
       // Refresh buyer data
       await fetchBuyerData();
       
     } catch (error) {
       console.error('🚨 Error approving offer:', error);
-      alert('Failed to approve offer: ' + (error.response?.data?.detail || error.message));
+      notify.error('Failed to approve offer: ' + (error.response?.data?.detail || error.message));
     }
   };
 
@@ -983,14 +983,14 @@ const BuyerDashboard = () => {
         action: 'reject'
       }, { headers });
       
-      alert(`Offer rejected. Asset "${offer.asset_name}" is now available again.`);
+      notify.info(`Offer rejected. Asset "${offer.asset_name}" is now available again.`);
       
       // Refresh buyer data
       await fetchBuyerData();
       
     } catch (error) {
       console.error('🚨 Error rejecting offer:', error);
-      alert('Failed to reject offer: ' + (error.response?.data?.detail || error.message));
+      notify.error('Failed to reject offer: ' + (error.response?.data?.detail || error.message));
     }
   };
 
