@@ -1247,7 +1247,7 @@ const MarketplacePage = () => {
                                 alert('Please enter a campaign name');
                               }
                             }}
-                            disabled={!offerDetails.campaignName.trim()}
+                            disabled={!(offerDetails.campaignName || '').trim()}
                           >
                             Create
                           </Button>
