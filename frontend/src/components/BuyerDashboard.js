@@ -276,6 +276,26 @@ const BuyerDashboard = () => {
       }
       
       console.log('📊 Final booked assets count:', bookedAssetsData.length);
+      
+      // TEMPORARY DEBUG: Add a test asset to verify UI is working
+      if (bookedAssetsData.length === 0) {
+        console.log('🧪 DEBUG: Adding test asset since no real assets found');
+        bookedAssetsData.push({
+          id: 'test-debug-asset',
+          name: 'DEBUG: Test Billboard',
+          address: '123 Debug Street, Dhaka',
+          type: 'Billboard',
+          campaignName: 'Test Marketing Campaign',
+          campaignId: 'debug-campaign',
+          campaignStatus: 'Live',
+          assetStartDate: '2025-08-15',
+          assetEndDate: '2025-09-15',
+          duration: '1 month',
+          expiryDate: '2025-09-15',
+          lastStatus: 'Booked'
+        });
+      }
+      
       setLiveAssets(bookedAssetsData);
       
     } catch (error) {
