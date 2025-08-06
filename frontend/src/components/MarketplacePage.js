@@ -1724,128 +1724,252 @@ const MarketplacePage = () => {
               </DialogTitle>
             </DialogHeader>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Images and Basic Info */}
+              <div className="space-y-4">
+                {/* Image Gallery */}
                 {selectedAsset.photos && selectedAsset.photos.length > 0 && (
-                  <div className="mb-4">
+                  <div>
                     {/* Main selected image */}
                     <div 
-                      className="mb-3 cursor-pointer"
+                      className="mb-3 cursor-pointer group"
                       onClick={() => setShowImageModal(true)}
                     >
                       <img 
                         src={selectedAsset.photos[selectedImageIndex]} 
                         alt={`${selectedAsset.name} - Image ${selectedImageIndex + 1}`}
-                        className="w-full h-64 object-cover rounded-lg hover:opacity-90 transition-opacity"
+                        className="w-full h-64 object-cover rounded-lg group-hover:opacity-90 transition-opacity shadow-sm"
                       />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-20 rounded-lg">
+                        <Eye className="w-8 h-8 text-white" />
+                      </div>
                     </div>
                     
                     {/* Image thumbnails if more than one image */}
                     {selectedAsset.photos.length > 1 && (
-                      <div className="flex space-x-2 overflow-x-auto">
-                        {selectedAsset.photos.map((photo, index) => (
-                          <div
-                            key={index}
-                            className={`flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden ${
-                              index === selectedImageIndex 
-                                ? 'border-orange-500' 
-                                : 'border-gray-200 hover:border-gray-400'
-                            }`}
-                            onClick={() => setSelectedImageIndex(index)}
-                          >
-                            <img 
-                              src={photo} 
-                              alt={`${selectedAsset.name} - Thumbnail ${index + 1}`}
-                              className="w-16 h-16 object-cover"
-                            />
-                          </div>
-                        ))}
+                      <div>
+                        <div className="flex space-x-2 overflow-x-auto pb-2">
+                          {selectedAsset.photos.map((photo, index) => (
+                            <div
+                              key={index}
+                              className={`flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${
+                                index === selectedImageIndex 
+                                  ? 'border-orange-500 ring-2 ring-orange-200' 
+                                  : 'border-gray-200 hover:border-gray-400'
+                              }`}
+                              onClick={() => setSelectedImageIndex(index)}
+                            >
+                              <img 
+                                src={photo} 
+                                alt={`${selectedAsset.name} - Thumbnail ${index + 1}`}
+                                className="w-16 h-16 object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 text-center">
+                          {selectedAsset.photos.length} photos • Click to view larger
+                        </p>
                       </div>
-                    )}
-                    
-                    {/* Image counter */}
-                    {selectedAsset.photos.length > 1 && (
-                      <p className="text-xs text-gray-500 mt-2 text-center">
-                        Image {selectedImageIndex + 1} of {selectedAsset.photos.length}
-                      </p>
                     )}
                   </div>
                 )}
-                
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-semibold mb-1">Location</h4>
-                    <p className="text-gray-600 flex items-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {selectedAsset.address}
-                    </p>
-                    {selectedAsset.division && (
-                      <p className="text-gray-500 text-sm mt-1">
-                        {selectedAsset.district}, {selectedAsset.division} Division
-                      </p>
+
+                {/* Asset Basic Information */}
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <Building className="w-4 h-4 mr-2" />
+                    Asset Information
+                  </h4>
+                  
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-gray-500">Type:</span>
+                      <div className="font-medium">{selectedAsset.type}</div>
+                    </div>
+                    
+                    {selectedAsset.dimensions && (
+                      <div>
+                        <span className="text-gray-500">Dimensions:</span>
+                        <div className="font-medium">{selectedAsset.dimensions}</div>
+                      </div>
+                    )}
+                    
+                    {selectedAsset.traffic_volume && (
+                      <div>
+                        <span className="text-gray-500">Traffic:</span>
+                        <div className="font-medium">{selectedAsset.traffic_volume}</div>
+                      </div>
+                    )}
+                    
+                    {selectedAsset.visibility_score && (
+                      <div>
+                        <span className="text-gray-500">Visibility:</span>
+                        <div className="font-medium">{selectedAsset.visibility_score}/10</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Location with Small Map */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center mb-3">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Location
+                  </h4>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-700">{selectedAsset.address}</span>
+                    </div>
+                    
+                    {selectedAsset.district && selectedAsset.division && (
+                      <div className="text-gray-600">
+                        {selectedAsset.district}, {selectedAsset.division}
+                      </div>
+                    )}
+                    
+                    {/* Coordinates Display */}
+                    {selectedAsset.location && selectedAsset.location.lat && selectedAsset.location.lng && (
+                      <div className="text-xs text-gray-500">
+                        📍 {selectedAsset.location.lat}, {selectedAsset.location.lng}
+                      </div>
                     )}
                   </div>
                   
-                  <div>
-                    <h4 className="font-semibold mb-1">Description</h4>
-                    <p className="text-gray-600">{selectedAsset.description}</p>
-                  </div>
+                  {/* Small Map Placeholder (you can integrate Google Maps later) */}
+                  {selectedAsset.location && selectedAsset.location.lat && selectedAsset.location.lng && (
+                    <div className="mt-3 bg-gray-200 h-32 rounded flex items-center justify-center">
+                      <div className="text-center text-gray-600">
+                        <MapPin className="w-6 h-6 mx-auto mb-1" />
+                        <div className="text-xs">Map View</div>
+                        <div className="text-xs text-gray-500">
+                          {selectedAsset.location.lat.toFixed(4)}, {selectedAsset.location.lng.toFixed(4)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column - Pricing and Details */}
+              <div className="space-y-4">
+                {/* Pricing Information */}
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center mb-3">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Pricing Information
+                  </h4>
                   
-                  <div>
-                    <h4 className="font-semibold mb-1">Specifications</h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>Dimensions: {selectedAsset.dimensions}</div>
-                      <div>Visibility: {selectedAsset.visibility_score}/10</div>
-                      <div>Traffic: {selectedAsset.traffic_volume}</div>
-                      <div>Seller: {selectedAsset.seller_name}</div>
+                  <div className="space-y-3">
+                    {selectedAsset.pricing && selectedAsset.pricing.monthly_rate && selectedAsset.pricing.monthly_rate > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Monthly Rate:</span>
+                        <span className="font-bold text-green-600">৳{selectedAsset.pricing.monthly_rate.toLocaleString()}</span>
+                      </div>
+                    )}
+                    
+                    {selectedAsset.pricing && selectedAsset.pricing.yearly_rate && selectedAsset.pricing.yearly_rate > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Yearly Rate:</span>
+                        <span className="font-bold text-green-600">৳{selectedAsset.pricing.yearly_rate.toLocaleString()}</span>
+                      </div>
+                    )}
+                    
+                    {/* Special offer indicator */}
+                    <div className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                      💡 Contact for best offer and package deals
                     </div>
                   </div>
                 </div>
-              </div>
-              
-              <div>
+
+                {/* Status Information */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 mb-3">Status</h4>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Badge 
+                      variant={selectedAsset.status === 'Available' ? 'success' : selectedAsset.status === 'Booked' ? 'secondary' : 'default'}
+                      className={
+                        selectedAsset.status === 'Available' ? 'bg-green-100 text-green-800' :
+                        selectedAsset.status === 'Booked' ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
+                      }
+                    >
+                      {selectedAsset.status}
+                    </Badge>
+                  </div>
+                  
+                  {selectedAsset.next_available_date && (
+                    <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded">
+                      <Clock className="w-4 h-4 inline mr-1" />
+                      Next available: {new Date(selectedAsset.next_available_date).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+
+                {/* Seller Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center mb-3">
+                    <Users className="w-4 h-4 mr-2" />
+                    Seller Information
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <div className="font-medium">{selectedAsset.seller_name}</div>
+                    {selectedAsset.seller_id && (
+                      <div className="text-gray-500 text-xs">ID: {selectedAsset.seller_id}</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Technical Specifications */}
                 {selectedAsset.specifications && Object.keys(selectedAsset.specifications).length > 0 && (
-                  <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                    <h4 className="font-semibold mb-3">Technical Details</h4>
-                    <div className="space-y-1 text-sm">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-3">Technical Details</h4>
+                    <div className="space-y-2 text-sm">
                       {Object.entries(selectedAsset.specifications).map(([key, value]) => (
                         <div key={key} className="flex justify-between">
-                          <span className="capitalize">{key}:</span>
-                          <span>{value}</span>
+                          <span className="text-gray-500 capitalize">{key}:</span>
+                          <span className="font-medium">{value}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                
-                {/* Request Best Offer Button - Available for Available assets */}
-                <Button 
-                  variant="outline"
-                  className="w-full border-orange-200 text-orange-600 hover:bg-orange-50"
-                  onClick={() => {
-                    console.log('🚨 Request Best Offer button clicked!');
-                    console.log('🚨 Selected asset:', selectedAsset);
-                    handleRequestBestOffer(selectedAsset);
-                  }}
-                  disabled={selectedAsset.status === 'Booked'}
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  {selectedAsset.status === 'Booked' ? 'Booked - Not Available' : 'Request Best Offer'}
-                </Button>
-                
-                {!currentUser && selectedAsset.status !== 'Booked' && (
-                  <p className="text-xs text-gray-600 mt-2 text-center">
-                    Sign in to request offers for this asset
-                  </p>
-                )}
 
-                {selectedAsset.next_available_date && (
-                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm text-yellow-800">
-                      <Clock className="w-4 h-4 inline mr-1" />
-                      Next available: {new Date(selectedAsset.next_available_date).toLocaleDateString()}
+                {/* Description */}
+                {selectedAsset.description && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-3">Description</h4>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {selectedAsset.description}
                     </p>
                   </div>
+                )}
+
+                {/* Request Best Offer Button */}
+                <Button 
+                  size="lg"
+                  className={`w-full ${
+                    selectedAsset.status === 'Available' 
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                  onClick={() => {
+                    if (selectedAsset.status === 'Available') {
+                      handleRequestBestOffer(selectedAsset);
+                    }
+                  }}
+                  disabled={selectedAsset.status !== 'Available'}
+                >
+                  <MessageSquare className="w-5 h-5 mr-2" />
+                  {selectedAsset.status === 'Available' ? 'Request Best Offer' : 
+                   selectedAsset.status === 'Booked' ? 'Currently Booked' : 'Not Available'}
+                </Button>
+
+                {!currentUser && selectedAsset.status === 'Available' && (
+                  <p className="text-xs text-gray-500 text-center">
+                    Please sign in to request offers
+                  </p>
                 )}
               </div>
             </div>
