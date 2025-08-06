@@ -827,6 +827,7 @@ async def update_offer_request_status_admin(
                 "status": AssetStatus.AVAILABLE,
                 "buyer_id": None,
                 "buyer_name": None,
+                "next_available_date": None,  # Clear next available date when asset becomes available
                 "updated_at": datetime.utcnow()
             }}
         )
