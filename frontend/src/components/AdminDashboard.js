@@ -4177,10 +4177,6 @@ const AdminDashboard = () => {
                           <span className="font-bold text-green-600">৳{selectedAsset.pricing.yearly_rate.toLocaleString()}</span>
                         </div>
                       )}
-                      
-                      <div className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                        💡 Contact for best offer and package deals
-                      </div>
                     </div>
                   </div>
 
