@@ -1890,22 +1890,25 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Offer Mediation Tab */}
+          {/* Offer Mediation Tab - Enhanced UX with Buyer Grouping */}
           <TabsContent value="offers" className="space-y-6">
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center space-x-2">
-                    <MessageSquare className="w-5 h-5" />
-                    <span>Offer Mediation</span>
+                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                    <span>Pending Offers by Buyer</span>
+                    <Badge variant="secondary" className="ml-2">
+                      {getFilteredOfferRequests().filter(offer => offer.status === 'Pending').length} Pending
+                    </Badge>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
                     <Input
-                      placeholder="Search offer requests..."
+                      placeholder="Search buyer or asset..."
                       value={searchTerm}
                       onChange={(e) => {
                         setSearchTerm(e.target.value);
-                        setOfferCurrentPage(1); // Reset to first page when searching
+                        setOfferCurrentPage(1);
                       }}
                       className="w-64"
                     />
@@ -1913,290 +1916,183 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {getFilteredOfferRequests().length > 0 ? (
-                  <div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Asset</TableHead>
-                          <TableHead>Buyer</TableHead>
-                          <TableHead>Campaign</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Offered Price</TableHead>
-                          <TableHead>Asset Price</TableHead>
-                          <TableHead>Difference</TableHead>
-                          <TableHead>Duration</TableHead>
-                          <TableHead>Submitted</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {getPaginatedOfferRequests().map((offer) => {
-                        // Calculate price difference
-                        const assetPrice = offer.asset_price || 0;
-                        const offeredPrice = offer.estimated_budget || 0;
-                        const difference = offeredPrice - assetPrice;
-                        const percentageDiff = assetPrice > 0 ? ((difference / assetPrice) * 100).toFixed(1) : 0;
-                        
-                        return (
-                          <TableRow key={offer.id}>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{offer.asset_name}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{offer.buyer_name}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{offer.campaign_name}</div>
-                                <div className="text-sm text-gray-500 capitalize">{offer.campaign_type} campaign</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge className={`${getStatusColor(offer.status)}`}>
-                                {offer.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="font-medium">
-                                {offeredPrice ? `৳${offeredPrice.toLocaleString()}` : 'Not specified'}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="font-medium">
-                                {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'Not available'}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {assetPrice > 0 && offeredPrice > 0 ? (
-                                <div className="flex flex-col">
-                                  <span className={`font-medium ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {difference >= 0 ? '+' : ''}৳{difference.toLocaleString()}
-                                  </span>
-                                  <span className={`text-xs ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    ({percentageDiff >= 0 ? '+' : ''}{percentageDiff}%)
-                                  </span>
+                {(() => {
+                  const buyerGroups = getPendingOffersByBuyer();
+                  
+                  if (buyerGroups.length === 0) {
+                    return (
+                      <div className="text-center py-12">
+                        <MessageSquare className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900">No Pending Offers</h3>
+                        <p className="text-gray-500">All offer requests have been processed or none exist.</p>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <div className="space-y-6">
+                      {buyerGroups.map((group, groupIndex) => (
+                        <Card key={`buyer-${groupIndex}`} className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-white">
+                          <CardHeader className="pb-3">
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center space-x-3">
+                                <div className="bg-orange-100 p-2 rounded-full">
+                                  <Users className="w-5 h-5 text-orange-600" />
                                 </div>
-                              ) : (
-                                <span className="text-gray-400">N/A</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                {offer.contract_duration || 'Not specified'}
+                                <div>
+                                  <h3 className="font-semibold text-lg text-gray-900">{group.buyer.name}</h3>
+                                  <p className="text-sm text-gray-600">{group.buyer.email}</p>
+                                  <Badge variant="outline" className="mt-1 border-orange-300 text-orange-600">
+                                    {group.offers.length} Pending {group.offers.length === 1 ? 'Request' : 'Requests'}
+                                  </Badge>
+                                </div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                {new Date(offer.created_at).toLocaleDateString()}
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => {
+                                    group.offers.forEach(offer => handleQuoteOffer(offer));
+                                  }}
+                                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                >
+                                  <DollarSign className="w-4 h-4 mr-1" />
+                                  Quote All ({group.offers.length})
+                                </Button>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
-                                  <DropdownMenuItem 
-                                    onClick={() => handleQuoteOffer(offer)}
-                                    className="flex items-center cursor-pointer text-blue-600"
-                                  >
-                                    <DollarSign className="h-4 w-4 mr-2" />
-                                    Price Quotation
-                                  </DropdownMenuItem>
-                                  
-                                  <DropdownMenuItem asChild>
-                                    <Dialog>
-                                      <DialogTrigger asChild>
-                                        <div 
-                                          className="flex items-center cursor-pointer px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm w-full"
-                                          onClick={() => setSelectedOfferRequest(offer)}
-                                        >
-                                          <Eye className="h-4 w-4 mr-2" />
-                                          View Details
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <div className="space-y-4">
+                              {group.offers.map((offer) => {
+                                const assetPrice = offer.asset_price || 0;
+                                const offeredPrice = offer.estimated_budget || 0;
+                                const difference = offeredPrice - assetPrice;
+                                const percentageDiff = assetPrice > 0 ? ((difference / assetPrice) * 100).toFixed(1) : 0;
+                                
+                                return (
+                                  <Card key={offer.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                                    <CardContent className="p-4">
+                                      <div className="grid grid-cols-12 gap-4 items-center">
+                                        {/* Asset Info - 3 cols */}
+                                        <div className="col-span-3">
+                                          <div className="font-medium text-gray-900">{offer.asset_name}</div>
+                                          <div className="text-sm text-gray-500">{offer.campaign_name}</div>
+                                          <Badge variant="secondary" className="text-xs mt-1">
+                                            {offer.contract_duration || '3 months'}
+                                          </Badge>
                                         </div>
-                                      </DialogTrigger>
-                                      <DialogContent className="max-w-3xl">
-                                        <DialogHeader>
-                                          <DialogTitle>Offer Request Details</DialogTitle>
-                                        </DialogHeader>
-                                        {selectedOfferRequest && (
-                                          <div className="space-y-6">
-                                            <div className="grid grid-cols-2 gap-6">
-                                              <div>
-                                                <h4 className="font-semibold mb-3">Request Information</h4>
-                                                <div className="space-y-2 text-sm">
-                                                  <p><strong>Asset:</strong> {selectedOfferRequest.asset_name}</p>
-                                                  <p><strong>Buyer:</strong> {selectedOfferRequest.buyer_name}</p>
-                                                  <p><strong>Campaign:</strong> {selectedOfferRequest.campaign_name}</p>
-                                                  <p><strong>Campaign Type:</strong> <span className="capitalize">{selectedOfferRequest.campaign_type}</span></p>
-                                                  <p><strong>Duration:</strong> {selectedOfferRequest.contract_duration || 'Not specified'}</p>
-                                                  <p><strong>Status:</strong> 
-                                                    <Badge className={`ml-2 ${getStatusColor(selectedOfferRequest.status)}`}>
-                                                      {selectedOfferRequest.status}
-                                                    </Badge>
-                                                  </p>
-                                                </div>
-                                              </div>
-                                              <div>
-                                                <h4 className="font-semibold mb-3">Financial Details</h4>
-                                                <div className="space-y-2 text-sm">
-                                                  <p><strong>Offered Price:</strong> {selectedOfferRequest.estimated_budget ? `৳${selectedOfferRequest.estimated_budget.toLocaleString()}` : 'Not specified'}</p>
-                                                  <p><strong>Asset Price:</strong> {selectedOfferRequest.asset_price ? `৳${selectedOfferRequest.asset_price.toLocaleString()}` : 'Not available'}</p>
-                                                  {selectedOfferRequest.asset_price && selectedOfferRequest.estimated_budget && (
-                                                    <p><strong>Difference:</strong> 
-                                                      <span className={`ml-1 ${(selectedOfferRequest.estimated_budget - selectedOfferRequest.asset_price) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                        {(selectedOfferRequest.estimated_budget - selectedOfferRequest.asset_price) >= 0 ? '+' : ''}৳{(selectedOfferRequest.estimated_budget - selectedOfferRequest.asset_price).toLocaleString()}
-                                                      </span>
-                                                    </p>
-                                                  )}
-                                                  <p><strong>Submitted:</strong> {new Date(selectedOfferRequest.created_at).toLocaleString()}</p>
-                                                </div>
-                                              </div>
+                                        
+                                        {/* Price Comparison - 4 cols */}
+                                        <div className="col-span-4">
+                                          <div className="grid grid-cols-3 gap-2 text-sm">
+                                            <div>
+                                              <span className="text-gray-500 block">Buyer Offer</span>
+                                              <span className="font-medium text-blue-600">
+                                                {offeredPrice ? `৳${offeredPrice.toLocaleString()}` : 'N/A'}
+                                              </span>
                                             </div>
-
-                                            {selectedOfferRequest.special_requirements && (
-                                              <div>
-                                                <h4 className="font-semibold mb-2">Special Requirements</h4>
-                                                <p className="text-sm bg-gray-50 p-3 rounded">{selectedOfferRequest.special_requirements}</p>
-                                              </div>
-                                            )}
-
-                                            {selectedOfferRequest.notes && (
-                                              <div>
-                                                <h4 className="font-semibold mb-2">Additional Notes</h4>
-                                                <p className="text-sm bg-gray-50 p-3 rounded">{selectedOfferRequest.notes}</p>
-                                              </div>
-                                            )}
-
-                                            <div className="flex justify-between items-center pt-4 border-t">
-                                              <div className="text-sm text-gray-600">
-                                                <strong>Current Status:</strong> {selectedOfferRequest.status}
-                                              </div>
-                                              <div className="flex space-x-2">
-                                                <Button
-                                                  onClick={() => updateOfferRequestStatus(selectedOfferRequest.id, 'In Process')}
-                                                  size="sm"
-                                                  variant="outline"
-                                                  disabled={selectedOfferRequest.status === 'In Process'}
-                                                >
-                                                  Mark In Process
-                                                </Button>
-                                                <Button
-                                                  onClick={() => updateOfferRequestStatus(selectedOfferRequest.id, 'On Hold')}
-                                                  size="sm"
-                                                  variant="outline"
-                                                  disabled={selectedOfferRequest.status === 'On Hold'}
-                                                >
-                                                  Put On Hold
-                                                </Button>
-                                                <Button
-                                                  onClick={() => updateOfferRequestStatus(selectedOfferRequest.id, 'Approved')}
-                                                  size="sm"
-                                                  className="bg-green-600 hover:bg-green-700"
-                                                  disabled={selectedOfferRequest.status === 'Approved'}
-                                                >
-                                                  Approve
-                                                </Button>
-                                              </div>
+                                            <div>
+                                              <span className="text-gray-500 block">Asset Price</span>
+                                              <span className="font-medium">
+                                                {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-500 block">Difference</span>
+                                              {assetPrice > 0 && offeredPrice > 0 ? (
+                                                <div>
+                                                  <span className={`font-medium ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {difference >= 0 ? '+' : ''}৳{Math.abs(difference).toLocaleString()}
+                                                  </span>
+                                                  <div className={`text-xs ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                    ({percentageDiff >= 0 ? '+' : ''}{percentageDiff}%)
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <span className="text-gray-400">N/A</span>
+                                              )}
                                             </div>
                                           </div>
-                                        )}
-                                      </DialogContent>
-                                    </Dialog>
-                                  </DropdownMenuItem>
-                                  
-                                  <DropdownMenuItem 
-                                    onClick={() => updateOfferRequestStatus(offer.id, 'In Process')}
-                                    className="flex items-center cursor-pointer"
-                                    disabled={offer.status === 'In Process'}
-                                  >
-                                    <Clock className="h-4 w-4 mr-2" />
-                                    Mark In Process
-                                  </DropdownMenuItem>
-                                  
-                                  <DropdownMenuItem 
-                                    onClick={() => updateOfferRequestStatus(offer.id, 'On Hold')}
-                                    className="flex items-center cursor-pointer text-yellow-600"
-                                    disabled={offer.status === 'On Hold'}
-                                  >
-                                    <Pause className="h-4 w-4 mr-2" />
-                                    Put On Hold
-                                  </DropdownMenuItem>
-                                  
-                                  <DropdownMenuItem 
-                                    onClick={() => updateOfferRequestStatus(offer.id, 'Approved')}
-                                    className="flex items-center cursor-pointer text-green-600"
-                                    disabled={offer.status === 'Approved'}
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Approve
-                                  </DropdownMenuItem>
-                                  
-                                  <DropdownMenuItem 
-                                    onClick={() => deleteOfferRequest(offer)}
-                                    className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Delete Request
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                  
-                  {/* Pagination Controls */}
-                  {getTotalPages() > 1 && (
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="text-sm text-gray-500">
-                        Showing {((offerCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(offerCurrentPage * itemsPerPage, getFilteredOfferRequests().length)} of {getFilteredOfferRequests().length} offer requests
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setOfferCurrentPage(prev => Math.max(prev - 1, 1))}
-                          disabled={offerCurrentPage === 1}
-                        >
-                          Previous
-                        </Button>
-                        <span className="text-sm text-gray-600">
-                          Page {offerCurrentPage} of {getTotalPages()}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setOfferCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
-                          disabled={offerCurrentPage === getTotalPages()}
-                        >
-                          Next
-                        </Button>
-                      </div>
+                                        </div>
+                                        
+                                        {/* Date & Status - 2 cols */}
+                                        <div className="col-span-2 text-center">
+                                          <div className="text-xs text-gray-500">Submitted</div>
+                                          <div className="text-sm font-medium">
+                                            {new Date(offer.created_at).toLocaleDateString()}
+                                          </div>
+                                          <Badge className="mt-1 bg-yellow-100 text-yellow-800 border-yellow-300">
+                                            ⏰ Needs Quote
+                                          </Badge>
+                                        </div>
+                                        
+                                        {/* Actions - 3 cols */}
+                                        <div className="col-span-3 flex justify-end space-x-2">
+                                          <Button
+                                            size="sm"
+                                            onClick={() => handleQuoteOffer(offer)}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                                          >
+                                            <DollarSign className="w-3 h-3 mr-1" />
+                                            Quote Price
+                                          </Button>
+                                          
+                                          <Dialog>
+                                            <DialogTrigger asChild>
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setSelectedOfferRequest(offer)}
+                                                className="flex-1"
+                                              >
+                                                <Eye className="w-3 h-3 mr-1" />
+                                                Details
+                                              </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="max-w-2xl">
+                                              <DialogHeader>
+                                                <DialogTitle>Offer Request Details</DialogTitle>
+                                              </DialogHeader>
+                                              {selectedOfferRequest && (
+                                                <div className="grid grid-cols-2 gap-4">
+                                                  <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Asset</label>
+                                                    <p className="text-sm">{selectedOfferRequest.asset_name}</p>
+                                                  </div>
+                                                  <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Buyer</label>
+                                                    <p className="text-sm">{selectedOfferRequest.buyer_name} ({selectedOfferRequest.buyer_email})</p>
+                                                  </div>
+                                                  <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
+                                                    <p className="text-sm">{selectedOfferRequest.campaign_name}</p>
+                                                  </div>
+                                                  <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                                                    <p className="text-sm">{selectedOfferRequest.contract_duration || 'Not specified'}</p>
+                                                  </div>
+                                                  <div className="col-span-2">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
+                                                    <p className="text-sm">{selectedOfferRequest.special_requirements || 'None'}</p>
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </DialogContent>
+                                          </Dialog>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                  )}
-                </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No offer requests found.</p>
-                    <p className="text-sm">
-                      {searchTerm ? 
-                        `No offer requests match "${searchTerm}". Try adjusting your search.` : 
-                        "Offer requests from buyers will appear here for admin review."
-                      }
-                    </p>
-                  </div>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
