@@ -1166,8 +1166,8 @@ const MarketplacePage = () => {
                           }}
                           className="bg-orange-600 hover:bg-orange-700"
                           disabled={
-                            !offerDetails.estimatedBudget.trim() || 
-                            (offerDetails.campaignType === 'new' && !offerDetails.campaignName.trim()) ||
+                            !(offerDetails.estimatedBudget || '').trim() || 
+                            (offerDetails.campaignType === 'new' && !(offerDetails.campaignName || '').trim()) ||
                             (offerDetails.campaignType === 'existing' && !offerDetails.existingCampaignId)
                           }
                         >
