@@ -1386,7 +1386,7 @@ const BuyerDashboard = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>৳{campaign.budget?.toLocaleString()}</TableCell>
-                          <TableCell>{(campaign.assets || []).length} selected</TableCell>
+                          <TableCell>{(campaign.campaign_assets || []).length} selected</TableCell>
                           <TableCell>
                             {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'Not set'}
                           </TableCell>
