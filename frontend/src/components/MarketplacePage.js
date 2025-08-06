@@ -1241,8 +1241,8 @@ const MarketplacePage = () => {
                           />
                           <Button
                             onClick={() => {
-                              if (offerDetails.campaignName.trim()) {
-                                createNewCampaignWithAsset(offerDetails.campaignName.trim());
+                              if ((offerDetails.campaignName || '').trim()) {
+                                createNewCampaignWithAsset((offerDetails.campaignName || '').trim());
                               } else {
                                 alert('Please enter a campaign name');
                               }
