@@ -977,8 +977,16 @@ const AdminDashboard = () => {
             ...prev,
             address: addressFromUrl,
             district: parts.length > 1 ? parts[parts.length - 2] : '',
-            division: parts.length > 2 ? parts[parts.length - 1] : ''
+            division: parts.length > 2 ? parts[parts.length - 1] : '',
+            location: coords ? coords : prev.location // Use extracted coords if available
           }));
+          
+          console.log('URL parsing success:', {
+            address: addressFromUrl,
+            district: parts.length > 1 ? parts[parts.length - 2] : '',
+            division: parts.length > 2 ? parts[parts.length - 1] : '',
+            coordinates: coords || 'Not found'
+          });
           
           notify.success('Address extracted from URL. Please verify and adjust if needed.');
           return;
