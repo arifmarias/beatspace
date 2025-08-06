@@ -282,6 +282,27 @@ const AdminDashboard = () => {
     });
   };
 
+  // Get pending offers grouped by buyer
+  const getPendingOffersByBuyer = () => {
+    const pendingOffers = getFilteredOfferRequests().filter(offer => offer.status === 'Pending');
+    const buyerGroups = pendingOffers.reduce((groups, offer) => {
+      const buyerKey = `${offer.buyer_name}-${offer.buyer_email}`;
+      if (!groups[buyerKey]) {
+        groups[buyerKey] = {
+          buyer: { 
+            name: offer.buyer_name, 
+            email: offer.buyer_email 
+          },
+          offers: []
+        };
+      }
+      groups[buyerKey].offers.push(offer);
+      return groups;
+    }, {});
+    
+    return Object.values(buyerGroups);
+  };
+
   const getPaginatedOfferRequests = () => {
     const filtered = getFilteredOfferRequests();
     const startIndex = (offerCurrentPage - 1) * itemsPerPage;
