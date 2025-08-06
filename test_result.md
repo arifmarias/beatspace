@@ -705,10 +705,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Debug My Assets tab - investigate why booked assets not showing"
-    - "Verify fetchLiveAssets function data flow"
+    - "Test dynamic asset removal from basket using DELETE /offers/requests/{id} endpoint"
+    - "Verify individual remove buttons cancel offer requests properly"
+    - "Test Clear All functionality cancels all pending offer requests"
   stuck_tasks:
-    - "My Assets tab shows No Booked Assets Yet despite dummy data"
+    - "None - implementing enhanced basket removal functionality"
   test_all: false
   test_priority: "high_first"
 
