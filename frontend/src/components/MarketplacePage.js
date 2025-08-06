@@ -58,7 +58,7 @@ const MarketplacePage = () => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 12;
   const [campaign, setCampaign] = useState([]);
   const [filters, setFilters] = useState({
     type: 'all',
