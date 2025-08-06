@@ -2036,123 +2036,122 @@ const AdminDashboard = () => {
                                 const offeredPrice = offer.estimated_budget || 0;
                                 const difference = offeredPrice - assetPrice;
                                 const percentageDiff = assetPrice > 0 ? ((difference / assetPrice) * 100).toFixed(1) : 0;
+                                const isExpanded = selectedOfferRequest?.id === offer.id;
                                 
                                 return (
-                                  <Card key={offer.id} className="border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                                        onClick={() => {
-                                          // Show offer details inline or expand the card
-                                          setSelectedOfferRequest(selectedOfferRequest?.id === offer.id ? null : offer);
-                                        }}>
-                                    <CardContent className="p-4">
-                                      <div className="grid grid-cols-12 gap-4 items-center">
-                                        {/* Asset Info - 3 cols */}
-                                        <div className="col-span-3">
-                                          <div className="font-medium text-gray-900">{offer.asset_name}</div>
-                                          <div className="text-sm text-gray-500">{offer.campaign_name}</div>
-                                          <Badge variant="secondary" className="text-xs mt-1">
-                                            {offer.contract_duration || '3 months'}
-                                          </Badge>
-                                        </div>
-                                        
-                                        {/* Price Comparison - 4 cols */}
-                                        <div className="col-span-4">
-                                          <div className="grid grid-cols-3 gap-2 text-sm">
-                                            <div>
-                                              <span className="text-gray-500 block">Buyer Offer</span>
-                                              <span className="font-medium text-blue-600">
-                                                {offeredPrice ? `৳${offeredPrice.toLocaleString()}` : 'N/A'}
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <span className="text-gray-500 block">Asset Price</span>
-                                              <span className="font-medium">
-                                                {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <span className="text-gray-500 block">Difference</span>
-                                              {assetPrice > 0 && offeredPrice > 0 ? (
-                                                <div>
-                                                  <span className={`font-medium ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {difference >= 0 ? '+' : ''}৳{Math.abs(difference).toLocaleString()}
-                                                  </span>
-                                                  <div className={`text-xs ${difference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                    ({percentageDiff >= 0 ? '+' : ''}{percentageDiff}%)
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <span className="text-gray-400">N/A</span>
-                                              )}
+                                  <div key={offer.id}>
+                                    <Card className="border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                                          onClick={() => {
+                                            console.log('🖱️ Clicked on offer row:', offer.id);
+                                            setSelectedOfferRequest(isExpanded ? null : offer);
+                                          }}>
+                                      <CardContent className="p-4">
+                                        <div className="grid grid-cols-12 gap-4 items-center">
+                                          {/* Asset Info - 3 cols */}
+                                          <div className="col-span-3">
+                                            <div className="font-medium text-gray-900">{offer.asset_name}</div>
+                                            <div className="text-sm text-gray-500">{offer.campaign_name}</div>
+                                            <Badge variant="secondary" className="text-xs mt-1">
+                                              {offer.contract_duration || '3 months'}
+                                            </Badge>
+                                          </div>
+                                          
+                                          {/* Price Comparison - 4 cols */}
+                                          <div className="col-span-4">
+                                            <div className="grid grid-cols-3 gap-2 text-sm">
+                                              <div>
+                                                <span className="text-gray-500 block">Buyer Offer</span>
+                                                <span className="font-medium text-blue-600">
+                                                  {offeredPrice ? `৳${offeredPrice.toLocaleString()}` : 'N/A'}
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-gray-500 block">Asset Price</span>
+                                                <span className="font-medium">
+                                                  {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-gray-500 block">Admin Quote</span>
+                                                <span className="font-medium text-green-600">
+                                                  {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
+                                                </span>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                        
-                                        {/* Date & Status - 2 cols */}
-                                        <div className="col-span-2 text-center">
-                                          <div className="text-xs text-gray-500">Submitted</div>
-                                          <div className="text-sm font-medium">
-                                            {new Date(offer.created_at).toLocaleDateString()}
+                                          
+                                          {/* Date & Status - 2 cols */}
+                                          <div className="col-span-2 text-center">
+                                            <div className="text-xs text-gray-500">Submitted</div>
+                                            <div className="text-sm font-medium">
+                                              {new Date(offer.created_at).toLocaleDateString()}
+                                            </div>
+                                            <Badge className={`mt-1 ${
+                                              offer.status === 'Pending' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
+                                              offer.status === 'Quoted' || offer.status === 'In Process' ? 'bg-blue-100 text-blue-800 border-blue-300' :
+                                              'bg-gray-100 text-gray-800 border-gray-300'
+                                            }`}>
+                                              {offer.status === 'Pending' ? '⏰ Needs Quote' :
+                                               offer.status === 'Quoted' ? '💰 Quoted' :
+                                               offer.status === 'In Process' ? '⚡ In Process' :
+                                               `📋 ${offer.status}`
+                                              }
+                                            </Badge>
                                           </div>
-                                          <Badge className={`mt-1 ${
-                                            offer.status === 'Pending' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
-                                            offer.status === 'Quoted' || offer.status === 'In Process' ? 'bg-blue-100 text-blue-800 border-blue-300' :
-                                            'bg-gray-100 text-gray-800 border-gray-300'
-                                          }`}>
-                                            {offer.status === 'Pending' ? '⏰ Needs Quote' :
-                                             offer.status === 'Quoted' ? '💰 Quoted' :
-                                             offer.status === 'In Process' ? '⚡ In Process' :
-                                             `📋 ${offer.status}`
-                                            }
-                                          </Badge>
-                                        </div>
-                                        
-                                        {/* Actions - 3 cols */}
-                                        <div className="col-span-3 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
-                                          {offer.status === 'Pending' ? (
-                                            // Show Quote Price button for pending offers
-                                            <Button
-                                              size="sm"
-                                              onClick={() => handleQuoteOffer(offer)}
-                                              className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
-                                            >
-                                              <DollarSign className="w-3 h-3 mr-1" />
-                                              Quote Price
-                                            </Button>
-                                          ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
-                                            // Show both Quote Price (to update) and Approve buttons for quoted offers
-                                            <>
+                                          
+                                          {/* Actions - 3 cols */}
+                                          <div className="col-span-3 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+                                            {offer.status === 'Pending' ? (
+                                              // Show Quote Price button for pending offers
                                               <Button
                                                 size="sm"
                                                 onClick={() => handleQuoteOffer(offer)}
-                                                variant="outline"
-                                                className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
                                               >
                                                 <DollarSign className="w-3 h-3 mr-1" />
-                                                Update Price
+                                                Quote Price
                                               </Button>
-                                              <Button
-                                                size="sm"
-                                                onClick={() => handleApproveOffer(offer)}
-                                                className="bg-green-600 hover:bg-green-700 text-white"
-                                              >
-                                                <CheckCircle className="w-3 h-3 mr-1" />
-                                                Approve Asset
-                                              </Button>
-                                            </>
-                                          ) : (
-                                            // Show status for completed offers
-                                            <Badge className="bg-gray-100 text-gray-800">
-                                              {offer.status}
-                                            </Badge>
-                                          )}
+                                            ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
+                                              // Show both Quote Price (to update) and Approve buttons for quoted offers
+                                              <>
+                                                <Button
+                                                  size="sm"
+                                                  onClick={() => handleQuoteOffer(offer)}
+                                                  variant="outline"
+                                                  className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                                >
+                                                  <DollarSign className="w-3 h-3 mr-1" />
+                                                  Update Price
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  onClick={() => handleApproveOffer(offer)}
+                                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                                >
+                                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                                  Approve Asset
+                                                </Button>
+                                              </>
+                                            ) : (
+                                              // Show status for completed offers
+                                              <Badge className="bg-gray-100 text-gray-800">
+                                                {offer.status}
+                                              </Badge>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
-                                      
-                                      {/* Expandable Details Section */}
-                                      {selectedOfferRequest?.id === offer.id && (
-                                        <div className="mt-4 pt-4 border-t border-gray-200">
-                                          <div className="bg-gray-50 p-4 rounded-lg">
-                                            <h4 className="font-medium text-gray-900 mb-3">Offer Details</h4>
+                                      </CardContent>
+                                    </Card>
+                                    
+                                    {/* Expandable Details Section */}
+                                    {isExpanded && (
+                                      <Card className="ml-4 mt-2 border-l-4 border-l-blue-500">
+                                        <CardContent className="p-4">
+                                          <div className="bg-gray-50 rounded-lg p-4">
+                                            <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                                              <Eye className="w-4 h-4 mr-2 text-blue-600" />
+                                              Detailed Offer Information
+                                            </h4>
                                             <div className="grid grid-cols-2 gap-4 text-sm">
                                               <div>
                                                 <span className="font-medium text-gray-700">Asset:</span>
@@ -2170,16 +2169,32 @@ const AdminDashboard = () => {
                                                 <span className="font-medium text-gray-700">Duration:</span>
                                                 <p>{offer.contract_duration || 'Not specified'}</p>
                                               </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Current Status:</span>
+                                                <p className="font-medium text-blue-600">{offer.status}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Quoted Price:</span>
+                                                <p className="font-medium text-green-600">
+                                                  {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted yet'}
+                                                </p>
+                                              </div>
                                               <div className="col-span-2">
                                                 <span className="font-medium text-gray-700">Special Requirements:</span>
                                                 <p className="mt-1">{offer.special_requirements || 'None'}</p>
                                               </div>
+                                              {offer.admin_notes && (
+                                                <div className="col-span-2">
+                                                  <span className="font-medium text-gray-700">Admin Notes:</span>
+                                                  <p className="mt-1 text-gray-600">{offer.admin_notes}</p>
+                                                </div>
+                                              )}
                                             </div>
                                           </div>
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
+                                        </CardContent>
+                                      </Card>
+                                    )}
+                                  </div>
                                 );
                               })}
                             </div>
