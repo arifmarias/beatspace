@@ -1502,10 +1502,6 @@ const BuyerDashboard = () => {
                         // Calculate total offered price for this campaign's offers
                         const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.admin_quoted_price || 0), 0);
                         
-                        // Find campaign budget (from the first offer in the group)
-                        const campaign = (campaigns || []).find(c => c.name === campaignName);
-                        const campaignBudget = campaign?.budget || 0;
-                        
                         const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed (true)
                         
                         return (
