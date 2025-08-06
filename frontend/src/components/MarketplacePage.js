@@ -78,6 +78,7 @@ const MarketplacePage = () => {
     existingCampaignId: '',
     assetId: '',
     contractDuration: '3_months',
+    estimatedBudget: '', // Add missing estimatedBudget field
     customStartDate: null,
     customEndDate: null,
     customDurationDays: null,
