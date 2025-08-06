@@ -705,11 +705,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Test dynamic asset removal from basket using DELETE /offers/requests/{id} endpoint"
-    - "Verify individual remove buttons cancel offer requests properly"
-    - "Test Clear All functionality cancels all pending offer requests"
+    - "Test fixed CalendarComponent import error in Admin Dashboard"
+    - "Verify Quote Price and Details buttons work without JavaScript errors"
+    - "Test enhanced Offer Mediation tab with buyer grouping"
   stuck_tasks:
-    - "None - implementing enhanced basket removal functionality"
+    - "None - CalendarComponent error has been resolved"
   test_all: false
   test_priority: "high_first"
 
