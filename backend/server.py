@@ -1673,12 +1673,6 @@ async def update_offer_quote(
         }}
     )
     
-    # Update asset status to negotiating
-    await db.assets.update_one(
-        {"id": request["asset_id"]},
-        {"$set": {"status": AssetStatus.NEGOTIATING}}
-    )
-    
     # Send notification to buyer (placeholder)
     logger.info(f"Quote provided for offer request: {request_id} - Price: {quote_data.get('quoted_price')}")
     
