@@ -225,65 +225,9 @@ const BuyerDashboard = () => {
   };
 
   const fetchLiveAssets = async () => {
-    console.log('🚀 fetchLiveAssets STARTED - fixed version');
-    setAssetsLoading(true);
-    
-    try {
-      const headers = getAuthHeaders();
-      
-      // Fetch data directly without setTimeout
-      const [assetResponse, offersResponse] = await Promise.all([
-        axios.get(`${API}/assets/public`).catch(err => ({ data: [] })),
-        axios.get(`${API}/offers/requests`, { headers }).catch(err => ({ data: [] }))
-      ]);
-      
-      const allAssets = assetResponse.data || [];
-      const allOffers = offersResponse.data || [];
-      
-      console.log('✅ Data fetched - Assets:', allAssets.length, 'Offers:', allOffers.length);
-      
-      const bookedAssetsData = [];
-      
-      // Find booked assets for this buyer
-      const bookedAssets = allAssets.filter(asset => asset.status === 'Booked');
-      const userApprovedOffers = allOffers.filter(offer => 
-        offer.buyer_email === currentUser?.email && offer.status === 'Approved'
-      );
-      
-      console.log('📊 Booked assets:', bookedAssets.length, 'User approved offers:', userApprovedOffers.length);
-      
-      // Match them
-      for (const asset of bookedAssets) {
-        const matchingOffer = userApprovedOffers.find(offer => offer.asset_id === asset.id);
-        if (matchingOffer) {
-          console.log('✅ REAL MATCH:', asset.name);
-          bookedAssetsData.push({
-            id: asset.id,
-            name: asset.name,
-            address: asset.address || 'Address not available',
-            type: asset.type || 'Billboard',
-            campaignName: matchingOffer.campaign_name || 'Unknown Campaign',
-            assetStartDate: matchingOffer.asset_start_date || matchingOffer.tentative_start_date,
-            assetEndDate: matchingOffer.asset_expiration_date,
-            duration: matchingOffer.asset_expiration_date ? 
-              calculateDuration(matchingOffer.asset_start_date || matchingOffer.tentative_start_date, matchingOffer.asset_expiration_date) : 
-              '1 month',
-            expiryDate: matchingOffer.asset_expiration_date,
-            lastStatus: 'Booked'
-          });
-        }
-      }
-      
-      console.log('📊 Final booked assets:', bookedAssetsData.length);
-      setLiveAssets(bookedAssetsData);
-      
-    } catch (error) {
-      console.error('❌ Error in fetchLiveAssets:', error);
-      setLiveAssets([]);
-    } finally {
-      console.log('🏁 Setting loading to false');
-      setAssetsLoading(false);
-    }
+    console.log('🚫 fetchLiveAssets disabled');
+    setAssetsLoading(false);
+    setLiveAssets([]);
   };
 
   const calculateDuration = (startDate, endDate) => {
