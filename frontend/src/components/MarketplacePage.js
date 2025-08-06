@@ -1723,11 +1723,47 @@ const MarketplacePage = () => {
               <div>
                 {selectedAsset.photos && selectedAsset.photos.length > 0 && (
                   <div className="mb-4">
-                    <img 
-                      src={selectedAsset.photos[0]} 
-                      alt={selectedAsset.name}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
+                    {/* Main selected image */}
+                    <div 
+                      className="mb-3 cursor-pointer"
+                      onClick={() => setShowImageModal(true)}
+                    >
+                      <img 
+                        src={selectedAsset.photos[selectedImageIndex]} 
+                        alt={`${selectedAsset.name} - Image ${selectedImageIndex + 1}`}
+                        className="w-full h-64 object-cover rounded-lg hover:opacity-90 transition-opacity"
+                      />
+                    </div>
+                    
+                    {/* Image thumbnails if more than one image */}
+                    {selectedAsset.photos.length > 1 && (
+                      <div className="flex space-x-2 overflow-x-auto">
+                        {selectedAsset.photos.map((photo, index) => (
+                          <div
+                            key={index}
+                            className={`flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden ${
+                              index === selectedImageIndex 
+                                ? 'border-orange-500' 
+                                : 'border-gray-200 hover:border-gray-400'
+                            }`}
+                            onClick={() => setSelectedImageIndex(index)}
+                          >
+                            <img 
+                              src={photo} 
+                              alt={`${selectedAsset.name} - Thumbnail ${index + 1}`}
+                              className="w-16 h-16 object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Image counter */}
+                    {selectedAsset.photos.length > 1 && (
+                      <p className="text-xs text-gray-500 mt-2 text-center">
+                        Image {selectedImageIndex + 1} of {selectedAsset.photos.length}
+                      </p>
+                    )}
                   </div>
                 )}
                 
