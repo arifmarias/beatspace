@@ -56,9 +56,47 @@
 ##   test_all: false
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
+backend:
+  - task: "Buyer approve/reject offer functionality"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Missing backend endpoint for buyer to approve/reject quoted offers. Need PUT/PATCH endpoint like /api/offers/requests/{id}/approve and /api/offers/requests/{id}/reject to complete the workflow."
+
+frontend:
+  - task: "Buyer approve/reject offer UI functionality"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Buyer dashboard shows quoted offers but missing approve/reject buttons. Need to add UI for buyers to approve or reject quoted offers with proper status updates."
+
+  - task: "Admin Offer Mediation filtering"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/AdminDashboard.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Current filtering logic shows offers with 'Quoted' status correctly. The getActiveOffersByBuyer function filters out 'Approved' and 'Rejected' offers but keeps 'Quoted' offers visible. Manual verification shows offers are visible after quoting."
+
 ## agent_communication:
-##     - agent: "main"
-##       message: "Starting investigation of My Assets tab bug where booked assets are not displaying. The fetchLiveAssets function in BuyerDashboard.js appears correct - it fetches Live campaigns and looks for assets with 'Booked' status. Need to verify if: 1) Dummy data exists with proper Booked assets, 2) Live campaigns have campaign_assets with proper asset_id links, 3) Assets in DB actually have 'Booked' status. Please test POST /api/admin/create-dummy-data endpoint and then verify the data flow through the entire chain: campaigns → campaign_assets → assets with 'Booked' status."
+     - agent: "main"
+       message: "WORKFLOW VERIFICATION STATUS: ✅ Step 1 WORKING: Buyer can create campaign, add assets, request offers - Admin can see requests in Offer Mediation tab and quote prices. ✅ Admin quoting functionality working - offers show 'Quoted' status with admin quoted prices. ❌ Step 2 MISSING: Buyer approve/reject functionality missing - no backend endpoint or frontend UI for buyers to approve/reject quoted offers. ❌ Step 3 INCOMPLETE: Asset status update to 'Booked/Live' after buyer approval missing. Need to implement buyer approve/reject endpoints and UI, then complete asset status lifecycle."
 
 # Protocol Guidelines for Main agent
 #
