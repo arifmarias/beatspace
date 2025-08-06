@@ -591,7 +591,7 @@ const MarketplacePage = () => {
     }
     
     if (startDate) {
-      const assetExpiration = calculateAssetExpirationDate(startDate, offerDetails.contractDuration);
+      const assetExpiration = calculateAssetExpirationDate(startDate, offerDetails.contractDuration, offerDetails.customEndDate);
       
       // Check if asset expiration exceeds campaign end date
       if (campaignEndDate && assetExpiration > campaignEndDate) {
