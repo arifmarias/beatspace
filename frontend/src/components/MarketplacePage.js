@@ -1847,11 +1847,12 @@ const MarketplacePage = () => {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => setAssetBasket([])}
-                      className="bg-orange-600 hover:bg-orange-700 flex-1"
+                      onClick={handleClearBasket}
+                      className="bg-red-600 hover:bg-red-700 flex-1 text-white"
+                      title="Cancel all asset requests"
                     >
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Clear All
+                      <X className="w-3 h-3 mr-1" />
+                      Cancel All
                     </Button>
                   </div>
                 </div>
