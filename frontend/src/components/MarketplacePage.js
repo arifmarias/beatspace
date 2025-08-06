@@ -1831,16 +1831,19 @@ const MarketplacePage = () => {
                     )}
                   </div>
                   
-                  {/* Small Map Placeholder (you can integrate Google Maps later) */}
+                  {/* Google Map Embed */}
                   {selectedAsset.location && selectedAsset.location.lat && selectedAsset.location.lng && (
-                    <div className="mt-3 bg-gray-200 h-32 rounded flex items-center justify-center">
-                      <div className="text-center text-gray-600">
-                        <MapPin className="w-6 h-6 mx-auto mb-1" />
-                        <div className="text-xs">Map View</div>
-                        <div className="text-xs text-gray-500">
-                          {selectedAsset.location.lat.toFixed(4)}, {selectedAsset.location.lng.toFixed(4)}
-                        </div>
-                      </div>
+                    <div className="mt-3 h-48 rounded overflow-hidden">
+                      <iframe
+                        src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${selectedAsset.location.lat},${selectedAsset.location.lng}&zoom=16`}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={`Map of ${selectedAsset.name}`}
+                      />
                     </div>
                   )}
                 </div>
