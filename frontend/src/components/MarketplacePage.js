@@ -676,8 +676,8 @@ const MarketplacePage = () => {
         const assetCheckRes = await axios.get(`${API}/assets/${selectedAssetForOffer.id}`, { headers });
         const currentAssetStatus = assetCheckRes.data.status;
         
-        if (currentAssetStatus !== 'Available') {
-          alert(`Asset is no longer available. Current status: ${currentAssetStatus}. Please select a different asset.`);
+        if (currentAssetStatus === 'Booked') {
+          alert(`Asset is no longer available. Current status: Booked. Please select a different asset.`);
           return;
         }
       } catch (error) {
