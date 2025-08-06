@@ -1526,10 +1526,10 @@ async def get_booked_assets(current_user: User = Depends(get_current_user)):
             "buyer_id": current_user.id
         }).to_list(None)
         
-        # Get approved offers for campaign details
+        # Get approved/accepted offers for campaign details
         approved_offers = await db.offer_requests.find({
             "buyer_id": current_user.id,
-            "status": "Approved"
+            "status": {"$in": ["Approved", "Accepted"]}  # Include both statuses
         }).to_list(None)
         
         # Create lookup for offers by asset_id for campaign details
