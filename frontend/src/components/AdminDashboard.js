@@ -283,10 +283,14 @@ const AdminDashboard = () => {
     });
   };
 
-  // Get pending offers grouped by buyer
-  const getPendingOffersByBuyer = () => {
-    const pendingOffers = getFilteredOfferRequests().filter(offer => offer.status === 'Pending');
-    const buyerGroups = pendingOffers.reduce((groups, offer) => {
+  // Get offers that need admin action (not yet approved) grouped by buyer
+  const getActiveOffersByBuyer = () => {
+    // Show offers that are: Pending, Quoted, In Process - anything not fully Approved/Rejected
+    const activeOffers = getFilteredOfferRequests().filter(offer => 
+      offer.status !== 'Approved' && offer.status !== 'Rejected'
+    );
+    
+    const buyerGroups = activeOffers.reduce((groups, offer) => {
       const buyerKey = `${offer.buyer_name}-${offer.buyer_email}`;
       if (!groups[buyerKey]) {
         groups[buyerKey] = {
