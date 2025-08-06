@@ -255,8 +255,8 @@ const BuyerDashboard = () => {
         // Find the asset for this offer
         const asset = allAssets.find(a => a.id === offer.asset_id);
         
-        if (asset) { // Temporarily remove && asset.status === 'Booked' check
-          console.log('✅ Processing asset:', asset.name, 'Status:', asset.status);
+        if (asset && asset.status === 'Booked') {
+          console.log('✅ Found booked asset:', asset.name, 'Status:', asset.status);
           
           const bookedAsset = {
             ...asset,
