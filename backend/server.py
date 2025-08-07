@@ -2161,6 +2161,13 @@ async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_
             upsert=True
         )
         
+        # If photos are provided, also update the asset's photos array
+        if "photos" in monitoring_data and monitoring_data["photos"]:
+            await db.assets.update_one(
+                {"id": asset_id},
+                {"$set": {"photos": monitoring_data["photos"]}}
+            )
+        
         return {"message": "Monitoring report updated successfully"}
         
     except Exception as e:
