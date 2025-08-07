@@ -2901,6 +2901,207 @@ const BuyerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Asset Monitoring Dialog */}
+        <Dialog open={!!selectedAssetMonitoring} onOpenChange={() => {
+          setSelectedAssetMonitoring(null);
+          setMonitoringData(null);
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-blue-600" />
+                <span>Asset Monitoring Report</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedAssetMonitoring && (
+              <div className="space-y-6">
+                {/* Asset Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-2 flex items-center">
+                    <Building className="w-5 h-5 mr-2 text-blue-600" />
+                    {selectedAssetMonitoring.name}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">📍 Location:</span>
+                      <div className="font-medium">{selectedAssetMonitoring.address}</div>
+                      <div className="text-gray-600">{selectedAssetMonitoring.district}, {selectedAssetMonitoring.division}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">📅 Campaign:</span>
+                      <div className="font-medium">{selectedAssetMonitoring.campaignName || 'N/A'}</div>
+                      <span className="text-gray-500">💰 Investment:</span>
+                      <div className="font-medium text-green-600">৳{selectedAssetMonitoring.cost?.toLocaleString() || '0'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {monitoringLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-600">Loading monitoring data...</p>
+                    </div>
+                  </div>
+                ) : monitoringData ? (
+                  <>
+                    {/* Status Indicators */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white border rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <CheckCircle className={`w-4 h-4 mr-2 ${
+                            monitoringData.condition_status === 'Excellent' ? 'text-green-500' :
+                            monitoringData.condition_status === 'Good' ? 'text-yellow-500' :
+                            monitoringData.condition_status === 'Fair' ? 'text-orange-500' :
+                            'text-red-500'
+                          }`} />
+                          Overall Condition
+                        </h4>
+                        <div className={`text-lg font-semibold ${
+                          monitoringData.condition_status === 'Excellent' ? 'text-green-600' :
+                          monitoringData.condition_status === 'Good' ? 'text-yellow-600' :
+                          monitoringData.condition_status === 'Fair' ? 'text-orange-600' :
+                          'text-red-600'
+                        }`}>
+                          {monitoringData.condition_status}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Last updated: {new Date(monitoringData.last_inspection_date).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      <div className="bg-white border rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <Clock className={`w-4 h-4 mr-2 ${
+                            monitoringData.maintenance_status === 'Up to date' ? 'text-green-500' :
+                            monitoringData.maintenance_status === 'Due soon' ? 'text-yellow-500' :
+                            'text-red-500'
+                          }`} />
+                          Maintenance
+                        </h4>
+                        <div className={`text-lg font-semibold ${
+                          monitoringData.maintenance_status === 'Up to date' ? 'text-green-600' :
+                          monitoringData.maintenance_status === 'Due soon' ? 'text-yellow-600' :
+                          'text-red-600'
+                        }`}>
+                          {monitoringData.maintenance_status}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Next due: {new Date(monitoringData.next_inspection_due).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      <div className="bg-white border rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <AlertCircle className={`w-4 h-4 mr-2 ${
+                            monitoringData.active_issues ? 'text-red-500' : 'text-green-500'
+                          }`} />
+                          Active Issues
+                        </h4>
+                        <div className={`text-lg font-semibold ${
+                          monitoringData.active_issues ? 'text-red-600' : 'text-green-600'
+                        }`}>
+                          {monitoringData.active_issues || 'None reported'}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Status monitored daily
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Photos Display */}
+                    {selectedAssetMonitoring.photos && selectedAssetMonitoring.photos.length > 0 && (
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                          <Eye className="w-4 h-4 mr-2 text-gray-600" />
+                          Recent Photos ({selectedAssetMonitoring.photos.length} available)
+                        </h4>
+                        <div className="grid grid-cols-3 gap-3">
+                          {selectedAssetMonitoring.photos.slice(0, 3).map((photo, index) => (
+                            <div key={index} className="relative group cursor-pointer">
+                              <img 
+                                src={photo} 
+                                alt={`${selectedAssetMonitoring.name} - Photo ${index + 1}`}
+                                className="w-full h-24 object-cover rounded-lg hover:scale-105 transition-transform"
+                                onClick={() => {
+                                  // Open photo in new tab for larger view
+                                  window.open(photo, '_blank');
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center">
+                                <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                          Click photos to view larger • Latest photos shown first
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Inspection Data */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-gray-600" />
+                        Inspection History
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">• Last Inspection: {new Date(monitoringData.last_inspection_date).toLocaleDateString()} at {new Date(monitoringData.last_inspection_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                            <p className="text-sm text-gray-600">Inspector: {monitoringData.inspector_name}</p>
+                            <p className="text-sm text-gray-600">Next Due: {new Date(monitoringData.next_inspection_due).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        {monitoringData.inspection_notes && (
+                          <div className="bg-white rounded p-3 border-l-4 border-blue-500">
+                            <p className="font-medium text-sm text-gray-700">Notes:</p>
+                            <p className="text-sm text-gray-600 mt-1">"{monitoringData.inspection_notes}"</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="flex space-x-3 pt-4 border-t">
+                      <Button 
+                        onClick={() => {
+                          const reason = prompt("Please describe the reason for inspection request (optional):");
+                          if (reason !== null) {
+                            requestInspection(selectedAssetMonitoring.id, reason);
+                          }
+                        }}
+                        className="bg-orange-600 hover:bg-orange-700 flex items-center space-x-2"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        <span>Request Inspection</span>
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedAssetMonitoring(null);
+                          setMonitoringData(null);
+                        }}
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Monitoring data not available</h3>
+                    <p className="text-gray-500">Unable to load monitoring information for this asset.</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
