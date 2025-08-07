@@ -103,6 +103,31 @@ class CampaignAsset(BaseModel):
     asset_expiration_date: datetime
     added_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Monitoring Report Models
+class ConditionStatus(str, Enum):
+    EXCELLENT = "Excellent"
+    GOOD = "Good"
+    FAIR = "Fair"
+    NEEDS_ATTENTION = "Needs Attention"
+
+class MaintenanceStatus(str, Enum):
+    UP_TO_DATE = "Up to date"
+    DUE_SOON = "Due soon"
+    OVERDUE = "Overdue"
+
+class MonitoringReport(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    asset_id: str
+    condition_status: ConditionStatus = ConditionStatus.EXCELLENT
+    maintenance_status: MaintenanceStatus = MaintenanceStatus.UP_TO_DATE
+    active_issues: str = ""  # Text field for issues written by admin
+    last_inspection_date: datetime = Field(default_factory=datetime.utcnow)
+    inspector_name: str = "Admin Team"
+    next_inspection_due: datetime = Field(default_factory=lambda: datetime.utcnow() + timedelta(days=30))
+    inspection_notes: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 class PaymentStatus(str, Enum):
     PENDING = "pending"
     PROCESSING = "processing"
