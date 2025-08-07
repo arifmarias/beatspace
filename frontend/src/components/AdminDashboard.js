@@ -4571,6 +4571,7 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
           {/* Asset Info */}
           <div>
             <h4 className="font-semibold text-gray-900">{asset.name}</h4>
+            <p className="text-sm text-blue-600 font-medium">{asset.buyer_name || 'Unknown Campaign'}</p>
             <p className="text-sm text-gray-600">{asset.address}</p>
             <p className="text-xs text-gray-500">{asset.district}, {asset.division}</p>
             <div className="flex items-center space-x-2 mt-1">
@@ -4578,7 +4579,7 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
                 {asset.status}
               </Badge>
               <span className="text-xs text-gray-500">
-                Investment: ৳{asset.buyer_id ? '90,000' : 'N/A'}
+                Investment: ৳{asset.final_cost || asset.admin_quoted_price || asset.pricing?.monthly_rate || 'N/A'}
               </span>
             </div>
           </div>
