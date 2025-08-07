@@ -2158,7 +2158,7 @@ async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_
         # Update monitoring report
         update_data = {
             **monitoring_data,
-            "inspector_name": current_user["name"],
+            "inspector_name": current_user.get("name", "Admin"),
             "updated_at": datetime.utcnow()
         }
         
