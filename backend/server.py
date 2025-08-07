@@ -2144,10 +2144,10 @@ async def get_asset_monitoring(asset_id: str):
         raise HTTPException(status_code=500, detail=f"Error fetching monitoring report: {str(e)}")
 
 @api_router.post("/assets/{asset_id}/monitoring")
-async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_user: dict = Depends(get_current_user)):
+async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_user: User = Depends(get_current_user)):
     """Update monitoring report for a specific asset (Admin only)"""
     try:
-        if current_user["role"] != "admin":
+        if current_user.role != "admin":
             raise HTTPException(status_code=403, detail="Only admins can update monitoring reports")
         
         # Check if asset exists
@@ -2158,7 +2158,7 @@ async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_
         # Update monitoring report
         update_data = {
             **monitoring_data,
-            "inspector_name": current_user.get("name", "Admin"),
+            "inspector_name": current_user.name,
             "updated_at": datetime.utcnow()
         }
         
