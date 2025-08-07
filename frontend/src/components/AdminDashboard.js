@@ -4554,36 +4554,29 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
 
     setPhotoUploading(true);
     try {
-      const uploadedPhotos = [];
+      // Use the same backend upload approach as other components
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('images', file);
+      });
       
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
-        
-        const response = await fetch(
-          `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-        
-        const data = await response.json();
-        if (data.secure_url) {
-          uploadedPhotos.push(data.secure_url);
+      const response = await axios.post(`${API}/upload/images`, formData, {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'multipart/form-data'
         }
-      }
+      });
       
-      // Add new photos to existing ones
+      // Add uploaded image URLs to form
+      const uploadedUrls = response.data.images.map(img => img.url);
       setMonitoringForm(prev => ({
         ...prev,
-        photos: [...prev.photos, ...uploadedPhotos]
+        photos: [...prev.photos, ...uploadedUrls]
       }));
       
     } catch (error) {
       console.error('Error uploading photos:', error);
-      alert('Failed to upload photos. Please try again.');
+      alert('Failed to upload photos: ' + (error.response?.data?.detail || error.message));
     } finally {
       setPhotoUploading(false);
     }
