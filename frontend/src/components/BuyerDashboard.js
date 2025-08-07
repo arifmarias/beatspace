@@ -1076,6 +1076,57 @@ const BuyerDashboard = () => {
     return campaignAssets + allCampaignOffers.length; // Add both counts together
   };
 
+  // Add asset to campaign from marketplace request
+  const addToDefaultCampaign = (asset) => {
+    setCampaign(prev => {
+      const isAlreadyAdded = prev.some(item => item.id === asset.id);
+      if (isAlreadyAdded) {
+        return prev;
+      }
+      return [...prev, asset];
+    });
+    notify.success(`${asset.name} added to campaign!`);
+  };
+  
+  // Fetch monitoring data for selected asset
+  const fetchMonitoringData = async (assetId) => {
+    try {
+      setMonitoringLoading(true);
+      const response = await axios.get(`${API}/assets/${assetId}/monitoring`, {
+        headers: getAuthHeaders()
+      });
+      setMonitoringData(response.data);
+    } catch (error) {
+      console.error('Error fetching monitoring data:', error);
+      notify.error('Failed to load monitoring data');
+    } finally {
+      setMonitoringLoading(false);
+    }
+  };
+  
+  // Request inspection for an asset
+  const requestInspection = async (assetId, reason) => {
+    try {
+      await axios.post(`${API}/assets/${assetId}/request-inspection`, {
+        reason: reason || 'General inspection request'
+      }, {
+        headers: getAuthHeaders()
+      });
+      notify.success('Inspection request submitted successfully!');
+      // Refresh monitoring data
+      fetchMonitoringData(assetId);
+    } catch (error) {
+      console.error('Error requesting inspection:', error);
+      notify.error('Failed to submit inspection request');
+    }
+  };
+  
+  // Handle asset row click for monitoring
+  const handleAssetMonitoringClick = (asset) => {
+    setSelectedAssetMonitoring(asset);
+    fetchMonitoringData(asset.id);
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
