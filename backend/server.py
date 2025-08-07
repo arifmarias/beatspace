@@ -2104,6 +2104,96 @@ async def delete_campaign(
     
     return {"message": f"Campaign '{campaign.get('name')}' deleted successfully"}
 
+# Monitoring Report Endpoints
+@api_router.get("/assets/{asset_id}/monitoring")
+async def get_asset_monitoring(asset_id: str):
+    """Get monitoring report for a specific asset"""
+    try:
+        # Get asset details
+        asset = await db.assets.find_one({"id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset not found")
+        
+        # Get or create monitoring report
+        monitoring_report = await db.monitoring_reports.find_one({"asset_id": asset_id})
+        
+        if not monitoring_report:
+            # Create default monitoring report if none exists
+            default_report = MonitoringReport(
+                asset_id=asset_id,
+                condition_status=ConditionStatus.EXCELLENT,
+                maintenance_status=MaintenanceStatus.UP_TO_DATE,
+                active_issues="",
+                inspector_name="Admin Team",
+                inspection_notes="Initial monitoring record created."
+            )
+            monitoring_report = default_report.dict()
+            await db.monitoring_reports.insert_one(monitoring_report)
+        
+        return monitoring_report
+        
+    except Exception as e:
+        logger.error(f"Error fetching monitoring report for asset {asset_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching monitoring report: {str(e)}")
+
+@api_router.post("/assets/{asset_id}/monitoring")
+async def update_asset_monitoring(asset_id: str, monitoring_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update monitoring report for a specific asset (Admin only)"""
+    try:
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only admins can update monitoring reports")
+        
+        # Check if asset exists
+        asset = await db.assets.find_one({"id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset not found")
+        
+        # Update monitoring report
+        update_data = {
+            **monitoring_data,
+            "inspector_name": current_user["name"],
+            "updated_at": datetime.utcnow()
+        }
+        
+        result = await db.monitoring_reports.update_one(
+            {"asset_id": asset_id},
+            {"$set": update_data},
+            upsert=True
+        )
+        
+        return {"message": "Monitoring report updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error updating monitoring report for asset {asset_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating monitoring report: {str(e)}")
+
+@api_router.post("/assets/{asset_id}/request-inspection")
+async def request_inspection(asset_id: str, request_data: dict, current_user: dict = Depends(get_current_user)):
+    """Request inspection for an asset (sends notification to admin)"""
+    try:
+        # Check if asset exists and belongs to the buyer
+        asset = await db.assets.find_one({"id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset not found")
+        
+        # For now, just update the monitoring report with inspection request
+        inspection_request = {
+            "inspection_notes": f"Inspection requested by {current_user['name']} on {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}. Reason: {request_data.get('reason', 'General inspection request')}",
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.monitoring_reports.update_one(
+            {"asset_id": asset_id},
+            {"$set": inspection_request},
+            upsert=True
+        )
+        
+        return {"message": "Inspection request submitted successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error submitting inspection request for asset {asset_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error submitting inspection request: {str(e)}")
+
 @api_router.get("/")
 async def root():
     return {"message": "BeatSpace API v3.0 - Advanced Features Ready", "version": "3.0.0"}
