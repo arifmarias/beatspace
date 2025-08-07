@@ -4745,6 +4745,60 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
               rows={3}
             />
           </div>
+
+          {/* Photo Management */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Asset Photos ({monitoringForm.photos.length} photos)
+            </label>
+            
+            {/* Current Photos */}
+            {monitoringForm.photos.length > 0 && (
+              <div className="grid grid-cols-4 gap-3 mb-3">
+                {monitoringForm.photos.map((photo, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={photo}
+                      alt={`Asset photo ${index + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Photo Upload */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+              <div className="text-center">
+                <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <div className="flex items-center justify-center">
+                  <label className="cursor-pointer">
+                    <span className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                      {photoUploading ? 'Uploading...' : 'Upload new photos'}
+                    </span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      multiple
+                      onChange={handlePhotoUpload}
+                      disabled={photoUploading}
+                    />
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Click to add monitoring photos (JPG, PNG)
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
