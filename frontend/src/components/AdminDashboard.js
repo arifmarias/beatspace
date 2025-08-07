@@ -1785,7 +1785,7 @@ const AdminDashboard = () => {
                               <DropdownMenuItem 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteAsset(asset.id);
+                                  deleteAsset(asset);
                                 }}
                                 className="text-red-600"
                               >
