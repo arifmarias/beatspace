@@ -4511,10 +4511,12 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
     condition_status: 'Excellent',
     maintenance_status: 'Up to date',
     active_issues: '',
-    inspection_notes: ''
+    inspection_notes: '',
+    photos: []
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   // Fetch existing monitoring data when component mounts
   useEffect(() => {
