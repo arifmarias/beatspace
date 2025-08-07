@@ -4557,7 +4557,7 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
       // Use the same backend upload approach as other components
       const formData = new FormData();
       files.forEach(file => {
-        formData.append('images', file);
+        formData.append('files', file); // Changed from 'images' to 'files'
       });
       
       const response = await axios.post(`${API}/upload/images`, formData, {
