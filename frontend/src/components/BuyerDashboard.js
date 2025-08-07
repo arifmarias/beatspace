@@ -3012,14 +3012,14 @@ const BuyerDashboard = () => {
                     </div>
 
                     {/* Photos Display */}
-                    {selectedAssetMonitoring.photos && selectedAssetMonitoring.photos.length > 0 && (
+                    {monitoringData && monitoringData.photos && monitoringData.photos.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-4">
                         <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                           <Eye className="w-4 h-4 mr-2 text-gray-600" />
-                          Recent Photos ({selectedAssetMonitoring.photos.length} available)
+                          Recent Photos ({monitoringData.photos.length} available)
                         </h4>
                         <div className="grid grid-cols-3 gap-3">
-                          {selectedAssetMonitoring.photos.slice(0, 3).map((photo, index) => (
+                          {monitoringData.photos.slice(0, 3).map((photo, index) => (
                             <div key={index} className="relative group cursor-pointer">
                               <img 
                                 src={photo} 
