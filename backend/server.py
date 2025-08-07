@@ -2130,6 +2130,9 @@ async def get_asset_monitoring(asset_id: str):
             monitoring_report = default_report.dict()
             await db.monitoring_reports.insert_one(monitoring_report)
         
+        # Ensure the monitoring report includes current asset photos
+        monitoring_report["photos"] = asset.get("photos", [])
+        
         return monitoring_report
         
     except Exception as e:
