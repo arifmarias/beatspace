@@ -1763,19 +1763,30 @@ const AdminDashboard = () => {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8 w-8 p-0"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <MoreVertical className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
                               <DropdownMenuItem 
-                                onClick={() => setEditingAsset(asset)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingAsset(asset);
+                                }}
                               >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit Asset
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                onClick={() => deleteAsset(asset)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteAsset(asset.id);
+                                }}
                                 className="text-red-600"
                               >
                                 <X className="h-4 w-4 mr-2" />
