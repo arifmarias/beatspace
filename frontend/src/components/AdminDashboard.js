@@ -870,6 +870,65 @@ const AdminDashboard = () => {
       alert('Failed to delete asset: ' + (error.response?.data?.detail || error.message));
     }
   };
+  
+  // Fetch booked assets grouped by campaigns
+  const fetchBookedAssets = async () => {
+    try {
+      setMonitoringLoading(true);
+      const response = await axios.get(`${API}/assets`, { headers });
+      const allAssets = response.data;
+      
+      // Filter only booked assets and group by campaign
+      const booked = allAssets.filter(asset => asset.status === 'Booked');
+      setBookedAssets(booked);
+    } catch (error) {
+      console.error('Error fetching booked assets:', error);
+      notify.error('Failed to load booked assets');
+    } finally {
+      setMonitoringLoading(false);
+    }
+  };
+  
+  // Update monitoring data for an asset
+  const updateMonitoringData = async (assetId, monitoringData) => {
+    try {
+      await axios.post(`${API}/assets/${assetId}/monitoring`, monitoringData, { headers });
+      notify.success('Monitoring data updated successfully!');
+      // Refresh the asset data
+      fetchBookedAssets();
+    } catch (error) {
+      console.error('Error updating monitoring data:', error);
+      notify.error('Failed to update monitoring data');
+    }
+  };
+  
+  // Toggle campaign collapse
+  const toggleCampaignCollapse = (campaignName) => {
+    setCollapsedCampaigns(prev => ({
+      ...prev,
+      [campaignName]: !prev[campaignName]
+    }));
+  };
+  
+  // Group booked assets by campaign name
+  const getGroupedBookedAssets = () => {
+    const filtered = bookedAssets.filter(asset =>
+      asset.name.toLowerCase().includes(monitoringSearch.toLowerCase()) ||
+      asset.buyer_name?.toLowerCase().includes(monitoringSearch.toLowerCase()) ||
+      asset.district?.toLowerCase().includes(monitoringSearch.toLowerCase())
+    );
+    
+    const grouped = filtered.reduce((acc, asset) => {
+      const campaignName = asset.buyer_name || 'Unknown Campaign';
+      if (!acc[campaignName]) {
+        acc[campaignName] = [];
+      }
+      acc[campaignName].push(asset);
+      return acc;
+    }, {});
+    
+    return grouped;
+  };
 
   // Image upload handler
   const handleImageUpload = async (event) => {
