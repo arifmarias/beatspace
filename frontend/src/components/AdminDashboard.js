@@ -2406,7 +2406,113 @@ const AdminDashboard = () => {
 
           {/* Monitoring Tab */}
           <TabsContent value="monitoring" className="space-y-6">
-            <AssetMonitoringSystem />
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Activity className="w-5 h-5 text-blue-600" />
+                      <span>Asset Monitoring</span>
+                    </CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Manage monitoring data for booked assets organized by campaigns
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={fetchBookedAssets}
+                    variant="outline" 
+                    size="sm"
+                    disabled={monitoringLoading}
+                  >
+                    {monitoringLoading ? 'Loading...' : 'Refresh'}
+                  </Button>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                {/* Search Bar */}
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      placeholder="Search by asset name, buyer, or location..."
+                      value={monitoringSearch}
+                      onChange={(e) => setMonitoringSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {bookedAssets.length} booked assets
+                  </div>
+                </div>
+
+                {monitoringLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-600">Loading booked assets...</p>
+                    </div>
+                  </div>
+                ) : bookedAssets.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Booked Assets</h3>
+                    <p className="text-gray-500">
+                      No assets are currently booked for monitoring.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {Object.entries(getGroupedBookedAssets()).map(([campaignName, assets]) => {
+                      const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed
+                      
+                      return (
+                        <div key={campaignName} className="border rounded-lg overflow-hidden">
+                          {/* Campaign Header */}
+                          <div 
+                            className="bg-gray-50 p-4 cursor-pointer hover:bg-gray-100 transition-colors border-b"
+                            onClick={() => toggleCampaignCollapse(campaignName)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-2">
+                                  {isCollapsed ? (
+                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                                  )}
+                                  <Building className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold text-gray-900">{campaignName}</h3>
+                                  <p className="text-sm text-gray-500">{assets.length} booked asset{assets.length > 1 ? 's' : ''}</p>
+                                </div>
+                              </div>
+                              <Badge className="bg-blue-100 text-blue-800">
+                                {isCollapsed ? 'Click to expand' : 'Click to collapse'}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {/* Campaign Assets */}
+                          {!isCollapsed && (
+                            <div className="p-4 space-y-4">
+                              {assets.map((asset) => (
+                                <MonitoringAssetCard 
+                                  key={asset.id} 
+                                  asset={asset} 
+                                  onUpdate={updateMonitoringData}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Analytics Tab */}
