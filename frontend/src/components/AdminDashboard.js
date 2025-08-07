@@ -875,7 +875,7 @@ const AdminDashboard = () => {
   const fetchBookedAssets = async () => {
     try {
       setMonitoringLoading(true);
-      const response = await axios.get(`${API}/assets`, { headers });
+      const response = await axios.get(`${API}/assets`, { headers: getAuthHeaders() });
       const allAssets = response.data;
       
       // Filter only booked assets and group by campaign
@@ -892,7 +892,7 @@ const AdminDashboard = () => {
   // Update monitoring data for an asset
   const updateMonitoringData = async (assetId, monitoringData) => {
     try {
-      await axios.post(`${API}/assets/${assetId}/monitoring`, monitoringData, { headers });
+      await axios.post(`${API}/assets/${assetId}/monitoring`, monitoringData, { headers: getAuthHeaders() });
       notify.success('Monitoring data updated successfully!');
       // Refresh the asset data
       fetchBookedAssets();
