@@ -70,6 +70,12 @@ const AdminDashboard = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
+  
+  // Monitoring states
+  const [bookedAssets, setBookedAssets] = useState([]);
+  const [monitoringLoading, setMonitoringLoading] = useState(false);
+  const [monitoringSearch, setMonitoringSearch] = useState('');
+  const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
