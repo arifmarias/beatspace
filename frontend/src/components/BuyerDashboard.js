@@ -81,7 +81,8 @@ const BuyerDashboard = () => {
 
   // My Assets state
   const [liveAssets, setLiveAssets] = useState([]);
-  const [myAssetsView, setMyAssetsView] = useState('list'); // 'list', 'map', 'campaign'
+  const [myAssetsView, setMyAssetsView] = useState('list');
+  const [selectedMapAsset, setSelectedMapAsset] = useState(null); // 'list', 'map', 'campaign'
   const [assetsLoading, setAssetsLoading] = useState(false);
 
   // Pagination and search state for Campaigns
