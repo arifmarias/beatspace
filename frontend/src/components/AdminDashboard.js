@@ -4532,12 +4532,68 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
         condition_status: response.data.condition_status || 'Excellent',
         maintenance_status: response.data.maintenance_status || 'Up to date', 
         active_issues: response.data.active_issues || '',
-        inspection_notes: response.data.inspection_notes || ''
+        inspection_notes: response.data.inspection_notes || '',
+        photos: asset.photos || [] // Use asset photos as current photos
       });
     } catch (error) {
       console.error('Error fetching monitoring data:', error);
       // Use defaults if no monitoring data exists
+      setMonitoringForm({
+        condition_status: 'Excellent',
+        maintenance_status: 'Up to date',
+        active_issues: '',
+        inspection_notes: '',
+        photos: asset.photos || []
+      });
     }
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setPhotoUploading(true);
+    try {
+      const uploadedPhotos = [];
+      
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+        
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+        
+        const data = await response.json();
+        if (data.secure_url) {
+          uploadedPhotos.push(data.secure_url);
+        }
+      }
+      
+      // Add new photos to existing ones
+      setMonitoringForm(prev => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedPhotos]
+      }));
+      
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      alert('Failed to upload photos. Please try again.');
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const removePhoto = (indexToRemove) => {
+    setMonitoringForm(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, index) => index !== indexToRemove)
+    }));
   };
 
   const handleSave = async () => {
