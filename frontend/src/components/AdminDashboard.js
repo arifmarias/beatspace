@@ -191,6 +191,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    fetchBookedAssets(); // Add this to fetch booked assets for monitoring
   }, []);
 
   const fetchDashboardData = async () => {
