@@ -1776,7 +1776,7 @@ const AdminDashboard = () => {
                               <DropdownMenuItem 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setEditingAsset(asset);
+                                  editAsset(asset);
                                 }}
                               >
                                 <Edit className="h-4 w-4 mr-2" />
