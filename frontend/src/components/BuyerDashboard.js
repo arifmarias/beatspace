@@ -1078,7 +1078,7 @@ const BuyerDashboard = () => {
 
   // Add asset to campaign from marketplace request
   const addToDefaultCampaign = (asset) => {
-    setCampaign(prev => {
+    setCampaignAssets(prev => {
       const isAlreadyAdded = prev.some(item => item.id === asset.id);
       if (isAlreadyAdded) {
         return prev;
