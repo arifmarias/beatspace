@@ -1333,7 +1333,11 @@ const BuyerDashboard = () => {
                           </TableHeader>
                           <TableBody>
                             {getPaginatedAssets().map((asset) => (
-                              <TableRow key={asset.id}>
+                              <TableRow 
+                                key={asset.id} 
+                                className="cursor-pointer hover:bg-gray-50 transition-colors"
+                                onClick={() => handleAssetMonitoringClick(asset)}
+                              >
                                 <TableCell>
                                   <div>
                                     <div className="font-medium">{asset.name}</div>
