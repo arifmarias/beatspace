@@ -1365,7 +1365,11 @@ const BuyerDashboard = () => {
                             {/* Interactive Map Container */}
                             <div className="relative">
                               <iframe
-                                src={`https://www.google.com/maps/embed/v1/view?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&center=23.8103,90.4125&zoom=12`}
+                                src={`https://www.google.com/maps/embed/v1/view?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&center=${
+                                  selectedMapAsset?.location?.lat && selectedMapAsset?.location?.lng 
+                                    ? `${selectedMapAsset.location.lat},${selectedMapAsset.location.lng}&zoom=16`
+                                    : '23.8103,90.4125&zoom=12'
+                                }`}
                                 className="w-full h-96 border-0"
                                 allowFullScreen=""
                                 loading="lazy"
