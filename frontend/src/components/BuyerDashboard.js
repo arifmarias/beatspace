@@ -1349,16 +1349,114 @@ const BuyerDashboard = () => {
                     {/* Map View */}
                     {myAssetsView === 'map' && (
                       <div className="space-y-4">
-                        <div className="bg-gray-100 rounded-lg p-8 text-center">
-                          <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-700 mb-2">Map View</h3>
-                          <p className="text-gray-500">
-                            Interactive map showing locations of your {liveAssets.length} booked assets
-                          </p>
-                          <p className="text-sm text-gray-400 mt-2">
-                            Map integration coming soon...
-                          </p>
-                        </div>
+                        {liveAssets.length > 0 ? (
+                          <div className="bg-white rounded-lg border overflow-hidden">
+                            <div className="p-4 border-b bg-gray-50">
+                              <h3 className="text-lg font-medium text-gray-800 flex items-center">
+                                <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                                My Assets Locations ({liveAssets.length} assets)
+                              </h3>
+                              <p className="text-sm text-gray-600 mt-1">
+                                Interactive map showing your booked assets across Bangladesh
+                              </p>
+                            </div>
+                            
+                            {/* Interactive Map Container */}
+                            <div className="relative">
+                              <iframe
+                                src={`https://www.google.com/maps/embed/v1/view?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&center=23.8103,90.4125&zoom=12`}
+                                className="w-full h-96 border-0"
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title="My Assets Map"
+                              />
+                              
+                              {/* Asset markers overlay */}
+                              <div className="absolute inset-0 pointer-events-none">
+                                {liveAssets.map((asset, index) => {
+                                  if (!asset.location?.lat || !asset.location?.lng) return null;
+                                  
+                                  // Calculate approximate position on the map
+                                  // This is a simplified approach - for production, use proper map libraries
+                                  const centerLat = 23.8103;
+                                  const centerLng = 90.4125;
+                                  const mapWidth = 100; // percentage
+                                  const mapHeight = 100; // percentage
+                                  
+                                  // Simple offset calculation (not precise, but gives visual indication)
+                                  const latDiff = asset.location.lat - centerLat;
+                                  const lngDiff = asset.location.lng - centerLng;
+                                  
+                                  const left = Math.max(5, Math.min(95, 50 + (lngDiff * 20))); // rough conversion
+                                  const top = Math.max(5, Math.min(95, 50 - (latDiff * 20))); // rough conversion
+                                  
+                                  return (
+                                    <div
+                                      key={asset.id}
+                                      className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+                                      style={{
+                                        left: `${left}%`,
+                                        top: `${top}%`
+                                      }}
+                                    >
+                                      <div className="relative group cursor-pointer">
+                                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:scale-110 transition-transform">
+                                          <Building className="w-4 h-4 text-white" />
+                                        </div>
+                                        
+                                        {/* Tooltip */}
+                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                          <div className="bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                            <div className="font-medium">{asset.name}</div>
+                                            <div className="text-gray-300">{asset.district}</div>
+                                            <div className="text-green-300">৳{asset.cost?.toLocaleString()}</div>
+                                          </div>
+                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-black"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            
+                            {/* Assets List Below Map */}
+                            <div className="p-4 bg-gray-50 border-t">
+                              <h4 className="font-medium text-gray-800 mb-3">Asset Details</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {liveAssets.slice(0, 6).map((asset) => (
+                                  <div key={asset.id} className="flex items-center space-x-3 p-2 bg-white rounded border">
+                                    <div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-medium text-sm text-gray-900 truncate">{asset.name}</div>
+                                      <div className="text-xs text-gray-500">{asset.district}, {asset.division}</div>
+                                    </div>
+                                    <div className="text-sm font-medium text-green-600">
+                                      ৳{asset.cost?.toLocaleString()}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              {liveAssets.length > 6 && (
+                                <p className="text-xs text-gray-500 mt-2 text-center">
+                                  Showing 6 of {liveAssets.length} assets
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-100 rounded-lg p-8 text-center">
+                            <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-700 mb-2">No Assets to Display</h3>
+                            <p className="text-gray-500">
+                              You don't have any booked assets to show on the map yet.
+                            </p>
+                            <p className="text-sm text-gray-400 mt-2">
+                              Start by requesting offers from the marketplace!
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
 
