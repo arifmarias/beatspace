@@ -2130,6 +2130,10 @@ async def get_asset_monitoring(asset_id: str):
             monitoring_report = default_report.dict()
             await db.monitoring_reports.insert_one(monitoring_report)
         
+        # Remove MongoDB ObjectId to avoid serialization issues
+        if "_id" in monitoring_report:
+            del monitoring_report["_id"]
+        
         # Ensure the monitoring report includes current asset photos
         monitoring_report["photos"] = asset.get("photos", [])
         
