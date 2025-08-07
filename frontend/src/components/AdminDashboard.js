@@ -4847,6 +4847,29 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
               </p>
             </div>
           )}
+
+          {/* Photos Preview */}
+          {monitoringForm.photos.length > 0 && (
+            <div className="md:col-span-3 mt-2">
+              <label className="block text-xs font-medium text-gray-500 mb-2">CURRENT PHOTOS ({monitoringForm.photos.length})</label>
+              <div className="flex space-x-2 overflow-x-auto">
+                {monitoringForm.photos.slice(0, 4).map((photo, index) => (
+                  <img
+                    key={index}
+                    src={photo}
+                    alt={`Asset photo ${index + 1}`}
+                    className="w-16 h-16 object-cover rounded border flex-shrink-0 cursor-pointer hover:opacity-75 transition-opacity"
+                    onClick={() => window.open(photo, '_blank')}
+                  />
+                ))}
+                {monitoringForm.photos.length > 4 && (
+                  <div className="w-16 h-16 bg-gray-100 rounded border flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-gray-500">+{monitoringForm.photos.length - 4}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
