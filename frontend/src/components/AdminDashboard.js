@@ -4504,4 +4504,239 @@ const AdminDashboard = () => {
   );
 };
 
+// Monitoring Asset Card Component
+const MonitoringAssetCard = ({ asset, onUpdate }) => {
+  const [monitoringForm, setMonitoringForm] = useState({
+    condition_status: 'Excellent',
+    maintenance_status: 'Up to date',
+    active_issues: '',
+    inspection_notes: ''
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch existing monitoring data when component mounts
+  useEffect(() => {
+    fetchMonitoringData();
+  }, [asset.id]);
+
+  const fetchMonitoringData = async () => {
+    try {
+      const response = await axios.get(`${API}/assets/${asset.id}/monitoring`, {
+        headers: getAuthHeaders()
+      });
+      setMonitoringForm({
+        condition_status: response.data.condition_status || 'Excellent',
+        maintenance_status: response.data.maintenance_status || 'Up to date', 
+        active_issues: response.data.active_issues || '',
+        inspection_notes: response.data.inspection_notes || ''
+      });
+    } catch (error) {
+      console.error('Error fetching monitoring data:', error);
+      // Use defaults if no monitoring data exists
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      await onUpdate(asset.id, monitoringForm);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving monitoring data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    fetchMonitoringData(); // Reset form to original data
+  };
+
+  return (
+    <div className="border rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start space-x-4">
+          {/* Asset Image */}
+          {asset.photos && asset.photos[0] && (
+            <img 
+              src={asset.photos[0]} 
+              alt={asset.name}
+              className="w-16 h-16 object-cover rounded-lg"
+            />
+          )}
+          
+          {/* Asset Info */}
+          <div>
+            <h4 className="font-semibold text-gray-900">{asset.name}</h4>
+            <p className="text-sm text-gray-600">{asset.address}</p>
+            <p className="text-xs text-gray-500">{asset.district}, {asset.division}</p>
+            <div className="flex items-center space-x-2 mt-1">
+              <Badge className="bg-green-100 text-green-800 text-xs">
+                {asset.status}
+              </Badge>
+              <span className="text-xs text-gray-500">
+                Investment: ৳{asset.buyer_id ? '90,000' : 'N/A'}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Action Button */}
+        <div>
+          {!isEditing ? (
+            <Button 
+              onClick={() => setIsEditing(true)}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Edit Monitoring
+            </Button>
+          ) : (
+            <div className="flex space-x-2">
+              <Button 
+                onClick={handleSave}
+                size="sm"
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {loading ? 'Saving...' : 'Save'}
+              </Button>
+              <Button 
+                onClick={handleCancel}
+                size="sm"
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Monitoring Form */}
+      {isEditing ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          {/* Condition Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Overall Condition *
+            </label>
+            <Select 
+              value={monitoringForm.condition_status}
+              onValueChange={(value) => setMonitoringForm({...monitoringForm, condition_status: value})}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Excellent">Excellent</SelectItem>
+                <SelectItem value="Good">Good</SelectItem>
+                <SelectItem value="Fair">Fair</SelectItem>
+                <SelectItem value="Needs Attention">Needs Attention</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Maintenance Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Maintenance Status *
+            </label>
+            <Select 
+              value={monitoringForm.maintenance_status}
+              onValueChange={(value) => setMonitoringForm({...monitoringForm, maintenance_status: value})}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Up to date">Up to date</SelectItem>
+                <SelectItem value="Due soon">Due soon</SelectItem>
+                <SelectItem value="Overdue">Overdue</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Active Issues */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Active Issues
+            </label>
+            <Textarea
+              placeholder="Describe any current issues with the asset (leave empty if none)..."
+              value={monitoringForm.active_issues}
+              onChange={(e) => setMonitoringForm({...monitoringForm, active_issues: e.target.value})}
+              rows={2}
+            />
+          </div>
+
+          {/* Inspection Notes */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Inspection Notes
+            </label>
+            <Textarea
+              placeholder="Add detailed inspection notes, observations, or maintenance recommendations..."
+              value={monitoringForm.inspection_notes}
+              onChange={(e) => setMonitoringForm({...monitoringForm, inspection_notes: e.target.value})}
+              rows={3}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+          {/* Display Current Status */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">CONDITION</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.condition_status === 'Excellent' ? 'bg-green-100 text-green-800' :
+              monitoringForm.condition_status === 'Good' ? 'bg-yellow-100 text-yellow-800' :
+              monitoringForm.condition_status === 'Fair' ? 'bg-orange-100 text-orange-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              <CheckCircle className="w-3 h-3 mr-1" />
+              {monitoringForm.condition_status}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">MAINTENANCE</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.maintenance_status === 'Up to date' ? 'bg-green-100 text-green-800' :
+              monitoringForm.maintenance_status === 'Due soon' ? 'bg-yellow-100 text-yellow-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              <Clock className="w-3 h-3 mr-1" />
+              {monitoringForm.maintenance_status}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">ISSUES</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.active_issues ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+            }`}>
+              <AlertCircle className="w-3 h-3 mr-1" />
+              {monitoringForm.active_issues ? 'Issues reported' : 'None reported'}
+            </div>
+          </div>
+
+          {/* Notes Preview */}
+          {monitoringForm.inspection_notes && (
+            <div className="md:col-span-3 mt-2">
+              <label className="block text-xs font-medium text-gray-500 mb-1">LATEST NOTES</label>
+              <p className="text-sm text-gray-700 bg-white p-2 rounded border-l-4 border-blue-500">
+                "{monitoringForm.inspection_notes.slice(0, 100)}{monitoringForm.inspection_notes.length > 100 ? '...' : ''}"
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default AdminDashboard;
