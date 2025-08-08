@@ -273,12 +273,12 @@ const BuyerDashboard = () => {
       const response = await axios.get(`${API}/assets/live`, { headers });
       console.log('✅ API response:', response);
       
-      const bookedAssetsData = response.data || [];
-      console.log('📊 Booked assets data:', bookedAssetsData);
+      const liveAssetsData = response.data || [];
+      console.log('📊 Live assets data:', liveAssetsData);
       
-      // TEMPORARY: If no real booked assets, show demo data for testing
-      if (bookedAssetsData.length === 0) {
-        console.log('ℹ️ No booked assets found, showing demo data for testing');
+      // TEMPORARY: If no real live assets, show demo data for testing
+      if (liveAssetsData.length === 0) {
+        console.log('ℹ️ No live assets found, showing demo data for testing');
         const demoAssets = [
           {
             id: 'demo-asset-1',
