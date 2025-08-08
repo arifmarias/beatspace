@@ -201,17 +201,33 @@ const AdminDashboard = () => {
       const headers = getAuthHeaders();
       
       // Fetch all data in parallel
-      const [usersRes, assetsRes, campaignsRes, statsRes] = await Promise.all([
+      const [usersRes, assetsRes, campaignsRes, offersRes, statsRes] = await Promise.all([
         axios.get(`${API}/admin/users`, { headers }),
         axios.get(`${API}/admin/assets`, { headers }),
         axios.get(`${API}/campaigns`, { headers }),
+        axios.get(`${API}/offers/requests`, { headers }),
         axios.get(`${API}/stats/public`)
       ]);
 
       const allUsers = usersRes.data || [];
+      const allCampaigns = campaignsRes.data || [];
+      const allOffers = offersRes.data || [];
+      
+      // Enrich campaigns with asset counts from offer requests
+      const enrichedCampaigns = allCampaigns.map(campaign => {
+        const campaignOffers = allOffers.filter(offer => 
+          offer.campaign_name === campaign.name && offer.buyer_id === campaign.buyer_id
+        );
+        return {
+          ...campaign,
+          campaign_assets: campaignOffers,
+          asset_count: campaignOffers.length
+        };
+      });
+
       setUsers(allUsers);
       setAssets(assetsRes.data);
-      setCampaigns(campaignsRes.data);
+      setCampaigns(enrichedCampaigns);
       setStats(statsRes.data);
 
       // Filter sellers for the asset form dropdown
