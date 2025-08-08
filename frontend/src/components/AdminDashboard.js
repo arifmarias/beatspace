@@ -2382,7 +2382,7 @@ const AdminDashboard = () => {
                       <span>Asset Monitoring</span>
                     </CardTitle>
                     <p className="text-sm text-gray-600 mt-1">
-                      Manage monitoring data for booked assets organized by campaigns
+                      View all live assets organized by campaigns
                     </p>
                   </div>
                   <Button 
