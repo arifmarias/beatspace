@@ -289,7 +289,7 @@ const BuyerDashboard = () => {
             duration: '3 months',
             cost: 90000, // Demo cost
             expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
-            lastStatus: 'Booked',
+            lastStatus: 'Live',
             location: { lat: 23.7461, lng: 90.3742 },
             images: []
           }
