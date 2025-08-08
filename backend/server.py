@@ -1555,13 +1555,13 @@ async def refresh_application_data(current_user: User = Depends(require_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error refreshing data: {str(e)}")
 
-@api_router.get("/assets/booked")
-async def get_booked_assets(current_user: User = Depends(get_current_user)):
-    """Get all assets booked by the current buyer"""
+@api_router.get("/assets/live")
+async def get_live_assets(current_user: User = Depends(get_current_user)):
+    """Get live assets for the current buyer"""
     try:
-        # Directly query assets with "Booked" status and current buyer's ID
-        booked_assets = await db.assets.find({
-            "status": "Booked",
+        # Filter assets by buyer and Live status
+        live_assets = await db.assets.find({
+            "status": AssetStatus.LIVE,
             "buyer_id": current_user.id
         }).to_list(None)
         
@@ -1574,13 +1574,13 @@ async def get_booked_assets(current_user: User = Depends(get_current_user)):
         # Create lookup for offers by asset_id for campaign details
         offers_by_asset = {offer["asset_id"]: offer for offer in approved_offers}
         
-        booked_assets_data = []
+        live_assets_data = []
         
-        for asset in booked_assets:
+        for asset in live_assets:
             # Get campaign details from the corresponding offer
             offer = offers_by_asset.get(asset["id"])
             
-            booked_asset = {
+            live_asset = {
                 "id": asset["id"],
                 "name": asset["name"],
                 "address": asset.get("address", "Address not available"),
@@ -1591,16 +1591,16 @@ async def get_booked_assets(current_user: User = Depends(get_current_user)):
                 "duration": offer.get("contract_duration", "1 month") if offer else "N/A",
                 "expiryDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else asset.get("next_available_date"),
                 "cost": offer.get("final_offer") or offer.get("admin_quoted_price") if offer else 0,  # Final offered price
-                "lastStatus": "Booked",
+                "lastStatus": "Live",
                 "location": asset.get("location", {}),
                 "images": asset.get("images", [])
             }
-            booked_assets_data.append(booked_asset)
+            live_assets_data.append(live_asset)
         
-        return booked_assets_data
+        return live_assets_data
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching booked assets: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching live assets: {str(e)}")
 
 # Enhanced Asset CRUD Routes
 @api_router.get("/assets", response_model=List[Asset])
