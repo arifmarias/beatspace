@@ -2409,7 +2409,7 @@ const AdminDashboard = () => {
                     />
                   </div>
                   <div className="text-sm text-gray-500">
-                    {bookedAssets.length} booked assets
+                    {bookedAssets.length} live assets
                   </div>
                 </div>
 
