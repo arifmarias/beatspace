@@ -3261,20 +3261,44 @@ const AdminDashboard = () => {
                   <div>
                     <h4 className="font-semibold mb-3">Campaign Assets ({selectedCampaign.campaign_assets.length})</h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {selectedCampaign.campaign_assets.map((asset, index) => (
-                        <div key={index} className="border rounded-lg p-3 space-y-1">
+                      {selectedCampaign.campaign_assets.map((offer, index) => (
+                        <div key={index} className="border rounded-lg p-3 space-y-2">
                           <div className="flex justify-between items-start">
-                            <span className="font-medium text-sm">{asset.asset_name || `Asset ${index + 1}`}</span>
-                            <span className="text-xs text-gray-500">ID: {asset.asset_id}</span>
+                            <span className="font-medium text-sm">{offer.asset_name || `Asset ${index + 1}`}</span>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                className={`text-xs ${
+                                  offer.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                                  offer.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
+                                  offer.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {offer.status}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Asset ID: {offer.asset_id}
                           </div>
                           <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                             <div>
-                              <strong>Start:</strong> {asset.asset_start_date ? new Date(asset.asset_start_date).toLocaleDateString() : 'Not set'}
+                              <strong>Request Date:</strong> {offer.created_at ? new Date(offer.created_at).toLocaleDateString() : 'Not set'}
                             </div>
                             <div>
-                              <strong>Expiry:</strong> {asset.asset_expiration_date ? new Date(asset.asset_expiration_date).toLocaleDateString() : 'Not set'}
+                              <strong>Duration:</strong> {offer.duration_months ? `${offer.duration_months} months` : 'Not set'}
                             </div>
                           </div>
+                          {offer.admin_quoted_price && (
+                            <div className="text-xs">
+                              <strong>Quoted Price:</strong> <span className="text-green-600 font-medium">৳{offer.admin_quoted_price.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {offer.buyer_budget && (
+                            <div className="text-xs">
+                              <strong>Buyer Budget:</strong> ৳{offer.buyer_budget.toLocaleString()}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
