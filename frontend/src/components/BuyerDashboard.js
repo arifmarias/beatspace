@@ -2910,6 +2910,8 @@ const BuyerDashboard = () => {
         <Dialog open={!!selectedAssetMonitoring} onOpenChange={() => {
           setSelectedAssetMonitoring(null);
           setMonitoringData(null);
+          setSelectedImageIndex(0);
+          setShowImageModal(false);
         }}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
