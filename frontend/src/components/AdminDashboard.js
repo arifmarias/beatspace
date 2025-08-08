@@ -913,7 +913,7 @@ const AdminDashboard = () => {
           };
         });
       
-      setBookedAssets(booked);
+      setBookedAssets(live);
     } catch (error) {
       console.error('Error fetching booked assets:', error);
       notify.error('Failed to load booked assets');
