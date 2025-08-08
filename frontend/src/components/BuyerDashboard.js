@@ -88,6 +88,10 @@ const BuyerDashboard = () => {
   const [selectedAssetMonitoring, setSelectedAssetMonitoring] = useState(null);
   const [monitoringData, setMonitoringData] = useState(null);
   const [monitoringLoading, setMonitoringLoading] = useState(false);
+  
+  // Image modal states for monitoring dialog
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [assetsLoading, setAssetsLoading] = useState(false);
 
   // Pagination and search state for Campaigns
