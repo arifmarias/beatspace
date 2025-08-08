@@ -3143,7 +3143,7 @@ const BuyerDashboard = () => {
               <div className="relative">
                 {/* Large image display */}
                 <img 
-                  src={monitoringData.photos.reverse()[selectedImageIndex || 0]} 
+                  src={[...monitoringData.photos].reverse()[selectedImageIndex || 0]} 
                   alt={`${selectedAssetMonitoring.name} - Photo ${(selectedImageIndex || 0) + 1}`}
                   className="w-full max-h-[70vh] object-contain mx-auto"
                 />
