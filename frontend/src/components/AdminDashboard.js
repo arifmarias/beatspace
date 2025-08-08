@@ -1972,7 +1972,11 @@ const AdminDashboard = () => {
                       </TableHeader>
                       <TableBody>
                         {getPaginatedCampaigns().map((campaign) => (
-                        <TableRow key={campaign.id}>
+                        <TableRow 
+                          key={campaign.id}
+                          className="cursor-pointer hover:bg-gray-50"
+                          onClick={() => setSelectedCampaign(campaign)}
+                        >
                           <TableCell>
                             <div>
                               <div className="font-medium">{campaign.name}</div>
