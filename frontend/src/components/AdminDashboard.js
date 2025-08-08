@@ -901,9 +901,9 @@ const AdminDashboard = () => {
       const allAssets = assetsResponse.data;
       const allOffers = offersResponse.data;
       
-      // Filter only booked assets and add campaign names from offer requests
-      const booked = allAssets
-        .filter(asset => asset.status === 'Booked')
+      // Filter only live assets and add campaign names from offer requests
+      const live = allAssets
+        .filter(asset => asset.status === 'Live')
         .map(asset => {
           // Find the corresponding offer request to get campaign name
           const offer = allOffers.find(o => o.asset_id === asset.id);
