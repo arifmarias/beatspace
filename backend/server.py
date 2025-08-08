@@ -417,7 +417,7 @@ async def update_assets_status_for_campaign(campaign_id: str, campaign_status: s
     
     # Set asset status based on campaign status
     if campaign_status == "Live":
-        new_asset_status = AssetStatus.BOOKED  # Changed: Live campaigns mean Booked assets
+        new_asset_status = AssetStatus.LIVE  # Changed: Live campaigns mean Live assets
     elif campaign_status == "Draft":
         new_asset_status = AssetStatus.AVAILABLE
     elif campaign_status == "Completed":
