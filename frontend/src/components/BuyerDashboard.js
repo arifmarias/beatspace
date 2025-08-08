@@ -3022,26 +3022,46 @@ const BuyerDashboard = () => {
                           <Eye className="w-4 h-4 mr-2 text-gray-600" />
                           Recent Photos ({monitoringData.photos.length} available)
                         </h4>
-                        <div className="grid grid-cols-3 gap-3">
-                          {monitoringData.photos.slice(0, 3).map((photo, index) => (
-                            <div key={index} className="relative group cursor-pointer">
-                              <img 
-                                src={photo} 
-                                alt={`${selectedAssetMonitoring.name} - Photo ${index + 1}`}
-                                className="w-full h-24 object-cover rounded-lg hover:scale-105 transition-transform"
-                                onClick={() => {
-                                  // Open photo in new tab for larger view
-                                  window.open(photo, '_blank');
-                                }}
-                              />
-                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center">
-                                <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                              </div>
-                            </div>
-                          ))}
+                        
+                        {/* Main selected image */}
+                        <div 
+                          className="mb-3 cursor-pointer relative"
+                          onClick={() => setShowImageModal(true)}
+                        >
+                          <img 
+                            src={monitoringData.photos.reverse()[selectedImageIndex || 0]} 
+                            alt={`${selectedAssetMonitoring.name} - Photo ${(selectedImageIndex || 0) + 1}`}
+                            className="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-opacity rounded-lg flex items-center justify-center">
+                            <Eye className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity" />
+                          </div>
                         </div>
+                        
+                        {/* Dot navigation if more than one image */}
+                        {monitoringData.photos.length > 1 && (
+                          <div className="flex justify-center space-x-3 mt-3">
+                            {monitoringData.photos.map((_, index) => (
+                              <button
+                                key={index}
+                                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                                  index === (selectedImageIndex || 0)
+                                    ? 'bg-orange-500 transform scale-125' 
+                                    : 'bg-gray-400 hover:bg-gray-600'
+                                }`}
+                                onClick={() => setSelectedImageIndex(index)}
+                                aria-label={`View image ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                        )}
+                        
+                        {/* Image counter */}
                         <p className="text-xs text-gray-500 mt-2 text-center">
-                          Click photos to view larger • Latest photos shown first
+                          {monitoringData.photos.length > 1 
+                            ? `Image ${(selectedImageIndex || 0) + 1} of ${monitoringData.photos.length} • Click to view larger`
+                            : 'Click to view larger • Latest photos shown first'
+                          }
                         </p>
                       </div>
                     )}
