@@ -296,7 +296,7 @@ const BuyerDashboard = () => {
         ];
         setLiveAssets(demoAssets);
       } else {
-        setLiveAssets(bookedAssetsData);
+        setLiveAssets(liveAssetsData);
       }
       
       // Clear timeout on success
