@@ -1249,7 +1249,7 @@ const BuyerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">
                     <Activity className="w-5 h-5" />
-                    <span>My Booked Assets</span>
+                    <span>My Assets</span>
                   </CardTitle>
                   
                   {/* View Toggle Buttons */}
