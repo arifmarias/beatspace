@@ -267,10 +267,10 @@ const BuyerDashboard = () => {
       const headers = getAuthHeaders();
       console.log('🔑 Auth headers:', headers);
       
-      console.log('📡 Calling API:', `${API}/assets/booked`);
+      console.log('📡 Calling API:', `${API}/assets/live`);
       
-      // Use the dedicated booked assets API
-      const response = await axios.get(`${API}/assets/booked`, { headers });
+      // Use the dedicated live assets API
+      const response = await axios.get(`${API}/assets/live`, { headers });
       console.log('✅ API response:', response);
       
       const bookedAssetsData = response.data || [];
