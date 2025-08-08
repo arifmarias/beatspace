@@ -879,7 +879,7 @@ const AdminDashboard = () => {
       setMonitoringLoading(true);
       const [assetsResponse, offersResponse] = await Promise.all([
         axios.get(`${API}/assets`, { headers: getAuthHeaders() }),
-        axios.get(`${API}/offers`, { headers: getAuthHeaders() })
+        axios.get(`${API}/offers/requests`, { headers: getAuthHeaders() })
       ]);
       
       const allAssets = assetsResponse.data;
