@@ -3032,7 +3032,7 @@ const BuyerDashboard = () => {
                           onClick={() => setShowImageModal(true)}
                         >
                           <img 
-                            src={monitoringData.photos.reverse()[selectedImageIndex || 0]} 
+                            src={[...monitoringData.photos].reverse()[selectedImageIndex || 0]} 
                             alt={`${selectedAssetMonitoring.name} - Photo ${(selectedImageIndex || 0) + 1}`}
                             className="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity"
                           />
