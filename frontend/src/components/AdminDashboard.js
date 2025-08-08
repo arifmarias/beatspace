@@ -877,11 +877,26 @@ const AdminDashboard = () => {
   const fetchBookedAssets = async () => {
     try {
       setMonitoringLoading(true);
-      const response = await axios.get(`${API}/assets`, { headers: getAuthHeaders() });
-      const allAssets = response.data;
+      const [assetsResponse, offersResponse] = await Promise.all([
+        axios.get(`${API}/assets`, { headers: getAuthHeaders() }),
+        axios.get(`${API}/offers`, { headers: getAuthHeaders() })
+      ]);
       
-      // Filter only booked assets and group by campaign
-      const booked = allAssets.filter(asset => asset.status === 'Booked');
+      const allAssets = assetsResponse.data;
+      const allOffers = offersResponse.data;
+      
+      // Filter only booked assets and add campaign names from offer requests
+      const booked = allAssets
+        .filter(asset => asset.status === 'Booked')
+        .map(asset => {
+          // Find the corresponding offer request to get campaign name
+          const offer = allOffers.find(o => o.asset_id === asset.id);
+          return {
+            ...asset,
+            campaign_name: offer?.campaign_name || asset.buyer_name || 'Unknown Campaign'
+          };
+        });
+      
       setBookedAssets(booked);
     } catch (error) {
       console.error('Error fetching booked assets:', error);
