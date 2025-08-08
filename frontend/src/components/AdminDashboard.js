@@ -4644,9 +4644,6 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
               <Badge className="bg-green-100 text-green-800 text-xs">
                 {asset.status}
               </Badge>
-              <span className="text-xs text-gray-500">
-                Investment: ৳{asset.final_cost || asset.admin_quoted_price || asset.pricing?.monthly_rate || 'N/A'}
-              </span>
             </div>
           </div>
         </div>
