@@ -3174,7 +3174,7 @@ const BuyerDashboard = () => {
                 {/* Thumbnail navigation at bottom */}
                 {monitoringData.photos.length > 1 && (
                   <div className="flex justify-center space-x-2 mt-4 overflow-x-auto">
-                    {monitoringData.photos.map((photo, index) => (
+                    {[...monitoringData.photos].reverse().map((photo, index) => (
                       <div
                         key={index}
                         className={`flex-shrink-0 cursor-pointer border-2 rounded overflow-hidden ${
