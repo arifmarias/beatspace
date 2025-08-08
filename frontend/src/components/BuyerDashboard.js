@@ -3128,6 +3128,74 @@ const BuyerDashboard = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Image Modal for larger view - Monitoring Dialog */}
+        {showImageModal && selectedAssetMonitoring && monitoringData?.photos && (
+          <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+            <DialogContent className="max-w-4xl max-h-[95vh] p-2">
+              <DialogHeader className="pb-2">
+                <DialogTitle className="text-center">
+                  {selectedAssetMonitoring.name} - Monitoring Photo {(selectedImageIndex || 0) + 1} of {monitoringData.photos.length}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="relative">
+                {/* Large image display */}
+                <img 
+                  src={monitoringData.photos.reverse()[selectedImageIndex || 0]} 
+                  alt={`${selectedAssetMonitoring.name} - Photo ${(selectedImageIndex || 0) + 1}`}
+                  className="w-full max-h-[70vh] object-contain mx-auto"
+                />
+                
+                {/* Navigation arrows */}
+                {monitoringData.photos.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setSelectedImageIndex((prev) => 
+                        (prev || 0) === 0 ? monitoringData.photos.length - 1 : (prev || 0) - 1
+                      )}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    
+                    <button
+                      onClick={() => setSelectedImageIndex((prev) => 
+                        (prev || 0) === monitoringData.photos.length - 1 ? 0 : (prev || 0) + 1
+                      )}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+                
+                {/* Thumbnail navigation at bottom */}
+                {monitoringData.photos.length > 1 && (
+                  <div className="flex justify-center space-x-2 mt-4 overflow-x-auto">
+                    {monitoringData.photos.map((photo, index) => (
+                      <div
+                        key={index}
+                        className={`flex-shrink-0 cursor-pointer border-2 rounded overflow-hidden ${
+                          index === (selectedImageIndex || 0)
+                            ? 'border-orange-500' 
+                            : 'border-gray-300 hover:border-gray-500'
+                        }`}
+                        onClick={() => setSelectedImageIndex(index)}
+                      >
+                        <img 
+                          src={photo} 
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-12 h-12 object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
