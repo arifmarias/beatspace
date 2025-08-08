@@ -836,7 +836,7 @@ async def update_offer_request_status_admin(
         await db.assets.update_one(
             {"id": offer_request["asset_id"]},
             {"$set": {
-                "status": AssetStatus.BOOKED,
+                "status": AssetStatus.LIVE,
                 "buyer_id": offer_request["buyer_id"],
                 "buyer_name": offer_request["buyer_name"],
                 "next_available_date": tentative_end,  # Asset becomes available after booking ends
