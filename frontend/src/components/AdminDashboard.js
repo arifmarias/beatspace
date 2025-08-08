@@ -3205,6 +3205,79 @@ const AdminDashboard = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Campaign Details Dialog */}
+        <Dialog open={!!selectedCampaign} onOpenChange={() => setSelectedCampaign(null)}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Campaign Details</DialogTitle>
+            </DialogHeader>
+            {selectedCampaign && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3">Campaign Information</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Name:</strong> {selectedCampaign.name}</p>
+                      <p><strong>Description:</strong> {selectedCampaign.description || 'No description'}</p>
+                      <p><strong>Buyer:</strong> {selectedCampaign.buyer_name}</p>
+                      <p><strong>Budget:</strong> {selectedCampaign.budget ? `৳${selectedCampaign.budget.toLocaleString()}` : 'Not specified'}</p>
+                      <p><strong>Status:</strong> 
+                        <Badge className={`ml-2 ${getStatusColor(selectedCampaign.status)}`}>
+                          {selectedCampaign.status}
+                        </Badge>
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-3">Timeline</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Start Date:</strong> {selectedCampaign.start_date ? new Date(selectedCampaign.start_date).toLocaleDateString() : 'Not set'}</p>
+                      <p><strong>End Date:</strong> {selectedCampaign.end_date ? new Date(selectedCampaign.end_date).toLocaleDateString() : 'Not set'}</p>
+                      <p><strong>Created:</strong> {new Date(selectedCampaign.created_at).toLocaleString()}</p>
+                      {selectedCampaign.updated_at && (
+                        <p><strong>Last Updated:</strong> {new Date(selectedCampaign.updated_at).toLocaleString()}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {selectedCampaign.campaign_assets && selectedCampaign.campaign_assets.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-3">Campaign Assets ({selectedCampaign.campaign_assets.length})</h4>
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {selectedCampaign.campaign_assets.map((asset, index) => (
+                        <div key={index} className="border rounded-lg p-3 space-y-1">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium text-sm">{asset.asset_name || `Asset ${index + 1}`}</span>
+                            <span className="text-xs text-gray-500">ID: {asset.asset_id}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
+                            <div>
+                              <strong>Start:</strong> {asset.asset_start_date ? new Date(asset.asset_start_date).toLocaleDateString() : 'Not set'}
+                            </div>
+                            <div>
+                              <strong>Expiry:</strong> {asset.asset_expiration_date ? new Date(asset.asset_expiration_date).toLocaleDateString() : 'Not set'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(!selectedCampaign.campaign_assets || selectedCampaign.campaign_assets.length === 0) && (
+                  <div>
+                    <h4 className="font-semibold mb-3">Campaign Assets</h4>
+                    <div className="text-center py-4 text-gray-500 text-sm border-2 border-dashed rounded-lg">
+                      No assets assigned to this campaign
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Add Asset Dialog */}
         <Dialog open={showAddAsset} onOpenChange={(open) => {
           setShowAddAsset(open);
