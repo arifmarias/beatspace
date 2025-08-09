@@ -1936,7 +1936,6 @@ const BuyerDashboard = () => {
                                   Showing 6 of {getMapFilteredAssets().length} filtered assets
                                 </p>
                               )}
-                              )}
                             </div>
                           </div>
                         ) : (
