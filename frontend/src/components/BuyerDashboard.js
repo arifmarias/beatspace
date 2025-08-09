@@ -2521,7 +2521,7 @@ const BuyerDashboard = () => {
                                             </Button>
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent align="end" className="w-48">
-                                            {/* Show Approve/Reject for Quoted offers */}
+                                            {/* Show Approve/Revised/Cancel for Quoted offers */}
                                             {offer.status === 'Quoted' && (
                                               <>
                                                 <DropdownMenuItem 
@@ -2538,14 +2538,6 @@ const BuyerDashboard = () => {
                                                 >
                                                   <Edit3 className="h-4 w-4 mr-2" />
                                                   Revised Offer
-                                                </DropdownMenuItem>
-                                                
-                                                <DropdownMenuItem 
-                                                  onClick={() => handleRejectOffer(offer)}
-                                                  className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                >
-                                                  <XCircle className="h-4 w-4 mr-2" />
-                                                  Reject Offer
                                                 </DropdownMenuItem>
                                                 
                                                 <DropdownMenuItem 
