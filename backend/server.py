@@ -1716,6 +1716,39 @@ async def delete_asset(
     await db.assets.delete_one({"id": asset_id})
     return {"message": "Asset deleted successfully"}
 
+@api_router.patch("/assets/{asset_id}/creative")
+async def update_asset_creative(
+    asset_id: str,
+    creative_data: CreativeUpdate,
+    current_user: User = Depends(get_current_user)
+):
+    """Update creative tags and timeline for an asset (buyer only)"""
+    asset = await db.assets.find_one({"id": asset_id})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    # Only buyers can update creative fields, and only for their own assets
+    if current_user.role != UserRole.BUYER or asset.get("buyer_id") != current_user.id:
+        raise HTTPException(status_code=403, detail="Can only update creative fields for your own assets")
+    
+    # Prepare update data
+    update_data = {}
+    if creative_data.creative_tags is not None:
+        update_data["creative_tags"] = creative_data.creative_tags
+    if creative_data.creative_timeline is not None:
+        update_data["creative_timeline"] = creative_data.creative_timeline
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No creative data provided")
+    
+    updated_asset = await db.assets.find_one_and_update(
+        {"id": asset_id},
+        {"$set": update_data},
+        return_document=True
+    )
+    
+    return {"message": "Creative data updated successfully", "asset": Asset(**updated_asset)}
+
 # Admin-specific routes
 @api_router.get("/admin/users", response_model=List[User])
 async def get_all_users(admin_user: User = Depends(require_admin)):
