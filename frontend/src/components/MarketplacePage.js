@@ -292,7 +292,7 @@ const MarketplacePage = () => {
         <div style="display: flex; gap: 8px; margin: 8px 0;">
           <span style="background: ${asset.status === 'Booked' ? '#fef3c7' : '#dcfce7'}; 
                        color: ${asset.status === 'Booked' ? '#d97706' : '#16a34a'}; 
-                       padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.status === 'Booked' ? 'Booked' : 'Available'}</span>
+                       padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.status}</span>
           <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.type}</span>
         </div>
         <p style="margin: 8px 0; font-weight: 600;">From ৳${pricing.toLocaleString()}</p>
