@@ -724,13 +724,15 @@ const BuyerDashboard = () => {
 
   // Helper functions for My Assets pagination
   const getPaginatedAssets = () => {
+    const filteredAssets = getFilteredAssets();
     const start = (assetsCurrentPage - 1) * assetsItemsPerPage;
     const end = start + assetsItemsPerPage;
-    return liveAssets.slice(start, end);
+    return filteredAssets.slice(start, end);
   };
 
   const getAssetsTotalPages = () => {
-    return Math.ceil(liveAssets.length / assetsItemsPerPage);
+    const filteredAssets = getFilteredAssets();
+    return Math.ceil(filteredAssets.length / assetsItemsPerPage);
   };
 
   const getPaginatedCampaignAssets = () => {
