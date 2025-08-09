@@ -889,7 +889,7 @@ const AdminDashboard = () => {
     }
   };
   
-  // Fetch booked assets grouped by campaigns
+  // Fetch live assets grouped by campaigns
   const fetchBookedAssets = async () => {
     try {
       setMonitoringLoading(true);
