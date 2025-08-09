@@ -1619,8 +1619,8 @@ const MarketplacePage = () => {
                                   <h3 className="font-semibold text-lg">{asset.name}</h3>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                  <div className={`w-3 h-3 rounded-full ${statusColors[asset.status === 'Booked' ? 'Booked' : 'Available']}`} />
-                                  <span className="text-sm text-gray-600">{asset.status === 'Booked' ? 'Booked' : 'Available'}</span>
+                                  <div className={`w-3 h-3 rounded-full ${statusColors[asset.status]}`} />
+                                  <span className="text-sm text-gray-600">{asset.status}</span>
                                 </div>
                               </div>
                               
