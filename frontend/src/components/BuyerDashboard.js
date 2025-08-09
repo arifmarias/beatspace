@@ -1258,6 +1258,38 @@ const BuyerDashboard = () => {
     );
   };
 
+  // Filter assets for map based on type and location
+  const getMapFilteredAssets = () => {
+    return liveAssets.filter(asset => {
+      // Filter by asset type
+      if (mapFilters.assetType !== 'all' && asset.type !== mapFilters.assetType) {
+        return false;
+      }
+      
+      // Filter by location (using address for location filtering)
+      if (mapFilters.location !== 'all') {
+        const addressLower = asset.address?.toLowerCase() || '';
+        if (!addressLower.includes(mapFilters.location.toLowerCase())) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  };
+
+  // Get unique locations from assets for location filter
+  const getUniqueLocations = () => {
+    const locations = liveAssets.map(asset => {
+      // Extract city/area from address (simple logic)
+      const address = asset.address || '';
+      const parts = address.split(',');
+      return parts.length > 1 ? parts[parts.length - 2].trim() : parts[0].split(' ')[0];
+    }).filter(loc => loc);
+    
+    return [...new Set(locations)];
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
