@@ -118,6 +118,22 @@ const BuyerDashboard = () => {
   const [editOfferDetails, setEditOfferDetails] = useState({
     campaignType: 'existing', // Default to existing for edits
     campaignName: '',
+    existingCampaignId: '',
+    contractDuration: '1_month',
+    estimatedBudget: '',
+    tentativeStartDate: null,
+    assetExpirationDate: null,
+    serviceBundles: {
+      printing: false,
+      setup: false,
+      monitoring: false
+    },
+    specialRequirements: '',
+    notes: '',
+    customStartDate: null,
+    customEndDate: null,
+    customDurationDays: null
+  });
   
   // Creative editing state
   const [editingCreative, setEditingCreative] = useState(null); // Asset ID being edited
