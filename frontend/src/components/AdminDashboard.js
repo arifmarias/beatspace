@@ -943,7 +943,7 @@ const AdminDashboard = () => {
     }));
   };
   
-  // Group booked assets by campaign name
+  // Group live assets by campaign name
   const getGroupedBookedAssets = () => {
     const filtered = bookedAssets.filter(asset =>
       asset.name.toLowerCase().includes(monitoringSearch.toLowerCase()) ||
