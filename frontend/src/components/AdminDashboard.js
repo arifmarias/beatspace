@@ -2417,7 +2417,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                       <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                      <p className="text-gray-600">Loading booked assets...</p>
+                      <p className="text-gray-600">Loading live assets...</p>
                     </div>
                   </div>
                 ) : bookedAssets.length === 0 ? (
