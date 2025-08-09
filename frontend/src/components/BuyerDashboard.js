@@ -1618,34 +1618,21 @@ const BuyerDashboard = () => {
                                       )}
                                     </div>
                                   ) : (
-                                    <div>
-                                      {asset.creative_timeline ? (
-                                        <div className="space-y-1">
-                                          <div className="text-sm font-medium text-gray-900">
-                                            {new Date(asset.creative_timeline).toLocaleDateString()}
-                                          </div>
-                                          <Button 
-                                            variant="ghost" 
-                                            size="sm" 
-                                            onClick={() => handleEditCreative(asset)}
-                                            className="text-xs text-blue-600 hover:text-blue-700"
-                                          >
-                                            <Edit className="w-3 h-3 mr-1" />
-                                            Edit
-                                          </Button>
+                                    <div className="flex items-center space-x-2">
+                                      {asset.creative_timeline && (
+                                        <div className="text-sm font-medium text-gray-900">
+                                          {new Date(asset.creative_timeline).toLocaleDateString()}
                                         </div>
-                                      ) : (
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm" 
-                                          onClick={() => handleEditCreative(asset)}
-                                          className="text-xs text-gray-500 hover:text-gray-700"
-                                          disabled={!asset.creative_tags || asset.creative_tags.length === 0}
-                                        >
-                                          <CalendarDays className="w-3 h-3 mr-1" />
-                                          {asset.creative_tags && asset.creative_tags.length > 0 ? 'Set date' : 'Add tags first'}
-                                        </Button>
                                       )}
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        onClick={() => handleEditCreative(asset)}
+                                        className="text-xs text-blue-600 hover:text-blue-700 p-1"
+                                        disabled={!asset.creative_tags || asset.creative_tags.length === 0}
+                                      >
+                                        <Edit className="w-3 h-3" />
+                                      </Button>
                                     </div>
                                   )}
                                 </TableCell>
