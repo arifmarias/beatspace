@@ -1183,9 +1183,18 @@ const BuyerDashboard = () => {
     try {
       const tags = creativeForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
       
+      // Validate that tags are required for timeline
+      if (creativeForm.timeline && tags.length === 0) {
+        notify.error('Creative tags are required to set creative timeline');
+        return;
+      }
+      
+      // If no tags, also clear timeline
+      const timelineValue = tags.length > 0 ? creativeForm.timeline : null;
+      
       await axios.patch(`${API}/assets/${assetId}/creative`, {
         creative_tags: tags,
-        creative_timeline: creativeForm.timeline ? creativeForm.timeline.toISOString() : null
+        creative_timeline: timelineValue ? timelineValue.toISOString() : null
       }, { headers: getAuthHeaders() });
       
       notify.success('Creative data updated successfully!');
