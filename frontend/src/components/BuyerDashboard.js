@@ -1922,7 +1922,7 @@ const BuyerDashboard = () => {
                                           <div className={`font-medium text-sm truncate ${
                                             selectedMapAsset?.id === asset.id ? 'text-blue-900' : 'text-gray-900'
                                           }`}>{asset.name}</div>
-                                          <div className="text-xs text-gray-500">{asset.district}, {asset.division}</div>
+                                          <div className="text-xs text-gray-500">{asset.address}</div>
                                         </div>
                                         <div className={`text-sm font-medium ${
                                           selectedMapAsset?.id === asset.id ? 'text-blue-600' : 'text-green-600'
