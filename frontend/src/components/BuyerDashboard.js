@@ -1465,6 +1465,117 @@ const BuyerDashboard = () => {
                                     )}
                                   </div>
                                 </TableCell>
+                                
+                                {/* Creative Tags Column */}
+                                <TableCell onClick={(e) => e.stopPropagation()}>
+                                  {editingCreative === asset.id ? (
+                                    <div className="space-y-2">
+                                      <Input
+                                        placeholder="Enter tags separated by commas"
+                                        value={creativeForm.tags}
+                                        onChange={(e) => setCreativeForm(prev => ({...prev, tags: e.target.value}))}
+                                        className="text-xs"
+                                      />
+                                      <div className="flex space-x-1">
+                                        <Button size="sm" onClick={() => handleSaveCreative(asset.id)}>
+                                          Save
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={handleCancelCreativeEdit}>
+                                          Cancel
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-1">
+                                      {asset.creative_tags && asset.creative_tags.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1">
+                                          {asset.creative_tags.map((tag, index) => (
+                                            <Badge key={index} className={`text-xs ${generateTagColor(tag)}`}>
+                                              {tag}
+                                            </Badge>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => handleEditCreative(asset)}
+                                          className="text-xs text-gray-500 hover:text-gray-700"
+                                        >
+                                          <Tag className="w-3 h-3 mr-1" />
+                                          Add tags
+                                        </Button>
+                                      )}
+                                      {asset.creative_tags && asset.creative_tags.length > 0 && (
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => handleEditCreative(asset)}
+                                          className="text-xs text-blue-600 hover:text-blue-700"
+                                        >
+                                          <Edit className="w-3 h-3 mr-1" />
+                                          Edit
+                                        </Button>
+                                      )}
+                                    </div>
+                                  )}
+                                </TableCell>
+                                
+                                {/* Creative Timeline Column */}
+                                <TableCell onClick={(e) => e.stopPropagation()}>
+                                  {editingCreative === asset.id ? (
+                                    <div className="space-y-2">
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <Button variant="outline" size="sm" className="w-full text-xs">
+                                            <CalendarDays className="w-3 h-3 mr-1" />
+                                            {creativeForm.timeline ? 
+                                              creativeForm.timeline.toLocaleDateString() : 
+                                              "Select date"
+                                            }
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                          <CalendarComponent
+                                            mode="single"
+                                            selected={creativeForm.timeline}
+                                            onSelect={(date) => setCreativeForm(prev => ({...prev, timeline: date}))}
+                                            disabled={(date) => date < new Date()}
+                                          />
+                                        </PopoverContent>
+                                      </Popover>
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      {asset.creative_timeline ? (
+                                        <div className="space-y-1">
+                                          <div className="text-sm font-medium text-gray-900">
+                                            {new Date(asset.creative_timeline).toLocaleDateString()}
+                                          </div>
+                                          <Button 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            onClick={() => handleEditCreative(asset)}
+                                            className="text-xs text-blue-600 hover:text-blue-700"
+                                          >
+                                            <Edit className="w-3 h-3 mr-1" />
+                                            Edit
+                                          </Button>
+                                        </div>
+                                      ) : (
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => handleEditCreative(asset)}
+                                          className="text-xs text-gray-500 hover:text-gray-700"
+                                        >
+                                          <CalendarDays className="w-3 h-3 mr-1" />
+                                          Set date
+                                        </Button>
+                                      )}
+                                    </div>
+                                  )}
+                                </TableCell>
                                 <TableCell>{asset.duration}</TableCell>
                                 <TableCell>
                                   <span className="text-green-600 font-medium">
