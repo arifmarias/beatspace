@@ -1903,38 +1903,41 @@ const BuyerDashboard = () => {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                  {getMapFilteredAssets().slice(0, 6).map((asset) => (
-                                  <div 
-                                    key={asset.id} 
-                                    className={`flex items-center space-x-3 p-2 rounded border cursor-pointer transition-all hover:shadow-md ${
-                                      selectedMapAsset?.id === asset.id 
-                                        ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
-                                        : 'bg-white hover:bg-gray-50'
-                                    }`}
-                                    onClick={() => setSelectedMapAsset(asset)}
-                                  >
-                                    <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                                      selectedMapAsset?.id === asset.id ? 'bg-blue-500' : 'bg-red-500'
-                                    }`}></div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className={`font-medium text-sm truncate ${
-                                        selectedMapAsset?.id === asset.id ? 'text-blue-900' : 'text-gray-900'
-                                      }`}>{asset.name}</div>
-                                      <div className="text-xs text-gray-500">{asset.district}, {asset.division}</div>
-                                    </div>
-                                    <div className={`text-sm font-medium ${
-                                      selectedMapAsset?.id === asset.id ? 'text-blue-600' : 'text-green-600'
-                                    }`}>
-                                      ৳{asset.cost?.toLocaleString()}
-                                    </div>
+                                <>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {getMapFilteredAssets().slice(0, 6).map((asset) => (
+                                      <div 
+                                        key={asset.id} 
+                                        className={`flex items-center space-x-3 p-2 rounded border cursor-pointer transition-all hover:shadow-md ${
+                                          selectedMapAsset?.id === asset.id 
+                                            ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
+                                            : 'bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => setSelectedMapAsset(asset)}
+                                      >
+                                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                                          selectedMapAsset?.id === asset.id ? 'bg-blue-500' : 'bg-red-500'
+                                        }`}></div>
+                                        <div className="flex-1 min-w-0">
+                                          <div className={`font-medium text-sm truncate ${
+                                            selectedMapAsset?.id === asset.id ? 'text-blue-900' : 'text-gray-900'
+                                          }`}>{asset.name}</div>
+                                          <div className="text-xs text-gray-500">{asset.district}, {asset.division}</div>
+                                        </div>
+                                        <div className={`text-sm font-medium ${
+                                          selectedMapAsset?.id === asset.id ? 'text-blue-600' : 'text-green-600'
+                                        }`}>
+                                          ৳{asset.cost?.toLocaleString()}
+                                        </div>
+                                      </div>
+                                    ))}
                                   </div>
-                                ))}
-                              </div>
-                              {getMapFilteredAssets().length > 6 && (
-                                <p className="text-xs text-gray-500 mt-2 text-center">
-                                  Showing 6 of {getMapFilteredAssets().length} filtered assets
-                                </p>
+                                  {getMapFilteredAssets().length > 6 && (
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                      Showing 6 of {getMapFilteredAssets().length} filtered assets
+                                    </p>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
