@@ -1908,7 +1908,7 @@ const BuyerDashboard = () => {
                               ) : (
                                 <>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {getMapFilteredAssets().slice(0, 6).map((asset) => (
+                                    {(showAllMapAssets ? getMapFilteredAssets() : getMapFilteredAssets().slice(0, 6)).map((asset) => (
                                       <div 
                                         key={asset.id} 
                                         className={`flex items-center space-x-3 p-2 rounded border cursor-pointer transition-all hover:shadow-md ${
@@ -1935,10 +1935,34 @@ const BuyerDashboard = () => {
                                       </div>
                                     ))}
                                   </div>
+                                  
+                                  {/* Show More/Less Controls */}
                                   {getMapFilteredAssets().length > 6 && (
-                                    <p className="text-xs text-gray-500 mt-2 text-center">
-                                      Showing 6 of {getMapFilteredAssets().length} filtered assets
-                                    </p>
+                                    <div className="text-center mt-4">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <p className="text-xs text-gray-500">
+                                          Showing {showAllMapAssets ? getMapFilteredAssets().length : Math.min(6, getMapFilteredAssets().length)} of {getMapFilteredAssets().length} filtered assets
+                                        </p>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => setShowAllMapAssets(!showAllMapAssets)}
+                                          className="h-7 text-xs"
+                                        >
+                                          {showAllMapAssets ? (
+                                            <>
+                                              <ChevronUp className="w-3 h-3 mr-1" />
+                                              Show Less
+                                            </>
+                                          ) : (
+                                            <>
+                                              <ChevronDown className="w-3 h-3 mr-1" />
+                                              Show More ({getMapFilteredAssets().length - 6} more)
+                                            </>
+                                          )}
+                                        </Button>
+                                      </div>
+                                    </div>
                                   )}
                                 </>
                               )}
