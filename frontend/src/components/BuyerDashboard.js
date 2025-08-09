@@ -141,22 +141,6 @@ const BuyerDashboard = () => {
     tags: '',
     timeline: null
   });
-    existingCampaignId: '',
-    assetId: '',
-    contractDuration: '3_months',
-    estimatedBudget: '',
-    serviceBundles: {
-      printing: false,
-      setup: false,
-      monitoring: false
-    },
-    timeline: '',
-    tentativeStartDate: null,
-    selectedCampaignEndDate: null,
-    assetExpirationDate: null,
-    specialRequirements: '',
-    notes: ''
-  });
 
   const [campaignForm, setCampaignForm] = useState({
     name: '',
