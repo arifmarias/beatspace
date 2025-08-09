@@ -1330,7 +1330,7 @@ const BuyerDashboard = () => {
                             <TableRow>
                               <TableHead>Name</TableHead>
                               <TableHead>Campaign</TableHead>
-                              <TableHead>Last Status</TableHead>
+                              <TableHead>Last Inspection</TableHead>
                               <TableHead>Duration</TableHead>
                               <TableHead>Cost</TableHead>
                               <TableHead>Expiry</TableHead>
