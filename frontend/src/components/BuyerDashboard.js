@@ -1422,6 +1422,8 @@ const BuyerDashboard = () => {
                               <TableHead>Name</TableHead>
                               <TableHead>Campaign</TableHead>
                               <TableHead>Last Inspection</TableHead>
+                              <TableHead>Creative Tag</TableHead>
+                              <TableHead>Creative Timeline</TableHead>
                               <TableHead>Duration</TableHead>
                               <TableHead>Cost</TableHead>
                               <TableHead>Expiry</TableHead>
