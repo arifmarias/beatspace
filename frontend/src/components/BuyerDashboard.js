@@ -285,10 +285,8 @@ const BuyerDashboard = () => {
             
             // Extract last inspection date from monitoring data
             let lastInspectionDate = null;
-            if (monitoringData && monitoringData.inspection_history && monitoringData.inspection_history.length > 0) {
-              // Get the most recent inspection
-              const sortedInspections = monitoringData.inspection_history.sort((a, b) => new Date(b.date) - new Date(a.date));
-              lastInspectionDate = sortedInspections[0].date;
+            if (monitoringData && monitoringData.last_inspection_date) {
+              lastInspectionDate = monitoringData.last_inspection_date;
             }
             
             return {
