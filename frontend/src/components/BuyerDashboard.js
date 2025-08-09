@@ -2541,7 +2541,10 @@ const BuyerDashboard = () => {
                                                 </DropdownMenuItem>
                                                 
                                                 <DropdownMenuItem 
-                                                  onClick={() => handleCancelRequest(offer)}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleCancelRequest(offer);
+                                                  }}
                                                   className="flex items-center cursor-pointer text-orange-600 hover:text-orange-700 hover:bg-orange-50"
                                                 >
                                                   <X className="h-4 w-4 mr-2" />
