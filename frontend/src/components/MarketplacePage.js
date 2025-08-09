@@ -287,7 +287,6 @@ const MarketplacePage = () => {
   };
 
   const createInfoWindowContent = (asset) => {
-    const pricing = asset.pricing['3_months'] || Object.values(asset.pricing)[0];
     return `
       <div style="max-width: 300px; font-family: system-ui;">
         <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">${asset.name}</h3>
@@ -298,7 +297,6 @@ const MarketplacePage = () => {
                        padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.status}</span>
           <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.type}</span>
         </div>
-        <p style="margin: 8px 0; font-weight: 600;">From ৳${pricing.toLocaleString()}</p>
         <p style="margin: 0; font-size: 12px; color: #666;">${asset.dimensions} • ${asset.traffic_volume} traffic</p>
       </div>
     `;
