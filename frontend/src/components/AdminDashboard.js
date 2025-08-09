@@ -916,7 +916,7 @@ const AdminDashboard = () => {
       setBookedAssets(live);
     } catch (error) {
       console.error('Error fetching booked assets:', error);
-      notify.error('Failed to load booked assets');
+      notify.error('Failed to load live assets');
     } finally {
       setMonitoringLoading(false);
     }
