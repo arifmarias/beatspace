@@ -248,6 +248,8 @@ class Asset(BaseModel):
     total_bookings: int = 0
     total_revenue: float = 0
     last_monitored: Optional[datetime] = None
+    creative_tags: List[str] = []  # NEW: Creative tags for buyer assets
+    creative_timeline: Optional[datetime] = None  # NEW: Creative expiry timeline
 
 class MonitoringRecord(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
