@@ -2558,7 +2558,7 @@ const BuyerDashboard = () => {
                                               </>
                                             )}
                                             
-                                            {/* Show Edit/Delete for Pending offers only */}
+                                            {/* Show Edit/Cancel for Pending offers only */}
                                             {offer.status === 'Pending' && (
                                               <>
                                                 <DropdownMenuItem 
@@ -2570,11 +2570,11 @@ const BuyerDashboard = () => {
                                                 </DropdownMenuItem>
                                                 
                                                 <DropdownMenuItem 
-                                                  onClick={() => handleDeleteOffer(offer.id)}
-                                                  className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                  onClick={() => handleCancelRequest(offer)}
+                                                  className="flex items-center cursor-pointer text-orange-600 hover:text-orange-700 hover:bg-orange-50"
                                                 >
                                                   <X className="h-4 w-4 mr-2" />
-                                                  Delete Request
+                                                  Cancel Request
                                                 </DropdownMenuItem>
                                               </>
                                             )}
