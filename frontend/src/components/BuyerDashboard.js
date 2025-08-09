@@ -1235,6 +1235,21 @@ const BuyerDashboard = () => {
     return colors[Math.abs(hash) % colors.length];
   };
 
+  // Filter assets based on search term
+  const getFilteredAssets = () => {
+    if (!searchTerm.trim()) return liveAssets;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return liveAssets.filter(asset => 
+      asset.name?.toLowerCase().includes(searchLower) ||
+      asset.campaignName?.toLowerCase().includes(searchLower) ||
+      asset.address?.toLowerCase().includes(searchLower) ||
+      (asset.creative_tags && asset.creative_tags.some(tag => 
+        tag.toLowerCase().includes(searchLower)
+      ))
+    );
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
