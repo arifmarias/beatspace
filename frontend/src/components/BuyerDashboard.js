@@ -1346,7 +1346,9 @@ const BuyerDashboard = () => {
                                 <TableCell>
                                   <div>
                                     <div className="font-medium">{asset.name}</div>
-                                    <div className="text-sm text-gray-500">{asset.address}</div>
+                                    <div className="text-sm text-gray-500 max-w-xs leading-tight break-words">
+                                      {asset.address}
+                                    </div>
                                   </div>
                                 </TableCell>
                                 <TableCell>
