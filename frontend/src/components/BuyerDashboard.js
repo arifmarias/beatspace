@@ -150,6 +150,9 @@ const BuyerDashboard = () => {
     assetType: 'all',
     location: 'all'
   });
+  
+  // Asset list display state
+  const [showAllMapAssets, setShowAllMapAssets] = useState(false);
 
   const [campaignForm, setCampaignForm] = useState({
     name: '',
