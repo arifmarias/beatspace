@@ -1142,7 +1142,7 @@ const BuyerDashboard = () => {
 
   // Handle cancel request
   const handleCancelRequest = async (offer) => {
-    if (!confirm('Are you sure you want to cancel this request? This action cannot be undone.')) {
+    if (!window.confirm('Are you sure you want to cancel this request? This action cannot be undone.')) {
       return;
     }
     
