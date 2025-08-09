@@ -1784,7 +1784,10 @@ const BuyerDashboard = () => {
                                   <MapPin className="w-4 h-4 text-gray-500" />
                                   <Select
                                     value={mapFilters.location}
-                                    onValueChange={(value) => setMapFilters(prev => ({...prev, location: value}))}
+                                    onValueChange={(value) => {
+                                      setMapFilters(prev => ({...prev, location: value}));
+                                      setShowAllMapAssets(false);
+                                    }}
                                   >
                                     <SelectTrigger className="w-40 h-8 text-xs">
                                       <SelectValue placeholder="Location" />
