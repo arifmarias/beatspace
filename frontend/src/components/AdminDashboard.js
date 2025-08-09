@@ -3445,10 +3445,13 @@ const AdminDashboard = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Billboard">Billboard</SelectItem>
-                      <SelectItem value="Digital Display">Digital Display</SelectItem>
-                      <SelectItem value="Transit Ad">Transit Ad</SelectItem>
-                      <SelectItem value="Street Furniture">Street Furniture</SelectItem>
+                      <SelectItem value="Billboard">📄 Billboard</SelectItem>
+                      <SelectItem value="Police Box">🚓 Police Box</SelectItem>
+                      <SelectItem value="Railway Station">🚂 Railway Station</SelectItem>
+                      <SelectItem value="Wall">🧱 Wall</SelectItem>
+                      <SelectItem value="Bridge">🌉 Bridge</SelectItem>
+                      <SelectItem value="Bus Stop">🚌 Bus Stop</SelectItem>
+                      <SelectItem value="Others">📍 Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
