@@ -277,9 +277,19 @@ const MarketplacePage = () => {
         content: createInfoWindowContent(asset)
       });
 
+      // Mouse hover shows info window
+      marker.addListener('mouseover', () => {
+        infoWindow.open(mapInstanceRef.current, marker);
+      });
+
+      // Mouse leave hides info window
+      marker.addListener('mouseout', () => {
+        infoWindow.close();
+      });
+
+      // Click shows asset details dialog
       marker.addListener('click', () => {
         setSelectedAsset(asset);
-        infoWindow.open(mapInstanceRef.current, marker);
       });
 
       markersRef.current.push(marker);
