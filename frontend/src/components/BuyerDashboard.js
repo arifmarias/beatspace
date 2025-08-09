@@ -1629,7 +1629,6 @@ const BuyerDashboard = () => {
                                         size="sm" 
                                         onClick={() => handleEditCreative(asset)}
                                         className="text-xs text-blue-600 hover:text-blue-700 p-1"
-                                        disabled={!asset.creative_tags || asset.creative_tags.length === 0}
                                       >
                                         <Edit className="w-3 h-3" />
                                       </Button>
