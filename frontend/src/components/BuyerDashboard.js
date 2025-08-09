@@ -2525,7 +2525,10 @@ const BuyerDashboard = () => {
                                             {offer.status === 'Quoted' && (
                                               <>
                                                 <DropdownMenuItem 
-                                                  onClick={() => handleApproveOffer(offer)}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleApproveOffer(offer);
+                                                  }}
                                                   className="flex items-center cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50"
                                                 >
                                                   <CheckCircle className="h-4 w-4 mr-2" />
@@ -2533,7 +2536,10 @@ const BuyerDashboard = () => {
                                                 </DropdownMenuItem>
                                                 
                                                 <DropdownMenuItem 
-                                                  onClick={() => handleRevisedOffer(offer)}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRevisedOffer(offer);
+                                                  }}
                                                   className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                                 >
                                                   <Edit3 className="h-4 w-4 mr-2" />
