@@ -1536,7 +1536,12 @@ const BuyerDashboard = () => {
                                     <div className="space-y-2">
                                       <Popover>
                                         <PopoverTrigger asChild>
-                                          <Button variant="outline" size="sm" className="w-full text-xs">
+                                          <Button 
+                                            variant="outline" 
+                                            size="sm" 
+                                            className="w-full text-xs"
+                                            disabled={!creativeForm.tags || creativeForm.tags.trim().length === 0}
+                                          >
                                             <CalendarDays className="w-3 h-3 mr-1" />
                                             {creativeForm.timeline ? 
                                               creativeForm.timeline.toLocaleDateString() : 
@@ -1553,6 +1558,9 @@ const BuyerDashboard = () => {
                                           />
                                         </PopoverContent>
                                       </Popover>
+                                      {(!creativeForm.tags || creativeForm.tags.trim().length === 0) && (
+                                        <p className="text-xs text-gray-500">Add tags first to set timeline</p>
+                                      )}
                                     </div>
                                   ) : (
                                     <div>
@@ -1577,9 +1585,10 @@ const BuyerDashboard = () => {
                                           size="sm" 
                                           onClick={() => handleEditCreative(asset)}
                                           className="text-xs text-gray-500 hover:text-gray-700"
+                                          disabled={!asset.creative_tags || asset.creative_tags.length === 0}
                                         >
                                           <CalendarDays className="w-3 h-3 mr-1" />
-                                          Set date
+                                          {asset.creative_tags && asset.creative_tags.length > 0 ? 'Set date' : 'Add tags first'}
                                         </Button>
                                       )}
                                     </div>
