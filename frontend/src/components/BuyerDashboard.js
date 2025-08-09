@@ -1836,7 +1836,7 @@ const BuyerDashboard = () => {
                               
                               {/* Asset markers overlay */}
                               <div className="absolute inset-0 pointer-events-none">
-                                {liveAssets.map((asset, index) => {
+                                {getMapFilteredAssets().map((asset, index) => {
                                   if (!asset.location?.lat || !asset.location?.lng) return null;
                                   
                                   // Calculate approximate position on the map
