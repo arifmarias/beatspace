@@ -144,6 +144,12 @@ const BuyerDashboard = () => {
   
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Map filter state
+  const [mapFilters, setMapFilters] = useState({
+    assetType: 'all',
+    location: 'all'
+  });
 
   const [campaignForm, setCampaignForm] = useState({
     name: '',
