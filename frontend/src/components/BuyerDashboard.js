@@ -1886,8 +1886,25 @@ const BuyerDashboard = () => {
                             {/* Assets List Below Map */}
                             <div className="p-4 bg-gray-50 border-t">
                               <h4 className="font-medium text-gray-800 mb-3">Asset Details ({getMapFilteredAssets().length} assets)</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {getMapFilteredAssets().slice(0, 6).map((asset) => (
+                              {getMapFilteredAssets().length === 0 ? (
+                                <div className="text-center py-8">
+                                  <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                  <h3 className="text-sm font-medium text-gray-900 mb-1">No Assets Found</h3>
+                                  <p className="text-xs text-gray-500 mb-3">
+                                    No assets match your current filter criteria.
+                                  </p>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setMapFilters({ assetType: 'all', location: 'all' })}
+                                    className="h-7 text-xs"
+                                  >
+                                    Clear Filters
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {getMapFilteredAssets().slice(0, 6).map((asset) => (
                                   <div 
                                     key={asset.id} 
                                     className={`flex items-center space-x-3 p-2 rounded border cursor-pointer transition-all hover:shadow-md ${
