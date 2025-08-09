@@ -1131,7 +1131,7 @@ const BuyerDashboard = () => {
       });
       
       notify.success('Revision request sent to admin successfully!');
-      fetchRequestedOffers(); // Refresh the offers
+      fetchBuyerData(); // Refresh the offers
     } catch (error) {
       console.error('Error requesting revision:', error);
       notify.error('Failed to send revision request: ' + (error.response?.data?.detail || error.message));
@@ -1150,7 +1150,7 @@ const BuyerDashboard = () => {
       });
       
       notify.success('Request cancelled successfully!');
-      fetchRequestedOffers(); // Refresh the offers
+      fetchBuyerData(); // Refresh the offers
     } catch (error) {
       console.error('Error cancelling request:', error);
       notify.error('Failed to cancel request: ' + (error.response?.data?.detail || error.message));
