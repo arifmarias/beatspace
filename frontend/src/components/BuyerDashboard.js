@@ -1170,6 +1170,59 @@ const BuyerDashboard = () => {
     fetchMonitoringData(asset.id);
   };
 
+  // Creative management functions
+  const handleEditCreative = (asset) => {
+    setEditingCreative(asset.id);
+    setCreativeForm({
+      tags: (asset.creative_tags || []).join(', '),
+      timeline: asset.creative_timeline ? new Date(asset.creative_timeline) : null
+    });
+  };
+
+  const handleSaveCreative = async (assetId) => {
+    try {
+      const tags = creativeForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      
+      await axios.patch(`${API}/assets/${assetId}/creative`, {
+        creative_tags: tags,
+        creative_timeline: creativeForm.timeline ? creativeForm.timeline.toISOString() : null
+      }, { headers: getAuthHeaders() });
+      
+      notify.success('Creative data updated successfully!');
+      setEditingCreative(null);
+      fetchLiveAssets(true); // Refresh assets
+    } catch (error) {
+      console.error('Error updating creative data:', error);
+      notify.error('Failed to update creative data');
+    }
+  };
+
+  const handleCancelCreativeEdit = () => {
+    setEditingCreative(null);
+    setCreativeForm({ tags: '', timeline: null });
+  };
+
+  // Color generator for tags
+  const generateTagColor = (tag) => {
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800',
+      'bg-purple-100 text-purple-800',
+      'bg-pink-100 text-pink-800',
+      'bg-yellow-100 text-yellow-800',
+      'bg-indigo-100 text-indigo-800',
+      'bg-red-100 text-red-800',
+      'bg-gray-100 text-gray-800'
+    ];
+    
+    // Generate consistent color based on tag name
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) {
+      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   if (loading) {
     return <DashboardLoading type="buyer" />;
   }
