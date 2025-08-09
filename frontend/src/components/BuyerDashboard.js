@@ -1758,7 +1758,10 @@ const BuyerDashboard = () => {
                                   <Tag className="w-4 h-4 text-gray-500" />
                                   <Select
                                     value={mapFilters.assetType}
-                                    onValueChange={(value) => setMapFilters(prev => ({...prev, assetType: value}))}
+                                    onValueChange={(value) => {
+                                      setMapFilters(prev => ({...prev, assetType: value}));
+                                      setShowAllMapAssets(false);
+                                    }}
                                   >
                                     <SelectTrigger className="w-40 h-8 text-xs">
                                       <SelectValue placeholder="Asset Type" />
