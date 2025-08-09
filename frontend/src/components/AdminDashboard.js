@@ -2452,7 +2452,7 @@ const AdminDashboard = () => {
                                 </div>
                                 <div>
                                   <h3 className="font-semibold text-gray-900">{campaignName}</h3>
-                                  <p className="text-sm text-gray-500">{assets.length} booked asset{assets.length > 1 ? 's' : ''}</p>
+                                  <p className="text-sm text-gray-500">{assets.length} Live Asset{assets.length > 1 ? 's' : ''}</p>
                                 </div>
                               </div>
                               <Badge className="bg-blue-100 text-blue-800">
