@@ -2533,11 +2533,27 @@ const BuyerDashboard = () => {
                                                 </DropdownMenuItem>
                                                 
                                                 <DropdownMenuItem 
+                                                  onClick={() => handleRevisedOffer(offer)}
+                                                  className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                >
+                                                  <Edit3 className="h-4 w-4 mr-2" />
+                                                  Revised Offer
+                                                </DropdownMenuItem>
+                                                
+                                                <DropdownMenuItem 
                                                   onClick={() => handleRejectOffer(offer)}
                                                   className="flex items-center cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                                                 >
                                                   <XCircle className="h-4 w-4 mr-2" />
                                                   Reject Offer
+                                                </DropdownMenuItem>
+                                                
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleCancelRequest(offer)}
+                                                  className="flex items-center cursor-pointer text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                                >
+                                                  <X className="h-4 w-4 mr-2" />
+                                                  Cancel Request
                                                 </DropdownMenuItem>
                                               </>
                                             )}
