@@ -118,6 +118,13 @@ const BuyerDashboard = () => {
   const [editOfferDetails, setEditOfferDetails] = useState({
     campaignType: 'existing', // Default to existing for edits
     campaignName: '',
+  
+  // Creative editing state
+  const [editingCreative, setEditingCreative] = useState(null); // Asset ID being edited
+  const [creativeForm, setCreativeForm] = useState({
+    tags: '',
+    timeline: null
+  });
     existingCampaignId: '',
     assetId: '',
     contractDuration: '3_months',
