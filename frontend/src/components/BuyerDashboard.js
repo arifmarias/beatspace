@@ -1439,9 +1439,38 @@ const BuyerDashboard = () => {
                     {/* List View */}
                     {myAssetsView === 'list' && (
                       <div className="space-y-4">
+                        {/* Search Input */}
+                        <div className="flex items-center space-x-2">
+                          <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Input
+                              placeholder="Search by name, campaign, tags, or address..."
+                              value={searchTerm}
+                              onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setAssetsCurrentPage(1); // Reset to first page on search
+                              }}
+                              className="pl-10"
+                            />
+                          </div>
+                          {searchTerm && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                setSearchTerm('');
+                                setAssetsCurrentPage(1);
+                              }}
+                            >
+                              Clear
+                            </Button>
+                          )}
+                        </div>
+                        
                         <div className="flex items-center justify-between">
                           <p className="text-sm text-gray-600">
-                            Showing {getPaginatedAssets().length} of {liveAssets.length} live asset{liveAssets.length > 1 ? 's' : ''}
+                            Showing {getPaginatedAssets().length} of {getFilteredAssets().length} live asset{getFilteredAssets().length > 1 ? 's' : ''}
+                            {searchTerm && <span> (filtered from {liveAssets.length} total)</span>}
                           </p>
                         </div>
                         
