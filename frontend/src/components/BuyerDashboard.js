@@ -276,8 +276,38 @@ const BuyerDashboard = () => {
       const liveAssetsData = response.data || [];
       console.log('📊 Live assets data:', liveAssetsData);
       
+      // Fetch monitoring data for each asset to get inspection dates
+      const assetsWithInspectionData = await Promise.all(
+        liveAssetsData.map(async (asset) => {
+          try {
+            const monitoringResponse = await axios.get(`${API}/assets/${asset.id}/monitoring`, { headers });
+            const monitoringData = monitoringResponse.data;
+            
+            // Extract last inspection date from monitoring data
+            let lastInspectionDate = null;
+            if (monitoringData && monitoringData.inspection_history && monitoringData.inspection_history.length > 0) {
+              // Get the most recent inspection
+              const sortedInspections = monitoringData.inspection_history.sort((a, b) => new Date(b.date) - new Date(a.date));
+              lastInspectionDate = sortedInspections[0].date;
+            }
+            
+            return {
+              ...asset,
+              lastInspectionDate
+            };
+          } catch (monitoringError) {
+            console.warn(`❌ Failed to fetch monitoring data for asset ${asset.id}:`, monitoringError);
+            // Return asset without inspection date if monitoring fetch fails
+            return {
+              ...asset,
+              lastInspectionDate: null
+            };
+          }
+        })
+      );
+      
       // TEMPORARY: If no real live assets, show demo data for testing
-      if (liveAssetsData.length === 0) {
+      if (assetsWithInspectionData.length === 0) {
         console.log('ℹ️ No live assets found, showing demo data for testing');
         const demoAssets = [
           {
@@ -291,12 +321,13 @@ const BuyerDashboard = () => {
             expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
             lastStatus: 'Live',
             location: { lat: 23.7461, lng: 90.3742 },
-            images: []
+            images: [],
+            lastInspectionDate: null
           }
         ];
         setLiveAssets(demoAssets);
       } else {
-        setLiveAssets(liveAssetsData);
+        setLiveAssets(assetsWithInspectionData);
       }
       
       // Clear timeout on success
