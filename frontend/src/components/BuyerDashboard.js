@@ -5,6 +5,7 @@ import {
   Plus, 
   Eye, 
   Edit,
+  Edit3,
   X,
   XCircle,
   MapPin, 
@@ -32,7 +33,8 @@ import {
   FolderOpen,
   Activity,
   Tag,
-  CalendarDays
+  CalendarDays,
+  RotateCcw
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
