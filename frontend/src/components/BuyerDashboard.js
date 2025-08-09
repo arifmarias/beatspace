@@ -1474,7 +1474,26 @@ const BuyerDashboard = () => {
                           </p>
                         </div>
                         
-                        <Table>
+                        {getPaginatedAssets().length === 0 && searchTerm ? (
+                          <div className="text-center py-8">
+                            <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Results Found</h3>
+                            <p className="text-gray-500 mb-4">
+                              No assets found matching "{searchTerm}". Try adjusting your search terms.
+                            </p>
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                setSearchTerm('');
+                                setAssetsCurrentPage(1);
+                              }}
+                            >
+                              Clear Search
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            <Table>
                           <TableHeader>
                             <TableRow>
                               <TableHead>Name</TableHead>
