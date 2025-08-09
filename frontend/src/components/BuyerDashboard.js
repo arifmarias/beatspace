@@ -141,6 +141,9 @@ const BuyerDashboard = () => {
     tags: '',
     timeline: null
   });
+  
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [campaignForm, setCampaignForm] = useState({
     name: '',
