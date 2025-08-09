@@ -1495,8 +1495,8 @@ const BuyerDashboard = () => {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="space-y-1">
-                                      {asset.creative_tags && asset.creative_tags.length > 0 ? (
+                                    <div className="flex items-center space-x-2">
+                                      {asset.creative_tags && asset.creative_tags.length > 0 && (
                                         <div className="flex flex-wrap gap-1">
                                           {asset.creative_tags.map((tag, index) => (
                                             <Badge key={index} className={`text-xs ${generateTagColor(tag)}`}>
@@ -1504,28 +1504,15 @@ const BuyerDashboard = () => {
                                             </Badge>
                                           ))}
                                         </div>
-                                      ) : (
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm" 
-                                          onClick={() => handleEditCreative(asset)}
-                                          className="text-xs text-gray-500 hover:text-gray-700"
-                                        >
-                                          <Tag className="w-3 h-3 mr-1" />
-                                          Add tags
-                                        </Button>
                                       )}
-                                      {asset.creative_tags && asset.creative_tags.length > 0 && (
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm" 
-                                          onClick={() => handleEditCreative(asset)}
-                                          className="text-xs text-blue-600 hover:text-blue-700"
-                                        >
-                                          <Edit className="w-3 h-3 mr-1" />
-                                          Edit
-                                        </Button>
-                                      )}
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        onClick={() => handleEditCreative(asset)}
+                                        className="text-xs text-blue-600 hover:text-blue-700 p-1"
+                                      >
+                                        <Edit className="w-3 h-3" />
+                                      </Button>
                                     </div>
                                   )}
                                 </TableCell>
