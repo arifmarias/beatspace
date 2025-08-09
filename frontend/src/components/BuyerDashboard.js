@@ -1306,7 +1306,7 @@ const BuyerDashboard = () => {
                 ) : liveAssets.length === 0 ? (
                   <div className="text-center py-8">
                     <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Booked Assets Yet</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Live Assets Yet</h3>
                     <p className="text-gray-500 mb-4">
                       You don't have any booked advertising assets yet. Start by creating campaigns and requesting assets.
                     </p>
