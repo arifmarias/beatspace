@@ -1914,9 +1914,9 @@ const BuyerDashboard = () => {
                                   </div>
                                 ))}
                               </div>
-                              {liveAssets.length > 6 && (
+                              {getMapFilteredAssets().length > 6 && (
                                 <p className="text-xs text-gray-500 mt-2 text-center">
-                                  Showing 6 of {liveAssets.length} assets
+                                  Showing 6 of {getMapFilteredAssets().length} filtered assets
                                 </p>
                               )}
                             </div>
