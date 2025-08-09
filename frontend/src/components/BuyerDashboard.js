@@ -1121,6 +1121,42 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Handle revised offer request
+  const handleRevisedOffer = async (offer) => {
+    try {
+      await axios.post(`${API}/offer-requests/${offer.id}/request-revision`, {
+        message: 'Buyer has requested a price revision for this offer'
+      }, {
+        headers: getAuthHeaders()
+      });
+      
+      notify.success('Revision request sent to admin successfully!');
+      fetchRequestedOffers(); // Refresh the offers
+    } catch (error) {
+      console.error('Error requesting revision:', error);
+      notify.error('Failed to send revision request: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  // Handle cancel request
+  const handleCancelRequest = async (offer) => {
+    if (!confirm('Are you sure you want to cancel this request? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API}/offer-requests/${offer.id}`, {
+        headers: getAuthHeaders()
+      });
+      
+      notify.success('Request cancelled successfully!');
+      fetchRequestedOffers(); // Refresh the offers
+    } catch (error) {
+      console.error('Error cancelling request:', error);
+      notify.error('Failed to cancel request: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   // Helper function to get total asset count for a campaign (including offers)
   const getCampaignAssetCount = (campaign) => {
     const campaignAssets = (campaign.campaign_assets || []).length;
