@@ -297,14 +297,16 @@ const MarketplacePage = () => {
   };
 
   const createInfoWindowContent = (asset) => {
+    // Display "Pending Offer" as "Available" 
+    const displayStatus = asset.status === 'Pending Offer' ? 'Available' : asset.status;
     return `
       <div style="max-width: 300px; font-family: system-ui;">
         <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">${asset.name}</h3>
         <p style="margin: 0 0 8px 0; color: #666; font-size: 14px;">${asset.address}</p>
         <div style="display: flex; gap: 8px; margin: 8px 0;">
-          <span style="background: ${asset.status === 'Available' ? '#dcfce7' : asset.status === 'Live' ? '#fecaca' : '#fef3c7'}; 
-                       color: ${asset.status === 'Available' ? '#16a34a' : asset.status === 'Live' ? '#dc2626' : '#d97706'}; 
-                       padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.status}</span>
+          <span style="background: ${displayStatus === 'Available' ? '#dcfce7' : displayStatus === 'Live' ? '#fecaca' : '#fef3c7'}; 
+                       color: ${displayStatus === 'Available' ? '#16a34a' : displayStatus === 'Live' ? '#dc2626' : '#d97706'}; 
+                       padding: 2px 8px; border-radius: 12px; font-size: 12px;">${displayStatus}</span>
           <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${asset.type}</span>
         </div>
         <p style="margin: 0; font-size: 12px; color: #666;">${asset.dimensions} • ${asset.traffic_volume} traffic</p>
