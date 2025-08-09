@@ -1600,7 +1600,9 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
                 "cost": offer.get("final_offer") or offer.get("admin_quoted_price") if offer else 0,  # Final offered price
                 "lastStatus": "Live",
                 "location": asset.get("location", {}),
-                "images": asset.get("images", [])
+                "images": asset.get("images", []),
+                "creative_tags": asset.get("creative_tags", []),  # Include creative tags
+                "creative_timeline": asset.get("creative_timeline")  # Include creative timeline
             }
             live_assets_data.append(live_asset)
         
