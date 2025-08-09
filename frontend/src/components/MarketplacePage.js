@@ -124,11 +124,14 @@ const MarketplacePage = () => {
 
   const statusColors = {
     'Available': 'bg-green-500',
+    'Pending Offer': 'bg-yellow-500',
+    'Negotiating': 'bg-orange-400',
     'Booked': 'bg-orange-500',
-    'Live': 'bg-blue-500',
-    'Work in Progress': 'bg-yellow-500',
-    'Unavailable': 'bg-gray-500',
-    'Pending Approval': 'bg-purple-500'
+    'Work in Progress': 'bg-blue-400',
+    'Live': 'bg-red-500',
+    'Completed': 'bg-gray-500',
+    'Pending Approval': 'bg-purple-500',
+    'Unavailable': 'bg-gray-500'
   };
 
   const bangladeshDivisions = [
