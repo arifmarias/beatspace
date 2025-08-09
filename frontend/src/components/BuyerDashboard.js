@@ -1699,6 +1699,8 @@ const BuyerDashboard = () => {
                             </div>
                           </div>
                         )}
+                        </>
+                        )}
                       </div>
                     )}
 
