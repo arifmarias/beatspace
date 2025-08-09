@@ -291,6 +291,11 @@ class Payment(BaseModel):
     completed_at: Optional[datetime] = None
     invoice_url: Optional[str] = None
 
+# Creative Management Models
+class CreativeUpdate(BaseModel):
+    creative_tags: Optional[List[str]] = None
+    creative_timeline: Optional[datetime] = None
+
 # Enhanced Models for Phase 3
 class MonitoringRecordCreate(BaseModel):
     asset_id: str
