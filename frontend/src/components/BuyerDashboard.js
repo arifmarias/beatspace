@@ -1885,9 +1885,9 @@ const BuyerDashboard = () => {
                             
                             {/* Assets List Below Map */}
                             <div className="p-4 bg-gray-50 border-t">
-                              <h4 className="font-medium text-gray-800 mb-3">Asset Details</h4>
+                              <h4 className="font-medium text-gray-800 mb-3">Asset Details ({getMapFilteredAssets().length} assets)</h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {liveAssets.slice(0, 6).map((asset) => (
+                                {getMapFilteredAssets().slice(0, 6).map((asset) => (
                                   <div 
                                     key={asset.id} 
                                     className={`flex items-center space-x-3 p-2 rounded border cursor-pointer transition-all hover:shadow-md ${
