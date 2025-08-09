@@ -1808,7 +1808,10 @@ const BuyerDashboard = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setMapFilters({ assetType: 'all', location: 'all' })}
+                                    onClick={() => {
+                                      setMapFilters({ assetType: 'all', location: 'all' });
+                                      setShowAllMapAssets(false);
+                                    }}
                                     className="h-8 text-xs"
                                   >
                                     <X className="w-3 h-3 mr-1" />
