@@ -1357,9 +1357,20 @@ const BuyerDashboard = () => {
                                   </Badge>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant={asset.lastStatus === 'Booked' ? 'success' : 'secondary'}>
-                                    {asset.lastStatus}
-                                  </Badge>
+                                  <div className="text-sm">
+                                    {asset.lastInspectionDate ? (
+                                      <div>
+                                        <div className="font-medium text-gray-900">
+                                          {new Date(asset.lastInspectionDate).toLocaleDateString()}
+                                        </div>
+                                        <div className="text-gray-500">
+                                          {new Date(asset.lastInspectionDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-gray-500">No inspection yet</div>
+                                    )}
+                                  </div>
                                 </TableCell>
                                 <TableCell>{asset.duration}</TableCell>
                                 <TableCell>
