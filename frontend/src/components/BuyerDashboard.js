@@ -2563,7 +2563,10 @@ const BuyerDashboard = () => {
                                             {offer.status === 'Pending' && (
                                               <>
                                                 <DropdownMenuItem 
-                                                  onClick={() => handleEditOffer(offer)}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditOffer(offer);
+                                                  }}
                                                   className="flex items-center cursor-pointer"
                                                 >
                                                   <Edit className="h-4 w-4 mr-2" />
