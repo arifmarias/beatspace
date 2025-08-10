@@ -1542,6 +1542,23 @@ async def respond_to_offer(
         )
         
         logger.info(f"Offer rejected: {request_id}")
+        
+        # 🚀 REAL-TIME EVENT: Notify admin of offer rejection
+        try:
+            asset_name = request.get("asset_name", "Unknown Asset")
+            await websocket_manager.send_to_all_admins({
+                "type": "offer_rejected",
+                "offer_id": request_id,
+                "asset_name": asset_name,
+                "buyer_name": current_user.company_name,
+                "buyer_email": current_user.email,
+                "timestamp": datetime.utcnow().isoformat(),
+                "message": f"Offer rejected by {current_user.company_name} for {asset_name}"
+            })
+            print(f"✅ Offer rejected notification sent to admins")
+        except Exception as ws_error:
+            print(f"❌ WebSocket notification failed: {ws_error}")
+        
     
     elif response_action == "modify" or response_action == "request_revision":
         # Buyer requests price revision
