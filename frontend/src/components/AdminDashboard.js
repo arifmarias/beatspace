@@ -468,12 +468,24 @@ const AdminDashboard = () => {
       return "0 assets";
     }
     
-    // Count live/approved assets (exclude only rejected and cancelled)
+    // Count live/approved assets (approved, accepted, booked)
     const liveAssets = campaignOffers.filter(offer => 
-      offer.status !== 'Rejected' && 
-      offer.status !== 'Cancelled' &&
-      offer.status !== 'rejected' &&
-      offer.status !== 'cancelled'
+      offer.status === 'Approved' || 
+      offer.status === 'Accepted' ||
+      offer.status === 'Booked' ||
+      offer.status === 'approved' ||
+      offer.status === 'accepted' ||
+      offer.status === 'booked'
+    );
+    
+    // Count quoted assets (quoted, pending, revision requested)
+    const quotedAssets = campaignOffers.filter(offer => 
+      offer.status === 'Quoted' || 
+      offer.status === 'Pending' ||
+      offer.status === 'Revision Requested' ||
+      offer.status === 'quoted' ||
+      offer.status === 'pending' ||
+      offer.status === 'revision requested'
     );
     
     // Count rejected assets
@@ -482,22 +494,16 @@ const AdminDashboard = () => {
       offer.status === 'rejected'
     );
     
-    // Count cancelled assets  
-    const cancelledAssets = campaignOffers.filter(offer => 
-      offer.status === 'Cancelled' || 
-      offer.status === 'cancelled'
-    );
-    
-    // Create breakdown string
+    // Create breakdown string - only show categories that have assets
     const parts = [];
     if (liveAssets.length > 0) {
       parts.push(`${liveAssets.length} live`);
     }
+    if (quotedAssets.length > 0) {
+      parts.push(`${quotedAssets.length} quoted`);
+    }
     if (rejectedAssets.length > 0) {
       parts.push(`${rejectedAssets.length} rejected`);
-    }
-    if (cancelledAssets.length > 0) {
-      parts.push(`${cancelledAssets.length} cancelled`);
     }
     
     return parts.length > 0 ? parts.join(', ') : `${campaignOffers.length} assets`;
