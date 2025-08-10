@@ -1541,10 +1541,10 @@ const AdminDashboard = () => {
         validUntil: null
       });
       
-      console.log('🔄 Refreshing dashboard data...');
-      // Immediate refresh for real-time updates
-      await fetchDashboardData();
-      console.log('✅ Data refreshed after quote update');
+      console.log('🔄 Refreshing offer requests data...');
+      // Use sectional refresh instead of full dashboard refresh to maintain tab state
+      await fetchOfferRequests();
+      console.log('✅ Offer requests refreshed after quote update');
       
     } catch (error) {
       console.error('❌ Error submitting quote:', error);
