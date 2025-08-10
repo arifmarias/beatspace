@@ -184,6 +184,9 @@ class OfferRequestCreate(BaseModel):
     timeline: Optional[str] = None
     special_requirements: Optional[str] = None
     notes: Optional[str] = None
+    # Asset dates from Request Best Offer form
+    asset_start_date: Optional[datetime] = None
+    asset_expiration_date: Optional[datetime] = None
 
 class UserCreate(BaseModel):
     email: EmailStr
