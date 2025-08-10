@@ -25,6 +25,7 @@ import {
   MoreVertical,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
   Mail,
   Phone,
   Globe,
