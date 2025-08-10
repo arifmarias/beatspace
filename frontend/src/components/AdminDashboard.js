@@ -109,7 +109,7 @@ const AdminDashboard = () => {
     
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
-        success(
+        notifySuccess(
           'Offer Approved! 🎉', 
           `${message.buyer_name || 'A buyer'} approved offer for ${message.asset_name}`
         );
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
-        info(
+        notifyInfo(
           'Offer Rejected', 
           `${message.buyer_name || 'A buyer'} rejected offer for ${message.asset_name}`
         );
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
-        warning(
+        notifyWarning(
           'Revision Requested ✏️', 
           `${message.buyer_name || 'A buyer'} requested revision for ${message.asset_name}`
         );
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
-        success(
+        notifySuccess(
           'New Offer Request! 📝', 
           `New offer request received for ${message.asset_name}`
         );
