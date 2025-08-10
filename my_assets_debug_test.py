@@ -17,7 +17,7 @@ import sys
 from datetime import datetime
 
 class MyAssetsDebugTester:
-    def __init__(self, base_url="https://55aef315-4c65-4acc-8ad9-d36623495f55.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://a8ac7f94-a43e-430c-87bd-f84ed32ece15.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.admin_token = None
         self.buyer_token = None
