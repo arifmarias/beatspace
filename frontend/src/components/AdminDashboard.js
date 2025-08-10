@@ -250,15 +250,41 @@ const AdminDashboard = () => {
           offerRequestsData.map(async (offer) => {
             try {
               const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
+              const assetData = assetResponse.data;
+              
+              // Get appropriate price based on contract duration
+              let assetPrice = 0;
+              const duration = offer.contract_duration;
+              if (assetData.pricing) {
+                if (duration === '1_month') {
+                  assetPrice = assetData.pricing.monthly_rate || assetData.pricing.weekly_rate * 4 || 0;
+                } else if (duration === '3_months') {
+                  assetPrice = assetData.pricing.yearly_rate / 4 || assetData.pricing.monthly_rate * 3 || 0;
+                } else if (duration === '6_months') {
+                  assetPrice = assetData.pricing.yearly_rate / 2 || assetData.pricing.monthly_rate * 6 || 0;
+                } else if (duration === '1_year') {
+                  assetPrice = assetData.pricing.yearly_rate || assetData.pricing.monthly_rate * 12 || 0;
+                } else {
+                  // Default to weekly rate if duration not specified
+                  assetPrice = assetData.pricing.weekly_rate || 0;
+                }
+              }
+
               return {
                 ...offer,
-                asset_price: assetResponse.data.pricing?.weekly_rate || 0
+                asset_price: assetPrice,
+                asset_seller_name: assetData.seller_name || 'N/A',
+                asset_pricing_full: assetData.pricing || {},
+                quote_count: offer.quote_count || 0 // Track how many times admin has quoted
               };
             } catch (error) {
               console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
               return {
                 ...offer,
-                asset_price: 0
+                asset_price: 0,
+                asset_seller_name: 'N/A',
+                asset_pricing_full: {},
+                quote_count: 0
               };
             }
           })
