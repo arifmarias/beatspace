@@ -123,22 +123,6 @@ const BuyerDashboard = () => {
   // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
-  // Debounced refresh function to prevent rapid API calls
-  const refreshTimerRef = useRef(null);
-  const debouncedRefreshRequestedOffers = useCallback(() => {
-    if (refreshTimerRef.current) {
-      clearTimeout(refreshTimerRef.current);
-    }
-    
-    refreshTimerRef.current = setTimeout(() => {
-      console.log('🔄 Buyer Dashboard: Debounced refresh triggered');
-      // We'll use the fetchRequestedOffers function if available
-      if (typeof fetchRequestedOffers === 'function') {
-        fetchRequestedOffers();
-      }
-    }, 1000); // 1 second debounce
-  }, []); // Empty dependency array since we're using ref
-
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Buyer Dashboard: Received real-time update:', message);
@@ -149,16 +133,25 @@ const BuyerDashboard = () => {
       return;
     }
     
+    // Debounce refresh calls using setTimeout to prevent rapid successive calls
+    const scheduleRefresh = () => {
+      setTimeout(() => {
+        console.log('🔄 Buyer Dashboard: Scheduled refresh triggered after WebSocket event');
+        if (typeof fetchRequestedOffers === 'function') {
+          fetchRequestedOffers();
+        }
+      }, 1500); // 1.5 second delay
+    };
+    
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_QUOTED:
         notify.success(`New price quote received: ৳${message.price?.toLocaleString()}`);
-        // Use debounced refresh to prevent rapid API calls
-        debouncedRefreshRequestedOffers();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.ASSET_STATUS_CHANGED:
         notify.info(`Asset status updated: ${message.asset_name}`);
-        debouncedRefreshRequestedOffers();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.CONNECTION_STATUS:
