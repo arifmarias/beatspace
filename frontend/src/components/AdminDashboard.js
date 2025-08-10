@@ -1130,6 +1130,45 @@ const AdminDashboard = () => {
     }
   };
   
+  // Fetch offer requests for mediation (similar to fetchBookedAssets but for offers only)
+  const fetchOfferRequests = async () => {
+    try {
+      setOfferMediationLoading(true);
+      const headers = getAuthHeaders();
+      
+      // Fetch only offer requests data
+      const offerRequestsResponse = await axios.get(`${API}/admin/offer-requests`, { headers });
+      const offerRequestsData = offerRequestsResponse.data || [];
+      
+      // Fetch asset prices for each offer request (same logic as in fetchDashboardData)
+      const enrichedOfferRequests = await Promise.all(
+        offerRequestsData.map(async (offer) => {
+          try {
+            const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
+            return {
+              ...offer,
+              asset_pricing: assetResponse.data.pricing || {}
+            };
+          } catch (error) {
+            console.warn(`Could not fetch pricing for asset ${offer.asset_id}`);
+            return {
+              ...offer,
+              asset_pricing: {}
+            };
+          }
+        })
+      );
+      
+      setOfferRequests(enrichedOfferRequests);
+    } catch (error) {
+      console.error('Error fetching offer requests:', error);
+      notify.error('Failed to load offer requests');
+    } finally {
+      setOfferMediationLoading(false);
+    }
+  };
+  };
+  
   // Toggle campaign collapse
   const toggleCampaignCollapse = (campaignName) => {
     setCollapsedCampaigns(prev => ({
