@@ -3864,6 +3864,154 @@ const BuyerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Asset Details Dialog */}
+        <Dialog open={!!selectedOfferDetails} onOpenChange={() => setSelectedOfferDetails(null)}>
+          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center text-blue-600">
+                <FileText className="h-5 w-5 mr-2" />
+                Requested Asset Details
+              </DialogTitle>
+            </DialogHeader>
+            {selectedOfferDetails && (
+              <div className="space-y-6">
+                {/* Asset Basic Information */}
+                <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                    {selectedOfferDetails.asset_name}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <span className="font-semibold text-gray-700">Campaign:</span>
+                      <p className="mt-1 text-gray-900">{selectedOfferDetails.campaign_name}</p>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-700">Status:</span>
+                      <div className="mt-1">
+                        <Badge 
+                          variant={selectedOfferDetails.status === 'Quoted' ? 'success' : 'secondary'}
+                          className={
+                            selectedOfferDetails.status === 'Quoted' ? 'bg-green-100 text-green-800' :
+                            selectedOfferDetails.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }
+                        >
+                          {selectedOfferDetails.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-700">Requested Dates:</span>
+                      <p className="mt-1 text-gray-900">
+                        {selectedOfferDetails.asset_start_date && selectedOfferDetails.asset_expiration_date
+                          ? `${new Date(selectedOfferDetails.asset_start_date).toLocaleDateString()} - ${new Date(selectedOfferDetails.asset_expiration_date).toLocaleDateString()}`
+                          : 'Not specified'}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-700">Request Date:</span>
+                      <p className="mt-1 text-gray-900">
+                        {new Date(selectedOfferDetails.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing Information */}
+                {(selectedOfferDetails.admin_quoted_price || selectedOfferDetails.asset_pricing) && (
+                  <div className="bg-gradient-to-r from-green-50 to-white border border-green-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <DollarSign className="w-5 h-5 mr-2 text-green-600" />
+                      Pricing Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {selectedOfferDetails.admin_quoted_price && (
+                        <div>
+                          <span className="font-semibold text-gray-700">Admin Quoted Price:</span>
+                          <p className="mt-1 text-2xl font-bold text-green-600">
+                            ৳{selectedOfferDetails.admin_quoted_price?.toLocaleString()}/month
+                          </p>
+                        </div>
+                      )}
+                      {selectedOfferDetails.asset_pricing?.monthly_rate && (
+                        <div>
+                          <span className="font-semibold text-gray-700">Asset Market Price:</span>
+                          <p className="mt-1 text-lg text-gray-900">
+                            ৳{selectedOfferDetails.asset_pricing.monthly_rate?.toLocaleString()}/month
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Notes and Instructions */}
+                {selectedOfferDetails.notes && (
+                  <div className="bg-gradient-to-r from-amber-50 to-white border border-amber-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <Edit className="w-5 h-5 mr-2 text-amber-600" />
+                      Campaign Notes & Instructions
+                    </h3>
+                    <p className="text-gray-900 whitespace-pre-wrap">{selectedOfferDetails.notes}</p>
+                  </div>
+                )}
+
+                {/* Action Buttons for Quoted Offers */}
+                {selectedOfferDetails.status === 'Quoted' && (
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Actions</h3>
+                    <div className="flex flex-wrap gap-3">
+                      <Button 
+                        onClick={() => {
+                          handleApproveOffer(selectedOfferDetails);
+                          setSelectedOfferDetails(null);
+                        }}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Approve Offer
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          // Handle request revision
+                          setSelectedOfferDetails(null);
+                        }}
+                        className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Request Revision
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        onClick={() => {
+                          handleRejectOffer(selectedOfferDetails);
+                          setSelectedOfferDetails(null);
+                        }}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Reject Offer
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Close Button */}
+                <div className="flex justify-end pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSelectedOfferDetails(null)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
