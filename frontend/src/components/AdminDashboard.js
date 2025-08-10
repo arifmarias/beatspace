@@ -360,12 +360,21 @@ const AdminDashboard = () => {
     
     return offerRequests.filter(offer => {
       const searchLower = searchTerm.toLowerCase();
-      return (
+      const matchesSearch = (
         offer.asset_name?.toLowerCase().includes(searchLower) ||
         offer.buyer_name?.toLowerCase().includes(searchLower) ||
         offer.campaign_name?.toLowerCase().includes(searchLower) ||
         offer.status?.toLowerCase().includes(searchLower)
       );
+      
+      // Buyer status filter
+      let matchesBuyerStatus = true;
+      if (buyerStatusFilter !== 'all') {
+        const buyerStatus = getBuyerStatus(offer);
+        matchesBuyerStatus = buyerStatus === buyerStatusFilter;
+      }
+      
+      return matchesSearch && matchesBuyerStatus;
     });
   };
 
