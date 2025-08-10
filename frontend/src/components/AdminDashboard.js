@@ -2429,69 +2429,30 @@ const AdminDashboard = () => {
                                               <Eye className="w-4 h-4 mr-2 text-blue-600" />
                                               Detailed Offer Information
                                             </h4>
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div className="grid grid-cols-2 gap-6 text-sm">
                                               <div>
-                                                <span className="font-medium text-gray-700">Asset:</span>
-                                                <p>{offer.asset_name}</p>
+                                                <span className="font-semibold text-gray-700">Seller Name:</span>
+                                                <p className="mt-1 text-gray-900">{offer.asset_seller_name}</p>
                                               </div>
                                               <div>
-                                                <span className="font-medium text-gray-700">Buyer:</span>
-                                                <p>{offer.buyer_name} ({offer.buyer_email})</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Campaign:</span>
-                                                <p>{offer.campaign_name}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Duration:</span>
-                                                <p>{offer.contract_duration || 'Not specified'}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Seller:</span>
-                                                <p>{offer.asset_seller_name}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Buyer Requested Budget:</span>
-                                                <p className="font-medium text-blue-600">
-                                                  {offer.estimated_budget ? `৳${offer.estimated_budget.toLocaleString()}` : 'N/A'}
-                                                </p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Asset Market Price:</span>
-                                                <p className="font-medium">
-                                                  {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
-                                                </p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Admin Quoted Price:</span>
-                                                <p className="font-medium text-green-600">
-                                                  {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted yet'}
-                                                </p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Requested Start Date:</span>
-                                                <p>{offer.tentative_start_date ? new Date(offer.tentative_start_date).toLocaleDateString() : 'Not specified'}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Requested End Date:</span>
-                                                <p>{offer.tentative_end_date ? new Date(offer.tentative_end_date).toLocaleDateString() : 'Not specified'}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Buyer Status:</span>
-                                                <p className="font-medium text-blue-600">{getBuyerStatus(offer)}</p>
-                                              </div>
-                                              <div>
-                                                <span className="font-medium text-gray-700">Admin Status:</span>
-                                                <p className="font-medium text-green-600">{getAdminStatus(offer)}</p>
+                                                <span className="font-semibold text-gray-700">Asset Market Price:</span>
+                                                <div className="mt-1">
+                                                  <div className="text-gray-900">Monthly: ৳{offer.asset_pricing_full?.monthly_rate?.toLocaleString() || 'N/A'}</div>
+                                                  <div className="text-gray-900">Yearly: ৳{offer.asset_pricing_full?.yearly_rate?.toLocaleString() || 'N/A'}</div>
+                                                </div>
                                               </div>
                                               <div className="col-span-2">
-                                                <span className="font-medium text-gray-700">Special Requirements:</span>
-                                                <p className="mt-1">{offer.special_requirements || 'None'}</p>
+                                                <span className="font-semibold text-gray-700">Special Requirements:</span>
+                                                <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
+                                                  {offer.special_requirements || 'None specified'}
+                                                </p>
                                               </div>
-                                              {offer.admin_notes && (
+                                              {(offer.admin_notes || offer.notes_instructions) && (
                                                 <div className="col-span-2">
-                                                  <span className="font-medium text-gray-700">Admin Notes:</span>
-                                                  <p className="mt-1 text-gray-600">{offer.admin_notes}</p>
+                                                  <span className="font-semibold text-gray-700">Notes & Instructions:</span>
+                                                  <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
+                                                    {offer.admin_notes || offer.notes_instructions || 'No notes available'}
+                                                  </p>
                                                 </div>
                                               )}
                                             </div>
