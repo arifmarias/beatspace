@@ -2469,7 +2469,7 @@ const AdminDashboard = () => {
                                               <div className="col-span-2">
                                                 <span className="font-semibold text-gray-700">Notes & Instructions:</span>
                                                 <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
-                                                  {offer.campaign_notes || offer.admin_notes || 'No notes available'}
+                                                  {offer.notes || offer.admin_notes || 'No notes available'}
                                                 </p>
                                               </div>
                                             </div>
