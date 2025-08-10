@@ -2429,7 +2429,8 @@ const AdminDashboard = () => {
                       {buyerGroups.map((group, groupIndex) => {
                         // Use a unique identifier combining buyer email and name for better uniqueness
                         const buyerKey = `${group.buyer.email}-${group.buyer.name}`;
-                        const isBuyerCollapsed = collapsedBuyers[buyerKey] !== false;
+                        // Default to collapsed (true). If explicitly set to false, then expand
+                        const isBuyerCollapsed = collapsedBuyers[buyerKey] === undefined ? true : collapsedBuyers[buyerKey];
                         
                         return (
                         <Card key={`buyer-${groupIndex}`} className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-white">
