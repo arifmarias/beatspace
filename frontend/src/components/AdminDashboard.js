@@ -2288,113 +2288,113 @@ const AdminDashboard = () => {
                                 
                                 return (
                                   <div key={offer.id}>
-                                    <Card className="border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                                    <Card className="border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer mb-4"
                                           onClick={() => toggleOfferExpansion(offer.id)}>
-                                      <CardContent className="p-4">
-                                        <div className="grid grid-cols-12 gap-4 items-center">
-                                          {/* Expand/Collapse Indicator */}
-                                          <div className="col-span-1 flex justify-center">
+                                      <CardContent className="p-6">
+                                        {/* Header Section */}
+                                        <div className="flex items-center justify-between mb-4">
+                                          <div className="flex items-center space-x-3">
                                             {expandedOffers.has(offer.id) ? (
-                                              <ChevronDown className="w-4 h-4 text-gray-500" />
+                                              <ChevronDown className="w-5 h-5 text-gray-500" />
                                             ) : (
-                                              <ChevronRight className="w-4 h-4 text-gray-500" />
+                                              <ChevronRight className="w-5 h-5 text-gray-500" />
                                             )}
-                                          </div>
-                                          
-                                          {/* Asset Info - 2 cols */}
-                                          <div className="col-span-2">
-                                            <div className="font-medium text-gray-900">{offer.asset_name}</div>
-                                            <div className="text-sm text-gray-500">{offer.campaign_name}</div>
-                                            <Badge variant="secondary" className="text-xs mt-1">
-                                              {offer.contract_duration || '1_month'}
-                                            </Badge>
-                                          </div>
-                                          
-                                          {/* Dates - 2 cols */}
-                                          <div className="col-span-2">
-                                            <div className="text-xs text-gray-500">Requested Dates</div>
-                                            <div className="text-sm">
-                                              <div>Start: {offer.asset_start_date ? new Date(offer.asset_start_date).toLocaleDateString() : 'N/A'}</div>
-                                              <div>End: {offer.asset_expiration_date ? new Date(offer.asset_expiration_date).toLocaleDateString() : 'N/A'}</div>
+                                            <div>
+                                              <h3 className="text-lg font-semibold text-gray-900">{offer.asset_name}</h3>
+                                              <p className="text-sm text-gray-600">{offer.campaign_name}</p>
                                             </div>
                                           </div>
-                                          
-                                          {/* Enhanced Status & Quote Section - 3 cols (reduced from 4) */}
-                                          <div className="col-span-3">
-                                            <div className="bg-gradient-to-r from-blue-50 to-green-50 p-3 rounded-lg border border-gray-200">
-                                              <div className="grid grid-cols-2 gap-4">
-                                                {/* Buyer Status */}
-                                                <div className="text-center">
-                                                  <div className="text-xs font-medium text-gray-600 mb-2">Buyer Status</div>
-                                                  <Badge className="px-3 py-1 text-sm font-semibold bg-blue-100 text-blue-800 border-blue-300 rounded-full">
-                                                    {getBuyerStatus(offer)}
-                                                  </Badge>
+                                          <Badge variant="secondary" className="text-sm px-3 py-1">
+                                            {offer.contract_duration?.replace('_', ' ') || '1 month'}
+                                          </Badge>
+                                        </div>
+
+                                        {/* Main Info Section */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                                          {/* Left Column - Basic Info */}
+                                          <div className="space-y-3">
+                                            <div>
+                                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Requested Dates</label>
+                                              <div className="mt-1 text-sm text-gray-900">
+                                                <div>Start: {offer.asset_start_date ? new Date(offer.asset_start_date).toLocaleDateString() : 'N/A'}</div>
+                                                <div>End: {offer.asset_expiration_date ? new Date(offer.asset_expiration_date).toLocaleDateString() : 'N/A'}</div>
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Seller</label>
+                                              <p className="mt-1 text-sm font-medium text-gray-900">{offer.asset_seller_name}</p>
+                                            </div>
+                                          </div>
+
+                                          {/* Middle Column - Status */}
+                                          <div className="space-y-3">
+                                            <div>
+                                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Buyer Status</label>
+                                              <div className="mt-2">
+                                                <Badge className="px-4 py-2 text-sm font-semibold bg-blue-100 text-blue-800 border-blue-300 rounded-lg">
+                                                  {getBuyerStatus(offer)}
+                                                </Badge>
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Submitted</label>
+                                              <p className="mt-1 text-sm text-gray-900">{new Date(offer.created_at).toLocaleDateString()}</p>
+                                            </div>
+                                          </div>
+
+                                          {/* Right Column - Quote & Actions */}
+                                          <div className="space-y-4">
+                                            <div>
+                                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Admin Quote</label>
+                                              <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-4">
+                                                <div className="text-xl font-bold text-green-700">
+                                                  {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
                                                 </div>
-                                                
-                                                {/* Enhanced Admin Quote Section */}
-                                                <div className="text-center">
-                                                  <div className="text-xs font-medium text-gray-600 mb-2">Admin Quote</div>
-                                                  <div className="bg-white px-3 py-2 rounded-lg border-2 border-gray-300 shadow-sm">
-                                                    <span className="font-bold text-green-700 text-sm">
-                                                      {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
-                                                    </span>
-                                                    {offer.admin_quoted_price && (
-                                                      <div className="text-xs text-gray-500 mt-1">
-                                                        Last updated: {offer.quoted_at ? new Date(offer.quoted_at).toLocaleDateString() : 'N/A'}
-                                                      </div>
-                                                    )}
+                                                {offer.admin_quoted_price && (
+                                                  <div className="text-xs text-gray-500 mt-1">
+                                                    Last updated: {offer.quoted_at ? new Date(offer.quoted_at).toLocaleDateString() : 'N/A'}
                                                   </div>
-                                                </div>
-                                              </div>
-                                              
-                                              {/* Seller info moved to small text below */}
-                                              <div className="mt-3 text-center">
-                                                <span className="text-xs text-gray-500">
-                                                  Seller: <span className="font-medium">{offer.asset_seller_name}</span>
-                                                </span>
+                                                )}
                                               </div>
                                             </div>
-                                          </div>
-                                          
-                                          {/* Actions - 2 cols (expanded space for better positioning) */}
-                                          <div className="col-span-2 flex flex-col justify-end space-y-1 pl-4" onClick={(e) => e.stopPropagation()}>
-                                            {offer.status === 'Pending' ? (
-                                              // Show Quote Price button for pending offers
-                                              <Button
-                                                size="sm"
-                                                onClick={() => handleQuoteOffer(offer)}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-                                              >
-                                                <DollarSign className="w-3 h-3 mr-1" />
-                                                Quote Price
-                                              </Button>
-                                            ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
-                                              // Show both Quote Price (to update) and Approve buttons for quoted offers - stacked vertically
-                                              <>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex flex-col space-y-2" onClick={(e) => e.stopPropagation()}>
+                                              {offer.status === 'Pending' ? (
                                                 <Button
-                                                  size="sm"
+                                                  size="default"
                                                   onClick={() => handleQuoteOffer(offer)}
-                                                  variant="outline"
-                                                  className="border-blue-300 text-blue-600 hover:bg-blue-50 w-full"
+                                                  className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2"
                                                 >
-                                                  <DollarSign className="w-3 h-3 mr-1" />
-                                                  Update Price
+                                                  <DollarSign className="w-4 h-4 mr-2" />
+                                                  Quote Price
                                                 </Button>
-                                                <Button
-                                                  size="sm"
-                                                  onClick={() => handleApproveOffer(offer)}
-                                                  className="bg-green-600 hover:bg-green-700 text-white w-full"
-                                                >
-                                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                                  Approve Asset
-                                                </Button>
-                                              </>
-                                            ) : (
-                                              // Show status for completed offers
-                                              <Badge className="bg-gray-100 text-gray-800">
-                                                {offer.status}
-                                              </Badge>
-                                            )}
+                                              ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
+                                                <>
+                                                  <Button
+                                                    size="default"
+                                                    onClick={() => handleQuoteOffer(offer)}
+                                                    variant="outline"
+                                                    className="border-blue-300 text-blue-600 hover:bg-blue-50 w-full py-2"
+                                                  >
+                                                    <DollarSign className="w-4 h-4 mr-2" />
+                                                    Update Price
+                                                  </Button>
+                                                  <Button
+                                                    size="default"
+                                                    onClick={() => handleApproveOffer(offer)}
+                                                    className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
+                                                  >
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Approve Asset
+                                                  </Button>
+                                                </>
+                                              ) : (
+                                                <Badge className="bg-gray-100 text-gray-800 py-2 text-center">
+                                                  {offer.status}
+                                                </Badge>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                       </CardContent>
