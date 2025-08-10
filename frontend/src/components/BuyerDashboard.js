@@ -420,52 +420,6 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Initialize Google Map for asset location
-  const initializeAssetMap = async (mapContainerRef, asset) => {
-    if (!mapContainerRef || !GOOGLE_MAPS_API_KEY || !asset?.location) {
-      console.error('Map container, API key, or asset location not available');
-      return;
-    }
-
-    const loader = new Loader({
-      apiKey: GOOGLE_MAPS_API_KEY,
-      version: 'weekly',
-      libraries: ['places']
-    });
-
-    try {
-      await loader.load();
-      
-      const map = new window.google.maps.Map(mapContainerRef, {
-        center: { lat: asset.location.lat, lng: asset.location.lng },
-        zoom: 15,
-        styles: [
-          {
-            featureType: 'poi',
-            elementType: 'labels',
-            stylers: [{ visibility: 'off' }]
-          }
-        ]
-      });
-
-      // Add marker for the asset
-      new window.google.maps.Marker({
-        position: { lat: asset.location.lat, lng: asset.location.lng },
-        map: map,
-        title: asset.name,
-        icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ea580c"%3E%3Cpath d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/%3E%3C/svg%3E',
-          scaledSize: new window.google.maps.Size(30, 30),
-          anchor: new window.google.maps.Point(15, 30)
-        }
-      });
-
-      setAssetMapInstance(map);
-    } catch (error) {
-      console.error('Error loading Google Maps:', error);
-    }
-  };
-
   const calculateDuration = (startDate, endDate) => {
     if (!startDate || !endDate) return 'N/A';
     
