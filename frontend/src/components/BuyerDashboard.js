@@ -125,7 +125,11 @@ const BuyerDashboard = () => {
   // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
-  // WebSocket connection for real-time updates
+  // Notification system
+  const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
+  const { success: notifySuccess, error: notifyError, info: notifyInfo, warning: notifyWarning } = useNotifications();
+
+  // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Buyer Dashboard: Received real-time update:', message);
     
@@ -142,17 +146,23 @@ const BuyerDashboard = () => {
         if (typeof fetchRequestedOffers === 'function') {
           fetchRequestedOffers();
         }
-      }, 1500); // 1.5 second delay
+      }, 2000); // Increased to 2 second delay for more stability
     };
     
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_QUOTED:
-        notify.success(`New price quote received: ৳${message.price?.toLocaleString()}`);
+        notifySuccess(
+          'New Price Quote! 💰',
+          `Price quote received: ৳${message.price?.toLocaleString()} for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.ASSET_STATUS_CHANGED:
-        notify.info(`Asset status updated: ${message.asset_name}`);
+        notifyInfo(
+          'Asset Status Updated',
+          `Status changed for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
