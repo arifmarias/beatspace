@@ -2391,11 +2391,12 @@ const AdminDashboard = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={fetchDashboardData}
+                      onClick={fetchOfferRequests}
+                      disabled={offerMediationLoading}
                       className="flex items-center space-x-1"
                     >
                       <Activity className="w-4 h-4" />
-                      <span>Refresh</span>
+                      <span>{offerMediationLoading ? 'Loading...' : 'Refresh'}</span>
                     </Button>
                   </div>
                 </div>
