@@ -261,17 +261,33 @@ export const useWebSocket = (userId, onMessage) => {
     }
   }, []);
 
-  // Initialize connection on mount
+  // Initialize connection on mount with better stability
   useEffect(() => {
     if (userId) {
+      console.log(`🔌 WebSocket: Initializing connection for user: ${userId}`);
       connect();
     }
 
-    // Cleanup on unmount
+    // Cleanup on unmount - but NOT on userId changes
     return () => {
-      disconnect();
+      if (websocketRef.current) {
+        console.log('🔌 WebSocket: Component unmounting - cleaning up connection');
+        disconnect();
+      }
     };
-  }, [userId, connect, disconnect]);
+  }, [userId]); // Only depend on userId, not connect/disconnect functions
+
+  // Separate effect to handle reconnection attempts
+  useEffect(() => {
+    if (!isConnected && userId && reconnectAttempts.current < maxReconnectAttempts) {
+      console.log('🔄 WebSocket: Connection lost, attempting to reconnect...');
+      const timer = setTimeout(() => {
+        connect();
+      }, reconnectDelay);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isConnected, userId]); // Reconnect when connection is lost
 
   // Handle page visibility changes (reconnect when tab becomes active) - DISABLED to prevent connection loops
   // useEffect(() => {
