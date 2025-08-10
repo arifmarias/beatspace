@@ -2455,50 +2455,82 @@ async def root():
 @api_router.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     """
-    WebSocket endpoint for real-time communication with authentication
+    WebSocket endpoint for real-time communication
+    Enhanced with better authentication and error handling
     Token is passed as query parameter: /ws/admin?token=jwt_token
     """
+    print(f"🔌 WebSocket: New connection attempt for user_id: {user_id}")
+    
     # Get token from query parameters
     query_params = dict(websocket.query_params)
     token = query_params.get("token")
+    print(f"🔌 WebSocket: Token length: {len(token) if token else 0}")
     
     if not token:
         print(f"❌ WebSocket: No token provided for user {user_id}")
         await websocket.close(code=4001, reason="Authentication token required")
         return
     
+    # Accept the connection first
+    await websocket.accept()
+    print(f"🔌 WebSocket: Connection accepted for {user_id}")
+    
+    # Authenticate user
     try:
         # Verify JWT token
+        print(f"🔐 WebSocket: Decoding token for {user_id}...")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_identifier = payload.get("sub")  # This could be email or user ID
+        user_role = payload.get("role")  # Get role from token
+        
+        print(f"🔐 WebSocket: Token decoded - identifier: {user_identifier}, role: {user_role}")
+        
         if not user_identifier:
             print(f"❌ WebSocket: Invalid token payload for user {user_id}")
             await websocket.close(code=4003, reason="Invalid token payload")
             return
             
         # Get user from database - try both email and user ID
+        print(f"🔍 WebSocket: Looking up user by email: {user_identifier}")
         user_doc = await db.users.find_one({"email": user_identifier})
+        
         if not user_doc:
             # Try finding by user ID if email lookup failed
+            print(f"🔍 WebSocket: Email lookup failed, trying by ID: {user_identifier}")
             user_doc = await db.users.find_one({"id": user_identifier})
         
         if not user_doc:
             print(f"❌ WebSocket: User not found for identifier {user_identifier}")
+            print(f"🔍 WebSocket: Available users in DB:")
+            async for user in db.users.find({}, {"email": 1, "id": 1, "role": 1, "company_name": 1}):
+                print(f"   - {user.get('email')} (ID: {user.get('id')}, Role: {user.get('role')})")
             await websocket.close(code=4004, reason="User not found")
             return
             
-        # Validate user_id matches authenticated user (more flexible matching)
-        expected_user_id = "admin" if user_doc.get("role") == "admin" else user_doc.get("email", user_doc.get("id"))
-        if user_id != expected_user_id and user_id != "admin":
-            print(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
-            # Allow admin connections with 'admin' user_id regardless of actual email
-            if user_doc.get("role") == "admin" and user_id == "admin":
-                pass  # Allow admin connection
-            else:
-                await websocket.close(code=4005, reason="User ID mismatch")
-                return
+        print(f"✅ WebSocket: Found user in DB: {user_doc.get('email')} (Role: {user_doc.get('role')})")
             
-        print(f"✅ WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({user_doc.get('email', user_identifier)}) as {user_id}")
+        # Enhanced user_id validation - be more flexible for admin connections
+        expected_user_id = None
+        if user_doc.get("role") == "admin":
+            expected_user_id = "admin"  # Admin can use 'admin' as user_id
+        else:
+            expected_user_id = user_doc.get("email", user_doc.get("id"))
+        
+        print(f"🔍 WebSocket: Validating user_id - Expected: {expected_user_id}, Got: {user_id}")
+        
+        # More flexible user ID matching
+        if user_id == expected_user_id:
+            print(f"✅ WebSocket: User ID matches exactly")
+        elif user_doc.get("role") == "admin" and user_id == "admin":
+            print(f"✅ WebSocket: Admin user allowed with 'admin' user_id")
+        elif user_id == user_doc.get("email"):
+            print(f"✅ WebSocket: User ID matches email")
+        else:
+            print(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
+            await websocket.close(code=4005, reason=f"User ID mismatch. Expected: {expected_user_id}")
+            return
+            
+        print(f"🎉 WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({user_doc.get('email', user_identifier)}) as {user_id}")
         
     except jwt.ExpiredSignatureError:
         print(f"❌ WebSocket: Token expired for user {user_id}")
@@ -2510,6 +2542,8 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         return
     except Exception as e:
         print(f"❌ WebSocket authentication error for {user_id}: {e}")
+        import traceback
+        traceback.print_exc()
         await websocket.close(code=4006, reason="Authentication failed")
         return
     
