@@ -13,9 +13,11 @@ export const useWebSocket = (userId, onMessage) => {
   
   const websocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000; // 3 seconds
+  const heartbeatInterval = 30000; // 30 seconds
 
   // Get authentication token
   const getAuthToken = useCallback(() => {
