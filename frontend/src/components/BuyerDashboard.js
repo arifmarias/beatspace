@@ -17,6 +17,7 @@ import {
   CheckCircle,
   AlertCircle,
   Building,
+  Camera,
   Users,
   TrendingUp,
   FileText,
