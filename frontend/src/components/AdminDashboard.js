@@ -2427,7 +2427,8 @@ const AdminDashboard = () => {
                   return (
                     <div className="space-y-6">
                       {buyerGroups.map((group, groupIndex) => {
-                        const isBuyerCollapsed = collapsedBuyers[group.buyer.email] !== false; // Default to collapsed (true)
+                        // Default to collapsed (true), only expand if explicitly set to false
+                        const isBuyerCollapsed = collapsedBuyers[group.buyer.email] !== false;
                         
                         return (
                         <Card key={`buyer-${groupIndex}`} className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-white">
