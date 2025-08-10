@@ -1494,6 +1494,24 @@ const BuyerDashboard = () => {
               <h1 className="text-xl font-semibold text-gray-900">BeatSpace</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <NotificationBell
+                notifications={notifications}
+                onMarkAsRead={markAsRead}
+                onClearAll={clearAll}
+                className="relative"
+              />
+              
+              {/* WebSocket Connection Status - Only show when connected */}
+              {isConnected && (
+                <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-green-100">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span className="text-xs font-medium text-green-700">
+                    Live{userInfo?.name ? ` (${userInfo.name})` : ''}
+                  </span>
+                </div>
+              )}
+              
               <Button variant="outline" onClick={() => navigate('/marketplace')}>
                 Explore Marketplace
               </Button>
