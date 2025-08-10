@@ -652,11 +652,16 @@ const AdminDashboard = () => {
     
     // Check if buyer requested revision
     if (offer.revision_requested || offer.status === 'Revision Requested') {
-      return 'Requested for Revised Price';
+      return 'Request for Revised';
+    }
+    
+    // Check if admin has quoted a price (then it becomes "Price Quoted")
+    if (offer.admin_quoted_price && offer.admin_quoted_price > 0) {
+      return 'Price Quoted';
     }
     
     // First time request (default)
-    return 'Requested';
+    return 'New Request';
   };
 
   const getAdminStatus = (offer) => {
