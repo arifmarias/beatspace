@@ -80,6 +80,45 @@ const AdminDashboard = () => {
   const [monitoringSearch, setMonitoringSearch] = useState('');
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
+  
+  // WebSocket connection for real-time updates
+  const handleWebSocketMessage = (message) => {
+    console.log('🔔 Admin Dashboard: Received real-time update:', message);
+    
+    switch (message.type) {
+      case WEBSOCKET_EVENTS.OFFER_APPROVED:
+        notify.success(`Offer approved for ${message.asset_name}`);
+        // Refresh offer requests to show updated status
+        fetchOfferRequests();
+        break;
+        
+      case WEBSOCKET_EVENTS.OFFER_REJECTED:
+        notify.info(`Offer rejected for ${message.asset_name}`);
+        fetchOfferRequests();
+        break;
+        
+      case WEBSOCKET_EVENTS.REVISION_REQUESTED:
+        notify.info(`Revision requested for ${message.asset_name}`);
+        fetchOfferRequests();
+        break;
+        
+      case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
+        notify.success(`New offer request received for ${message.asset_name}`);
+        fetchOfferRequests();
+        break;
+        
+      case WEBSOCKET_EVENTS.CONNECTION_STATUS:
+        console.log(`📊 WebSocket Status: ${message.message} (${message.active_connections} active)`);
+        break;
+        
+      default:
+        console.log('📥 Unknown message type:', message.type);
+    }
+  };
+
+  const currentUser = { email: 'admin@beatspace.com', role: 'admin' }; // Get from auth context
+  const websocketUserId = getWebSocketUserId(currentUser);
+  const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
