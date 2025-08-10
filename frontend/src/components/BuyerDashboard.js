@@ -148,8 +148,6 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Get current user from auth - you might need to adjust this based on your auth system
-  const currentUser = { email: 'marketing@grameenphone.com', role: 'buyer' }; // Replace with actual user
   const websocketUserId = getWebSocketUserId(currentUser);
   const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
 
