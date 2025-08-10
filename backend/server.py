@@ -2470,27 +2470,35 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     try:
         # Verify JWT token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if not email:
+        user_identifier = payload.get("sub")  # This could be email or user ID
+        if not user_identifier:
             print(f"❌ WebSocket: Invalid token payload for user {user_id}")
             await websocket.close(code=4003, reason="Invalid token payload")
             return
             
-        # Get user from database
-        user_doc = await db.users.find_one({"email": email})
+        # Get user from database - try both email and user ID
+        user_doc = await db.users.find_one({"email": user_identifier})
         if not user_doc:
-            print(f"❌ WebSocket: User not found for email {email}")
+            # Try finding by user ID if email lookup failed
+            user_doc = await db.users.find_one({"id": user_identifier})
+        
+        if not user_doc:
+            print(f"❌ WebSocket: User not found for identifier {user_identifier}")
             await websocket.close(code=4004, reason="User not found")
             return
             
         # Validate user_id matches authenticated user (more flexible matching)
-        expected_user_id = "admin" if user_doc.get("role") == "admin" else user_doc.get("email")
+        expected_user_id = "admin" if user_doc.get("role") == "admin" else user_doc.get("email", user_doc.get("id"))
         if user_id != expected_user_id and user_id != "admin":
             print(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
-            await websocket.close(code=4005, reason="User ID mismatch")
-            return
+            # Allow admin connections with 'admin' user_id regardless of actual email
+            if user_doc.get("role") == "admin" and user_id == "admin":
+                pass  # Allow admin connection
+            else:
+                await websocket.close(code=4005, reason="User ID mismatch")
+                return
             
-        print(f"✅ WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({email}) as {user_id}")
+        print(f"✅ WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({user_doc.get('email', user_identifier)}) as {user_id}")
         
     except jwt.ExpiredSignatureError:
         print(f"❌ WebSocket: Token expired for user {user_id}")
