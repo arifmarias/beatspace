@@ -31,15 +31,16 @@ const UnauthorizedPage = () => (
 function App() {
   return (
     <NotificationProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/marketplace" element={<MarketplacePage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <GlobalNotificationProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* Protected Routes */}
             <Route 
