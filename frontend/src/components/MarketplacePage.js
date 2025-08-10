@@ -1937,14 +1937,14 @@ const MarketplacePage = () => {
                   <h4 className="font-semibold text-gray-900 mb-3">Status</h4>
                   <div className="flex items-center space-x-2 mb-3">
                     <Badge 
-                      variant={selectedAsset.status === 'Available' ? 'success' : selectedAsset.status === 'Booked' ? 'secondary' : 'default'}
+                      variant={selectedAsset.status === 'Available' || selectedAsset.status === 'Pending Offer' ? 'success' : selectedAsset.status === 'Booked' ? 'secondary' : 'default'}
                       className={
-                        selectedAsset.status === 'Available' ? 'bg-green-100 text-green-800' :
+                        selectedAsset.status === 'Available' || selectedAsset.status === 'Pending Offer' ? 'bg-green-100 text-green-800' :
                         selectedAsset.status === 'Booked' ? 'bg-red-100 text-red-800' :
                         'bg-gray-100 text-gray-800'
                       }
                     >
-                      {selectedAsset.status}
+                      {selectedAsset.status === 'Pending Offer' ? 'Available' : selectedAsset.status}
                     </Badge>
                   </div>
                   
