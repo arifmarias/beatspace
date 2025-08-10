@@ -52,6 +52,7 @@ import { Calendar as CalendarComponent } from './ui/calendar';
 import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { getAuthHeaders, logout } from '../utils/auth';
+import { useWebSocket, getWebSocketUserId, WEBSOCKET_EVENTS } from '../utils/websocket';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from './ui/notification';
 import OfferMediationPanel from './OfferMediationPanel';
