@@ -56,9 +56,15 @@ export const useWebSocket = (userId, onMessage) => {
       return;
     }
 
+    const wsUrl = getWebSocketUrl();
+    if (!wsUrl) {
+      console.warn('🚫 WebSocket: Could not generate WebSocket URL (missing token?)');
+      setError('Authentication token required for WebSocket connection');
+      return;
+    }
+
     try {
-      const wsUrl = getWebSocketUrl();
-      console.log(`🔌 WebSocket: Connecting to ${wsUrl}`);
+      console.log(`🔌 WebSocket: Connecting to ${wsUrl.replace(/token=[^&]+/, 'token=***')}`);
       
       websocketRef.current = new WebSocket(wsUrl);
 
@@ -82,8 +88,14 @@ export const useWebSocket = (userId, onMessage) => {
           
           setLastMessage(data);
           
+          // Handle authentication success
+          if (data.type === 'connection_status' && data.status === 'authenticated') {
+            setUserInfo(data.user_info);
+            console.log(`🔐 WebSocket: Authenticated as ${data.user_info?.name}`);
+          }
+          
           // Update connection count if provided
-          if (data.active_connections) {
+          if (data.active_connections !== undefined) {
             setConnectionCount(data.active_connections);
           }
           
@@ -100,6 +112,14 @@ export const useWebSocket = (userId, onMessage) => {
       websocketRef.current.onclose = (event) => {
         console.log(`🔌 WebSocket: Connection closed (${event.code}: ${event.reason})`);
         setIsConnected(false);
+        setUserInfo(null);
+        
+        // Handle authentication errors (4000-4006 range)
+        if (event.code >= 4001 && event.code <= 4006) {
+          console.error(`🔐 WebSocket: Authentication failed - ${event.reason}`);
+          setError(`Authentication failed: ${event.reason}`);
+          return; // Don't attempt to reconnect on auth failures
+        }
         
         // Attempt to reconnect if not a clean close
         if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
