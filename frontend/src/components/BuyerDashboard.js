@@ -2575,26 +2575,10 @@ const BuyerDashboard = () => {
                                     <TableRow 
                                       key={`offer-${offer.id}`}
                                       className="hover:bg-gray-50 cursor-pointer transition-colors"
-                                      onClick={async () => {
+                                      onClick={() => {
                                         // Show offer details in a proper dialog
                                         console.log('🖱️ Clicked on offer:', offer.asset_name, offer.status);
-                                        
-                                        // Fetch complete asset details including location and photos
-                                        try {
-                                          const headers = getAuthHeaders();
-                                          const assetResponse = await axios.get(`${API}/assets/public`);
-                                          const allAssets = assetResponse.data || [];
-                                          const fullAssetDetails = allAssets.find(asset => asset.id === offer.asset_id);
-                                          
-                                          setSelectedOfferDetails({
-                                            ...offer,
-                                            assetDetails: fullAssetDetails
-                                          });
-                                          setSelectedImageIndex(0); // Reset image index
-                                        } catch (error) {
-                                          console.error('Error fetching asset details:', error);
-                                          setSelectedOfferDetails(offer); // Fallback to offer data
-                                        }
+                                        setSelectedOfferDetails(offer);
                                       }}
                                     >
                                       <TableCell>
