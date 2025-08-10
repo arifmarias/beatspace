@@ -2299,6 +2299,15 @@ const AdminDashboard = () => {
                                           onClick={() => toggleOfferExpansion(offer.id)}>
                                       <CardContent className="p-4">
                                         <div className="grid grid-cols-12 gap-4 items-center">
+                                          {/* Expand/Collapse Indicator */}
+                                          <div className="col-span-1 flex justify-center">
+                                            {expandedOffers.has(offer.id) ? (
+                                              <ChevronDown className="w-4 h-4 text-gray-500" />
+                                            ) : (
+                                              <ChevronRight className="w-4 h-4 text-gray-500" />
+                                            )}
+                                          </div>
+                                          
                                           {/* Asset Info - 2 cols */}
                                           <div className="col-span-2">
                                             <div className="font-medium text-gray-900">{offer.asset_name}</div>
