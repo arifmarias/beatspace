@@ -2329,6 +2329,17 @@ const AdminDashboard = () => {
                     </Badge>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
+                    <Select value={buyerStatusFilter} onValueChange={setBuyerStatusFilter}>
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Filter by Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="New Request">New Request</SelectItem>
+                        <SelectItem value="Price Quoted">Price Quoted</SelectItem>
+                        <SelectItem value="Request for Revised">Request for Revised</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <Input
                       placeholder="Search buyer or asset..."
                       value={searchTerm}
@@ -2338,6 +2349,15 @@ const AdminDashboard = () => {
                       }}
                       className="w-64"
                     />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={fetchDashboardData}
+                      className="flex items-center space-x-1"
+                    >
+                      <Activity className="w-4 h-4" />
+                      <span>Refresh</span>
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
