@@ -2477,7 +2477,15 @@ const BuyerDashboard = () => {
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                  {offers.map((offer) => (
+                                  {offers
+                                    .filter(offer => 
+                                      // Hide cancelled and rejected offers from buyer view
+                                      offer.status !== 'Rejected' && 
+                                      offer.status !== 'Cancelled' &&
+                                      offer.status !== 'rejected' &&
+                                      offer.status !== 'cancelled'
+                                    )
+                                    .map((offer) => (
                                     <TableRow 
                                       key={`offer-${offer.id}`}
                                       className="hover:bg-gray-50 cursor-pointer transition-colors"
