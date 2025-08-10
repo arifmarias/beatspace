@@ -82,19 +82,20 @@ const AdminDashboard = () => {
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   
   // Debounced refresh function to prevent rapid API calls
-  const [refreshTimer, setRefreshTimer] = useState(null);
+  const refreshTimerRef = useRef(null);
   const debouncedRefreshOfferRequests = useCallback(() => {
-    if (refreshTimer) {
-      clearTimeout(refreshTimer);
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
     }
     
-    const timer = setTimeout(() => {
+    refreshTimerRef.current = setTimeout(() => {
       console.log('🔄 Debounced refresh triggered');
-      fetchOfferRequests();
+      // We'll define fetchOfferRequests later - use a safer approach
+      if (typeof fetchOfferRequests === 'function') {
+        fetchOfferRequests();
+      }
     }, 1000); // 1 second debounce
-    
-    setRefreshTimer(timer);
-  }, [refreshTimer]);
+  }, []); // Empty dependency array since we're using ref
 
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
