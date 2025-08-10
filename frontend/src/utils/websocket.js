@@ -19,9 +19,9 @@ export const useWebSocket = (userId, onMessage) => {
   const reconnectDelay = 3000; // 3 seconds
   const heartbeatInterval = 30000; // 30 seconds
 
-  // Get authentication token
+  // Get authentication token from the auth system
   const getAuthToken = useCallback(() => {
-    return localStorage.getItem('token') || sessionStorage.getItem('token');
+    return localStorage.getItem('beatspace_token') || sessionStorage.getItem('beatspace_token');
   }, []);
 
   // Get WebSocket URL from environment with authentication
