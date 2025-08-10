@@ -2603,7 +2603,7 @@ const BuyerDashboard = () => {
                                                   className="flex items-center cursor-pointer text-orange-600 hover:text-orange-700 hover:bg-orange-50"
                                                 >
                                                   <X className="h-4 w-4 mr-2" />
-                                                  Reject Offer
+                                                  Cancel Request
                                                 </DropdownMenuItem>
                                               </>
                                             )}
