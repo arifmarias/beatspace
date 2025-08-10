@@ -81,22 +81,6 @@ const AdminDashboard = () => {
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   
-  // Debounced refresh function to prevent rapid API calls
-  const refreshTimerRef = useRef(null);
-  const debouncedRefreshOfferRequests = useCallback(() => {
-    if (refreshTimerRef.current) {
-      clearTimeout(refreshTimerRef.current);
-    }
-    
-    refreshTimerRef.current = setTimeout(() => {
-      console.log('🔄 Debounced refresh triggered');
-      // We'll define fetchOfferRequests later - use a safer approach
-      if (typeof fetchOfferRequests === 'function') {
-        fetchOfferRequests();
-      }
-    }, 1000); // 1 second debounce
-  }, []); // Empty dependency array since we're using ref
-
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Admin Dashboard: Received real-time update:', message);
@@ -107,26 +91,35 @@ const AdminDashboard = () => {
       return;
     }
     
+    // Debounce refresh calls using setTimeout to prevent rapid successive calls
+    const scheduleRefresh = () => {
+      setTimeout(() => {
+        console.log('🔄 Scheduled refresh triggered after WebSocket event');
+        if (typeof fetchOfferRequests === 'function') {
+          fetchOfferRequests();
+        }
+      }, 1500); // 1.5 second delay
+    };
+    
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
         notify.success(`Offer approved for ${message.asset_name}`);
-        // Use debounced refresh to prevent rapid API calls
-        debouncedRefreshOfferRequests();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
         notify.info(`Offer rejected for ${message.asset_name}`);
-        debouncedRefreshOfferRequests();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
         notify.info(`Revision requested for ${message.asset_name}`);
-        debouncedRefreshOfferRequests();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
         notify.success(`New offer request received for ${message.asset_name}`);
-        debouncedRefreshOfferRequests();
+        scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.CONNECTION_STATUS:
