@@ -1447,9 +1447,9 @@ const AdminDashboard = () => {
       });
       
       console.log('🔄 Refreshing dashboard data...');
-      // Refresh the dashboard data to show updated offer
+      // Immediate refresh for real-time updates
       await fetchDashboardData();
-      console.log('✅ Dashboard data refreshed');
+      console.log('✅ Data refreshed after quote update');
       
     } catch (error) {
       console.error('❌ Error submitting quote:', error);
