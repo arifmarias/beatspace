@@ -52,11 +52,27 @@ export const useWebSocket = (userId, onMessage) => {
     return wsUrl;
   }, [userId, getAuthToken]);
 
+  // Connection state guards
+  const connectingRef = useRef(false); // Prevent multiple simultaneous connection attempts
+
   // Connect to WebSocket
   const connect = useCallback(() => {
     if (!userId) {
       console.warn('🚫 WebSocket: No user ID provided');
       return;
+    }
+
+    // Prevent multiple simultaneous connections
+    if (connectingRef.current || (websocketRef.current && websocketRef.current.readyState === WebSocket.CONNECTING)) {
+      console.warn('🚫 WebSocket: Connection already in progress');
+      return;
+    }
+
+    // Close existing connection if it exists
+    if (websocketRef.current && websocketRef.current.readyState !== WebSocket.CLOSED) {
+      console.log('🔌 WebSocket: Closing existing connection before creating new one');
+      websocketRef.current.close();
+      websocketRef.current = null;
     }
 
     const wsUrl = getWebSocketUrl();
@@ -67,6 +83,7 @@ export const useWebSocket = (userId, onMessage) => {
     }
 
     try {
+      connectingRef.current = true; // Set connecting flag
       console.log(`🔌 WebSocket: Connecting to ${wsUrl.replace(/token=[^&]+/, 'token=***')}`);
       
       websocketRef.current = new WebSocket(wsUrl);
@@ -76,6 +93,7 @@ export const useWebSocket = (userId, onMessage) => {
         setIsConnected(true);
         setError(null);
         reconnectAttempts.current = 0;
+        connectingRef.current = false; // Clear connecting flag
         
         // Send initial ping to activate connection (only when connection is open)
         const sendInitialPing = () => {
