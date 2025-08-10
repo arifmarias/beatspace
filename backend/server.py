@@ -1409,13 +1409,23 @@ async def update_offer_quote(
     
     # 🚀 REAL-TIME EVENT: Send WebSocket notification to buyer
     try:
-        # Get buyer information from the request
+        # Get buyer information from the request - improved lookup
         buyer_email = request.get("buyer_email") or request.get("created_by")
+        buyer_id = request.get("buyer_id")
         asset_name = request.get("asset_name", "Unknown Asset")
+        
+        # If no buyer_email, try to get it from buyer_id
+        if not buyer_email and buyer_id:
+            buyer_doc = await db.users.find_one({"id": buyer_id})
+            if buyer_doc:
+                buyer_email = buyer_doc.get("email")
+                print(f"🔍 Found buyer email from buyer_id: {buyer_email}")
+            else:
+                print(f"⚠️ Could not find buyer with ID: {buyer_id}")
         
         if buyer_email:
             # Send real-time notification to buyer
-            await websocket_manager.send_to_user(buyer_email, {
+            notification_data = {
                 "type": "offer_quoted",
                 "offer_id": request_id,
                 "asset_name": asset_name,
@@ -1424,13 +1434,19 @@ async def update_offer_quote(
                 "quote_count": new_quote_count,
                 "timestamp": datetime.utcnow().isoformat(),
                 "message": f"New price quote received for {asset_name}: ৳{quote_data.get('quoted_price'):,}"
-            })
+            }
+            
+            await websocket_manager.send_to_user(buyer_email, notification_data)
             print(f"✅ Real-time notification sent to buyer: {buyer_email}")
+            print(f"📤 Notification data: {notification_data}")
         else:
-            print(f"⚠️ Could not send notification - buyer email not found in request: {request_id}")
+            print(f"⚠️ Could not send notification - no buyer email found for request: {request_id}")
+            print(f"🔍 Request data: buyer_id={buyer_id}, buyer_email={request.get('buyer_email')}, created_by={request.get('created_by')}")
             
     except Exception as ws_error:
         print(f"❌ WebSocket notification failed: {ws_error}")
+        import traceback
+        traceback.print_exc()
         # Don't fail the main operation if WebSocket fails
     
     return {"message": "Quote added successfully", "quoted_price": quote_data.get("quoted_price")}
