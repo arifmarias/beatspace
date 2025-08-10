@@ -129,7 +129,8 @@ export const useWebSocket = (userId, onMessage) => {
         // Handle authentication errors (4000-4006 range)
         if (event.code >= 4001 && event.code <= 4006) {
           console.error(`🔐 WebSocket: Authentication failed - ${event.reason}`);
-          setError(`Authentication failed: ${event.reason}`);
+          // Don't set user-visible error for auth issues - just log them
+          // The UI will simply not show the "Live" status
           return; // Don't attempt to reconnect on auth failures
         }
         
