@@ -92,6 +92,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [offerRequests, setOfferRequests] = useState([]);
   const [selectedOfferRequest, setSelectedOfferRequest] = useState(null);
+  const [expandedOffers, setExpandedOffers] = useState(new Set()); // Track which offers are expanded
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [showGroupQuoteDialog, setShowGroupQuoteDialog] = useState(false);
   const [quoteForm, setQuoteForm] = useState({
