@@ -123,20 +123,41 @@ const BuyerDashboard = () => {
   // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
+  // Debounced refresh function to prevent rapid API calls
+  const [refreshTimer, setRefreshTimer] = useState(null);
+  const debouncedRefreshRequestedOffers = useCallback(() => {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+    
+    const timer = setTimeout(() => {
+      console.log('🔄 Buyer Dashboard: Debounced refresh triggered');
+      fetchRequestedOffers();
+    }, 1000); // 1 second debounce
+    
+    setRefreshTimer(timer);
+  }, [refreshTimer]);
+
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Buyer Dashboard: Received real-time update:', message);
     
+    // Only handle messages if WebSocket connection is stable
+    if (!isConnected) {
+      console.warn('⚠️ Buyer Dashboard: Ignoring WebSocket message - connection not stable');
+      return;
+    }
+    
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_QUOTED:
         notify.success(`New price quote received: ৳${message.price?.toLocaleString()}`);
-        // Refresh requested offers to show new quote
-        fetchRequestedOffers();
+        // Use debounced refresh to prevent rapid API calls
+        debouncedRefreshRequestedOffers();
         break;
         
       case WEBSOCKET_EVENTS.ASSET_STATUS_CHANGED:
         notify.info(`Asset status updated: ${message.asset_name}`);
-        fetchRequestedOffers();
+        debouncedRefreshRequestedOffers();
         break;
         
       case WEBSOCKET_EVENTS.CONNECTION_STATUS:
