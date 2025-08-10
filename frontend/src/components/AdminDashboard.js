@@ -252,7 +252,18 @@ const AdminDashboard = () => {
               const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
               const assetData = assetResponse.data;
               
-              // Get appropriate price based on contract duration
+              // Fetch campaign details if existing_campaign_id is available
+              let campaignNotes = '';
+              if (offer.existing_campaign_id) {
+                try {
+                  const campaignResponse = await axios.get(`${API}/campaigns/${offer.existing_campaign_id}`, { headers });
+                  campaignNotes = campaignResponse.data.description || '';
+                } catch (campaignError) {
+                  console.error(`Error fetching campaign details for ${offer.existing_campaign_id}:`, campaignError);
+                }
+              }
+              
+              // Always try to get monthly rate first for display consistency
               let assetPrice = 0;
               const duration = offer.contract_duration;
               if (assetData.pricing) {
@@ -271,6 +282,7 @@ const AdminDashboard = () => {
                 asset_price: assetPrice,
                 asset_seller_name: assetData.seller_name || 'N/A',
                 asset_pricing_full: assetData.pricing || {},
+                campaign_notes: campaignNotes,
                 quote_count: offer.quote_count || 0 // Track how many times admin has quoted
               };
             } catch (error) {
@@ -280,6 +292,7 @@ const AdminDashboard = () => {
                 asset_price: 0,
                 asset_seller_name: 'N/A',
                 asset_pricing_full: {},
+                campaign_notes: '',
                 quote_count: 0
               };
             }
