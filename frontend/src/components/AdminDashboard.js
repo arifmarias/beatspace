@@ -589,12 +589,12 @@ const AdminDashboard = () => {
   };
 
   const getAdminStatus = (offer) => {
-    const quoteCount = offer.quote_count || 0;
-    
-    if (quoteCount === 0) {
-      return 'Need to quote';
-    } else {
+    // Check if admin has already quoted a price
+    if (offer.admin_quoted_price && offer.admin_quoted_price > 0) {
+      const quoteCount = offer.quote_count || 1; // Default to 1 if already quoted but count not tracked
       return `Quoted #${quoteCount}`;
+    } else {
+      return 'Need to quote';
     }
   };
 
