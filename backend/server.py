@@ -2457,7 +2457,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     """
     WebSocket endpoint for real-time communication
     Enhanced with better authentication and error handling
-    Token is passed as query parameter: /ws/admin?token=jwt_token
     """
     print(f"🔌 WebSocket: New connection attempt for user_id: {user_id}")
     
