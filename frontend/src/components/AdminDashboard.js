@@ -2404,8 +2404,8 @@ const AdminDashboard = () => {
                                       </CardContent>
                                     </Card>
                                     
-                                    {/* Expandable Details Section */}
-                                    {isExpanded && (
+                                    {/* Expandable Details Section - Default Closed */}
+                                    {expandedOffers.has(offer.id) && (
                                       <Card className="ml-4 mt-2 border-l-4 border-l-blue-500">
                                         <CardContent className="p-4">
                                           <div className="bg-gray-50 rounded-lg p-4">
@@ -2431,14 +2431,42 @@ const AdminDashboard = () => {
                                                 <p>{offer.contract_duration || 'Not specified'}</p>
                                               </div>
                                               <div>
-                                                <span className="font-medium text-gray-700">Current Status:</span>
-                                                <p className="font-medium text-blue-600">{offer.status}</p>
+                                                <span className="font-medium text-gray-700">Seller:</span>
+                                                <p>{offer.asset_seller_name}</p>
                                               </div>
                                               <div>
-                                                <span className="font-medium text-gray-700">Quoted Price:</span>
+                                                <span className="font-medium text-gray-700">Buyer Requested Budget:</span>
+                                                <p className="font-medium text-blue-600">
+                                                  {offer.estimated_budget ? `৳${offer.estimated_budget.toLocaleString()}` : 'N/A'}
+                                                </p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Asset Market Price:</span>
+                                                <p className="font-medium">
+                                                  {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
+                                                </p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Admin Quoted Price:</span>
                                                 <p className="font-medium text-green-600">
                                                   {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted yet'}
                                                 </p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Requested Start Date:</span>
+                                                <p>{offer.tentative_start_date ? new Date(offer.tentative_start_date).toLocaleDateString() : 'Not specified'}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Requested End Date:</span>
+                                                <p>{offer.tentative_end_date ? new Date(offer.tentative_end_date).toLocaleDateString() : 'Not specified'}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Buyer Status:</span>
+                                                <p className="font-medium text-blue-600">{getBuyerStatus(offer)}</p>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium text-gray-700">Admin Status:</span>
+                                                <p className="font-medium text-green-600">{getAdminStatus(offer)}</p>
                                               </div>
                                               <div className="col-span-2">
                                                 <span className="font-medium text-gray-700">Special Requirements:</span>
