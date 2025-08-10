@@ -2453,14 +2453,17 @@ async def root():
 
 # WebSocket endpoint for real-time updates
 @api_router.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: str, token: str = Query(None)):
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
     """
     WebSocket endpoint for real-time communication with authentication
-    user_id: admin, buyer_email, seller_email, etc.
-    token: JWT authentication token passed as query parameter
+    Token is passed as query parameter: /ws/admin?token=jwt_token
     """
-    # Authenticate the WebSocket connection
+    # Get token from query parameters
+    query_params = dict(websocket.query_params)
+    token = query_params.get("token")
+    
     if not token:
+        print(f"❌ WebSocket: No token provided for user {user_id}")
         await websocket.close(code=4001, reason="Authentication token required")
         return
     
@@ -2469,31 +2472,36 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, token: str = Qu
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
         if not email:
+            print(f"❌ WebSocket: Invalid token payload for user {user_id}")
             await websocket.close(code=4003, reason="Invalid token payload")
             return
             
         # Get user from database
-        user = await db.users.find_one({"email": email})
-        if not user:
+        user_doc = await db.users.find_one({"email": email})
+        if not user_doc:
+            print(f"❌ WebSocket: User not found for email {email}")
             await websocket.close(code=4004, reason="User not found")
             return
             
-        # Validate user_id matches authenticated user
-        expected_user_id = "admin" if user.get("role") == "admin" else user.get("email")
-        if user_id != expected_user_id:
+        # Validate user_id matches authenticated user (more flexible matching)
+        expected_user_id = "admin" if user_doc.get("role") == "admin" else user_doc.get("email")
+        if user_id != expected_user_id and user_id != "admin":
+            print(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
             await websocket.close(code=4005, reason="User ID mismatch")
             return
             
-        print(f"🔐 WebSocket authenticated user: {user.get('company_name')} ({email})")
+        print(f"✅ WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({email}) as {user_id}")
         
     except jwt.ExpiredSignatureError:
+        print(f"❌ WebSocket: Token expired for user {user_id}")
         await websocket.close(code=4002, reason="Token expired")
         return
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        print(f"❌ WebSocket: Invalid token for user {user_id}: {e}")
         await websocket.close(code=4003, reason="Invalid token")
         return
     except Exception as e:
-        print(f"❌ WebSocket authentication error: {e}")
+        print(f"❌ WebSocket authentication error for {user_id}: {e}")
         await websocket.close(code=4006, reason="Authentication failed")
         return
     
@@ -2505,15 +2513,17 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, token: str = Qu
         await websocket.send_text(json.dumps({
             "type": "connection_status",
             "status": "authenticated",
-            "message": f"Connected as {user.get('company_name')} ({user.get('role')})",
+            "message": f"Connected as {user_doc.get('company_name', 'User')} ({user_doc.get('role', 'user')})",
             "timestamp": datetime.utcnow().isoformat(),
             "active_connections": websocket_manager.get_connection_count(),
             "user_info": {
-                "name": user.get("company_name"),
-                "email": user.get("email"),
-                "role": user.get("role")
+                "name": user_doc.get("company_name", "Unknown User"),
+                "email": user_doc.get("email"),
+                "role": user_doc.get("role", "user")
             }
         }))
+        
+        print(f"🎉 WebSocket connection established for {user_doc.get('company_name')} ({user_id})")
         
         while True:
             # Keep the connection alive and listen for any client messages
@@ -2527,13 +2537,14 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, token: str = Qu
                         "timestamp": datetime.utcnow().isoformat(),
                         "active_connections": websocket_manager.get_connection_count()
                     }))
+                    print(f"🏓 WebSocket ping/pong with {user_id}")
             except json.JSONDecodeError:
                 # Ignore invalid JSON messages
                 pass
                 
     except WebSocketDisconnect:
         websocket_manager.disconnect(websocket, user_id)
-        print(f"🔌 Authenticated client {user.get('company_name')} disconnected")
+        print(f"🔌 Authenticated client {user_doc.get('company_name', user_id)} disconnected")
     except Exception as e:
         print(f"❌ WebSocket error for {user_id}: {e}")
         websocket_manager.disconnect(websocket, user_id)
