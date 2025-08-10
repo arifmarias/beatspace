@@ -10,6 +10,7 @@ import SellerDashboard from './components/SellerDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { NotificationProvider } from './components/ui/notification';
+import { NotificationProvider as GlobalNotificationProvider } from './contexts/NotificationContext';
 import './App.css';
 
 const UnauthorizedPage = () => (
