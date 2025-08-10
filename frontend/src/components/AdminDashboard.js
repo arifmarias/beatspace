@@ -367,7 +367,7 @@ const AdminDashboard = () => {
     });
   };
 
-  // Get offers that need admin action (not yet approved) grouped by buyer
+  // Get offers that need admin action (not yet approved) grouped by buyer with pagination
   const getActiveOffersByBuyer = () => {
     console.log('🔍 DEBUG: All offer requests:', offerRequests);
     
@@ -380,7 +380,13 @@ const AdminDashboard = () => {
     
     console.log('🔍 DEBUG: Active offers after filtering:', activeOffers);
     
-    const buyerGroups = activeOffers.reduce((groups, offer) => {
+    // Apply pagination to individual offers
+    const startIndex = (offerCurrentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedOffers = activeOffers.slice(startIndex, endIndex);
+    
+    // Group the paginated offers by buyer
+    const buyerGroups = paginatedOffers.reduce((groups, offer) => {
       const buyerKey = `${offer.buyer_name}-${offer.buyer_email}`;
       if (!groups[buyerKey]) {
         groups[buyerKey] = {
@@ -398,6 +404,21 @@ const AdminDashboard = () => {
     const result = Object.values(buyerGroups);
     console.log('🔍 DEBUG: Final buyer groups:', result);
     return result;
+  };
+
+  // Get total pages for offers
+  const getOfferTotalPages = () => {
+    const activeOffers = getFilteredOfferRequests().filter(offer => {
+      return offer.status !== 'Approved' && offer.status !== 'Rejected' && offer.status !== 'Accepted';
+    });
+    return Math.ceil(activeOffers.length / itemsPerPage);
+  };
+
+  // Get total count of active offers for display
+  const getActiveOffersCount = () => {
+    return getFilteredOfferRequests().filter(offer => {
+      return offer.status !== 'Approved' && offer.status !== 'Rejected' && offer.status !== 'Accepted';
+    }).length;
   };
 
   const getPaginatedOfferRequests = () => {
