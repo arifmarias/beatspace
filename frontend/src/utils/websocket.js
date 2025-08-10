@@ -15,9 +15,9 @@ export const useWebSocket = (userId, onMessage) => {
   const reconnectTimeoutRef = useRef(null);
   const heartbeatIntervalRef = useRef(null);
   const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
-  const reconnectDelay = 5000; // 5 seconds - longer delay to prevent rapid reconnections
-  const heartbeatInterval = 120000; // 120 seconds - much longer heartbeat to reduce traffic
+  const maxReconnectAttempts = 3; // Reduced from 5 to 3
+  const reconnectDelay = 8000; // Increased to 8 seconds for stability
+  const heartbeatInterval = 180000; // Increased to 3 minutes to reduce traffic
   const lastMessageRef = useRef(Date.now()); // Track last message time to prevent duplicate processing
 
   // Get authentication token from the auth system
