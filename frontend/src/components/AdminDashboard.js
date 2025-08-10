@@ -2396,25 +2396,25 @@ const AdminDashboard = () => {
                                           </div>
                                           
                                           {/* Actions - 2 cols */}
-                                          <div className="col-span-2 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+                                          <div className="col-span-2 flex flex-col justify-end space-y-1" onClick={(e) => e.stopPropagation()}>
                                             {offer.status === 'Pending' ? (
                                               // Show Quote Price button for pending offers
                                               <Button
                                                 size="sm"
                                                 onClick={() => handleQuoteOffer(offer)}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white w-full"
                                               >
                                                 <DollarSign className="w-3 h-3 mr-1" />
                                                 Quote Price
                                               </Button>
                                             ) : offer.status === 'Quoted' || offer.status === 'In Process' ? (
-                                              // Show both Quote Price (to update) and Approve buttons for quoted offers
+                                              // Show both Quote Price (to update) and Approve buttons for quoted offers - stacked vertically
                                               <>
                                                 <Button
                                                   size="sm"
                                                   onClick={() => handleQuoteOffer(offer)}
                                                   variant="outline"
-                                                  className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                                  className="border-blue-300 text-blue-600 hover:bg-blue-50 w-full"
                                                 >
                                                   <DollarSign className="w-3 h-3 mr-1" />
                                                   Update Price
@@ -2422,7 +2422,7 @@ const AdminDashboard = () => {
                                                 <Button
                                                   size="sm"
                                                   onClick={() => handleApproveOffer(offer)}
-                                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                                  className="bg-green-600 hover:bg-green-700 text-white w-full"
                                                 >
                                                   <CheckCircle className="w-3 h-3 mr-1" />
                                                   Approve Asset
