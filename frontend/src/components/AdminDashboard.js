@@ -606,7 +606,15 @@ const AdminDashboard = () => {
   const getAdminStatus = (offer) => {
     // Check if admin has already quoted a price
     if (offer.admin_quoted_price && offer.admin_quoted_price > 0) {
-      const quoteCount = offer.quote_count || 1; // Default to 1 if already quoted but count not tracked
+      let quoteCount = offer.quote_count;
+      
+      // Handle different data types and ensure we have a valid number
+      if (typeof quoteCount === 'string') {
+        quoteCount = parseInt(quoteCount) || 1;
+      } else if (typeof quoteCount !== 'number' || quoteCount < 1) {
+        quoteCount = 1; // Default to 1 if already quoted but count not tracked properly
+      }
+      
       return `Quoted #${quoteCount}`;
     } else {
       return 'Need to quote';
