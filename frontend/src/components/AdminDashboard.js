@@ -2322,36 +2322,33 @@ const AdminDashboard = () => {
                                           {/* Enhanced Status & Quote Section - 4 cols (removed seller, expanded this) */}
                                           <div className="col-span-4">
                                             <div className="bg-gradient-to-r from-blue-50 to-green-50 p-3 rounded-lg border border-gray-200">
-                                              <div className="grid grid-cols-3 gap-4">
+                                              <div className="grid grid-cols-2 gap-6">
                                                 {/* Buyer Status */}
                                                 <div className="text-center">
                                                   <div className="text-xs font-medium text-gray-600 mb-2">Buyer Status</div>
-                                                  <Badge className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 border-blue-300 rounded-full">
+                                                  <Badge className="px-3 py-1 text-sm font-semibold bg-blue-100 text-blue-800 border-blue-300 rounded-full">
                                                     {getBuyerStatus(offer)}
                                                   </Badge>
                                                 </div>
                                                 
-                                                {/* Admin Status */}
-                                                <div className="text-center">
-                                                  <div className="text-xs font-medium text-gray-600 mb-2">Admin Status</div>
-                                                  <Badge className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 border-green-300 rounded-full">
-                                                    {getAdminStatus(offer)}
-                                                  </Badge>
-                                                </div>
-                                                
-                                                {/* Quote Amount */}
+                                                {/* Enhanced Admin Quote Section */}
                                                 <div className="text-center">
                                                   <div className="text-xs font-medium text-gray-600 mb-2">Admin Quote</div>
-                                                  <div className="bg-white px-3 py-1 rounded-md border border-gray-300 shadow-sm">
-                                                    <span className="font-bold text-green-700 text-sm">
+                                                  <div className="bg-white px-4 py-2 rounded-lg border-2 border-gray-300 shadow-sm">
+                                                    <span className="font-bold text-green-700 text-lg">
                                                       {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
                                                     </span>
+                                                    {offer.admin_quoted_price && (
+                                                      <div className="text-xs text-gray-500 mt-1">
+                                                        Last updated: {offer.quoted_at ? new Date(offer.quoted_at).toLocaleDateString() : 'N/A'}
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 </div>
                                               </div>
                                               
                                               {/* Seller info moved to small text below */}
-                                              <div className="mt-2 text-center">
+                                              <div className="mt-3 text-center">
                                                 <span className="text-xs text-gray-500">
                                                   Seller: <span className="font-medium">{offer.asset_seller_name}</span>
                                                 </span>
