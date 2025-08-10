@@ -1445,6 +1445,20 @@ async def respond_to_offer(
         
         logger.info(f"Offer rejected: {request_id}")
     
+    elif response_action == "modify" or response_action == "request_revision":
+        # Buyer requests price revision
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {
+                "status": "Revision Requested",
+                "revision_requested": True,
+                "revision_requested_at": datetime.utcnow(),
+                "revision_reason": response_data.get("reason", "Buyer requested price revision")
+            }}
+        )
+        
+        logger.info(f"Offer revision requested: {request_id}")
+    
     return {"message": f"Offer {response_action}ed successfully"}
 
 # Enhanced Asset Routes
