@@ -256,17 +256,13 @@ const AdminDashboard = () => {
               let assetPrice = 0;
               const duration = offer.contract_duration;
               if (assetData.pricing) {
-                if (duration === '1_month') {
-                  assetPrice = assetData.pricing.monthly_rate || assetData.pricing.weekly_rate * 4 || 0;
-                } else if (duration === '3_months') {
-                  assetPrice = assetData.pricing.yearly_rate / 4 || assetData.pricing.monthly_rate * 3 || 0;
-                } else if (duration === '6_months') {
-                  assetPrice = assetData.pricing.yearly_rate / 2 || assetData.pricing.monthly_rate * 6 || 0;
-                } else if (duration === '1_year') {
-                  assetPrice = assetData.pricing.yearly_rate || assetData.pricing.monthly_rate * 12 || 0;
-                } else {
-                  // Default to weekly rate if duration not specified
-                  assetPrice = assetData.pricing.weekly_rate || 0;
+                // Always try to get monthly rate first for display consistency
+                if (assetData.pricing.monthly_rate) {
+                  assetPrice = assetData.pricing.monthly_rate;
+                } else if (assetData.pricing.weekly_rate) {
+                  assetPrice = assetData.pricing.weekly_rate * 4; // Convert weekly to monthly
+                } else if (assetData.pricing.yearly_rate) {
+                  assetPrice = assetData.pricing.yearly_rate / 12; // Convert yearly to monthly
                 }
               }
 
