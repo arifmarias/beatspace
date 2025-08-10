@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
- * Custom React Hook for WebSocket Real-time Communication with Authentication
- * Provides connection management, event handling, and auto-reconnection
+ * Enhanced WebSocket Hook for BeatSpace
+ * Provides real-time communication with notification support
  */
 export const useWebSocket = (userId, onMessage) => {
   const [isConnected, setIsConnected] = useState(false);
