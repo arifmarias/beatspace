@@ -142,6 +142,8 @@ export const useWebSocket = (userId, onMessage) => {
           const now = Date.now();
           const messageKey = `${data.type}-${data.offer_id || data.asset_id || 'general'}`;
           
+          console.log(`📥 WebSocket: RECEIVED MESSAGE - Type: ${data.type}`, data);
+          
           // Skip if same message type received within last 2 seconds (except for connection status)
           if (data.type !== 'connection_status' && data.type !== 'ping' && data.type !== 'pong') {
             if (now - lastMessageRef.current < 2000) {
@@ -151,7 +153,7 @@ export const useWebSocket = (userId, onMessage) => {
             lastMessageRef.current = now;
           }
           
-          console.log(`📥 WebSocket: Processing message type: ${data.type}`, data);
+          console.log(`✅ WebSocket: Processing message type: ${data.type}`, data);
           setLastMessage(data);
           
           // Handle authentication success
@@ -166,8 +168,11 @@ export const useWebSocket = (userId, onMessage) => {
           }
           
           // Call the message handler if provided and connection is stable
-          if (onMessage && typeof onMessage === 'function' && isConnected) {
+          if (onMessage && typeof onMessage === 'function') {
+            console.log(`🎯 WebSocket: Calling message handler for ${data.type}`);
             onMessage(data);
+          } else {
+            console.warn(`⚠️ WebSocket: No message handler provided for ${data.type}`);
           }
           
         } catch (err) {
