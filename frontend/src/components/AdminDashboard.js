@@ -2344,26 +2344,34 @@ const AdminDashboard = () => {
                                             </div>
                                           </div>
                                           
-                                          {/* Status Columns - 2 cols */}
+                                          {/* Status & Quote Section - 2 cols */}
                                           <div className="col-span-2">
-                                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                              <div>
-                                                <span className="text-gray-500 block text-xs">Buyer Status</span>
-                                                <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-300">
-                                                  {getBuyerStatus(offer)}
-                                                </Badge>
-                                              </div>
-                                              <div>
-                                                <span className="text-gray-500 block text-xs">Admin Status</span>
-                                                <Badge className="text-xs bg-green-100 text-green-800 border-green-300">
-                                                  {getAdminStatus(offer)}
-                                                </Badge>
-                                              </div>
-                                            </div>
-                                            <div className="mt-1">
-                                              <span className="text-gray-500 text-xs">Admin Quote</span>
-                                              <div className="font-medium text-green-600">
-                                                {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
+                                            <div className="bg-gray-50 p-2 rounded-lg">
+                                              <div className="grid grid-cols-1 gap-2 text-sm">
+                                                <div className="flex justify-between items-center">
+                                                  <div className="flex items-center space-x-2">
+                                                    <span className="text-gray-600 text-xs">Buyer:</span>
+                                                    <Badge className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                                      {getBuyerStatus(offer)}
+                                                    </Badge>
+                                                  </div>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                  <div className="flex items-center space-x-2">
+                                                    <span className="text-gray-600 text-xs">Admin:</span>
+                                                    <Badge className="text-xs bg-green-50 text-green-700 border-green-200">
+                                                      {getAdminStatus(offer)}
+                                                    </Badge>
+                                                  </div>
+                                                </div>
+                                                <div className="border-t pt-2">
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600 text-xs">Quote:</span>
+                                                    <span className="font-medium text-green-600 text-sm">
+                                                      {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
+                                                    </span>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
