@@ -272,20 +272,20 @@ export const useWebSocket = (userId, onMessage) => {
     };
   }, [userId, connect, disconnect]);
 
-  // Handle page visibility changes (reconnect when tab becomes active)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && !isConnected && userId) {
-        console.log('👁️ WebSocket: Tab became active, attempting to reconnect...');
-        connect();
-      }
-    };
+  // Handle page visibility changes (reconnect when tab becomes active) - DISABLED to prevent connection loops
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (!document.hidden && !isConnected && userId) {
+  //       console.log('👁️ WebSocket: Tab became active, attempting to reconnect...');
+  //       connect();
+  //     }
+  //   };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [isConnected, userId, connect]);
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, [isConnected, userId, connect]);
 
   return {
     isConnected,
