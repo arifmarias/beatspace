@@ -2458,14 +2458,19 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     WebSocket endpoint for real-time communication
     Enhanced with better authentication and error handling
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"🔌 WebSocket: New connection attempt for user_id: {user_id}")
     print(f"🔌 WebSocket: New connection attempt for user_id: {user_id}")
     
     # Get token from query parameters
     query_params = dict(websocket.query_params)
     token = query_params.get("token")
+    logger.info(f"🔌 WebSocket: Token length: {len(token) if token else 0}")
     print(f"🔌 WebSocket: Token length: {len(token) if token else 0}")
     
     if not token:
+        logger.error(f"❌ WebSocket: No token provided for user {user_id}")
         print(f"❌ WebSocket: No token provided for user {user_id}")
         await websocket.close(code=4001, reason="Authentication token required")
         return
@@ -2474,35 +2479,44 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     user_doc = None
     try:
         # Verify JWT token
+        logger.info(f"🔐 WebSocket: Decoding token for {user_id}...")
         print(f"🔐 WebSocket: Decoding token for {user_id}...")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_identifier = payload.get("sub")  # This could be email or user ID
         user_role = payload.get("role")  # Get role from token
         
+        logger.info(f"🔐 WebSocket: Token decoded - identifier: {user_identifier}, role: {user_role}")
         print(f"🔐 WebSocket: Token decoded - identifier: {user_identifier}, role: {user_role}")
         
         if not user_identifier:
+            logger.error(f"❌ WebSocket: Invalid token payload for user {user_id}")
             print(f"❌ WebSocket: Invalid token payload for user {user_id}")
             await websocket.close(code=4003, reason="Invalid token payload")
             return
             
         # Get user from database - try both email and user ID
+        logger.info(f"🔍 WebSocket: Looking up user by email: {user_identifier}")
         print(f"🔍 WebSocket: Looking up user by email: {user_identifier}")
         user_doc = await db.users.find_one({"email": user_identifier})
         
         if not user_doc:
             # Try finding by user ID if email lookup failed
+            logger.info(f"🔍 WebSocket: Email lookup failed, trying by ID: {user_identifier}")
             print(f"🔍 WebSocket: Email lookup failed, trying by ID: {user_identifier}")
             user_doc = await db.users.find_one({"id": user_identifier})
         
         if not user_doc:
+            logger.error(f"❌ WebSocket: User not found for identifier {user_identifier}")
             print(f"❌ WebSocket: User not found for identifier {user_identifier}")
+            logger.info(f"🔍 WebSocket: Available users in DB:")
             print(f"🔍 WebSocket: Available users in DB:")
             async for user in db.users.find({}, {"email": 1, "id": 1, "role": 1, "company_name": 1}):
+                logger.info(f"   - {user.get('email')} (ID: {user.get('id')}, Role: {user.get('role')})")
                 print(f"   - {user.get('email')} (ID: {user.get('id')}, Role: {user.get('role')})")
             await websocket.close(code=4004, reason="User not found")
             return
             
+        logger.info(f"✅ WebSocket: Found user in DB: {user_doc.get('email')} (Role: {user_doc.get('role')})")
         print(f"✅ WebSocket: Found user in DB: {user_doc.get('email')} (Role: {user_doc.get('role')})")
             
         # Enhanced user_id validation - be more flexible for admin connections
@@ -2512,31 +2526,40 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         else:
             expected_user_id = user_doc.get("email", user_doc.get("id"))
         
+        logger.info(f"🔍 WebSocket: Validating user_id - Expected: {expected_user_id}, Got: {user_id}")
         print(f"🔍 WebSocket: Validating user_id - Expected: {expected_user_id}, Got: {user_id}")
         
         # More flexible user ID matching
         if user_id == expected_user_id:
+            logger.info(f"✅ WebSocket: User ID matches exactly")
             print(f"✅ WebSocket: User ID matches exactly")
         elif user_doc.get("role") == "admin" and user_id == "admin":
+            logger.info(f"✅ WebSocket: Admin user allowed with 'admin' user_id")
             print(f"✅ WebSocket: Admin user allowed with 'admin' user_id")
         elif user_id == user_doc.get("email"):
+            logger.info(f"✅ WebSocket: User ID matches email")
             print(f"✅ WebSocket: User ID matches email")
         else:
+            logger.error(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
             print(f"❌ WebSocket: User ID mismatch. Expected: {expected_user_id}, Got: {user_id}")
             await websocket.close(code=4005, reason=f"User ID mismatch. Expected: {expected_user_id}")
             return
             
+        logger.info(f"🎉 WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({user_doc.get('email', user_identifier)}) as {user_id}")
         print(f"🎉 WebSocket authenticated user: {user_doc.get('company_name', 'Unknown')} ({user_doc.get('email', user_identifier)}) as {user_id}")
         
     except jwt.ExpiredSignatureError:
+        logger.error(f"❌ WebSocket: Token expired for user {user_id}")
         print(f"❌ WebSocket: Token expired for user {user_id}")
         await websocket.close(code=4002, reason="Token expired")
         return
     except jwt.InvalidTokenError as e:
+        logger.error(f"❌ WebSocket: Invalid token for user {user_id}: {e}")
         print(f"❌ WebSocket: Invalid token for user {user_id}: {e}")
         await websocket.close(code=4003, reason="Invalid token")
         return
     except Exception as e:
+        logger.error(f"❌ WebSocket authentication error for {user_id}: {e}")
         print(f"❌ WebSocket authentication error for {user_id}: {e}")
         import traceback
         traceback.print_exc()
