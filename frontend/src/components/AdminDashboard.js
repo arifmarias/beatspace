@@ -118,7 +118,7 @@ const AdminDashboard = () => {
 
   const currentUser = getUser() || { email: 'admin@beatspace.com', role: 'admin' }; // Fallback for admin
   const websocketUserId = 'admin'; // Use simple 'admin' identifier for admin users
-  const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
+  const { isConnected, connectionCount, sendMessage, userInfo, error } = useWebSocket(websocketUserId, handleWebSocketMessage);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
