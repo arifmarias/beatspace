@@ -124,19 +124,20 @@ const BuyerDashboard = () => {
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
   // Debounced refresh function to prevent rapid API calls
-  const [refreshTimer, setRefreshTimer] = useState(null);
+  const refreshTimerRef = useRef(null);
   const debouncedRefreshRequestedOffers = useCallback(() => {
-    if (refreshTimer) {
-      clearTimeout(refreshTimer);
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
     }
     
-    const timer = setTimeout(() => {
+    refreshTimerRef.current = setTimeout(() => {
       console.log('🔄 Buyer Dashboard: Debounced refresh triggered');
-      fetchRequestedOffers();
+      // We'll use the fetchRequestedOffers function if available
+      if (typeof fetchRequestedOffers === 'function') {
+        fetchRequestedOffers();
+      }
     }, 1000); // 1 second debounce
-    
-    setRefreshTimer(timer);
-  }, [refreshTimer]);
+  }, []); // Empty dependency array since we're using ref
 
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
