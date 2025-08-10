@@ -35,18 +35,20 @@ export const useWebSocket = (userId, onMessage) => {
       return null;
     }
     
-    // For development, use local WebSocket server
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+    // Force localhost for development (when running on localhost:3000)
+    const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
-    // Check if we're in development (localhost) or production
     let wsUrl;
-    if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
-      // Development: use local WebSocket with /api prefix
+    if (isLocalDevelopment) {
+      // Development: always use local WebSocket
       wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
+      console.log('🏠 WebSocket: Using local development URL');
     } else {
-      // Production: replace protocol with WebSocket and add /api prefix
+      // Production: use environment URL
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
       const wsBaseUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
       wsUrl = `${wsBaseUrl}/api/ws/${userId}?token=${token}`;
+      console.log('🌐 WebSocket: Using production URL');
     }
     
     return wsUrl;
