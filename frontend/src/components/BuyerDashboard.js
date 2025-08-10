@@ -89,6 +89,10 @@ const BuyerDashboard = () => {
   const [myAssetsView, setMyAssetsView] = useState('list');
   const [selectedMapAsset, setSelectedMapAsset] = useState(null); // 'list', 'map', 'campaign'
   
+  // Cancel request dialog state
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [offerToCancel, setOfferToCancel] = useState(null);
+  
   // Monitoring Dialog state
   const [selectedAssetMonitoring, setSelectedAssetMonitoring] = useState(null);
   const [monitoringData, setMonitoringData] = useState(null);
