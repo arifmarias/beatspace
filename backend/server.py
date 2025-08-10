@@ -1296,6 +1296,15 @@ async def update_offer_quote(
     # Update offer request with quote - use consistent field names
     # Increment quote count to track how many times admin has quoted
     current_quote_count = request.get("quote_count", 0)
+    # Ensure we're working with an integer
+    if isinstance(current_quote_count, str):
+        try:
+            current_quote_count = int(current_quote_count)
+        except:
+            current_quote_count = 0
+    elif current_quote_count is None:
+        current_quote_count = 0
+    
     new_quote_count = current_quote_count + 1
     
     await db.offer_requests.update_one(
