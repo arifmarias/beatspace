@@ -2436,7 +2436,7 @@ const AdminDashboard = () => {
                           <CardHeader className="pb-3">
                             <div 
                               className="flex justify-between items-start cursor-pointer hover:bg-orange-50 -m-6 p-6 rounded-t-lg transition-colors"
-                              onClick={() => toggleBuyerCollapse(group.buyer.email)}
+                              onClick={() => toggleBuyerCollapse(`${group.buyer.email}-${group.buyer.name}`)}
                             >
                               <div className="flex items-center space-x-3">
                                 <div className="bg-orange-100 p-2 rounded-full">
