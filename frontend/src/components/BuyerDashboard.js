@@ -1161,7 +1161,10 @@ const BuyerDashboard = () => {
       });
       
       notify.success('Revised Offer sent to Admin. Thank you!');
-      fetchBuyerData(); // Refresh the offers
+      
+      // Immediate refresh for real-time updates
+      await fetchBuyerData();
+      console.log('✅ Data refreshed after revision request');
     } catch (error) {
       console.error('Error requesting revision:', error);
       notify.error('Failed to send revision request: ' + (error.response?.data?.detail || error.message));
