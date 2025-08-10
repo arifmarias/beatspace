@@ -1288,6 +1288,10 @@ async def update_offer_quote(
         raise HTTPException(status_code=404, detail="Offer request not found")
     
     # Update offer request with quote - use consistent field names
+    # Increment quote count to track how many times admin has quoted
+    current_quote_count = request.get("quote_count", 0)
+    new_quote_count = current_quote_count + 1
+    
     await db.offer_requests.update_one(
         {"id": request_id},
         {"$set": {
@@ -1296,7 +1300,8 @@ async def update_offer_quote(
             "final_offer": quote_data.get("quoted_price"),  # Keep both for compatibility
             "admin_response": quote_data.get("admin_notes"),
             "admin_notes": quote_data.get("admin_notes"),
-            "quoted_at": datetime.utcnow()
+            "quoted_at": datetime.utcnow(),
+            "quote_count": new_quote_count  # Track quote iteration
         }}
     )
     
