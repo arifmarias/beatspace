@@ -1113,8 +1113,9 @@ const BuyerDashboard = () => {
       
       notify.success(`✅ Offer approved successfully! Asset "${offer.asset_name}" is now booked.`);
       
-      // Refresh buyer data
+      // Immediate refresh for real-time updates
       await fetchBuyerData();
+      console.log('✅ Data refreshed after offer approval');
       
     } catch (error) {
       console.error('🚨 Error approving offer:', error);
