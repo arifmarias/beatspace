@@ -18,10 +18,18 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Get WebSocket URL from environment
   const getWebSocketUrl = useCallback(() => {
-    // Use the backend URL but replace http with ws
+    // For development, use local WebSocket server
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-    const wsUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
-    return `${wsUrl}/ws/${userId}`;
+    
+    // Check if we're in development (localhost) or production
+    if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
+      // Development: use local WebSocket
+      return `ws://localhost:8001/ws/${userId}`;
+    } else {
+      // Production: replace protocol with WebSocket
+      const wsUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
+      return `${wsUrl}/ws/${userId}`;
+    }
   }, [userId]);
 
   // Connect to WebSocket
