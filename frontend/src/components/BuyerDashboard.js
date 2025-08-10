@@ -1202,16 +1202,23 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Helper function to get total asset count for a campaign (including offers)
+  // Helper function to get total asset count for a campaign (only live and requested assets)
   const getCampaignAssetCount = (campaign) => {
     const campaignAssets = (campaign.campaign_assets || []).length;
     
-    // Count ALL offers for this campaign (including approved ones)
-    const allCampaignOffers = (requestedOffers || []).filter(offer => 
-      offer.campaign_name === campaign.name
+    // Count only ACTIVE offers for this campaign (exclude cancelled, rejected, and approved)
+    const activeCampaignOffers = (requestedOffers || []).filter(offer => 
+      offer.campaign_name === campaign.name &&
+      // Only count live and requested assets (exclude cancelled/rejected/approved)
+      offer.status !== 'Rejected' && 
+      offer.status !== 'Cancelled' &&
+      offer.status !== 'rejected' &&
+      offer.status !== 'cancelled' &&
+      offer.status !== 'Approved' && 
+      offer.status !== 'Accepted'
     );
     
-    return campaignAssets + allCampaignOffers.length; // Add both counts together
+    return campaignAssets + activeCampaignOffers.length; // Add both counts together
   };
 
   // Add asset to campaign from marketplace request
