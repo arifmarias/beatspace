@@ -2342,6 +2342,29 @@ async def request_inspection(asset_id: str, request_data: dict, current_user: di
 async def root():
     return {"message": "BeatSpace API v3.0 - Advanced Features Ready", "version": "3.0.0"}
 
+# WebSocket endpoint for real-time updates
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    """
+    WebSocket endpoint for real-time communication
+    user_id can be: admin, buyer_email, seller_email, etc.
+    """
+    await websocket_manager.connect(websocket, user_id)
+    try:
+        while True:
+            # Keep the connection alive and listen for any client messages
+            data = await websocket.receive_text()
+            # For now, just echo back connection status
+            await websocket.send_text(json.dumps({
+                "type": "connection_status",
+                "message": f"Connected as {user_id}",
+                "timestamp": datetime.utcnow().isoformat(),
+                "active_connections": websocket_manager.get_connection_count()
+            }))
+    except WebSocketDisconnect:
+        websocket_manager.disconnect(websocket, user_id)
+        print(f"🔌 Client {user_id} disconnected")
+
 # Include the router in the main app
 app.include_router(api_router)
 
