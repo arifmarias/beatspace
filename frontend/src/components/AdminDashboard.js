@@ -1575,8 +1575,8 @@ const AdminDashboard = () => {
       
       notify.success(`Asset "${offer.asset_name}" approved successfully!`);
       
-      // Refresh the offer requests list
-      fetchDashboardData();
+      // Refresh only the offer requests list to maintain tab state
+      fetchOfferRequests();
       
     } catch (error) {
       console.error('Error approving offer:', error);
