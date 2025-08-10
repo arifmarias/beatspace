@@ -190,7 +190,7 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Send message through WebSocket
   const sendMessage = useCallback((message) => {
-    if (websocketRef.current && isConnected) {
+    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
       try {
         const messageStr = typeof message === 'string' ? message : JSON.stringify(message);
         websocketRef.current.send(messageStr);
@@ -201,10 +201,11 @@ export const useWebSocket = (userId, onMessage) => {
         return false;
       }
     } else {
-      console.warn('🚫 WebSocket: Cannot send message - not connected');
+      console.warn('🚫 WebSocket: Cannot send message - connection not ready. State:', 
+                  websocketRef.current ? websocketRef.current.readyState : 'No connection');
       return false;
     }
-  }, [isConnected]);
+  }, []);
 
   // Initialize connection on mount
   useEffect(() => {
