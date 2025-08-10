@@ -686,24 +686,7 @@ const AdminDashboard = () => {
     setExpandedOffers(newExpanded);
   };
 
-  // Helper function to get campaign asset breakdown by status
-  const getCampaignAssetBreakdown = (campaign) => {
-    const assets = campaign.campaign_assets || [];
-    
-    const approved = assets.filter(asset => 
-      asset.status === 'Approved' || asset.status === 'Accepted' || asset.status === 'Booked'
-    ).length;
-    
-    const rejected = assets.filter(asset => 
-      asset.status === 'Rejected' || asset.status === 'Cancelled'
-    ).length;
-    
-    const pending = assets.filter(asset => 
-      asset.status === 'Pending' || asset.status === 'Quoted' || asset.status === 'Revision Requested'
-    ).length;
-    
-    return { approved, rejected, pending, total: assets.length };
-  };
+
 
   // User CRUD Functions
   const handleCreateUser = async () => {
