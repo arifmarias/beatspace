@@ -83,7 +83,10 @@ const AdminDashboard = () => {
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   
-  // WebSocket connection for real-time updates
+  // Notification system
+  const { notifications, addNotification, markAsRead, clearAll, success, error, info, warning } = useNotifications();
+  
+  // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Admin Dashboard: Received real-time update:', message);
     
@@ -100,27 +103,39 @@ const AdminDashboard = () => {
         if (typeof fetchOfferRequests === 'function') {
           fetchOfferRequests();
         }
-      }, 1500); // 1.5 second delay
+      }, 2000); // Increased to 2 second delay for more stability
     };
     
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
-        notify.success(`Offer approved for ${message.asset_name}`);
+        success(
+          'Offer Approved! 🎉', 
+          `${message.buyer_name || 'A buyer'} approved offer for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
-        notify.info(`Offer rejected for ${message.asset_name}`);
+        info(
+          'Offer Rejected', 
+          `${message.buyer_name || 'A buyer'} rejected offer for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
-        notify.info(`Revision requested for ${message.asset_name}`);
+        warning(
+          'Revision Requested ✏️', 
+          `${message.buyer_name || 'A buyer'} requested revision for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
-        notify.success(`New offer request received for ${message.asset_name}`);
+        success(
+          'New Offer Request! 📝', 
+          `New offer request received for ${message.asset_name}`
+        );
         scheduleRefresh();
         break;
         
