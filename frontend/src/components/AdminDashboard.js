@@ -460,16 +460,6 @@ const AdminDashboard = () => {
     return Math.ceil(filtered.length / itemsPerPage);
   };
 
-  // Auto-refresh data every 30 seconds for real-time updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('🔄 Auto-refreshing admin dashboard data...');
-      fetchDashboardData();
-    }, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Cleanup function
   useEffect(() => {
     return () => {
