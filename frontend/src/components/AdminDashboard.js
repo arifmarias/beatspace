@@ -83,8 +83,9 @@ const AdminDashboard = () => {
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   
-  // Notification system
-  const { notifications, addNotification, markAsRead, clearAll, success, error, info, warning } = useNotifications();
+  // Notification system  
+  const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
+  const { success: notifySuccess, error: notifyError, info: notifyInfo, warning: notifyWarning } = useNotifications();
   
   // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
