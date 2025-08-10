@@ -76,19 +76,30 @@ class ConnectionManager:
         
     async def send_to_user(self, user_id: str, message: dict):
         """Send message to all connections for a specific user"""
-        if user_id in self.active_connections:
-            disconnected = []
-            for websocket in self.active_connections[user_id]:
-                try:
-                    await websocket.send_text(json.dumps(message))
-                    print(f"📤 Sent message to user {user_id}: {message.get('type')}")
-                except:
-                    # Mark for removal if connection is dead
-                    disconnected.append(websocket)
+        if user_id not in self.active_connections:
+            print(f"⚠️ No active connections for user: {user_id}")
+            return False
             
-            # Clean up dead connections
-            for ws in disconnected:
-                self.disconnect(ws, user_id)
+        message["timestamp"] = message.get("timestamp", datetime.utcnow().isoformat())
+        
+        disconnected = []
+        success_count = 0
+        
+        for websocket in self.active_connections[user_id]:
+            try:
+                await websocket.send_text(json.dumps(message))
+                success_count += 1
+                print(f"📤 Sent message to user {user_id}: {message.get('type')}")
+            except Exception as e:
+                print(f"❌ Failed to send message to {user_id}: {e}")
+                # Mark for removal if connection is dead
+                disconnected.append(websocket)
+        
+        # Clean up dead connections
+        for ws in disconnected:
+            self.disconnect(ws, user_id)
+            
+        return success_count > 0
                 
     async def send_to_all_admins(self, message: dict):
         """Send message to all admin users"""
