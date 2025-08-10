@@ -169,6 +169,9 @@ class OfferRequest(BaseModel):
     tentative_end_date: Optional[datetime] = None
     confirmed_start_date: Optional[datetime] = None
     confirmed_end_date: Optional[datetime] = None
+    # Asset dates from Request Best Offer form
+    asset_start_date: Optional[datetime] = None
+    asset_expiration_date: Optional[datetime] = None
 
 class OfferRequestCreate(BaseModel):
     asset_id: str
