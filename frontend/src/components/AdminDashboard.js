@@ -2319,40 +2319,42 @@ const AdminDashboard = () => {
                                             </div>
                                           </div>
                                           
-                                          {/* Seller - 1 col */}
-                                          <div className="col-span-1">
-                                            <div className="text-xs text-gray-500">Seller</div>
-                                            <div className="text-sm font-medium">{offer.asset_seller_name}</div>
-                                          </div>
-                                          
-                                          {/* Status & Quote Section - 3 cols (expanded from 2) */}
-                                          <div className="col-span-3">
-                                            <div className="bg-gray-50 p-2 rounded-lg">
-                                              <div className="grid grid-cols-3 gap-2 text-sm">
-                                                <div>
-                                                  <div className="flex flex-col items-center space-y-1">
-                                                    <span className="text-gray-600 text-xs">Buyer</span>
-                                                    <Badge className="text-xs bg-blue-50 text-blue-700 border-blue-200 text-center">
-                                                      {getBuyerStatus(offer)}
-                                                    </Badge>
-                                                  </div>
+                                          {/* Enhanced Status & Quote Section - 4 cols (removed seller, expanded this) */}
+                                          <div className="col-span-4">
+                                            <div className="bg-gradient-to-r from-blue-50 to-green-50 p-3 rounded-lg border border-gray-200">
+                                              <div className="grid grid-cols-3 gap-4">
+                                                {/* Buyer Status */}
+                                                <div className="text-center">
+                                                  <div className="text-xs font-medium text-gray-600 mb-2">Buyer Status</div>
+                                                  <Badge className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 border-blue-300 rounded-full">
+                                                    {getBuyerStatus(offer)}
+                                                  </Badge>
                                                 </div>
-                                                <div>
-                                                  <div className="flex flex-col items-center space-y-1">
-                                                    <span className="text-gray-600 text-xs">Admin</span>
-                                                    <Badge className="text-xs bg-green-50 text-green-700 border-green-200 text-center">
-                                                      {getAdminStatus(offer)}
-                                                    </Badge>
-                                                  </div>
+                                                
+                                                {/* Admin Status */}
+                                                <div className="text-center">
+                                                  <div className="text-xs font-medium text-gray-600 mb-2">Admin Status</div>
+                                                  <Badge className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 border-green-300 rounded-full">
+                                                    {getAdminStatus(offer)}
+                                                  </Badge>
                                                 </div>
-                                                <div>
-                                                  <div className="flex flex-col items-center space-y-1">
-                                                    <span className="text-gray-600 text-xs">Quote</span>
-                                                    <span className="font-medium text-green-600 text-xs text-center">
+                                                
+                                                {/* Quote Amount */}
+                                                <div className="text-center">
+                                                  <div className="text-xs font-medium text-gray-600 mb-2">Admin Quote</div>
+                                                  <div className="bg-white px-3 py-1 rounded-md border border-gray-300 shadow-sm">
+                                                    <span className="font-bold text-green-700 text-sm">
                                                       {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
                                                     </span>
                                                   </div>
                                                 </div>
+                                              </div>
+                                              
+                                              {/* Seller info moved to small text below */}
+                                              <div className="mt-2 text-center">
+                                                <span className="text-xs text-gray-500">
+                                                  Seller: <span className="font-medium">{offer.asset_seller_name}</span>
+                                                </span>
                                               </div>
                                             </div>
                                           </div>
