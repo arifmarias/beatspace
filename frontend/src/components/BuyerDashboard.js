@@ -3867,7 +3867,7 @@ const BuyerDashboard = () => {
 
         {/* Asset Details Dialog */}
         <Dialog open={!!selectedOfferDetails} onOpenChange={() => setSelectedOfferDetails(null)}>
-          <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center text-blue-600">
                 <FileText className="h-5 w-5 mr-2" />
@@ -3876,80 +3876,6 @@ const BuyerDashboard = () => {
             </DialogHeader>
             {selectedOfferDetails && (
               <div className="space-y-6">
-                
-                {/* Asset Images and Map Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  
-                  {/* Left Column - Asset Images */}
-                  {selectedOfferDetails.assetDetails?.photos && selectedOfferDetails.assetDetails.photos.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                        <Camera className="w-5 h-5 mr-2 text-blue-600" />
-                        Asset Photos
-                      </h3>
-                      
-                      {/* Main selected image */}
-                      <div className="cursor-pointer relative">
-                        <img 
-                          src={selectedOfferDetails.assetDetails.photos[selectedImageIndex]} 
-                          alt={`${selectedOfferDetails.asset_name} - Image ${selectedImageIndex + 1}`}
-                          className="w-full h-64 object-cover rounded-lg shadow-sm"
-                        />
-                      </div>
-                      
-                      {/* Dot navigation if more than one image */}
-                      {selectedOfferDetails.assetDetails.photos.length > 1 && (
-                        <div className="flex justify-center space-x-3 mt-3">
-                          {selectedOfferDetails.assetDetails.photos.map((_, index) => (
-                            <button
-                              key={index}
-                              className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                                index === selectedImageIndex 
-                                  ? 'bg-blue-500 transform scale-125' 
-                                  : 'bg-gray-400 hover:bg-gray-600'
-                              }`}
-                              onClick={() => setSelectedImageIndex(index)}
-                              aria-label={`View image ${index + 1}`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Right Column - Asset Map */}
-                  {selectedOfferDetails.assetDetails?.location && (
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                        <MapPin className="w-5 h-5 mr-2 text-green-600" />
-                        Asset Location
-                      </h3>
-                      
-                      <div 
-                        ref={(mapRef) => {
-                          if (mapRef && selectedOfferDetails.assetDetails) {
-                            initializeAssetMap(mapRef, {
-                              name: selectedOfferDetails.asset_name,
-                              location: selectedOfferDetails.assetDetails.location
-                            });
-                          }
-                        }}
-                        className="w-full h-64 rounded-lg shadow-sm bg-gray-100"
-                      />
-                      
-                      <div className="text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4" />
-                          <span>
-                            {selectedOfferDetails.assetDetails.location.address || 
-                             `Lat: ${selectedOfferDetails.assetDetails.location.lat}, Lng: ${selectedOfferDetails.assetDetails.location.lng}`}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
                 {/* Asset Basic Information */}
                 <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-200 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -3990,18 +3916,6 @@ const BuyerDashboard = () => {
                         {new Date(selectedOfferDetails.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    {selectedOfferDetails.assetDetails?.type && (
-                      <div>
-                        <span className="font-semibold text-gray-700">Asset Type:</span>
-                        <p className="mt-1 text-gray-900">{selectedOfferDetails.assetDetails.type}</p>
-                      </div>
-                    )}
-                    {selectedOfferDetails.assetDetails?.size && (
-                      <div>
-                        <span className="font-semibold text-gray-700">Size:</span>
-                        <p className="mt-1 text-gray-900">{selectedOfferDetails.assetDetails.size}</p>
-                      </div>
-                    )}
                   </div>
                 </div>
 
