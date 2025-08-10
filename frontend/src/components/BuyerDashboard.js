@@ -684,6 +684,12 @@ const BuyerDashboard = () => {
 
   const getFilteredOffers = () => {
     return (requestedOffers || []).filter(offer => {
+      // Hide cancelled and rejected offers from buyer view (same as display filter)
+      const isNotCancelled = offer.status !== 'Rejected' && 
+                             offer.status !== 'Cancelled' &&
+                             offer.status !== 'rejected' &&
+                             offer.status !== 'cancelled';
+      
       // Exclude approved/accepted offers from the requested offers list
       const isNotApproved = offer.status !== 'Approved' && offer.status !== 'Accepted';
       
@@ -692,7 +698,7 @@ const BuyerDashboard = () => {
                            offer.campaign_name.toLowerCase().includes(offerSearch.toLowerCase()) ||
                            offer.status.toLowerCase().includes(offerSearch.toLowerCase());
                            
-      return isNotApproved && matchesSearch;
+      return isNotCancelled && isNotApproved && matchesSearch;
     });
   };
 
