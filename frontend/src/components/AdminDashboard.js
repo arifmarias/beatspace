@@ -2632,6 +2632,37 @@ const AdminDashboard = () => {
                                                   {offer.special_requirements || 'None specified'}
                                                 </p>
                                               </div>
+                                              {/* Additional Services Section */}
+                                              {(offer.service_bundles || offer.additional_services) && (
+                                                <div className="col-span-2">
+                                                  <span className="font-semibold text-gray-700">Additional Services:</span>
+                                                  <div className="mt-1 bg-white p-2 rounded border">
+                                                    {offer.service_bundles && (
+                                                      <div className="mb-2">
+                                                        <div className="flex flex-wrap gap-2">
+                                                          {Object.entries(offer.service_bundles).map(([service, enabled]) => (
+                                                            enabled && (
+                                                              <span key={service} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                                <CheckCircle className="w-3 h-3 mr-1" />
+                                                                {service.replace('_', ' ').charAt(0).toUpperCase() + service.replace('_', ' ').slice(1)}
+                                                              </span>
+                                                            )
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    )}
+                                                    {offer.additional_services && (
+                                                      <div className="text-gray-900">
+                                                        <span className="text-xs text-gray-600 font-medium">Additional Details:</span>
+                                                        <p className="mt-1">{offer.additional_services}</p>
+                                                      </div>
+                                                    )}
+                                                    {!offer.service_bundles && !offer.additional_services && (
+                                                      <p className="text-gray-900">None requested</p>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              )}
                                               <div className="col-span-2">
                                                 <span className="font-semibold text-gray-700">Notes & Instructions:</span>
                                                 <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
