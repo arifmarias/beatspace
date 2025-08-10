@@ -563,8 +563,8 @@ const AdminDashboard = () => {
   // Helper functions for offer status management
   const getBuyerStatus = (offer) => {
     // Check if offer has been cancelled by buyer
-    if (offer.status === 'Cancelled' || offer.cancelled_by_buyer) {
-      return 'Cancelled from Buyer';
+    if (offer.status === 'Cancelled' || offer.cancelled_by_buyer || offer.status === 'Rejected') {
+      return 'Offer Rejected';
     }
     
     // Check if buyer approved the offer
