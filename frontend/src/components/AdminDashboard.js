@@ -1167,7 +1167,6 @@ const AdminDashboard = () => {
       setOfferMediationLoading(false);
     }
   };
-  };
   
   // Toggle campaign collapse
   const toggleCampaignCollapse = (campaignName) => {
