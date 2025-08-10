@@ -2297,66 +2297,71 @@ const AdminDashboard = () => {
                                 return (
                                   <div key={offer.id}>
                                     <Card className="border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                                          onClick={() => {
-                                            console.log('🖱️ Clicked on offer row:', offer.id);
-                                            setSelectedOfferRequest(isExpanded ? null : offer);
-                                          }}>
+                                          onClick={() => toggleOfferExpansion(offer.id)}>
                                       <CardContent className="p-4">
                                         <div className="grid grid-cols-12 gap-4 items-center">
-                                          {/* Asset Info - 3 cols */}
-                                          <div className="col-span-3">
+                                          {/* Asset Info - 2 cols */}
+                                          <div className="col-span-2">
                                             <div className="font-medium text-gray-900">{offer.asset_name}</div>
                                             <div className="text-sm text-gray-500">{offer.campaign_name}</div>
                                             <Badge variant="secondary" className="text-xs mt-1">
-                                              {offer.contract_duration || '3 months'}
+                                              {offer.contract_duration || '1_month'}
                                             </Badge>
                                           </div>
                                           
-                                          {/* Price Comparison - 4 cols */}
-                                          <div className="col-span-4">
-                                            <div className="grid grid-cols-3 gap-2 text-sm">
+                                          {/* Dates - 2 cols */}
+                                          <div className="col-span-2">
+                                            <div className="text-xs text-gray-500">Requested Dates</div>
+                                            <div className="text-sm">
+                                              <div>Start: {offer.tentative_start_date ? new Date(offer.tentative_start_date).toLocaleDateString() : 'N/A'}</div>
+                                              <div>End: {offer.tentative_end_date ? new Date(offer.tentative_end_date).toLocaleDateString() : 'N/A'}</div>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Seller - 1 col */}
+                                          <div className="col-span-1">
+                                            <div className="text-xs text-gray-500">Seller</div>
+                                            <div className="text-sm font-medium">{offer.asset_seller_name}</div>
+                                          </div>
+                                          
+                                          {/* Price Info - 2 cols */}
+                                          <div className="col-span-2">
+                                            <div className="grid grid-cols-1 gap-1 text-sm">
                                               <div>
-                                                <span className="text-gray-500 block">Buyer Offer</span>
-                                                <span className="font-medium text-blue-600">
-                                                  {offeredPrice ? `৳${offeredPrice.toLocaleString()}` : 'N/A'}
-                                                </span>
-                                              </div>
-                                              <div>
-                                                <span className="text-gray-500 block">Asset Price</span>
-                                                <span className="font-medium">
+                                                <span className="text-gray-500 text-xs">Asset Price</span>
+                                                <div className="font-medium">
                                                   {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
-                                                </span>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Status Columns - 3 cols */}
+                                          <div className="col-span-3">
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                              <div>
+                                                <span className="text-gray-500 block text-xs">Buyer Status</span>
+                                                <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                                                  {getBuyerStatus(offer)}
+                                                </Badge>
                                               </div>
                                               <div>
-                                                <span className="text-gray-500 block">Admin Quote</span>
-                                                <span className="font-medium text-green-600">
-                                                  {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
-                                                </span>
+                                                <span className="text-gray-500 block text-xs">Admin Status</span>
+                                                <Badge className="text-xs bg-green-100 text-green-800 border-green-300">
+                                                  {getAdminStatus(offer)}
+                                                </Badge>
+                                              </div>
+                                            </div>
+                                            <div className="mt-1">
+                                              <span className="text-gray-500 text-xs">Admin Quote</span>
+                                              <div className="font-medium text-green-600">
+                                                {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
                                               </div>
                                             </div>
                                           </div>
                                           
-                                          {/* Date & Status - 2 cols */}
-                                          <div className="col-span-2 text-center">
-                                            <div className="text-xs text-gray-500">Submitted</div>
-                                            <div className="text-sm font-medium">
-                                              {new Date(offer.created_at).toLocaleDateString()}
-                                            </div>
-                                            <Badge className={`mt-1 ${
-                                              offer.status === 'Pending' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
-                                              offer.status === 'Quoted' || offer.status === 'In Process' ? 'bg-blue-100 text-blue-800 border-blue-300' :
-                                              'bg-gray-100 text-gray-800 border-gray-300'
-                                            }`}>
-                                              {offer.status === 'Pending' ? '⏰ Needs Quote' :
-                                               offer.status === 'Quoted' ? '💰 Quoted' :
-                                               offer.status === 'In Process' ? '⚡ In Process' :
-                                               `📋 ${offer.status}`
-                                              }
-                                            </Badge>
-                                          </div>
-                                          
-                                          {/* Actions - 3 cols */}
-                                          <div className="col-span-3 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+                                          {/* Actions - 2 cols */}
+                                          <div className="col-span-2 flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
                                             {offer.status === 'Pending' ? (
                                               // Show Quote Price button for pending offers
                                               <Button
