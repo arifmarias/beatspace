@@ -2319,10 +2319,10 @@ const AdminDashboard = () => {
                                             </div>
                                           </div>
                                           
-                                          {/* Enhanced Status & Quote Section - 4 cols (removed seller, expanded this) */}
-                                          <div className="col-span-4">
+                                          {/* Enhanced Status & Quote Section - 3 cols (reduced from 4) */}
+                                          <div className="col-span-3">
                                             <div className="bg-gradient-to-r from-blue-50 to-green-50 p-3 rounded-lg border border-gray-200">
-                                              <div className="grid grid-cols-2 gap-6">
+                                              <div className="grid grid-cols-2 gap-4">
                                                 {/* Buyer Status */}
                                                 <div className="text-center">
                                                   <div className="text-xs font-medium text-gray-600 mb-2">Buyer Status</div>
@@ -2334,8 +2334,8 @@ const AdminDashboard = () => {
                                                 {/* Enhanced Admin Quote Section */}
                                                 <div className="text-center">
                                                   <div className="text-xs font-medium text-gray-600 mb-2">Admin Quote</div>
-                                                  <div className="bg-white px-4 py-2 rounded-lg border-2 border-gray-300 shadow-sm">
-                                                    <span className="font-bold text-green-700 text-lg">
+                                                  <div className="bg-white px-3 py-2 rounded-lg border-2 border-gray-300 shadow-sm">
+                                                    <span className="font-bold text-green-700 text-sm">
                                                       {offer.admin_quoted_price ? `৳${offer.admin_quoted_price.toLocaleString()}` : 'Not quoted'}
                                                     </span>
                                                     {offer.admin_quoted_price && (
@@ -2356,8 +2356,8 @@ const AdminDashboard = () => {
                                             </div>
                                           </div>
                                           
-                                          {/* Actions - 2 cols */}
-                                          <div className="col-span-2 flex flex-col justify-end space-y-1" onClick={(e) => e.stopPropagation()}>
+                                          {/* Actions - 2 cols (expanded space for better positioning) */}
+                                          <div className="col-span-2 flex flex-col justify-end space-y-1 pl-4" onClick={(e) => e.stopPropagation()}>
                                             {offer.status === 'Pending' ? (
                                               // Show Quote Price button for pending offers
                                               <Button
