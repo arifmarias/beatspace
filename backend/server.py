@@ -1504,6 +1504,24 @@ async def respond_to_offer(
         
         logger.info(f"Offer accepted: {request_id}")
         
+        # 🚀 REAL-TIME EVENT: Notify admin of offer approval
+        try:
+            asset_name = request.get("asset_name", "Unknown Asset")
+            await websocket_manager.send_to_all_admins({
+                "type": "offer_approved",
+                "offer_id": request_id,
+                "asset_name": asset_name,
+                "buyer_name": current_user.company_name,
+                "buyer_email": current_user.email,
+                "final_price": request.get("admin_quoted_price"),
+                "timestamp": datetime.utcnow().isoformat(),
+                "message": f"Offer approved by {current_user.company_name} for {asset_name}"
+            })
+            print(f"✅ Offer approved notification sent to admins")
+        except Exception as ws_error:
+            print(f"❌ WebSocket notification failed: {ws_error}")
+        
+        
     elif response_action == "reject":
         # Update request status
         await db.offer_requests.update_one(
