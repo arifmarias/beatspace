@@ -213,6 +213,7 @@ export const useWebSocket = (userId, onMessage) => {
     connectionCount,
     lastMessage,
     error,
+    userInfo,
     sendMessage,
     connect,
     disconnect
