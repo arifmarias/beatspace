@@ -589,7 +589,7 @@ const AdminDashboard = () => {
       return 'Offer Rejected';
     }
     
-    // Check if buyer approved the offer
+    // Check if buyer approved the offer (accepted status from backend)
     if (offer.status === 'Approved' || offer.status === 'Accepted') {
       return 'Buyer Approved';
     }
