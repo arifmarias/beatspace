@@ -1490,23 +1490,15 @@ const BuyerDashboard = () => {
               <p className="text-gray-600">Manage your advertising campaigns and track performance.</p>
             </div>
             
-            {/* Enhanced WebSocket Connection Status */}
-            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full transition-colors ${
-              isConnected ? 'bg-green-100' : error ? 'bg-red-100' : 'bg-yellow-100'
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-green-500' : error ? 'bg-red-500' : 'bg-yellow-500'
-              }`}></div>
-              <span className={`text-xs font-medium ${
-                isConnected ? 'text-green-700' : error ? 'text-red-700' : 'text-yellow-700'
-              }`}>
-                {isConnected 
-                  ? `Live${userInfo?.name ? ` (${userInfo.name})` : ''} - ${connectionCount} active`
-                  : error 
-                    ? 'Auth Error' 
-                    : 'Connecting...'}
-              </span>
-            </div>
+            {/* Clean WebSocket Connection Status - Only show when connected */}
+            {isConnected && (
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-green-100">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span className="text-xs font-medium text-green-700">
+                  Live{userInfo?.name ? ` (${userInfo.name})` : ''} - {connectionCount} active
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
