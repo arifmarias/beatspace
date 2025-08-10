@@ -1206,16 +1206,15 @@ const BuyerDashboard = () => {
   const getCampaignAssetCount = (campaign) => {
     const campaignAssets = (campaign.campaign_assets || []).length;
     
-    // Count only ACTIVE offers for this campaign (exclude cancelled, rejected, and approved)
+    // Count ACTIVE and LIVE offers for this campaign
     const activeCampaignOffers = (requestedOffers || []).filter(offer => 
       offer.campaign_name === campaign.name &&
-      // Only count live and requested assets (exclude cancelled/rejected/approved)
+      // Include live/booked/approved assets AND exclude only cancelled/rejected
       offer.status !== 'Rejected' && 
       offer.status !== 'Cancelled' &&
       offer.status !== 'rejected' &&
-      offer.status !== 'cancelled' &&
-      offer.status !== 'Approved' && 
-      offer.status !== 'Accepted'
+      offer.status !== 'cancelled'
+      // Remove exclusion of 'Approved' and 'Accepted' as these are live assets
     );
     
     return campaignAssets + activeCampaignOffers.length; // Add both counts together
