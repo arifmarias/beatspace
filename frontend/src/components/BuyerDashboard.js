@@ -1202,7 +1202,10 @@ const BuyerDashboard = () => {
       
       setShowCancelDialog(false);
       setOfferToCancel(null);
-      fetchBuyerData(); // Refresh the offers
+      
+      // Immediate refresh for real-time updates
+      await fetchBuyerData();
+      console.log('✅ Data refreshed after request cancellation');
     } catch (error) {
       console.error('Error cancelling request:', error);
       notify.error('Failed to cancel request: ' + (error.response?.data?.detail || error.message));
