@@ -81,6 +81,16 @@ export const useWebSocket = (userId, onMessage) => {
           type: 'ping',
           timestamp: new Date().toISOString()
         }));
+        
+        // Start heartbeat to keep connection alive
+        heartbeatIntervalRef.current = setInterval(() => {
+          if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            websocketRef.current.send(JSON.stringify({
+              type: 'ping',
+              timestamp: new Date().toISOString()
+            }));
+          }
+        }, heartbeatInterval);
       };
 
       websocketRef.current.onmessage = (event) => {
