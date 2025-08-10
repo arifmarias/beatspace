@@ -1238,6 +1238,25 @@ async def create_offer_request(
     # Send notification email to admin (placeholder)
     logger.info(f"New offer request submitted: {offer_request.id} by {current_user.company_name}")
     
+    # 🚀 REAL-TIME EVENT: Notify admin of new offer request
+    try:
+        await websocket_manager.send_to_all_admins({
+            "type": "new_offer_request",
+            "offer_id": offer_request.id,
+            "asset_name": asset["name"],
+            "buyer_name": current_user.company_name,
+            "buyer_email": current_user.email,
+            "asset_id": offer_data.asset_id,
+            "requested_start_date": offer_request.asset_start_date.isoformat() if offer_request.asset_start_date else None,
+            "requested_end_date": offer_request.asset_expiration_date.isoformat() if offer_request.asset_expiration_date else None,
+            "timestamp": datetime.utcnow().isoformat(),
+            "message": f"New offer request from {current_user.company_name} for {asset['name']}"
+        })
+        print(f"✅ New offer request notification sent to admins")
+    except Exception as ws_error:
+        print(f"❌ WebSocket notification failed: {ws_error}")
+    
+    
     return offer_request
 
 @api_router.get("/offers/requests", response_model=List[OfferRequest])
