@@ -76,11 +76,18 @@ export const useWebSocket = (userId, onMessage) => {
         setError(null);
         reconnectAttempts.current = 0;
         
-        // Send initial ping to activate connection
-        websocketRef.current.send(JSON.stringify({
-          type: 'ping',
-          timestamp: new Date().toISOString()
-        }));
+        // Send initial ping to activate connection (only when connection is open)
+        const sendInitialPing = () => {
+          if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            websocketRef.current.send(JSON.stringify({
+              type: 'ping',
+              timestamp: new Date().toISOString()
+            }));
+          }
+        };
+        
+        // Send ping after a short delay to ensure connection is ready
+        setTimeout(sendInitialPing, 1000);
         
         // Start heartbeat to keep connection alive
         heartbeatIntervalRef.current = setInterval(() => {
