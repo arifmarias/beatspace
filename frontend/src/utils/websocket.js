@@ -104,8 +104,21 @@ export const useWebSocket = (userId, onMessage) => {
       websocketRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log(`📥 WebSocket: Received message type: ${data.type}`, data);
           
+          // Message deduplication and throttling
+          const now = Date.now();
+          const messageKey = `${data.type}-${data.offer_id || data.asset_id || 'general'}`;
+          
+          // Skip if same message type received within last 2 seconds (except for connection status)
+          if (data.type !== 'connection_status' && data.type !== 'ping' && data.type !== 'pong') {
+            if (now - lastMessageRef.current < 2000) {
+              console.log(`⏳ WebSocket: Throttling message ${data.type} - too frequent`);
+              return;
+            }
+            lastMessageRef.current = now;
+          }
+          
+          console.log(`📥 WebSocket: Processing message type: ${data.type}`, data);
           setLastMessage(data);
           
           // Handle authentication success
@@ -119,8 +132,8 @@ export const useWebSocket = (userId, onMessage) => {
             setConnectionCount(data.active_connections);
           }
           
-          // Call the message handler if provided
-          if (onMessage && typeof onMessage === 'function') {
+          // Call the message handler if provided and connection is stable
+          if (onMessage && typeof onMessage === 'function' && isConnected) {
             onMessage(data);
           }
           
