@@ -116,8 +116,8 @@ const AdminDashboard = () => {
     }
   };
 
-  const currentUser = { email: 'admin@beatspace.com', role: 'admin' }; // Get from auth context
-  const websocketUserId = getWebSocketUserId(currentUser);
+  const currentUser = getUser() || { email: 'admin@beatspace.com', role: 'admin' }; // Fallback for admin
+  const websocketUserId = 'admin'; // Use simple 'admin' identifier for admin users
   const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
