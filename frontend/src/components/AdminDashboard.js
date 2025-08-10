@@ -120,6 +120,7 @@ const AdminDashboard = () => {
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [assetSearchTerm, setAssetSearchTerm] = useState('');
   const [buyerStatusFilter, setBuyerStatusFilter] = useState('all'); // Filter for buyer status
+  const [offerMediationLoading, setOfferMediationLoading] = useState(false); // Loading state for offer mediation refresh
 
   // Bangladesh districts and divisions data
   const [bangladeshDistricts] = useState([
