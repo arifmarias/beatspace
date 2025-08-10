@@ -2470,11 +2470,8 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         await websocket.close(code=4001, reason="Authentication token required")
         return
     
-    # Accept the connection first
-    await websocket.accept()
-    print(f"🔌 WebSocket: Connection accepted for {user_id}")
-    
-    # Authenticate user
+    # Authenticate user BEFORE accepting connection
+    user_doc = None
     try:
         # Verify JWT token
         print(f"🔐 WebSocket: Decoding token for {user_id}...")
