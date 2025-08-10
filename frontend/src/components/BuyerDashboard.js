@@ -1162,8 +1162,8 @@ const BuyerDashboard = () => {
     if (!offerToCancel) return;
     
     try {
-      // For quoted offers, reject them instead of deleting
-      if (offerToCancel.status === 'Quoted') {
+      // For quoted offers or revision requested offers, reject them using respond endpoint
+      if (offerToCancel.status === 'Quoted' || offerToCancel.status === 'Revision Requested') {
         await axios.put(`${API}/offers/${offerToCancel.id}/respond`, {
           action: 'reject',
           reason: 'Buyer cancelled the request'
@@ -1172,7 +1172,7 @@ const BuyerDashboard = () => {
         });
         notify.success('Offer rejected successfully!');
       } else {
-        // For pending offers, delete them (fix the API endpoint)
+        // For pending offers, delete them using the correct API endpoint
         await axios.delete(`${API}/offers/requests/${offerToCancel.id}`, {
           headers: getAuthHeaders()
         });
