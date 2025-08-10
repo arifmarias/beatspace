@@ -2344,8 +2344,8 @@ const AdminDashboard = () => {
                                             </div>
                                           </div>
                                           
-                                          {/* Status Columns - 3 cols */}
-                                          <div className="col-span-3">
+                                          {/* Status Columns - 2 cols */}
+                                          <div className="col-span-2">
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                               <div>
                                                 <span className="text-gray-500 block text-xs">Buyer Status</span>
