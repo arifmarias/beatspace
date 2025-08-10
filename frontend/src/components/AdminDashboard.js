@@ -1177,6 +1177,14 @@ const AdminDashboard = () => {
     }));
   };
   
+  // Toggle buyer collapse in Offer Mediation
+  const toggleBuyerCollapse = (buyerEmail) => {
+    setCollapsedBuyers(prev => ({
+      ...prev,
+      [buyerEmail]: !prev[buyerEmail]
+    }));
+  };
+  
   // Group live assets by campaign name
   const getGroupedBookedAssets = () => {
     const filtered = bookedAssets.filter(asset =>
