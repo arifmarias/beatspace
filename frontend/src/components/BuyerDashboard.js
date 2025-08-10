@@ -1144,18 +1144,36 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Handle cancel request
-  const handleCancelRequest = async (offer) => {
-    if (!window.confirm('Are you sure you want to cancel this request? This action cannot be undone.')) {
-      return;
-    }
+  // Handle cancel request - show dialog instead of browser popup
+  const handleCancelRequest = (offer) => {
+    setOfferToCancel(offer);
+    setShowCancelDialog(true);
+  };
+
+  // Execute cancel request
+  const executeCancelRequest = async () => {
+    if (!offerToCancel) return;
     
     try {
-      await axios.delete(`${API}/offer-requests/${offer.id}`, {
-        headers: getAuthHeaders()
-      });
+      // For quoted offers, reject them instead of deleting
+      if (offerToCancel.status === 'Quoted') {
+        await axios.put(`${API}/offers/${offerToCancel.id}/respond`, {
+          action: 'reject',
+          reason: 'Buyer cancelled the request'
+        }, {
+          headers: getAuthHeaders()
+        });
+        notify.success('Offer rejected successfully!');
+      } else {
+        // For pending offers, delete them (fix the API endpoint)
+        await axios.delete(`${API}/offers/requests/${offerToCancel.id}`, {
+          headers: getAuthHeaders()
+        });
+        notify.success('Request cancelled successfully!');
+      }
       
-      notify.success('Request cancelled successfully!');
+      setShowCancelDialog(false);
+      setOfferToCancel(null);
       fetchBuyerData(); // Refresh the offers
     } catch (error) {
       console.error('Error cancelling request:', error);
