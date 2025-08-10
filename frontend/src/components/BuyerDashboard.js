@@ -3728,6 +3728,56 @@ const BuyerDashboard = () => {
             </DialogContent>
           </Dialog>
         )}
+        
+        {/* Cancel Request Confirmation Dialog */}
+        <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center text-orange-600">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                Cancel Request
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-700">
+                Are you sure you want to cancel this request? 
+                {offerToCancel?.status === 'Quoted' 
+                  ? ' This will reject the quoted offer from the admin.'
+                  : ' This action cannot be undone.'
+                }
+              </p>
+              
+              {offerToCancel && (
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="text-sm">
+                    <div className="font-semibold">{offerToCancel.asset_name}</div>
+                    <div className="text-gray-600">Campaign: {offerToCancel.campaign_name}</div>
+                    <div className="text-gray-600">Status: {offerToCancel.status}</div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowCancelDialog(false);
+                    setOfferToCancel(null);
+                  }}
+                >
+                  Keep Request
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={executeCancelRequest}
+                  className="bg-orange-600 hover:bg-orange-700"
+                >
+                  {offerToCancel?.status === 'Quoted' ? 'Reject Offer' : 'Cancel Request'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
