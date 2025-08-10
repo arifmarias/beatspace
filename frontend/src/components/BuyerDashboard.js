@@ -3919,30 +3919,20 @@ const BuyerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Pricing Information */}
-                {(selectedOfferDetails.admin_quoted_price || selectedOfferDetails.asset_pricing) && (
+                {/* Pricing Information - Only show when admin has quoted a price */}
+                {selectedOfferDetails.admin_quoted_price && (
                   <div className="bg-gradient-to-r from-green-50 to-white border border-green-200 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                       <DollarSign className="w-5 h-5 mr-2 text-green-600" />
-                      Pricing Information
+                      Admin Quoted Price
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {selectedOfferDetails.admin_quoted_price && (
-                        <div>
-                          <span className="font-semibold text-gray-700">Admin Quoted Price:</span>
-                          <p className="mt-1 text-2xl font-bold text-green-600">
-                            ৳{selectedOfferDetails.admin_quoted_price?.toLocaleString()}/month
-                          </p>
-                        </div>
-                      )}
-                      {selectedOfferDetails.asset_pricing?.monthly_rate && (
-                        <div>
-                          <span className="font-semibold text-gray-700">Asset Market Price:</span>
-                          <p className="mt-1 text-lg text-gray-900">
-                            ৳{selectedOfferDetails.asset_pricing.monthly_rate?.toLocaleString()}/month
-                          </p>
-                        </div>
-                      )}
+                    <div className="grid grid-cols-1 gap-6">
+                      <div>
+                        <span className="font-semibold text-gray-700">Quoted Price:</span>
+                        <p className="mt-1 text-2xl font-bold text-green-600">
+                          ৳{selectedOfferDetails.admin_quoted_price?.toLocaleString()}/month
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
