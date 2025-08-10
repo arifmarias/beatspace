@@ -90,6 +90,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </GlobalNotificationProvider>
     </NotificationProvider>
   );
 }
