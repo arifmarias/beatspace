@@ -1698,6 +1698,14 @@ const AdminDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* WebSocket Connection Status */}
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100">
+                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className="text-xs text-gray-600">
+                  {isConnected ? `Live (${connectionCount})` : 'Offline'}
+                </span>
+              </div>
+              
               <Button
                 variant="outline"
                 onClick={() => navigate('/marketplace')}
