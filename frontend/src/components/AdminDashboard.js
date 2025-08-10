@@ -567,6 +567,47 @@ const AdminDashboard = () => {
     }
   };
 
+  // Helper functions for offer status management
+  const getBuyerStatus = (offer) => {
+    // Check if offer has been cancelled by buyer
+    if (offer.status === 'Cancelled' || offer.cancelled_by_buyer) {
+      return 'Cancelled from Buyer';
+    }
+    
+    // Check if buyer approved the offer
+    if (offer.status === 'Approved' || offer.status === 'Accepted') {
+      return 'Buyer Approved';
+    }
+    
+    // Check if buyer requested revision
+    if (offer.revision_requested || offer.status === 'Revision Requested') {
+      return 'Requested for Revised Price';
+    }
+    
+    // First time request (default)
+    return 'Requested';
+  };
+
+  const getAdminStatus = (offer) => {
+    const quoteCount = offer.quote_count || 0;
+    
+    if (quoteCount === 0) {
+      return 'Need to quote';
+    } else {
+      return `Quoted #${quoteCount}`;
+    }
+  };
+
+  const toggleOfferExpansion = (offerId) => {
+    const newExpanded = new Set(expandedOffers);
+    if (newExpanded.has(offerId)) {
+      newExpanded.delete(offerId);
+    } else {
+      newExpanded.add(offerId);
+    }
+    setExpandedOffers(newExpanded);
+  };
+
   // User CRUD Functions
   const handleCreateUser = async () => {
     try {
