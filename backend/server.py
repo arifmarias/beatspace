@@ -50,6 +50,60 @@ app = FastAPI(
     version="3.0.0"
 )
 
+# WebSocket Connection Manager for Real-time Updates
+class ConnectionManager:
+    def __init__(self):
+        # Store connections by user_id -> list of websockets
+        self.active_connections: Dict[str, List[WebSocket]] = {}
+        
+    async def connect(self, websocket: WebSocket, user_id: str):
+        """Accept connection and add to active connections"""
+        await websocket.accept()
+        if user_id not in self.active_connections:
+            self.active_connections[user_id] = []
+        self.active_connections[user_id].append(websocket)
+        print(f"✅ WebSocket connected for user: {user_id}")
+        
+    def disconnect(self, websocket: WebSocket, user_id: str):
+        """Remove connection from active connections"""
+        if user_id in self.active_connections:
+            if websocket in self.active_connections[user_id]:
+                self.active_connections[user_id].remove(websocket)
+            # Clean up empty user entries
+            if not self.active_connections[user_id]:
+                del self.active_connections[user_id]
+        print(f"❌ WebSocket disconnected for user: {user_id}")
+        
+    async def send_to_user(self, user_id: str, message: dict):
+        """Send message to all connections for a specific user"""
+        if user_id in self.active_connections:
+            disconnected = []
+            for websocket in self.active_connections[user_id]:
+                try:
+                    await websocket.send_text(json.dumps(message))
+                    print(f"📤 Sent message to user {user_id}: {message.get('type')}")
+                except:
+                    # Mark for removal if connection is dead
+                    disconnected.append(websocket)
+            
+            # Clean up dead connections
+            for ws in disconnected:
+                self.disconnect(ws, user_id)
+                
+    async def send_to_all_admins(self, message: dict):
+        """Send message to all admin users"""
+        admin_keywords = ['admin', 'administrator'] 
+        for user_id in self.active_connections.keys():
+            if any(keyword in user_id.lower() for keyword in admin_keywords):
+                await self.send_to_user(user_id, message)
+                
+    def get_connection_count(self) -> int:
+        """Get total number of active connections"""
+        return sum(len(connections) for connections in self.active_connections.values())
+
+# Initialize connection manager
+websocket_manager = ConnectionManager()
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
