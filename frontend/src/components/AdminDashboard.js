@@ -2186,7 +2186,7 @@ const AdminDashboard = () => {
                             {campaign.budget ? `৳${campaign.budget.toLocaleString()}` : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            {campaign.asset_count || 0} assets
+                            {getCampaignAssetBreakdown(campaign)}
                           </TableCell>
                           <TableCell>
                             {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'N/A'}
