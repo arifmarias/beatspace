@@ -58,7 +58,7 @@ export const useWebSocket = (userId, onMessage) => {
   // Connection state guards
   const connectingRef = useRef(false); // Prevent multiple simultaneous connection attempts
   const lastConnectionAttemptRef = useRef(0); // Track last connection attempt time
-  const connectionCooldown = 3000; // 3 seconds between connection attempts
+  const connectionCooldown = 5000; // Increased to 5 seconds cooldown
 
   // Connect to WebSocket
   const connect = useCallback(() => {
