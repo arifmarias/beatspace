@@ -1573,6 +1573,24 @@ async def respond_to_offer(
         )
         
         logger.info(f"Offer revision requested: {request_id}")
+        
+        # 🚀 REAL-TIME EVENT: Notify admin of revision request
+        try:
+            asset_name = request.get("asset_name", "Unknown Asset")
+            await websocket_manager.send_to_all_admins({
+                "type": "revision_requested",
+                "offer_id": request_id,
+                "asset_name": asset_name,
+                "buyer_name": current_user.company_name,
+                "buyer_email": current_user.email,
+                "revision_reason": response_data.get("reason", "Buyer requested price revision"),
+                "timestamp": datetime.utcnow().isoformat(),
+                "message": f"Revision requested by {current_user.company_name} for {asset_name}"
+            })
+            print(f"✅ Revision request notification sent to admins")
+        except Exception as ws_error:
+            print(f"❌ WebSocket notification failed: {ws_error}")
+        
     
     return {"message": f"Offer {response_action}ed successfully"}
 
