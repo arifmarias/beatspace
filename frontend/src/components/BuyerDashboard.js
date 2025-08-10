@@ -1136,13 +1136,14 @@ const BuyerDashboard = () => {
   // Handle revised offer request
   const handleRevisedOffer = async (offer) => {
     try {
-      await axios.post(`${API}/offer-requests/${offer.id}/request-revision`, {
-        message: 'Buyer has requested a price revision for this offer'
+      await axios.put(`${API}/offers/${offer.id}/respond`, {
+        action: 'request_revision',
+        reason: 'Buyer has requested a price revision for this offer'
       }, {
         headers: getAuthHeaders()
       });
       
-      notify.success('Revision request sent to admin successfully!');
+      notify.success('Revised Offer sent to Admin. Thank you!');
       fetchBuyerData(); // Refresh the offers
     } catch (error) {
       console.error('Error requesting revision:', error);
