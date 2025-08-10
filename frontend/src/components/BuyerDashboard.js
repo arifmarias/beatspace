@@ -2564,8 +2564,8 @@ const BuyerDashboard = () => {
                                             </Button>
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent align="end" className="w-48">
-                                            {/* Show Approve/Revised/Cancel for Quoted offers */}
-                                            {offer.status === 'Quoted' && (
+                                            {/* Show Approve/Cancel for Quoted and Revision Requested offers */}
+                                            {(offer.status === 'Quoted' || offer.status === 'Revision Requested') && (
                                               <>
                                                 <DropdownMenuItem 
                                                   onClick={(e) => {
@@ -2578,16 +2578,19 @@ const BuyerDashboard = () => {
                                                   Approve Offer
                                                 </DropdownMenuItem>
                                                 
-                                                <DropdownMenuItem 
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleRevisedOffer(offer);
-                                                  }}
-                                                  className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                                >
-                                                  <Edit3 className="h-4 w-4 mr-2" />
-                                                  Revised Offer
-                                                </DropdownMenuItem>
+                                                {/* Only show Revised Offer option for Quoted status, not for already requested revisions */}
+                                                {offer.status === 'Quoted' && (
+                                                  <DropdownMenuItem 
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      handleRevisedOffer(offer);
+                                                    }}
+                                                    className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                  >
+                                                    <Edit3 className="h-4 w-4 mr-2" />
+                                                    Revised Offer
+                                                  </DropdownMenuItem>
+                                                )}
                                                 
                                                 <DropdownMenuItem 
                                                   onClick={(e) => {
