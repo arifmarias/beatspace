@@ -1731,6 +1731,14 @@ const AdminDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <NotificationBell
+                notifications={notifications}
+                onMarkAsRead={markAsRead}
+                onClearAll={clearAll}
+                className="relative"
+              />
+              
               {/* Clean WebSocket Connection Status - Only show when connected */}
               {isConnected && (
                 <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-green-100">
