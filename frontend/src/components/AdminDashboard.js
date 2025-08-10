@@ -2466,14 +2466,12 @@ const AdminDashboard = () => {
                                                   {offer.special_requirements || 'None specified'}
                                                 </p>
                                               </div>
-                                              {(offer.admin_notes || offer.notes_instructions) && (
-                                                <div className="col-span-2">
-                                                  <span className="font-semibold text-gray-700">Notes & Instructions:</span>
-                                                  <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
-                                                    {offer.admin_notes || offer.notes_instructions || 'No notes available'}
-                                                  </p>
-                                                </div>
-                                              )}
+                                              <div className="col-span-2">
+                                                <span className="font-semibold text-gray-700">Notes & Instructions:</span>
+                                                <p className="mt-1 text-gray-900 bg-white p-2 rounded border">
+                                                  {offer.campaign_notes || offer.admin_notes || 'No notes available'}
+                                                </p>
+                                              </div>
                                             </div>
                                           </div>
                                         </CardContent>
