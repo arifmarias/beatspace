@@ -188,17 +188,22 @@ export const useWebSocket = (userId, onMessage) => {
           return; // Don't attempt to reconnect on auth failures
         }
         
-        // Attempt to reconnect if not a clean close
-        if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
-          console.log(`🔄 WebSocket: Attempting to reconnect... (${reconnectAttempts.current + 1}/${maxReconnectAttempts})`);
+        // Attempt to reconnect if not a clean close (more conservative approach)
+        if (event.code !== 1000 && event.code !== 1001 && reconnectAttempts.current < maxReconnectAttempts) {
+          // Use exponential backoff for reconnection delay
+          const backoffDelay = Math.min(reconnectDelay * Math.pow(2, reconnectAttempts.current), 30000); // Max 30 seconds
+          
+          console.log(`🔄 WebSocket: Attempting to reconnect in ${backoffDelay/1000}s... (${reconnectAttempts.current + 1}/${maxReconnectAttempts})`);
           reconnectAttempts.current++;
           
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
-          }, reconnectDelay);
+          }, backoffDelay);
         } else if (reconnectAttempts.current >= maxReconnectAttempts) {
           console.error('🚫 WebSocket: Max reconnection attempts reached');
           setError('Failed to maintain connection after multiple attempts');
+        } else {
+          console.log('🔌 WebSocket: Clean close - not attempting to reconnect');
         }
       };
 
