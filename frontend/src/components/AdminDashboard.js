@@ -2321,8 +2321,8 @@ const AdminDashboard = () => {
                                           <div className="col-span-2">
                                             <div className="text-xs text-gray-500">Requested Dates</div>
                                             <div className="text-sm">
-                                              <div>Start: {offer.tentative_start_date ? new Date(offer.tentative_start_date).toLocaleDateString() : 'N/A'}</div>
-                                              <div>End: {offer.tentative_end_date ? new Date(offer.tentative_end_date).toLocaleDateString() : 'N/A'}</div>
+                                              <div>Start: {offer.asset_start_date ? new Date(offer.asset_start_date).toLocaleDateString() : 'N/A'}</div>
+                                              <div>End: {offer.asset_expiration_date ? new Date(offer.asset_expiration_date).toLocaleDateString() : 'N/A'}</div>
                                             </div>
                                           </div>
                                           
