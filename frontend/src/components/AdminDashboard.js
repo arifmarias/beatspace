@@ -604,6 +604,9 @@ const AdminDashboard = () => {
   };
 
   const getAdminStatus = (offer) => {
+    // Debug logging for quote count tracking
+    console.log(`🔍 DEBUG - Offer ${offer.id}: admin_quoted_price=${offer.admin_quoted_price}, quote_count=${offer.quote_count}, type=${typeof offer.quote_count}`);
+    
     // Check if admin has already quoted a price
     if (offer.admin_quoted_price && offer.admin_quoted_price > 0) {
       let quoteCount = offer.quote_count;
@@ -615,7 +618,9 @@ const AdminDashboard = () => {
         quoteCount = 1; // Default to 1 if already quoted but count not tracked properly
       }
       
-      return `Quoted #${quoteCount}`;
+      const status = `Quoted #${quoteCount}`;
+      console.log(`🔍 DEBUG - Returning admin status: ${status}`);
+      return status;
     } else {
       return 'Need to quote';
     }
