@@ -2426,10 +2426,16 @@ const AdminDashboard = () => {
                   
                   return (
                     <div className="space-y-6">
-                      {buyerGroups.map((group, groupIndex) => (
+                      {buyerGroups.map((group, groupIndex) => {
+                        const isBuyerCollapsed = collapsedBuyers[group.buyer.email] !== false; // Default to collapsed (true)
+                        
+                        return (
                         <Card key={`buyer-${groupIndex}`} className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-white">
                           <CardHeader className="pb-3">
-                            <div className="flex justify-between items-start">
+                            <div 
+                              className="flex justify-between items-start cursor-pointer hover:bg-orange-50 -m-6 p-6 rounded-t-lg transition-colors"
+                              onClick={() => toggleBuyerCollapse(group.buyer.email)}
+                            >
                               <div className="flex items-center space-x-3">
                                 <div className="bg-orange-100 p-2 rounded-full">
                                   <Users className="w-5 h-5 text-orange-600" />
@@ -2442,19 +2448,30 @@ const AdminDashboard = () => {
                                   </Badge>
                                 </div>
                               </div>
-                              <div className="flex space-x-2">
+                              <div className="flex items-center space-x-2">
                                 <Button 
                                   size="sm" 
                                   variant="outline"
-                                  onClick={() => handleGroupQuote(group)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent collapse toggle when clicking Group Quote
+                                    handleGroupQuote(group);
+                                  }}
                                   className="text-blue-600 border-blue-300 hover:bg-blue-50"
                                 >
                                   <DollarSign className="w-4 h-4 mr-1" />
                                   Group Quote ({group.offers.length})
                                 </Button>
+                                <div className="flex items-center">
+                                  {isBuyerCollapsed ? (
+                                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                                  ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </CardHeader>
+                          {!isBuyerCollapsed && (
                           <CardContent className="pt-0">
                             <div className="space-y-4">
                               {group.offers.map((offer) => {
