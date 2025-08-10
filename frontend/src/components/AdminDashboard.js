@@ -2477,6 +2477,52 @@ const AdminDashboard = () => {
                     </div>
                   );
                 })()}
+
+                {/* Offer Mediation Pagination Controls */}
+                {getOfferTotalPages() > 1 && (
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-500">
+                      Showing {((offerCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(offerCurrentPage * itemsPerPage, getActiveOffersCount())} of {getActiveOffersCount()} offers
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setOfferCurrentPage(Math.max(1, offerCurrentPage - 1))}
+                        disabled={offerCurrentPage === 1}
+                        className="flex items-center space-x-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span>Previous</span>
+                      </Button>
+                      
+                      <div className="flex items-center space-x-1">
+                        {Array.from({ length: getOfferTotalPages() }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={page === offerCurrentPage ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setOfferCurrentPage(page)}
+                            className="w-8 h-8 p-0"
+                          >
+                            {page}
+                          </Button>
+                        ))}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setOfferCurrentPage(Math.min(getOfferTotalPages(), offerCurrentPage + 1))}
+                        disabled={offerCurrentPage === getOfferTotalPages()}
+                        className="flex items-center space-x-1"
+                      >
+                        <span>Next</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
