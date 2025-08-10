@@ -56,11 +56,20 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Connection state guards
   const connectingRef = useRef(false); // Prevent multiple simultaneous connection attempts
+  const lastConnectionAttemptRef = useRef(0); // Track last connection attempt time
+  const connectionCooldown = 3000; // 3 seconds between connection attempts
 
   // Connect to WebSocket
   const connect = useCallback(() => {
     if (!userId) {
       console.warn('🚫 WebSocket: No user ID provided');
+      return;
+    }
+
+    // Rate limiting: prevent connections too frequently
+    const now = Date.now();
+    if (now - lastConnectionAttemptRef.current < connectionCooldown) {
+      console.warn('🚫 WebSocket: Connection attempt rate limited - waiting for cooldown');
       return;
     }
 
@@ -83,6 +92,9 @@ export const useWebSocket = (userId, onMessage) => {
       setError('Authentication token required for WebSocket connection');
       return;
     }
+
+    // Record connection attempt time
+    lastConnectionAttemptRef.current = now;
 
     try {
       connectingRef.current = true; // Set connecting flag
