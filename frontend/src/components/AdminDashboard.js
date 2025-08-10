@@ -78,6 +78,7 @@ const AdminDashboard = () => {
   const [monitoringLoading, setMonitoringLoading] = useState(false);
   const [monitoringSearch, setMonitoringSearch] = useState('');
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
+  const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
