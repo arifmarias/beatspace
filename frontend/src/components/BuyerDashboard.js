@@ -52,6 +52,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Alert, AlertDescription } from './ui/alert';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import NotificationBell from './ui/notification-bell';
+import { useNotifications } from '../contexts/NotificationContext';
 import { getAuthHeaders, logout, getUser, isAuthenticated, getToken } from '../utils/auth';
 import { useWebSocket, getWebSocketUserId, WEBSOCKET_EVENTS } from '../utils/websocket';
 import { useNavigate, useLocation } from 'react-router-dom';
