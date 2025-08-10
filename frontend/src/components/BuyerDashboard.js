@@ -123,6 +123,36 @@ const BuyerDashboard = () => {
   // Collapsible state for Requested Offers - default to collapsed
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
 
+  // WebSocket connection for real-time updates
+  const handleWebSocketMessage = (message) => {
+    console.log('🔔 Buyer Dashboard: Received real-time update:', message);
+    
+    switch (message.type) {
+      case WEBSOCKET_EVENTS.OFFER_QUOTED:
+        notify.success(`New price quote received: ৳${message.price?.toLocaleString()}`);
+        // Refresh requested offers to show new quote
+        fetchRequestedOffers();
+        break;
+        
+      case WEBSOCKET_EVENTS.ASSET_STATUS_CHANGED:
+        notify.info(`Asset status updated: ${message.asset_name}`);
+        fetchRequestedOffers();
+        break;
+        
+      case WEBSOCKET_EVENTS.CONNECTION_STATUS:
+        console.log(`📊 WebSocket Status: ${message.message} (${message.active_connections} active)`);
+        break;
+        
+      default:
+        console.log('📥 Unknown message type:', message.type);
+    }
+  };
+
+  // Get current user from auth - you might need to adjust this based on your auth system
+  const currentUser = { email: 'marketing@grameenphone.com', role: 'buyer' }; // Replace with actual user
+  const websocketUserId = getWebSocketUserId(currentUser);
+  const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
+
   // Edit offer form state - same structure as MarketplacePage
   const [editOfferDetails, setEditOfferDetails] = useState({
     campaignType: 'existing', // Default to existing for edits
