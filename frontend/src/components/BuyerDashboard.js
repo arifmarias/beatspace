@@ -281,6 +281,45 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Fetch requested offers only (sectional refresh)
+  const fetchRequestedOffers = async () => {
+    try {
+      setRequestedOffersLoading(true);
+      const headers = getAuthHeaders();
+      
+      // Fetch requested offers
+      const offersRes = await axios.get(`${API}/offers/requests`, { headers });
+      console.log('🔄 REFRESHED OFFERS RAW:', offersRes.data);
+      
+      // Enrich offers with asset pricing data
+      const enrichedOffers = await Promise.all((offersRes.data || []).map(async (offer) => {
+        try {
+          // Fetch asset details to get pricing
+          const assetRes = await axios.get(`${API}/assets/public`);
+          const allAssets = assetRes.data || [];
+          const assetDetails = allAssets.find(asset => asset.id === offer.asset_id);
+          
+          return {
+            ...offer,
+            asset_pricing: assetDetails?.pricing || null
+          };
+        } catch (error) {
+          console.error('Error fetching asset pricing for offer:', offer.id, error);
+          return offer; // Return offer without pricing if fetch fails
+        }
+      }));
+      
+      setRequestedOffers(enrichedOffers);
+      console.log('✅ OFFERS REFRESHED WITH PRICING:', enrichedOffers);
+      
+    } catch (error) {
+      console.error('Error refreshing requested offers:', error);
+      notify.error('Failed to refresh requested offers');
+    } finally {
+      setRequestedOffersLoading(false);
+    }
+  };
+
   const fetchLiveAssets = async (isManualRefresh = false) => {
     console.log('🔄 fetchLiveAssets called', isManualRefresh ? '(manual refresh)' : '');
     setAssetsLoading(true);
