@@ -2415,6 +2415,14 @@ const AdminDashboard = () => {
                                                 <p className="mt-1 text-gray-900">{offer.asset_seller_name}</p>
                                               </div>
                                               <div>
+                                                <span className="font-semibold text-gray-700">Admin Status:</span>
+                                                <p className="mt-1">
+                                                  <Badge className="bg-green-100 text-green-800 border-green-300">
+                                                    {getAdminStatus(offer)}
+                                                  </Badge>
+                                                </p>
+                                              </div>
+                                              <div>
                                                 <span className="font-semibold text-gray-700">Asset Market Price:</span>
                                                 <div className="mt-1">
                                                   <div className="text-gray-900">Monthly: ৳{offer.asset_pricing_full?.monthly_rate?.toLocaleString() || 'N/A'}</div>
