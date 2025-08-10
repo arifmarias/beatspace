@@ -2424,7 +2424,13 @@ const BuyerDashboard = () => {
                       </div>
                       <div className="text-sm text-gray-500">
                         {getFilteredOffers().length} of {(requestedOffers || []).filter(offer => 
-                          offer.status !== 'Approved' && offer.status !== 'Accepted'
+                          // Use same filtering logic as display - exclude cancelled and approved offers
+                          offer.status !== 'Rejected' && 
+                          offer.status !== 'Cancelled' &&
+                          offer.status !== 'rejected' &&
+                          offer.status !== 'cancelled' &&
+                          offer.status !== 'Approved' && 
+                          offer.status !== 'Accepted'
                         ).length} offers
                       </div>
                     </div>
