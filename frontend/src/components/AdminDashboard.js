@@ -2292,7 +2292,6 @@ const AdminDashboard = () => {
                                 const offeredPrice = offer.estimated_budget || 0;
                                 const difference = offeredPrice - assetPrice;
                                 const percentageDiff = assetPrice > 0 ? ((difference / assetPrice) * 100).toFixed(1) : 0;
-                                const isExpanded = selectedOfferRequest?.id === offer.id;
                                 
                                 return (
                                   <div key={offer.id}>
