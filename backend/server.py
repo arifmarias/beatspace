@@ -1377,6 +1377,32 @@ async def update_offer_quote(
     # Send notification to buyer (placeholder)
     logger.info(f"Quote provided for offer request: {request_id} - Price: {quote_data.get('quoted_price')}")
     
+    # 🚀 REAL-TIME EVENT: Send WebSocket notification to buyer
+    try:
+        # Get buyer information from the request
+        buyer_email = request.get("buyer_email") or request.get("created_by")
+        asset_name = request.get("asset_name", "Unknown Asset")
+        
+        if buyer_email:
+            # Send real-time notification to buyer
+            await websocket_manager.send_to_user(buyer_email, {
+                "type": "offer_quoted",
+                "offer_id": request_id,
+                "asset_name": asset_name,
+                "price": quote_data.get("quoted_price"),
+                "admin_notes": quote_data.get("admin_notes"),
+                "quote_count": new_quote_count,
+                "timestamp": datetime.utcnow().isoformat(),
+                "message": f"New price quote received for {asset_name}: ৳{quote_data.get('quoted_price'):,}"
+            })
+            print(f"✅ Real-time notification sent to buyer: {buyer_email}")
+        else:
+            print(f"⚠️ Could not send notification - buyer email not found in request: {request_id}")
+            
+    except Exception as ws_error:
+        print(f"❌ WebSocket notification failed: {ws_error}")
+        # Don't fail the main operation if WebSocket fails
+    
     return {"message": "Quote added successfully", "quoted_price": quote_data.get("quoted_price")}
 
 @api_router.put("/offers/{request_id}/respond")
