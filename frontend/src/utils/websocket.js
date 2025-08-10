@@ -161,8 +161,12 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Disconnect from WebSocket
   const disconnect = useCallback(() => {
+    // Clear timers
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
+    }
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
     }
     
     if (websocketRef.current) {
@@ -172,6 +176,7 @@ export const useWebSocket = (userId, onMessage) => {
     }
     
     setIsConnected(false);
+    setUserInfo(null);
     reconnectAttempts.current = 0;
   }, []);
 
