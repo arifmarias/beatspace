@@ -148,7 +148,7 @@ const BuyerDashboard = () => {
     }
   };
 
-  const websocketUserId = getWebSocketUserId(currentUser);
+  const websocketUserId = currentUser?.email || 'buyer'; // Use email or fallback to 'buyer'
   const { isConnected, connectionCount, sendMessage } = useWebSocket(websocketUserId, handleWebSocketMessage);
 
   // Edit offer form state - same structure as MarketplacePage
