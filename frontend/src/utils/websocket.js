@@ -192,6 +192,7 @@ export const useWebSocket = (userId, onMessage) => {
         console.error('🚫 WebSocket: Connection error:', error);
         setError('WebSocket connection error');
         setIsConnected(false);
+        connectingRef.current = false; // Clear connecting flag on error
       };
 
     } catch (err) {
