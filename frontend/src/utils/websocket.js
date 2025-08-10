@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
- * Custom React Hook for WebSocket Real-time Communication
+ * Custom React Hook for WebSocket Real-time Communication with Authentication
  * Provides connection management, event handling, and auto-reconnection
  */
 export const useWebSocket = (userId, onMessage) => {
@@ -9,6 +9,7 @@ export const useWebSocket = (userId, onMessage) => {
   const [connectionCount, setConnectionCount] = useState(0);
   const [lastMessage, setLastMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   
   const websocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
@@ -16,21 +17,37 @@ export const useWebSocket = (userId, onMessage) => {
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000; // 3 seconds
 
-  // Get WebSocket URL from environment
+  // Get authentication token
+  const getAuthToken = useCallback(() => {
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
+  }, []);
+
+  // Get WebSocket URL from environment with authentication
   const getWebSocketUrl = useCallback(() => {
+    if (!userId) return null;
+    
+    const token = getAuthToken();
+    if (!token) {
+      console.warn('🚫 WebSocket: No authentication token found');
+      return null;
+    }
+    
     // For development, use local WebSocket server
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
     
     // Check if we're in development (localhost) or production
+    let wsUrl;
     if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
       // Development: use local WebSocket with /api prefix
-      return `ws://localhost:8001/api/ws/${userId}`;
+      wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
     } else {
       // Production: replace protocol with WebSocket and add /api prefix
-      const wsUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
-      return `${wsUrl}/api/ws/${userId}`;
+      const wsBaseUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
+      wsUrl = `${wsBaseUrl}/api/ws/${userId}?token=${token}`;
     }
-  }, [userId]);
+    
+    return wsUrl;
+  }, [userId, getAuthToken]);
 
   // Connect to WebSocket
   const connect = useCallback(() => {
