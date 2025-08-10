@@ -164,6 +164,7 @@ export const useWebSocket = (userId, onMessage) => {
         console.log(`🔌 WebSocket: Connection closed (${event.code}: ${event.reason})`);
         setIsConnected(false);
         setUserInfo(null);
+        connectingRef.current = false; // Clear connecting flag on close
         
         // Handle authentication errors (4000-4006 range)
         if (event.code >= 4001 && event.code <= 4006) {
