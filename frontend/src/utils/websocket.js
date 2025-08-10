@@ -23,12 +23,12 @@ export const useWebSocket = (userId, onMessage) => {
     
     // Check if we're in development (localhost) or production
     if (backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')) {
-      // Development: use local WebSocket
-      return `ws://localhost:8001/ws/${userId}`;
+      // Development: use local WebSocket with /api prefix
+      return `ws://localhost:8001/api/ws/${userId}`;
     } else {
-      // Production: replace protocol with WebSocket
+      // Production: replace protocol with WebSocket and add /api prefix
       const wsUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
-      return `${wsUrl}/ws/${userId}`;
+      return `${wsUrl}/api/ws/${userId}`;
     }
   }, [userId]);
 
