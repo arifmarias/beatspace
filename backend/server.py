@@ -2442,26 +2442,90 @@ async def root():
 
 # WebSocket endpoint for real-time updates
 @api_router.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: str):
+async def websocket_endpoint(websocket: WebSocket, user_id: str, token: str = Query(None)):
     """
-    WebSocket endpoint for real-time communication
-    user_id can be: admin, buyer_email, seller_email, etc.
+    WebSocket endpoint for real-time communication with authentication
+    user_id: admin, buyer_email, seller_email, etc.
+    token: JWT authentication token passed as query parameter
     """
-    await websocket_manager.connect(websocket, user_id)
+    # Authenticate the WebSocket connection
+    if not token:
+        await websocket.close(code=4001, reason="Authentication token required")
+        return
+    
     try:
+        # Verify JWT token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            await websocket.close(code=4003, reason="Invalid token payload")
+            return
+            
+        # Get user from database
+        user = await db.users.find_one({"email": email})
+        if not user:
+            await websocket.close(code=4004, reason="User not found")
+            return
+            
+        # Validate user_id matches authenticated user
+        expected_user_id = "admin" if user.get("role") == "admin" else user.get("email")
+        if user_id != expected_user_id:
+            await websocket.close(code=4005, reason="User ID mismatch")
+            return
+            
+        print(f"🔐 WebSocket authenticated user: {user.get('company_name')} ({email})")
+        
+    except jwt.ExpiredSignatureError:
+        await websocket.close(code=4002, reason="Token expired")
+        return
+    except jwt.InvalidTokenError:
+        await websocket.close(code=4003, reason="Invalid token")
+        return
+    except Exception as e:
+        print(f"❌ WebSocket authentication error: {e}")
+        await websocket.close(code=4006, reason="Authentication failed")
+        return
+    
+    # If authentication successful, proceed with connection
+    await websocket_manager.connect(websocket, user_id)
+    
+    try:
+        # Send authentication success message
+        await websocket.send_text(json.dumps({
+            "type": "connection_status",
+            "status": "authenticated",
+            "message": f"Connected as {user.get('company_name')} ({user.get('role')})",
+            "timestamp": datetime.utcnow().isoformat(),
+            "active_connections": websocket_manager.get_connection_count(),
+            "user_info": {
+                "name": user.get("company_name"),
+                "email": user.get("email"),
+                "role": user.get("role")
+            }
+        }))
+        
         while True:
             # Keep the connection alive and listen for any client messages
             data = await websocket.receive_text()
-            # For now, just echo back connection status
-            await websocket.send_text(json.dumps({
-                "type": "connection_status",
-                "message": f"Connected as {user_id}",
-                "timestamp": datetime.utcnow().isoformat(),
-                "active_connections": websocket_manager.get_connection_count()
-            }))
+            try:
+                message = json.loads(data)
+                # Handle client heartbeat/ping
+                if message.get("type") == "ping":
+                    await websocket.send_text(json.dumps({
+                        "type": "pong",
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "active_connections": websocket_manager.get_connection_count()
+                    }))
+            except json.JSONDecodeError:
+                # Ignore invalid JSON messages
+                pass
+                
     except WebSocketDisconnect:
         websocket_manager.disconnect(websocket, user_id)
-        print(f"🔌 Client {user_id} disconnected")
+        print(f"🔌 Authenticated client {user.get('company_name')} disconnected")
+    except Exception as e:
+        print(f"❌ WebSocket error for {user_id}: {e}")
+        websocket_manager.disconnect(websocket, user_id)
 
 # Include the router in the main app
 app.include_router(api_router)
