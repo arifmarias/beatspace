@@ -81,30 +81,51 @@ const AdminDashboard = () => {
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
   
+  // Debounced refresh function to prevent rapid API calls
+  const [refreshTimer, setRefreshTimer] = useState(null);
+  const debouncedRefreshOfferRequests = useCallback(() => {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+    
+    const timer = setTimeout(() => {
+      console.log('🔄 Debounced refresh triggered');
+      fetchOfferRequests();
+    }, 1000); // 1 second debounce
+    
+    setRefreshTimer(timer);
+  }, [refreshTimer]);
+
   // WebSocket connection for real-time updates
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Admin Dashboard: Received real-time update:', message);
     
+    // Only handle messages if WebSocket connection is stable
+    if (!isConnected) {
+      console.warn('⚠️ Ignoring WebSocket message - connection not stable');
+      return;
+    }
+    
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
         notify.success(`Offer approved for ${message.asset_name}`);
-        // Refresh offer requests to show updated status
-        fetchOfferRequests();
+        // Use debounced refresh to prevent rapid API calls
+        debouncedRefreshOfferRequests();
         break;
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
         notify.info(`Offer rejected for ${message.asset_name}`);
-        fetchOfferRequests();
+        debouncedRefreshOfferRequests();
         break;
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
         notify.info(`Revision requested for ${message.asset_name}`);
-        fetchOfferRequests();
+        debouncedRefreshOfferRequests();
         break;
         
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
         notify.success(`New offer request received for ${message.asset_name}`);
-        fetchOfferRequests();
+        debouncedRefreshOfferRequests();
         break;
         
       case WEBSOCKET_EVENTS.CONNECTION_STATUS:
