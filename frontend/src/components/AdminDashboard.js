@@ -460,6 +460,49 @@ const AdminDashboard = () => {
     return Math.ceil(filtered.length / itemsPerPage);
   };
 
+  // Helper function to get asset status breakdown for a campaign
+  const getCampaignAssetBreakdown = (campaign) => {
+    const campaignOffers = campaign.campaign_assets || [];
+    
+    if (campaignOffers.length === 0) {
+      return "0 assets";
+    }
+    
+    // Count live/approved assets (exclude only rejected and cancelled)
+    const liveAssets = campaignOffers.filter(offer => 
+      offer.status !== 'Rejected' && 
+      offer.status !== 'Cancelled' &&
+      offer.status !== 'rejected' &&
+      offer.status !== 'cancelled'
+    );
+    
+    // Count rejected assets
+    const rejectedAssets = campaignOffers.filter(offer => 
+      offer.status === 'Rejected' || 
+      offer.status === 'rejected'
+    );
+    
+    // Count cancelled assets  
+    const cancelledAssets = campaignOffers.filter(offer => 
+      offer.status === 'Cancelled' || 
+      offer.status === 'cancelled'
+    );
+    
+    // Create breakdown string
+    const parts = [];
+    if (liveAssets.length > 0) {
+      parts.push(`${liveAssets.length} live`);
+    }
+    if (rejectedAssets.length > 0) {
+      parts.push(`${rejectedAssets.length} rejected`);
+    }
+    if (cancelledAssets.length > 0) {
+      parts.push(`${cancelledAssets.length} cancelled`);
+    }
+    
+    return parts.length > 0 ? parts.join(', ') : `${campaignOffers.length} assets`;
+  };
+
   // Cleanup function
   useEffect(() => {
     return () => {
