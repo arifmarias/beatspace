@@ -2448,10 +2448,22 @@ const BuyerDashboard = () => {
           <TabsContent value="requested-offers" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <FileText className="w-5 h-5" />
-                  <span>Requested Offers</span>
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5" />
+                    <span>Requested Offers</span>
+                  </CardTitle>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={fetchRequestedOffers}
+                    disabled={requestedOffersLoading}
+                    className="flex items-center space-x-1"
+                  >
+                    <Activity className="w-4 h-4" />
+                    <span>{requestedOffersLoading ? 'Loading...' : 'Refresh'}</span>
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {((requestedOffers || []).filter(offer => 
