@@ -102,6 +102,7 @@ const BuyerDashboard = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [assetsLoading, setAssetsLoading] = useState(false);
+  const [requestedOffersLoading, setRequestedOffersLoading] = useState(false); // Loading state for requested offers refresh
 
   // Pagination and search state for Campaigns
   const [campaignSearch, setCampaignSearch] = useState('');
