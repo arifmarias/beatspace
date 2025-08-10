@@ -119,6 +119,7 @@ const AdminDashboard = () => {
   const [campaignSearchTerm, setCampaignSearchTerm] = useState('');
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [assetSearchTerm, setAssetSearchTerm] = useState('');
+  const [buyerStatusFilter, setBuyerStatusFilter] = useState('all'); // Filter for buyer status
 
   // Bangladesh districts and divisions data
   const [bangladeshDistricts] = useState([
