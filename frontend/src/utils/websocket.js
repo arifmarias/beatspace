@@ -35,14 +35,15 @@ export const useWebSocket = (userId, onMessage) => {
       return null;
     }
     
-    // Force localhost for development (when running on localhost:3000)
-    const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // Always use localhost for development when frontend is served from localhost
+    const currentUrl = window.location.href;
+    const isLocalDevelopment = currentUrl.includes('localhost:3000') || currentUrl.includes('127.0.0.1:3000');
     
     let wsUrl;
-    if (isLocalDevelopment) {
+    if (isLocalDevelopment || process.env.NODE_ENV === 'development') {
       // Development: always use local WebSocket
       wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
-      console.log('🏠 WebSocket: Using local development URL');
+      console.log('🏠 WebSocket: Using local development URL (localhost:8001)');
     } else {
       // Production: use environment URL
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
