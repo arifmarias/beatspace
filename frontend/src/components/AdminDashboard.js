@@ -2338,7 +2338,7 @@ const AdminDashboard = () => {
                                               <div>
                                                 <span className="text-gray-500 text-xs">Asset Price</span>
                                                 <div className="font-medium">
-                                                  {assetPrice ? `৳${assetPrice.toLocaleString()}` : 'N/A'}
+                                                  {assetPrice ? `৳${assetPrice.toLocaleString()}/month` : 'N/A'}
                                                 </div>
                                               </div>
                                             </div>
