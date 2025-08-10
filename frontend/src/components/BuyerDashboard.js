@@ -1484,8 +1484,20 @@ const BuyerDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, {currentUser?.company_name}!</h2>
-          <p className="text-gray-600">Manage your advertising campaigns and track performance.</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, {currentUser?.company_name}!</h2>
+              <p className="text-gray-600">Manage your advertising campaigns and track performance.</p>
+            </div>
+            
+            {/* WebSocket Connection Status */}
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100">
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span className="text-xs text-gray-600">
+                {isConnected ? `Live (${connectionCount})` : 'Offline'}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Stats Cards */}
