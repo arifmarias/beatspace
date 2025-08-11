@@ -160,7 +160,7 @@ const OperatorDashboard = () => {
     try {
       // Update task status to in_progress
       const headers = getAuthHeaders();
-      await axios.put(`${API}/monitoring/tasks/${task.id}`, {
+      await axios.put(`${API}/api/monitoring/tasks/${task.id}`, {
         status: 'in_progress'
       }, { headers });
 
