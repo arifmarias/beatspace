@@ -65,18 +65,15 @@ class WebSocketTester:
             # Build WebSocket URL
             if user_id:
                 ws_url = f"{self.ws_base}/api/ws/{user_id}"
+                if token:
+                    ws_url += f"?token={token}"
             else:
                 ws_url = f"{self.ws_base}/api/{endpoint}"
             
             self.log(f"   Connecting to: {ws_url}")
             
-            # Set up headers with authentication if provided
-            additional_headers = {}
-            if token:
-                additional_headers["Authorization"] = f"Bearer {token}"
-            
-            # Connect to WebSocket
-            async with websockets.connect(ws_url, additional_headers=additional_headers, ping_interval=20, ping_timeout=10) as websocket:
+            # Connect to WebSocket (no additional headers needed for token auth)
+            async with websockets.connect(ws_url, ping_interval=20, ping_timeout=10) as websocket:
                 self.log(f"✅ WebSocket connected successfully")
                 
                 # Test basic message exchange
