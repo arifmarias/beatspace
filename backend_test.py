@@ -19,6 +19,8 @@ class BeatSpaceAPITester:
         self.created_campaign_id = None
         self.created_offer_request_id = None
         self.test_results = {}
+        self.buyer_user_id = None
+        self.existing_campaign_id = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, params=None, token=None):
         """Run a single API test"""
