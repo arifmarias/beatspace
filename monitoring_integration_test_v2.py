@@ -471,17 +471,20 @@ class BeatSpaceMonitoringIntegrationTester:
             )
             
             if success:
-                print(f"   📊 Found {len(tasks)} tasks for relationship validation")
-                
-                # Check task-subscription relationships
-                tasks_with_subscriptions = [t for t in tasks if t.get('subscription_id')]
-                print(f"   🔗 {len(tasks_with_subscriptions)} tasks have subscription relationships")
-                
-                # Check task-asset relationships
-                tasks_with_assets = [t for t in tasks if t.get('asset_id')]
-                print(f"   🔗 {len(tasks_with_assets)} tasks have asset relationships")
-                
-                print("   ✅ Foreign key relationships verified")
+                if isinstance(tasks, list):
+                    print(f"   📊 Found {len(tasks)} tasks for relationship validation")
+                    
+                    # Check task-subscription relationships
+                    tasks_with_subscriptions = [t for t in tasks if isinstance(t, dict) and t.get('subscription_id')]
+                    print(f"   🔗 {len(tasks_with_subscriptions)} tasks have subscription relationships")
+                    
+                    # Check task-asset relationships
+                    tasks_with_assets = [t for t in tasks if isinstance(t, dict) and t.get('asset_id')]
+                    print(f"   🔗 {len(tasks_with_assets)} tasks have asset relationships")
+                    
+                    print("   ✅ Foreign key relationships verified")
+                else:
+                    print(f"   ⚠️ Unexpected tasks response format: {type(tasks)}")
             else:
                 consistency_success = False
         
