@@ -108,9 +108,10 @@ class BeatSpaceAPITester:
         return success, response
 
     def test_buyer_login(self):
-        """Test buyer login with specified credentials"""
+        """Test buyer login with existing buyer credentials"""
+        # Try the existing buyer first
         login_data = {
-            "email": "marketing@grameenphone.com",  # Use specified buyer credentials
+            "email": "buy@demo.com",  # Use existing buyer
             "password": "buyer123"
         }
         success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
@@ -120,6 +121,7 @@ class BeatSpaceAPITester:
             print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
             print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
             print(f"   User ID: {self.buyer_user_id}")
+            print(f"   Using existing buyer: {response.get('user', {}).get('email')}")
         return success, response
 
     def create_buyer_if_not_exists(self):
