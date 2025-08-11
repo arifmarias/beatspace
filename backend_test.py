@@ -108,7 +108,7 @@ class BeatSpaceAPITester:
     def test_buyer_login(self):
         """Test buyer login"""
         login_data = {
-            "email": "buyer@company.com",  # Use existing buyer
+            "email": "buy@demo.com",  # Use existing buyer
             "password": "buyer123"
         }
         success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
