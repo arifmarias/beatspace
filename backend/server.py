@@ -2216,6 +2216,19 @@ async def get_all_users(admin_user: User = Depends(require_admin)):
     users = await db.users.find({}).to_list(1000)
     return [User(**user) for user in users]
 
+@api_router.get("/users", response_model=List[User])
+async def get_users_by_role(
+    role: Optional[str] = Query(None, description="Filter users by role"),
+    current_user: User = Depends(require_manager_or_admin)
+):
+    """Get users with optional role filtering for managers"""
+    query = {}
+    if role:
+        query["role"] = role
+    
+    users = await db.users.find(query).to_list(1000)
+    return [User(**user) for user in users]
+
 @api_router.get("/admin/assets", response_model=List[Asset])
 async def get_all_assets_admin(admin_user: User = Depends(require_admin)):
     """Get all assets for admin management"""
