@@ -140,7 +140,7 @@ frontend:
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete the buyer-admin workflow verification and ensure offers don't disappear from Admin Offer Mediation tab after price quoting. Verify step-by-step workflow: Buyer creates campaign → adds assets → requests offer → Admin quotes price → Buyer approves/rejects → Asset status updates to Booked/Live. Fix frontend rendering issues and implement missing buyer approve/reject functionality."
+user_problem_statement: "Complete the WebSocket real-time synchronization fix between Admin and Buyer dashboards. The WebSocket endpoints have been moved from api_router to main FastAPI app and uvicorn --workers parameter removed. Need to verify that real-time notifications work for offer quotes, approvals, rejections, revision requests, and new offer creations between dashboards without manual refreshes."
 
 backend:
   - task: "Booked Assets Endpoint - GET /api/assets/booked"
