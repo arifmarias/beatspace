@@ -2630,10 +2630,7 @@ const BuyerDashboard = () => {
                                 {/* Monitoring Service Option for Live/Active campaigns */}
                                 {(campaign.status === 'Live' || campaign.status === 'Approved') && (
                                   <DropdownMenuItem
-                                    onClick={() => {
-                                      setSelectedCampaign(campaign);
-                                      setShowMonitoringSubscription(true);
-                                    }}
+                                    onClick={() => handleMonitoringSubscriptionOpen(campaign)}
                                     className="cursor-pointer text-green-600"
                                   >
                                     <Eye className="h-4 w-4 mr-2" />
