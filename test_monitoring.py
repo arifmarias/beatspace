@@ -119,8 +119,39 @@ def test_monitoring_api():
                     else:
                         print(f"   ❌ Failed to create monitoring service: {create_response.text}")
                         
+                    # Step 2.7: Create a campaign as admin for testing
+                    print("\n2.7. Creating test campaign as admin...")
+                    test_campaign_data = {
+                        "name": "Test Monitoring Campaign",
+                        "description": "Test campaign for monitoring service",
+                        "budget": 50000,
+                        "start_date": "2025-01-15T00:00:00Z",
+                        "end_date": "2025-03-15T00:00:00Z",
+                        "status": "Live",
+                        "buyer_id": user_info.get('id', 'admin_user'),  # Use admin user ID
+                        "buyer_name": "Admin Test User"
+                    }
+                    
+                    create_campaign_response = requests.post(
+                        f"{API_BASE}/admin/campaigns", 
+                        json=test_campaign_data, 
+                        headers=headers
+                    )
+                    print(f"   Create campaign status: {create_campaign_response.status_code}")
+                    
+                    if create_campaign_response.status_code == 200:
+                        test_campaign = create_campaign_response.json()
+                        campaign_id = test_campaign.get('id')
+                        print(f"   ✅ Created test campaign: {test_campaign.get('name')} (ID: {campaign_id})")
+                        print(f"   Campaign owner: {test_campaign.get('buyer_id', 'N/A')}")
+                    else:
+                        print(f"   ❌ Failed to create test campaign: {create_campaign_response.text}")
+                        # Fallback to existing campaign
+                        campaign_id = campaigns[0].get('id')
+                        
                 else:
-                    print(f"   ⚠️  No campaigns found for buyer")
+                    print(f"   ⚠️  No campaigns found")
+                    campaign_id = None
             else:
                 print(f"   ❌ Failed to get campaigns: {campaigns_response.text}")
                 
