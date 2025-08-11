@@ -2906,6 +2906,7 @@ async def get_monitoring_tasks(
 ):
     """Get monitoring tasks (filtered by role)"""
     try:
+        logger.info(f"Fetching monitoring tasks for user {current_user.id} with role {current_user.role}")
         query = {}
         
         if current_user.role == UserRole.MONITORING_OPERATOR:
@@ -2917,11 +2918,14 @@ async def get_monitoring_tasks(
         if operator_id and current_user.role == UserRole.MANAGER:
             query["assigned_operator_id"] = operator_id
         
+        logger.info(f"Query: {query}")
+        
         # Check if collection exists, if not return empty list
         try:
             tasks = await db.monitoring_tasks.find(query).sort("scheduled_date", 1).to_list(1000)
-        except Exception:
-            # Collection might not exist yet
+            logger.info(f"Found {len(tasks)} tasks")
+        except Exception as e:
+            logger.error(f"Error querying monitoring_tasks: {str(e)}")
             tasks = []
         
         # Convert ObjectIds to strings and clean data
