@@ -58,6 +58,11 @@ export const useWebSocket = (userId, onMessage) => {
     const currentUrl = window.location.href;
     const isLocalDevelopment = currentUrl.includes('localhost:3000') || currentUrl.includes('127.0.0.1:3000');
     
+    console.log('🔍 WebSocket URL Detection:');
+    console.log(`   Current URL: ${currentUrl}`);
+    console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`   isLocalDevelopment: ${isLocalDevelopment}`);
+    
     let wsUrl;
     if (isLocalDevelopment || process.env.NODE_ENV === 'development') {
       // Development: use local WebSocket with authentication
