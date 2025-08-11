@@ -207,13 +207,13 @@ const ManagerDashboard = () => {
     }
   };
 
-  // Filter Tasks
-  const filteredTasks = tasks.filter(task => {
+  // Filter Tasks - with safety check
+  const filteredTasks = (Array.isArray(tasks) ? tasks : []).filter(task => {
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     const matchesOperator = operatorFilter === 'all' || task.assigned_operator_id === operatorFilter;
     const matchesSearch = !searchTerm || 
-      task.asset_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.id.toLowerCase().includes(searchTerm.toLowerCase());
+      task.asset_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.id?.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesStatus && matchesOperator && matchesSearch;
   });
