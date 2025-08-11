@@ -2236,15 +2236,100 @@ async def delete_campaign_admin(
     campaign_id: str,
     admin_user: User = Depends(require_admin)
 ):
-    """Delete campaign (admin only)"""
+    """Delete campaign (admin only) - Enhanced with proper cleanup"""
     campaign = await db.campaigns.find_one({"id": campaign_id})
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
     
-    # Delete the campaign
-    await db.campaigns.delete_one({"id": campaign_id})
+    print(f"🗑️ Admin deleting campaign: {campaign_id} ({campaign.get('name')})")
     
-    return {"message": f"Campaign deleted successfully"}
+    # Step 1: Get all assets associated with this campaign and make them available
+    campaign_assets = []
+    if campaign.get("assets"):
+        for asset_data in campaign["assets"]:
+            asset_id = asset_data.get("asset_id")
+            if asset_id:
+                campaign_assets.append(asset_id)
+    
+    # Free up all campaign assets - make them Available
+    if campaign_assets:
+        result = await db.assets.update_many(
+            {"id": {"$in": campaign_assets}},
+            {"$set": {
+                "status": AssetStatus.AVAILABLE,
+                "buyer_id": None,
+                "buyer_name": None, 
+                "next_available_date": None,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        print(f"✅ Freed up {result.modified_count} assets from campaign")
+    
+    # Step 2: Handle offer requests associated with this campaign
+    # Find offer requests that reference this campaign
+    offer_requests = await db.offer_requests.find({
+        "$or": [
+            {"existing_campaign_id": campaign_id},
+            {"campaign_name": campaign.get("name")}
+        ]
+    }).to_list(None)
+    
+    if offer_requests:
+        print(f"🔍 Found {len(offer_requests)} offer requests associated with campaign")
+        
+        # For each offer request, free up the asset and delete/update the request
+        for request in offer_requests:
+            asset_id = request.get("asset_id")
+            if asset_id:
+                # Make the asset available
+                await db.assets.update_one(
+                    {"id": asset_id},
+                    {"$set": {
+                        "status": AssetStatus.AVAILABLE,
+                        "buyer_id": None,
+                        "buyer_name": None,
+                        "next_available_date": None,
+                        "updated_at": datetime.utcnow()
+                    }}
+                )
+                print(f"✅ Asset {asset_id} made available")
+        
+        # Delete all associated offer requests
+        delete_result = await db.offer_requests.delete_many({
+            "$or": [
+                {"existing_campaign_id": campaign_id},
+                {"campaign_name": campaign.get("name")}
+            ]
+        })
+        print(f"✅ Deleted {delete_result.deleted_count} associated offer requests")
+    
+    # Step 3: Delete the campaign itself
+    await db.campaigns.delete_one({"id": campaign_id})
+    print(f"✅ Campaign {campaign_id} deleted successfully")
+    
+    # Step 4: Send real-time notification to affected buyers (if any)
+    try:
+        buyer_id = campaign.get("buyer_id")
+        if buyer_id:
+            # Find buyer email
+            buyer = await db.users.find_one({"id": buyer_id})
+            if buyer:
+                await websocket_manager.send_to_user(buyer["email"], {
+                    "type": "campaign_deleted",
+                    "campaign_id": campaign_id,
+                    "campaign_name": campaign.get("name"),
+                    "message": f"Campaign '{campaign.get('name')}' has been deleted by admin",
+                    "timestamp": datetime.utcnow().isoformat()
+                })
+                print(f"✅ Notified buyer {buyer['email']} of campaign deletion")
+    except Exception as ws_error:
+        print(f"⚠️ WebSocket notification failed: {ws_error}")
+    
+    return {
+        "message": f"Campaign '{campaign.get('name')}' deleted successfully",
+        "assets_freed": len(campaign_assets),
+        "offer_requests_deleted": len(offer_requests) if offer_requests else 0
+    }
 
 @api_router.patch("/admin/campaigns/{campaign_id}/status")
 async def update_campaign_status_admin(
