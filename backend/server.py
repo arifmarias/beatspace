@@ -2872,13 +2872,14 @@ async def get_monitoring_services(current_user: User = Depends(get_current_user)
             # Admins and managers can see all services
             query = {}
         
-        # Test: Just try the database query
         try:
             services = await db.monitoring_subscriptions.find(query).to_list(1000)
             logger.info(f"Found {len(services)} services in database")
             
-            # Return empty for now to isolate the issue
-            return {"services": [], "debug_count": len(services)}
+            # Clean the data to remove ObjectIds
+            cleaned_services = [clean_mongodb_doc(service) for service in services]
+            
+            return {"services": cleaned_services}
             
         except Exception as e:
             logger.error(f"Database query error: {str(e)}")
