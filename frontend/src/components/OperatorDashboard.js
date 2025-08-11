@@ -118,12 +118,19 @@ const OperatorDashboard = () => {
 
   // Setup offline handling
   const setupOfflineHandling = () => {
+    let isOnlineTimeout = null;
+    
     const handleOnline = () => {
-      setIsOnline(true);
-      syncPendingData();
+      // Debounce online/offline events to prevent rapid flickering
+      if (isOnlineTimeout) clearTimeout(isOnlineTimeout);
+      isOnlineTimeout = setTimeout(() => {
+        setIsOnline(true);
+        syncPendingData();
+      }, 100);
     };
     
     const handleOffline = () => {
+      if (isOnlineTimeout) clearTimeout(isOnlineTimeout);
       setIsOnline(false);
       notify.warning('You are now offline. Data will be synced when connection returns.');
     };
@@ -132,6 +139,7 @@ const OperatorDashboard = () => {
     window.addEventListener('offline', handleOffline);
 
     return () => {
+      if (isOnlineTimeout) clearTimeout(isOnlineTimeout);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
