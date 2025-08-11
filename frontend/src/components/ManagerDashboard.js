@@ -333,13 +333,17 @@ const ManagerDashboard = () => {
 
           {/* Tasks Tab */}
           <TabsContent value="tasks" className="space-y-4">
-            {/* Filters */}
+            {/* Task Management Card */}
             <Card>
               <CardHeader>
-                <CardTitle>Task Management</CardTitle>
+                <CardTitle className="flex items-center">
+                  <ClipboardList className="w-5 h-5 mr-2" />
+                  Task Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-4 mb-4">
+                {/* Filters */}
+                <div className="flex flex-wrap gap-4 mb-6">
                   <div className="flex items-center space-x-2">
                     <Search className="w-4 h-4 text-gray-400" />
                     <Input
