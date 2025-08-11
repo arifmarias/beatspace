@@ -549,6 +549,21 @@ backend:
           comment: "✅ FULLY RESOLVED: Both edit and delete functionality now working perfectly! 🎯 FINAL FIX: Resolved 422 validation error in update request by fixing payload format - removed fields not expected by backend OfferRequestCreate model (tentative_start_date, asset_expiration_date) and ensured only valid fields are sent: asset_id, campaign_name, campaign_type, existing_campaign_id, contract_duration, estimated_budget, service_bundles, timeline, special_requirements, notes. 🎉 USER CONFIRMATION: User confirmed 'update is working fine' - complete edit dialog opens with pre-populated data, allows modifications, saves changes successfully, closes dialog, and refreshes table with updated data."
 
 frontend:
+  - task: "WebSocket Real-time Connection and Event Handling"
+    implemented: true
+    working: "needs_verification"
+    file: "/app/frontend/src/utils/websocket.js, /app/frontend/src/components/AdminDashboard.js, /app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 2
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented useWebSocket hook with enhanced connection management, auto-reconnection, heartbeat, and message deduplication. Added WebSocket integration to both AdminDashboard and BuyerDashboard with notification system. Fixed URL detection (localhost for dev), connection debugging, and token authentication. Previous issues included infinite refresh loops (fixed with debouncing), incorrect WSS URLs (fixed), and immediate connection closure (fixed with proper endpoint registration)."
+        - working: "needs_verification"
+          agent: "main"
+          comment: "Backend WebSocket infrastructure confirmed working. Need to verify frontend WebSocket connections establish properly and real-time events (offer_quoted, offer_approved, offer_rejected, new_offer_request) trigger dashboard updates and notifications without manual refresh."
+
   - task: "Remove Add to Campaign buttons from list view"
     implemented: true
     working: true
