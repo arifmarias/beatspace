@@ -222,7 +222,78 @@ const ManagerDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Dashboard Statistics Cards - Match Admin Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Users className="h-8 w-8 text-blue-600" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total Tasks</dt>
+                    <dd className="text-lg font-medium text-gray-900">{stats.totalTasks}</dd>
+                    <dd className="text-xs text-gray-500">{stats.activeTasks} active, {stats.completedTasks} completed</dd>
+                  </dl>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <TrendingUp className="h-8 w-8 text-green-600" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Completion Rate</dt>
+                    <dd className="text-lg font-medium text-gray-900">{stats.completionRate}%</dd>
+                    <dd className="text-xs text-gray-500">Platform activity</dd>
+                  </dl>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <UserCheck className="h-8 w-8 text-purple-600" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Active Operators</dt>
+                    <dd className="text-lg font-medium text-gray-900">{stats.activeOperators}</dd>
+                    <dd className="text-xs text-gray-500">of {stats.totalOperators} total</dd>
+                  </dl>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Clock className="h-8 w-8 text-orange-600" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Avg Completion Time</dt>
+                    <dd className="text-lg font-medium text-gray-900">{stats.averageTime}min</dd>
+                    <dd className="text-xs text-gray-500">Per task average</dd>
+                  </dl>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
