@@ -90,6 +90,8 @@ const AdminDashboard = () => {
   // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Admin Dashboard: Received real-time update:', message);
+    console.log('🔔 Message type:', message.type);
+    console.log('🔔 Available WEBSOCKET_EVENTS:', WEBSOCKET_EVENTS);
     
     // Only handle messages if WebSocket connection is stable
     if (!isConnected) {
@@ -109,6 +111,7 @@ const AdminDashboard = () => {
     
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
+        console.log('🎯 Processing OFFER_APPROVED event');
         notifySuccess(
           'Offer Approved! 🎉', 
           `${message.buyer_name || 'A buyer'} approved offer for ${message.asset_name}`
@@ -117,6 +120,7 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
+        console.log('🎯 Processing OFFER_REJECTED event');
         notifyInfo(
           'Offer Rejected', 
           `${message.buyer_name || 'A buyer'} rejected offer for ${message.asset_name}`
@@ -125,6 +129,7 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
+        console.log('🎯 Processing REVISION_REQUESTED event');
         notifyWarning(
           'Revision Requested ✏️', 
           `${message.buyer_name || 'A buyer'} requested revision for ${message.asset_name}`
@@ -133,10 +138,13 @@ const AdminDashboard = () => {
         break;
         
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
+        console.log('🎯 Processing NEW_OFFER_REQUEST event');
+        console.log('🎯 About to call notifySuccess for new offer request');
         notifySuccess(
           'New Offer Request! 📝', 
           `New offer request received for ${message.asset_name}`
         );
+        console.log('🎯 notifySuccess called successfully');
         scheduleRefresh();
         break;
         
@@ -146,6 +154,7 @@ const AdminDashboard = () => {
         
       default:
         console.log('📥 Unknown message type:', message.type);
+        console.log('📥 Expected types:', Object.values(WEBSOCKET_EVENTS));
     }
   };
 
