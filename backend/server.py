@@ -146,6 +146,8 @@ class UserRole(str, Enum):
     BUYER = "buyer"
     SELLER = "seller"
     ADMIN = "admin"
+    MANAGER = "manager"          # New: Monitoring operations manager
+    MONITORING_OPERATOR = "monitoring_operator"  # New: Field monitoring staff
 
 class UserStatus(str, Enum):
     PENDING = "pending"
