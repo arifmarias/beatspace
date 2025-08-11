@@ -217,7 +217,21 @@ class BeatSpaceMonitoringIntegrationTester:
         if not self.admin_token:
             return False
         
-        # Create operator user
+        # First try to login with existing operator
+        login_data = {"email": "operator3@beatspace.com", "password": "operator123"}
+        login_success, login_response = self.run_test(
+            "Operator Login (Existing)", "POST", "auth/login", 200, data=login_data
+        )
+        
+        if login_success and 'access_token' in login_response:
+            self.operator_token = login_response['access_token']
+            # Get operator ID from user data
+            user_data = login_response.get('user', {})
+            self.test_operator_id = user_data.get('id')
+            print(f"   ✅ Existing operator user authenticated")
+            return True
+        
+        # If login failed, try to create new operator user
         operator_data = {
             "email": "operator3@beatspace.com",
             "password": "operator123",
@@ -252,6 +266,28 @@ class BeatSpaceMonitoringIntegrationTester:
                 self.operator_token = login_response['access_token']
                 print(f"   ✅ Operator user created and authenticated")
                 return True
+        else:
+            # If creation failed due to existing user, try to find existing user
+            print("   ℹ️ Operator creation failed, trying to find existing user")
+            success, users = self.run_test(
+                "Get All Users", "GET", "admin/users", 200, token=self.admin_token
+            )
+            
+            if success:
+                for user in users:
+                    if user.get('email') == 'operator3@beatspace.com':
+                        self.test_operator_id = user.get('id')
+                        print(f"   ✅ Found existing operator user: {self.test_operator_id}")
+                        
+                        # Try login again
+                        login_success, login_response = self.run_test(
+                            "Operator Login (Retry)", "POST", "auth/login", 200, data=login_data
+                        )
+                        
+                        if login_success and 'access_token' in login_response:
+                            self.operator_token = login_response['access_token']
+                            print(f"   ✅ Existing operator authenticated successfully")
+                            return True
         
         return False
 
