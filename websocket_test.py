@@ -201,13 +201,13 @@ class WebSocketTester:
         # Test 3: Invalid token
         self.tests_run += 1
         try:
-            ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}?token=invalid_token_123"
+            ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}?token=invalid_short_token"
             
             async with websockets.connect(ws_url, ping_timeout=5) as websocket:
                 self.log("❌ Invalid token should have been rejected")
                 return False
-        except websockets.exceptions.ConnectionClosed:
-            self.log("✅ Invalid token properly rejected")
+        except websockets.exceptions.ConnectionClosed as e:
+            self.log(f"✅ Invalid token properly rejected: {e}")
             self.tests_passed += 1
         except Exception as e:
             self.log(f"✅ Invalid token rejected with error: {e}")
