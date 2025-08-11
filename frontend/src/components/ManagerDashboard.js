@@ -183,13 +183,20 @@ const ManagerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Monitoring Operations</h1>
-              <p className="text-sm text-gray-600">Manage tasks, operators, and performance</p>
+      {/* Header - Match Admin Dashboard Style */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_campaign-nexus-4/artifacts/tui73r6o_BeatSpace%20Icon%20Only.png" 
+                alt="BeatSpace Logo" 
+                className="w-8 h-8"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
+                <p className="text-xs text-gray-500">Monitoring Operations Management</p>
+              </div>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -199,15 +206,20 @@ const ManagerDashboard = () => {
                 onMarkAsRead={markNotificationAsRead}
                 onClearAll={clearAllNotifications}
                 isConnected={isConnected}
+                className="relative"
               />
-              <Button onClick={fetchDashboardData} variant="outline" size="sm">
+              <Button 
+                onClick={fetchDashboardData} 
+                variant="outline"
+                size="sm"
+              >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-6">
