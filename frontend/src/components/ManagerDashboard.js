@@ -124,6 +124,12 @@ const ManagerDashboard = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       notify.error('Failed to load dashboard data');
+      
+      // Set empty arrays to prevent undefined errors
+      setTasks([]);
+      setOperators([]);
+      setServices([]);
+      setPerformance([]);
     } finally {
       setLoading(false);
     }
