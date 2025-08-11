@@ -118,10 +118,9 @@ class WebSocketTester:
         self.log(f"🔍 Testing {test_name}...")
         
         try:
-            ws_url = f"{self.ws_base}/api/ws/{user_id}"
-            additional_headers = {"Authorization": f"Bearer {token}"}
+            ws_url = f"{self.ws_base}/api/ws/{user_id}?token={token}"
             
-            async with websockets.connect(ws_url, additional_headers=additional_headers, ping_interval=5, ping_timeout=3) as websocket:
+            async with websockets.connect(ws_url, ping_interval=5, ping_timeout=3) as websocket:
                 self.log("✅ WebSocket connected for heartbeat test")
                 
                 # Send ping message
