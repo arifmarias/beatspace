@@ -483,70 +483,71 @@ const ManagerDashboard = () => {
           <TabsContent value="operators" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Operator Management</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Users className="w-5 h-5 mr-2" />
+                  Operator Management
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Operator</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Active Tasks</TableHead>
-                        <TableHead>Completed Today</TableHead>
-                        <TableHead>Performance</TableHead>
-                        <TableHead>Last Active</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(Array.isArray(operators) ? operators : []).map((operator) => {
-                        const safeTasks = Array.isArray(tasks) ? tasks : [];
-                        const operatorTasks = safeTasks.filter(t => t.assigned_operator_id === operator.id);
-                        const activeTasks = operatorTasks.filter(t => ['assigned', 'in_progress'].includes(t.status));
-                        const completedToday = operatorTasks.filter(t => 
-                          t.status === 'completed' && 
-                          new Date(t.completed_at || t.updated_at).toDateString() === new Date().toDateString()
-                        );
-                        
-                        return (
-                          <TableRow key={operator.id}>
-                            <TableCell>
-                              <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                  <User className="w-4 h-4 text-blue-600" />
-                                </div>
-                                <div>
-                                  <div className="font-medium">{operator.contact_name}</div>
-                                  <div className="text-sm text-gray-500">{operator.email}</div>
-                                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Operator</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Active Tasks</TableHead>
+                      <TableHead>Completed Today</TableHead>
+                      <TableHead>Performance</TableHead>
+                      <TableHead>Last Active</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(Array.isArray(operators) ? operators : []).map((operator) => {
+                      const safeTasks = Array.isArray(tasks) ? tasks : [];
+                      const operatorTasks = safeTasks.filter(t => t.assigned_operator_id === operator.id);
+                      const activeTasks = operatorTasks.filter(t => ['assigned', 'in_progress'].includes(t.status));
+                      const completedToday = operatorTasks.filter(t => 
+                        t.status === 'completed' && 
+                        new Date(t.completed_at || t.updated_at).toDateString() === new Date().toDateString()
+                      );
+                      
+                      return (
+                        <TableRow key={operator.id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <User className="w-4 h-4 text-blue-600" />
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={activeTasks.length > 0 ? 'default' : 'secondary'}>
-                                {activeTasks.length > 0 ? 'Active' : 'Available'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{activeTasks.length}</TableCell>
-                            <TableCell>
-                              <div className="text-sm font-medium">
-                                {completedToday.length}
+                              <div>
+                                <div className="font-medium">{operator.contact_name}</div>
+                                <div className="text-sm text-gray-500">{operator.email}</div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <Progress value={85} className="w-16 mr-2" />
-                                <span className="text-sm">85%</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm text-gray-500">
-                              {operator.last_login ? new Date(operator.last_login).toLocaleString() : 'Never'}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={activeTasks.length > 0 ? 'default' : 'secondary'}>
+                              {activeTasks.length > 0 ? 'Active' : 'Available'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{activeTasks.length}</TableCell>
+                          <TableCell>
+                            <div className="text-sm font-medium">
+                              {completedToday.length}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <Progress value={85} className="w-16 mr-2" />
+                              <span className="text-sm">85%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm text-gray-500">
+                            {operator.last_login ? new Date(operator.last_login).toLocaleString() : 'Never'}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
