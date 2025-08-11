@@ -2817,7 +2817,7 @@ async def websocket_endpoint_main(websocket: WebSocket, user_id: str):
                 print(f"Received message: {message}")
                 
                 if message.get("type") == "ping":
-                    await websocket_manager.send_personal_message(websocket, {
+                    await websocket_manager.send_to_user(user_id, {
                         "type": "pong", 
                         "timestamp": datetime.utcnow().isoformat()
                     })
