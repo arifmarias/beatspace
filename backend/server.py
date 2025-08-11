@@ -2304,7 +2304,9 @@ async def create_user_admin(
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Hash password
-    user_data["password"] = hash_password(user_data.get("password", "tempPassword123"))
+    user_data["password_hash"] = hash_password(user_data.get("password", "tempPassword123"))
+    if "password" in user_data:
+        del user_data["password"]  # Remove plain password
     user_data["status"] = UserStatus.PENDING  # Default status for admin-created users
     user_data["created_at"] = datetime.utcnow()
     
