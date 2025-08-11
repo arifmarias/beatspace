@@ -2759,6 +2759,81 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+# WebSocket endpoints must be at app level, not router level
+@app.websocket("/api/test-ws")
+async def websocket_test_endpoint(websocket: WebSocket):
+    """Simple WebSocket test endpoint"""
+    try:
+        await websocket.accept()
+        print("🎉 Test WebSocket connected successfully!")
+        await websocket.send_text("Hello from WebSocket!")
+        
+        # Keep connection alive
+        while True:
+            try:
+                data = await websocket.receive_text()
+                print(f"Received: {data}")
+                await websocket.send_text(f"Echo: {data}")
+            except WebSocketDisconnect:
+                print("Test WebSocket disconnected normally")
+                break
+    except Exception as e:
+        print(f"Test WebSocket error: {e}")
+
+@app.websocket("/api/ws/{user_id}")
+async def websocket_endpoint_main(websocket: WebSocket, user_id: str):
+    """Main WebSocket endpoint at app level"""
+    try:
+        # Get token from query parameters
+        query_params = dict(websocket.query_params)
+        token = query_params.get("token")
+        
+        if not token:
+            await websocket.close(code=4001, reason="Token required")
+            return
+            
+        # Accept connection first
+        await websocket.accept()
+        print(f"🎉 WebSocket connected for user: {user_id}")
+        
+        # Simple token validation (just check it exists and has reasonable length)
+        if len(token) < 50:  # JWT should be much longer
+            await websocket.close(code=4003, reason="Invalid token")
+            return
+            
+        # Add to manager and handle messages
+        await websocket_manager.connect(websocket, user_id)
+        await websocket_manager.send_personal_message(websocket, {
+            "type": "connection_status",
+            "message": "Connected successfully",
+            "user_id": user_id
+        })
+        
+        # Keep connection alive
+        while True:
+            try:
+                data = await websocket.receive_text()
+                message = json.loads(data)
+                print(f"Received message: {message}")
+                
+                if message.get("type") == "ping":
+                    await websocket_manager.send_personal_message(websocket, {
+                        "type": "pong", 
+                        "timestamp": datetime.utcnow().isoformat()
+                    })
+                    
+            except WebSocketDisconnect:
+                print(f"WebSocket disconnected: {user_id}")
+                break
+            except Exception as e:
+                print(f"WebSocket message error: {e}")
+                break
+                
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        websocket_manager.disconnect(websocket)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
