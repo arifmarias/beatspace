@@ -654,6 +654,12 @@ async def require_admin_or_manager(current_user: User = Depends(get_current_user
         raise HTTPException(status_code=403, detail="Admin or Manager access required")
     return current_user
 
+async def require_manager_or_admin(current_user: User = Depends(get_current_user)):
+    """Require Manager or Admin role for user management"""
+    if current_user.role not in [UserRole.MANAGER, UserRole.ADMIN]:
+        raise HTTPException(status_code=403, detail="Manager or Admin access required")
+    return current_user
+
 # Email notification functions
 def send_notification_email(to_email: str, subject: str, content: str):
     """Send notification email (demo implementation)"""
