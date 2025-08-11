@@ -1409,19 +1409,38 @@ async def update_offer_quote(
     
     # 🚀 REAL-TIME EVENT: Send WebSocket notification to buyer
     try:
-        # Get buyer information from the request - improved lookup
-        buyer_email = request.get("buyer_email") or request.get("created_by")
+        # Enhanced buyer email lookup - multiple fallback methods
+        buyer_email = None
         buyer_id = request.get("buyer_id")
         asset_name = request.get("asset_name", "Unknown Asset")
         
-        # If no buyer_email, try to get it from buyer_id
+        print(f"🔍 WebSocket Debug - Attempting buyer email lookup for request: {request_id}")
+        print(f"🔍 Request data - buyer_id: {buyer_id}, asset_name: {asset_name}")
+        
+        # Method 1: Direct email lookup from request (if available)
+        buyer_email = request.get("buyer_email") or request.get("created_by")
+        if buyer_email:
+            print(f"✅ Found buyer email directly from request: {buyer_email}")
+        
+        # Method 2: Lookup email using buyer_id
         if not buyer_email and buyer_id:
+            print(f"🔍 Looking up buyer email by ID: {buyer_id}")
             buyer_doc = await db.users.find_one({"id": buyer_id})
             if buyer_doc:
                 buyer_email = buyer_doc.get("email")
-                print(f"🔍 Found buyer email from buyer_id: {buyer_email}")
+                print(f"✅ Found buyer email from buyer_id lookup: {buyer_email}")
             else:
                 print(f"⚠️ Could not find buyer with ID: {buyer_id}")
+                
+        # Method 3: Alternative lookup by buyer_name if available
+        if not buyer_email:
+            buyer_name = request.get("buyer_name")
+            if buyer_name:
+                print(f"🔍 Attempting lookup by buyer_name: {buyer_name}")
+                buyer_doc = await db.users.find_one({"company_name": buyer_name})
+                if buyer_doc:
+                    buyer_email = buyer_doc.get("email")
+                    print(f"✅ Found buyer email from buyer_name lookup: {buyer_email}")
         
         if buyer_email:
             # Send real-time notification to buyer
@@ -1437,11 +1456,15 @@ async def update_offer_quote(
             }
             
             await websocket_manager.send_to_user(buyer_email, notification_data)
-            print(f"✅ Real-time notification sent to buyer: {buyer_email}")
-            print(f"📤 Notification data: {notification_data}")
+            print(f"✅ Real-time OFFER_QUOTED notification sent to buyer: {buyer_email}")
+            print(f"📤 Notification payload: {notification_data}")
         else:
-            print(f"⚠️ Could not send notification - no buyer email found for request: {request_id}")
-            print(f"🔍 Request data: buyer_id={buyer_id}, buyer_email={request.get('buyer_email')}, created_by={request.get('created_by')}")
+            print(f"❌ Could not determine buyer email for WebSocket notification")
+            print(f"🔍 Available request fields: {list(request.keys())}")
+            # Print first few chars of values for debugging
+            for key, value in request.items():
+                if key in ["buyer_id", "buyer_name", "buyer_email", "created_by"]:
+                    print(f"   {key}: {str(value)[:50]}...")
             
     except Exception as ws_error:
         print(f"❌ WebSocket notification failed: {ws_error}")
