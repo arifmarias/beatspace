@@ -291,7 +291,8 @@ const AdminDashboard = () => {
     website: '',
     address: '',
     role: 'buyer',
-    status: 'pending' // Default status for new users
+    status: 'pending', // Default status for new users
+    password: ''
   });
 
   // Campaign form state
