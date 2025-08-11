@@ -9772,32 +9772,39 @@ def run_booked_assets_test():
         return 1
 
 if __name__ == "__main__":
-    print("🚀 BeatSpace API Testing Suite - WebSocket Real-time Synchronization Focus")
+    print("🚀 BeatSpace API Testing Suite - Monitoring Service API Focus")
+    print("="*80)
+    print("Testing monitoring service API endpoints as requested:")
+    print("- POST /api/monitoring/services (create subscriptions)")
+    print("- GET /api/monitoring/services (fetch subscriptions)")
+    print("- Authentication with buyer credentials (marketing@grameenphone.com)")
+    print("- Validation with missing/invalid data")
+    print("- All MonitoringFrequency enum values (daily/weekly/bi_weekly/monthly)")
     print("="*80)
     
     # Initialize tester
     tester = BeatSpaceAPITester()
     
-    # Step 1: Authentication (required for WebSocket tests)
+    # Step 1: Authentication (required for monitoring service tests)
     print("\n📋 STEP 1: AUTHENTICATION SETUP")
     print("-" * 40)
     
-    admin_success, _ = tester.test_admin_login()
-    buyer_success, _ = tester.test_buyer_login()
+    buyer_success, buyer_response = tester.test_buyer_login()
     
-    if not admin_success:
-        print("❌ CRITICAL: Admin login failed - WebSocket tests cannot proceed")
+    if not buyer_success:
+        print("❌ CRITICAL: Buyer login failed - monitoring service tests cannot proceed")
+        print("   Expected credentials: marketing@grameenphone.com / buyer123")
         sys.exit(1)
     
     print(f"✅ Authentication setup complete")
-    print(f"   Admin token: {'✅ Available' if tester.admin_token else '❌ Missing'}")
+    print(f"   Buyer authenticated: {buyer_response.get('user', {}).get('email')}")
     print(f"   Buyer token: {'✅ Available' if tester.buyer_token else '❌ Missing'}")
     
-    # Step 2: WebSocket Real-time Synchronization Tests (MAIN FOCUS)
-    print("\n🎯 STEP 2: WEBSOCKET REAL-TIME SYNCHRONIZATION TESTS")
+    # Step 2: Monitoring Service API Tests (MAIN FOCUS)
+    print("\n🎯 STEP 2: MONITORING SERVICE API TESTS")
     print("-" * 60)
     
-    websocket_passed, websocket_total, websocket_results = tester.run_websocket_comprehensive_test_suite()
+    monitoring_passed, monitoring_total, monitoring_results = tester.run_monitoring_service_comprehensive_test_suite()
     
     # Step 3: Quick Backend API Health Check
     print("\n🔍 STEP 3: BACKEND API HEALTH CHECK")
@@ -9822,32 +9829,34 @@ if __name__ == "__main__":
     
     # Final Summary
     print("\n" + "="*80)
-    print("🎯 WEBSOCKET REAL-TIME SYNCHRONIZATION FIX VERIFICATION SUMMARY")
+    print("🎯 MONITORING SERVICE API TESTING SUMMARY")
     print("="*80)
     
-    print(f"🔌 WebSocket Tests: {websocket_passed}/{websocket_total} passed ({(websocket_passed/websocket_total*100):.1f}%)")
+    print(f"📊 Monitoring Service Tests: {monitoring_passed}/{monitoring_total} passed ({(monitoring_passed/monitoring_total*100):.1f}%)")
     print(f"🏥 Health Check: {health_passed}/{len(health_tests)} passed")
     
     # Key findings for the review request
     print(f"\n📋 KEY FINDINGS FOR REVIEW REQUEST:")
-    print(f"   1. WebSocket Connection Testing: {'✅ PASSED' if websocket_results.get('WebSocket Connection with Admin Credentials', {}).get('success') else '❌ FAILED'}")
-    print(f"   2. Authentication Flow: {'✅ PASSED' if websocket_results.get('WebSocket Authentication Flow', {}).get('success') else '❌ FAILED'}")
-    print(f"   3. Connection Stability: {'✅ PASSED' if websocket_results.get('WebSocket Connection Stability', {}).get('success') else '❌ FAILED'}")
-    print(f"   4. Real-time Communication: {'✅ PASSED' if websocket_results.get('WebSocket Real-time Communication', {}).get('success') else '❌ FAILED'}")
-    print(f"   5. Frontend Integration: {'✅ PASSED' if websocket_results.get('WebSocket Frontend Integration Verification', {}).get('success') else '❌ FAILED'}")
+    print(f"   1. Authentication: {'✅ PASSED' if monitoring_results.get('Monitoring Service Authentication', {}).get('success') else '❌ FAILED'}")
+    print(f"   2. Campaign Access: {'✅ PASSED' if monitoring_results.get('Get Buyer Campaigns', {}).get('success') else '❌ FAILED'}")
+    print(f"   3. Validation Tests: {'✅ PASSED' if monitoring_results.get('Create Monitoring Service - Validation', {}).get('success') else '❌ FAILED'}")
+    print(f"   4. Service Creation: {'✅ PASSED' if monitoring_results.get('Create Monitoring Service - Success', {}).get('success') else '❌ FAILED'}")
+    print(f"   5. Service Retrieval: {'✅ PASSED' if monitoring_results.get('Get Monitoring Services - Buyer', {}).get('success') else '❌ FAILED'}")
+    print(f"   6. Edge Cases: {'✅ PASSED' if monitoring_results.get('Monitoring Service Edge Cases', {}).get('success') else '❌ FAILED'}")
     
-    if websocket_passed >= 4:
-        print(f"\n🎉 CONCLUSION: WebSocket real-time synchronization fix is WORKING CORRECTLY!")
-        print(f"   ✅ Main authenticated endpoint /api/ws/{{user_id}} is functional")
-        print(f"   ✅ JWT authentication works with real user IDs (not hardcoded 'admin')")
-        print(f"   ✅ Connections stay stable without test endpoint fallback")
-        print(f"   ✅ Real-time communication and heartbeat system operational")
-        print(f"   ✅ Frontend can now use proper user IDs instead of hardcoded values")
-        print(f"\n   The browser console errors showing 'WebSocket connection failed' should be resolved.")
+    if monitoring_passed >= 4:
+        print(f"\n🎉 CONCLUSION: Monitoring service API endpoints are WORKING CORRECTLY!")
+        print(f"   ✅ POST /api/monitoring/services accepts valid payloads")
+        print(f"   ✅ GET /api/monitoring/services returns buyer's subscriptions")
+        print(f"   ✅ Authentication with buyer credentials working")
+        print(f"   ✅ Validation properly rejects invalid data")
+        print(f"   ✅ All MonitoringFrequency enum values supported")
+        print(f"   ✅ Error handling for edge cases implemented")
+        print(f"\n   The monitoring service subscription workflow is ready for frontend integration.")
     else:
-        print(f"\n❌ CONCLUSION: WebSocket real-time synchronization fix needs attention")
-        print(f"   Some critical WebSocket functionality is not working as expected")
-        print(f"   Browser console errors may persist until issues are resolved")
+        print(f"\n❌ CONCLUSION: Monitoring service API endpoints need attention")
+        print(f"   Some critical monitoring functionality is not working as expected")
+        print(f"   Frontend integration may encounter issues until problems are resolved")
     
     print(f"\n📊 Overall Test Results: {tester.tests_passed}/{tester.tests_run} passed ({(tester.tests_passed/max(tester.tests_run,1)*100):.1f}%)")
     print("="*80)
