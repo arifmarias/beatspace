@@ -371,7 +371,7 @@ const OperatorDashboard = () => {
             }
           });
         } else if (upload.type === 'report') {
-          await axios.post(`${API}/monitoring/tasks/${upload.taskId}/report`, upload.data, { headers });
+          await axios.post(`${API}/api/monitoring/tasks/${upload.taskId}/report`, upload.data, { headers });
         }
       }
 
