@@ -106,38 +106,69 @@ const ManagerDashboard = () => {
     }
   }, [currentUser, fetchInProgress, navigate]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (retryCount = 0) => {
+    // Prevent concurrent requests
+    if (fetchInProgress) {
+      console.log('Fetch already in progress, skipping...');
+      return;
+    }
+
     try {
+      setFetchInProgress(true);
       setLoading(true);
       const headers = getAuthHeaders();
       
-      // Fetch all data concurrently
+      console.log('Fetching dashboard data...');
+      
+      // Fetch all data concurrently with timeout
+      const requestConfig = { 
+        headers, 
+        timeout: 10000 // 10 second timeout
+      };
+      
       const [tasksRes, operatorsRes, servicesRes, performanceRes] = await Promise.all([
-        axios.get(`${API}/api/monitoring/tasks`, { headers }),
-        axios.get(`${API}/api/users?role=monitoring_operator`, { headers }),
-        axios.get(`${API}/api/monitoring/services`, { headers }),
-        axios.get(`${API}/api/monitoring/performance`, { headers })
+        axios.get(`${API}/api/monitoring/tasks`, requestConfig),
+        axios.get(`${API}/api/users?role=monitoring_operator`, requestConfig),
+        axios.get(`${API}/api/monitoring/services`, requestConfig),
+        axios.get(`${API}/api/monitoring/performance`, requestConfig)
       ]);
       
+      console.log('Dashboard data fetched successfully');
+      
       setTasks(tasksRes.data.tasks || []);
-      setOperators(operatorsRes.data.users || []);
+      setOperators(operatorsRes.data || []); // Note: users endpoint returns users directly, not nested in 'users'
       setServices(servicesRes.data.services || []);
-      setPerformance(performanceRes.data.performance || []);
+      setPerformance(performanceRes.data || {});
       
       // Calculate statistics
       calculateStats(tasksRes.data.tasks || []);
       
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      notify.error('Failed to load dashboard data');
+      
+      // Implement exponential backoff for retries
+      if (retryCount < 3 && error.code !== 'ECONNABORTED') {
+        const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+        console.log(`Retrying in ${delay}ms... (attempt ${retryCount + 1}/3)`);
+        
+        setTimeout(() => {
+          setFetchInProgress(false); // Reset flag before retry
+          fetchDashboardData(retryCount + 1);
+        }, delay);
+        return;
+      }
+      
+      // Show user-friendly error after all retries failed
+      notify.error(`Failed to load dashboard data${retryCount > 0 ? ' after ' + (retryCount + 1) + ' attempts' : ''}`);
       
       // Set empty arrays to prevent undefined errors
       setTasks([]);
       setOperators([]);
       setServices([]);
-      setPerformance([]);
+      setPerformance({});
     } finally {
       setLoading(false);
+      setFetchInProgress(false);
     }
   };
 
