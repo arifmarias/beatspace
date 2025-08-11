@@ -94,9 +94,17 @@ frontend:
           agent: "main"
           comment: "Current filtering logic shows offers with 'Quoted' status correctly. The getActiveOffersByBuyer function filters out 'Approved' and 'Rejected' offers but keeps 'Quoted' offers visible. Manual verification shows offers are visible after quoting."
 
+test_plan:
+  current_focus:
+    - "WebSocket Real-time Synchronization Implementation"
+    - "WebSocket Real-time Connection and Event Handling"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+  
 ## agent_communication:
      - agent: "main"
-       message: "WORKFLOW VERIFICATION STATUS: ✅ Step 1 WORKING: Buyer can create campaign, add assets, request offers - Admin can see requests in Offer Mediation tab and quote prices. ✅ Admin quoting functionality working - offers show 'Quoted' status with admin quoted prices. ❌ Step 2 MISSING: Buyer approve/reject functionality missing - no backend endpoint or frontend UI for buyers to approve/reject quoted offers. ❌ Step 3 INCOMPLETE: Asset status update to 'Booked/Live' after buyer approval missing. Need to implement buyer approve/reject endpoints and UI, then complete asset status lifecycle."
+       message: "✅ WEBSOCKET INFRASTRUCTURE FIXES COMPLETE: Fixed critical backend registration issue by moving WebSocket endpoints from api_router.websocket to app.websocket. Removed uvicorn --workers parameter that was breaking WebSocket state management. Both test endpoint (/api/test-ws) and main authenticated endpoint (/api/ws/{user_id}) are now fully functional with proper JWT authentication, connection management, and ping/pong heartbeat. Backend WebSocket infrastructure is production-ready. Need to test frontend WebSocket connections and verify real-time dashboard synchronization between Admin and Buyer interfaces for offer workflow events."
 
 # Protocol Guidelines for Main agent
 #
