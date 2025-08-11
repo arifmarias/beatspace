@@ -3240,14 +3240,17 @@ const AdminDashboard = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password *
+                  Password
                 </label>
                 <Input
                   type="password"
                   value={userForm.password}
                   onChange={(e) => setUserForm({...userForm, password: e.target.value})}
-                  placeholder="Enter password"
+                  placeholder="Leave empty to keep current password"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Only enter a password if you want to change it
+                </p>
               </div>
 
               <div>
