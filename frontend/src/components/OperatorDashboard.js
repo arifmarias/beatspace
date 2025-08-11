@@ -443,64 +443,401 @@ const OperatorDashboard = () => {
   const totalToday = todayTasks.length;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <h1 className="text-2xl font-bold mb-4">Operator Dashboard</h1>
-      
-      {/* Status indicator */}
-      <div className="bg-white p-4 rounded shadow mb-4">
-        <div className="flex items-center justify-between">
-          <span>Connection Status:</span>
-          <span className={`px-2 py-1 rounded text-sm ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            {isConnected ? 'Connected' : 'Disconnected'}
-          </span>
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <span>Network:</span>
-          <span className={`px-2 py-1 rounded text-sm ${isOnline ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-            {isOnline ? 'Online' : 'Offline'}
-          </span>
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Field Operations</h1>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <span>{completedToday}/{totalToday} completed today</span>
+                <div className={`flex items-center ${isOnline ? 'text-green-600' : 'text-red-600'}`}>
+                  {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button onClick={fetchMyTasks} size="sm" variant="ghost">
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+              <Button onClick={logout} size="sm" variant="outline">
+                <User className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tasks */}
-      <div className="bg-white rounded shadow p-4">
-        <h2 className="text-xl font-semibold mb-4">Today's Tasks ({tasks.length})</h2>
-        {loading ? (
-          <p>Loading tasks...</p>
-        ) : tasks.length > 0 ? (
-          <div className="space-y-3">
-            {tasks.map(task => (
-              <div key={task.id} className="border border-gray-200 rounded p-3">
+      {/* Main Content */}
+      <div className="pb-20"> {/* Bottom padding for mobile nav */}
+        {currentTask ? (
+          /* Task Execution Interface */
+          <div className="p-4 space-y-6">
+            {/* Current Task Header */}
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{task.asset_id}</p>
-                    <p className="text-sm text-gray-500">Status: {task.status}</p>
-                  </div>
-                  <button
-                    onClick={() => startTask(task)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    disabled={task.status === 'completed'}
-                  >
-                    {task.status === 'completed' ? 'Completed' : 'Start'}
-                  </button>
+                  <CardTitle className="text-lg">Current Task</CardTitle>
+                  <Badge variant="default">IN PROGRESS</Badge>
                 </div>
-              </div>
-            ))}
+                <p className="text-sm text-gray-600">
+                  Asset: {currentTask.asset_id.slice(0, 8)}...
+                </p>
+              </CardHeader>
+            </Card>
+
+            {/* Photo Capture Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Camera className="w-5 h-5 mr-2" />
+                  Photo Documentation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {photos.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {photos.map((photo, index) => (
+                        <div key={photo.id} className="relative">
+                          <img
+                            src={URL.createObjectURL(photo.file)}
+                            alt={`Photo ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border"
+                          />
+                          <div className="absolute top-1 right-1">
+                            {photo.uploaded ? (
+                              <CheckCircle2 className="w-5 h-5 text-green-500 bg-white rounded-full" />
+                            ) : (
+                              <Clock className="w-5 h-5 text-orange-500 bg-white rounded-full" />
+                            )}
+                          </div>
+                          {photo.location_verified && (
+                            <div className="absolute bottom-1 right-1 bg-green-500 text-white text-xs px-1 rounded">
+                              GPS ✓
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={capturePhoto}
+                    className="w-full h-12"
+                    size="lg"
+                    disabled={locationLoading}
+                  >
+                    {locationLoading ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    ) : (
+                      <Camera className="w-5 h-5 mr-2" />
+                    )}
+                    Capture Photo
+                  </Button>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Condition Assessment */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Star className="w-5 h-5 mr-2" />
+                  Condition Assessment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Overall Condition (1-10)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={reportData.overall_condition}
+                        onChange={(e) => setReportData(prev => ({
+                          ...prev,
+                          overall_condition: parseInt(e.target.value)
+                        }))}
+                        className="flex-1"
+                      />
+                      <span className="w-8 text-center font-semibold">
+                        {reportData.overall_condition}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Visibility Rating (1-10)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={reportData.visibility_rating}
+                        onChange={(e) => setReportData(prev => ({
+                          ...prev,
+                          visibility_rating: parseInt(e.target.value)
+                        }))}
+                        className="flex-1"
+                      />
+                      <span className="w-8 text-center font-semibold">
+                        {reportData.visibility_rating}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={reportData.maintenance_required}
+                        onChange={(e) => setReportData(prev => ({
+                          ...prev,
+                          maintenance_required: e.target.checked
+                        }))}
+                        className="rounded"
+                      />
+                      <span className="text-sm">Maintenance Required</span>
+                    </label>
+
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={reportData.urgent_issues}
+                        onChange={(e) => setReportData(prev => ({
+                          ...prev,
+                          urgent_issues: e.target.checked
+                        }))}
+                        className="rounded"
+                      />
+                      <span className="text-sm">Urgent Issues</span>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Notes
+                    </label>
+                    <Textarea
+                      value={reportData.notes}
+                      onChange={(e) => setReportData(prev => ({
+                        ...prev,
+                        notes: e.target.value
+                      }))}
+                      placeholder="Add any observations or issues..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Submit Report */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {!isOnline && (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                      <div className="flex items-center">
+                        <WifiOff className="w-5 h-5 text-orange-600 mr-2" />
+                        <span className="text-sm text-orange-800">
+                          Offline mode - Report will be submitted when connection returns
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={submitReport}
+                    className="w-full h-12"
+                    size="lg"
+                    disabled={photos.length === 0}
+                  >
+                    <CheckCircle2 className="w-5 h-5 mr-2" />
+                    Submit Report
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setCurrentTask(null);
+                      setSelectedTask(null);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Back to Tasks
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         ) : (
-          <p className="text-gray-500">No tasks assigned</p>
+          /* Task List Interface */
+          <div className="p-4">
+            {/* Today's Progress */}
+            <Card className="mb-6">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Today's Progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Completed</span>
+                    <span>{completedToday}/{totalToday}</span>
+                  </div>
+                  <Progress 
+                    value={totalToday > 0 ? (completedToday / totalToday) * 100 : 0} 
+                    className="h-2"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tasks List */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">My Tasks</h2>
+                {pendingUploads.length > 0 && (
+                  <Badge variant="outline" className="text-orange-600">
+                    {pendingUploads.length} pending
+                  </Badge>
+                )}
+              </div>
+
+              {todayTasks.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <CheckCircle2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No tasks assigned for today</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                todayTasks.map((task) => (
+                  <Card 
+                    key={task.id} 
+                    className={`cursor-pointer transition-colors ${
+                      task.status === 'completed' ? 'bg-green-50 border-green-200' : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => task.status !== 'completed' && startTask(task)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={getTaskStatusBadge(task.status)}>
+                            {task.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                          <Badge 
+                            className={getPriorityColor(task.priority)}
+                            variant="secondary"
+                          >
+                            {task.priority.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {new Date(task.scheduled_date).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center text-sm">
+                          <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                          <span>Asset: {task.asset_id.slice(0, 12)}...</span>
+                        </div>
+
+                        {task.special_instructions && (
+                          <div className="flex items-start text-sm text-gray-600">
+                            <FileText className="w-4 h-4 mr-2 text-gray-400 mt-0.5" />
+                            <span className="line-clamp-2">{task.special_instructions}</span>
+                          </div>
+                        )}
+
+                        {task.status === 'completed' && (
+                          <div className="flex items-center text-sm text-green-600">
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            <span>Completed at {new Date(task.completed_at).toLocaleTimeString()}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {task.status !== 'completed' && (
+                        <Button 
+                          onClick={() => startTask(task)}
+                          className="w-full mt-3" 
+                          size="sm"
+                        >
+                          <Zap className="w-4 h-4 mr-2" />
+                          Start Task
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Location info */}
-      {location.lat && (
-        <div className="bg-white rounded shadow p-4 mt-4">
-          <h3 className="font-semibold mb-2">Current Location</h3>
-          <p className="text-sm text-gray-600">
-            Lat: {location.lat.toFixed(6)}, Lng: {location.lng.toFixed(6)}
-          </p>
+      {/* Mobile Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="grid grid-cols-4 py-2">
+          <button 
+            className={`flex flex-col items-center py-2 px-1 ${activeTab === 'home' ? 'text-blue-600' : 'text-gray-600'}`}
+            onClick={() => setActiveTab('home')}
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-xs mt-1">Home</span>
+          </button>
+          
+          <button 
+            className={`flex flex-col items-center py-2 px-1 ${activeTab === 'tasks' ? 'text-blue-600' : 'text-gray-600'}`}
+            onClick={() => setActiveTab('tasks')}
+          >
+            <List className="w-5 h-5" />
+            <span className="text-xs mt-1">Tasks</span>
+            {todayTasks.filter(t => t.status !== 'completed').length > 0 && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+            )}
+          </button>
+          
+          <button 
+            className={`flex flex-col items-center py-2 px-1 ${activeTab === 'location' ? 'text-blue-600' : 'text-gray-600'}`}
+            onClick={() => setActiveTab('location')}
+          >
+            <Navigation className="w-5 h-5" />
+            <span className="text-xs mt-1">Navigate</span>
+          </button>
+          
+          <button 
+            className={`flex flex-col items-center py-2 px-1 ${activeTab === 'profile' ? 'text-blue-600' : 'text-gray-600'}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-xs mt-1">Settings</span>
+            {pendingUploads.length > 0 && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full"></div>
+            )}
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
     <div className="min-h-screen bg-gray-50">
