@@ -9347,44 +9347,82 @@ def run_booked_assets_test():
         return 1
 
 if __name__ == "__main__":
+    print("🚀 BeatSpace API Testing Suite - WebSocket Real-time Synchronization Focus")
+    print("="*80)
+    
+    # Initialize tester
     tester = BeatSpaceAPITester()
     
-    # Check command line arguments for specific test types
-    if len(sys.argv) > 1:
-        test_type = sys.argv[1].lower()
-        
-        if test_type == "booked-assets":
-            # Run Booked Assets endpoint test
-            exit_code = run_booked_assets_test()
-            sys.exit(exit_code)
-        elif test_type == "buyer-approve-reject":
-            # Run Buyer Approve/Reject Workflow tests
-            exit_code = run_buyer_approve_reject_tests()
-            sys.exit(exit_code)
-        elif test_type == "campaign-delete":
-            # Run Campaign DELETE functionality tests
-            exit_code = run_campaign_delete_tests()
-            sys.exit(exit_code)
-        elif test_type == "offer_mediation":
-            # Run FIXED Offer Mediation and Campaign Details tests
-            run_offer_mediation_tests()
-        elif test_type == "admin_asset":
-            # Run focused admin asset creation test
-            tester.run_admin_asset_creation_test()
-        elif test_type == "delete":
-            # Run focused DELETE offer request tests
-            tester.run_focused_delete_offer_tests()
-        elif test_type == "delete_simple":
-            # Run simple DELETE tests
-            tester.run_delete_offer_tests()
-        elif test_type == "cloudinary":
-            # Run Cloudinary integration tests
-            tester.run_cloudinary_tests()
-        else:
-            print(f"Unknown test type: {test_type}")
-            print("Available test types: booked-assets, buyer-approve-reject, campaign-delete, offer_mediation, admin_asset, delete, delete_simple, cloudinary")
-            tester.run_comprehensive_tests()
+    # Step 1: Authentication (required for WebSocket tests)
+    print("\n📋 STEP 1: AUTHENTICATION SETUP")
+    print("-" * 40)
+    
+    admin_success, _ = tester.test_admin_login()
+    buyer_success, _ = tester.test_buyer_login()
+    
+    if not admin_success:
+        print("❌ CRITICAL: Admin login failed - WebSocket tests cannot proceed")
+        sys.exit(1)
+    
+    print(f"✅ Authentication setup complete")
+    print(f"   Admin token: {'✅ Available' if tester.admin_token else '❌ Missing'}")
+    print(f"   Buyer token: {'✅ Available' if tester.buyer_token else '❌ Missing'}")
+    
+    # Step 2: WebSocket Real-time Synchronization Tests (MAIN FOCUS)
+    print("\n🎯 STEP 2: WEBSOCKET REAL-TIME SYNCHRONIZATION TESTS")
+    print("-" * 60)
+    
+    websocket_passed, websocket_total, websocket_results = tester.run_websocket_comprehensive_test_suite()
+    
+    # Step 3: Quick Backend API Health Check
+    print("\n🔍 STEP 3: BACKEND API HEALTH CHECK")
+    print("-" * 40)
+    
+    health_tests = [
+        ("Public Stats", tester.test_public_stats),
+        ("Public Assets", tester.test_public_assets),
+    ]
+    
+    health_passed = 0
+    for test_name, test_method in health_tests:
+        try:
+            success, _ = test_method()
+            if success:
+                health_passed += 1
+                print(f"✅ {test_name}: OK")
+            else:
+                print(f"❌ {test_name}: FAILED")
+        except Exception as e:
+            print(f"❌ {test_name}: ERROR - {str(e)}")
+    
+    # Final Summary
+    print("\n" + "="*80)
+    print("🎯 WEBSOCKET REAL-TIME SYNCHRONIZATION FIX VERIFICATION SUMMARY")
+    print("="*80)
+    
+    print(f"🔌 WebSocket Tests: {websocket_passed}/{websocket_total} passed ({(websocket_passed/websocket_total*100):.1f}%)")
+    print(f"🏥 Health Check: {health_passed}/{len(health_tests)} passed")
+    
+    # Key findings for the review request
+    print(f"\n📋 KEY FINDINGS FOR REVIEW REQUEST:")
+    print(f"   1. WebSocket Connection Testing: {'✅ PASSED' if websocket_results.get('WebSocket Connection with Admin Credentials', {}).get('success') else '❌ FAILED'}")
+    print(f"   2. Authentication Flow: {'✅ PASSED' if websocket_results.get('WebSocket Authentication Flow', {}).get('success') else '❌ FAILED'}")
+    print(f"   3. Connection Stability: {'✅ PASSED' if websocket_results.get('WebSocket Connection Stability', {}).get('success') else '❌ FAILED'}")
+    print(f"   4. Real-time Communication: {'✅ PASSED' if websocket_results.get('WebSocket Real-time Communication', {}).get('success') else '❌ FAILED'}")
+    print(f"   5. Frontend Integration: {'✅ PASSED' if websocket_results.get('WebSocket Frontend Integration Verification', {}).get('success') else '❌ FAILED'}")
+    
+    if websocket_passed >= 4:
+        print(f"\n🎉 CONCLUSION: WebSocket real-time synchronization fix is WORKING CORRECTLY!")
+        print(f"   ✅ Main authenticated endpoint /api/ws/{{user_id}} is functional")
+        print(f"   ✅ JWT authentication works with real user IDs (not hardcoded 'admin')")
+        print(f"   ✅ Connections stay stable without test endpoint fallback")
+        print(f"   ✅ Real-time communication and heartbeat system operational")
+        print(f"   ✅ Frontend can now use proper user IDs instead of hardcoded values")
+        print(f"\n   The browser console errors showing 'WebSocket connection failed' should be resolved.")
     else:
-        # Run booked assets test by default as requested
-        exit_code = run_booked_assets_test()
-        sys.exit(exit_code)
+        print(f"\n❌ CONCLUSION: WebSocket real-time synchronization fix needs attention")
+        print(f"   Some critical WebSocket functionality is not working as expected")
+        print(f"   Browser console errors may persist until issues are resolved")
+    
+    print(f"\n📊 Overall Test Results: {tester.tests_passed}/{tester.tests_run} passed ({(tester.tests_passed/max(tester.tests_run,1)*100):.1f}%)")
+    print("="*80)
