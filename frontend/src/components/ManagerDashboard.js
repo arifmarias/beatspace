@@ -173,7 +173,7 @@ const ManagerDashboard = () => {
     try {
       const headers = getAuthHeaders();
       
-      await axios.post(`${API}/monitoring/tasks/assign`, {
+      await axios.post(`${API}/api/monitoring/tasks/assign`, {
         task_ids: selectedTasks,
         operator_id: selectedOperator,
         priority: taskPriority,
