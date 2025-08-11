@@ -502,8 +502,7 @@ const OperatorDashboard = () => {
         </div>
       )}
     </div>
+  );
 };
-
-export default OperatorDashboard;
 
 export default OperatorDashboard;
