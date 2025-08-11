@@ -92,8 +92,6 @@ const ManagerDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Data Fetching
-  // Add request debouncing to prevent infinite loops
-  const [fetchInProgress, setFetchInProgress] = useState(false);
 
   useEffect(() => {
     if (currentUser?.role === 'manager') {
