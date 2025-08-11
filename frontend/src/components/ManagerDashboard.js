@@ -104,9 +104,7 @@ const ManagerDashboard = () => {
       // Only redirect if we have a user role but it's not manager
       navigate('/login');
     }
-    // Remove navigate from dependencies to prevent infinite loops
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, fetchInProgress, navigate]);
 
   const fetchDashboardData = async () => {
     try {
