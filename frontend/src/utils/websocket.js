@@ -22,7 +22,26 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Get authentication token from the auth system
   const getAuthToken = useCallback(() => {
-    return localStorage.getItem('beatspace_token') || sessionStorage.getItem('beatspace_token');
+    const localToken = localStorage.getItem('beatspace_token');
+    const sessionToken = sessionStorage.getItem('beatspace_token');
+    const token = localToken || sessionToken;
+    
+    console.log(`🔐 WebSocket: Token debugging:`);
+    console.log(`   localStorage token: ${localToken ? localToken.substring(0, 20) + '...' : 'null'}`);
+    console.log(`   sessionStorage token: ${sessionToken ? sessionToken.substring(0, 20) + '...' : 'null'}`);
+    console.log(`   Selected token: ${token ? token.substring(0, 20) + '...' : 'null'}`);
+    console.log(`   Token length: ${token ? token.length : 0}`);
+    
+    if (token) {
+      // Validate JWT structure (should have 3 parts separated by dots)
+      const parts = token.split('.');
+      console.log(`   JWT parts count: ${parts.length} (should be 3)`);
+      if (parts.length !== 3) {
+        console.error(`❌ Invalid JWT structure: Expected 3 parts, got ${parts.length}`);
+      }
+    }
+    
+    return token;
   }, []);
 
   // Get WebSocket URL from environment with authentication
