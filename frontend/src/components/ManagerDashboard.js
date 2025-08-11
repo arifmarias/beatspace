@@ -12,7 +12,7 @@ import { Progress } from './ui/progress';
 import { NotificationBell } from './ui/notification-bell';
 import { useWebSocket } from '../utils/websocket';
 import { useNotifications } from '../contexts/NotificationContext';
-import { getAuthHeaders } from '../utils/auth';
+import { getAuthHeaders, logout } from '../utils/auth';
 import axios from 'axios';
 import {
   Users, ClipboardList, TrendingUp, Clock, CheckCircle2,
