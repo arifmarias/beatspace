@@ -364,7 +364,7 @@ const OperatorDashboard = () => {
       
       for (const upload of pendingUploads) {
         if (upload.type === 'photo') {
-          await axios.post(`${API}/monitoring/upload-photo`, upload.data, {
+          await axios.post(`${API}/api/monitoring/upload-photo`, upload.data, {
             headers: {
               ...headers,
               'Content-Type': 'multipart/form-data'
