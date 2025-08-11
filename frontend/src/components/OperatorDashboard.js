@@ -142,7 +142,7 @@ const OperatorDashboard = () => {
       setLoading(true);
       const headers = getAuthHeaders();
       
-      const response = await axios.get(`${API}/monitoring/tasks`, { headers });
+      const response = await axios.get(`${API}/api/monitoring/tasks`, { headers });
       setTasks(response.data.tasks || []);
       
     } catch (error) {
