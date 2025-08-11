@@ -2583,6 +2583,21 @@ async def root():
     return {"message": "BeatSpace API v3.0 - Advanced Features Ready", "version": "3.0.0"}
 
 # WebSocket endpoint for real-time updates
+@api_router.websocket("/test-ws")
+async def websocket_test_endpoint(websocket: WebSocket):
+    """Simple WebSocket test endpoint without authentication"""
+    await websocket.accept()
+    print("🧪 Test WebSocket connected successfully!")
+    
+    try:
+        await websocket.send_text("Hello from test WebSocket!")
+        while True:
+            data = await websocket.receive_text()
+            print(f"🧪 Test WebSocket received: {data}")
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        print("🧪 Test WebSocket disconnected")
+
 @api_router.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     """
