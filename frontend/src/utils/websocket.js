@@ -54,14 +54,14 @@ export const useWebSocket = (userId, onMessage) => {
       return null;
     }
     
-    // Always use localhost for development when frontend is served from localhost
+    // TEMPORARY: Force localhost for debugging
     const currentUrl = window.location.href;
-    const isLocalDevelopment = currentUrl.includes('localhost:3000') || currentUrl.includes('127.0.0.1:3000');
+    const isLocalDevelopment = true; // Force local for debugging
     
     console.log('🔍 WebSocket URL Detection:');
     console.log(`   Current URL: ${currentUrl}`);
     console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`   isLocalDevelopment: ${isLocalDevelopment}`);
+    console.log(`   isLocalDevelopment: ${isLocalDevelopment} (forced)`);
     
     let wsUrl;
     if (isLocalDevelopment || process.env.NODE_ENV === 'development') {
