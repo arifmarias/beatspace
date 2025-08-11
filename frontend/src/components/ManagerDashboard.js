@@ -202,7 +202,7 @@ const ManagerDashboard = () => {
       const headers = getAuthHeaders();
       const today = new Date().toISOString().split('T')[0];
       
-      const response = await axios.post(`${API}/monitoring/generate-tasks`, { date: today }, { headers });
+      const response = await axios.post(`${API}/api/monitoring/generate-tasks`, { date: today }, { headers });
       
       notify.success(response.data.message);
       fetchDashboardData();
