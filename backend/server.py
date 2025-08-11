@@ -2832,7 +2832,7 @@ async def websocket_endpoint_main(websocket: WebSocket, user_id: str):
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
-        websocket_manager.disconnect(websocket)
+        websocket_manager.disconnect(websocket, user_id)
 
 app.add_middleware(
     CORSMiddleware,
