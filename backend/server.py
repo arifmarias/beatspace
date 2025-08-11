@@ -2913,7 +2913,15 @@ async def get_monitoring_tasks(
             query["assigned_operator_id"] = operator_id
         
         tasks = await db.monitoring_tasks.find(query).sort("scheduled_date", 1).to_list(1000)
-        return {"tasks": tasks}
+        
+        # Convert ObjectIds to strings and clean data
+        cleaned_tasks = []
+        for task in tasks:
+            if "_id" in task:
+                del task["_id"]  # Remove MongoDB ObjectId
+            cleaned_tasks.append(task)
+        
+        return {"tasks": cleaned_tasks}
         
     except Exception as e:
         logger.error(f"Error fetching monitoring tasks: {str(e)}")
