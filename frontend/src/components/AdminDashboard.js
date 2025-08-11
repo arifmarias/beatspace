@@ -881,7 +881,8 @@ const AdminDashboard = () => {
       website: user.website || '',
       address: user.address || '',
       role: user.role || 'buyer',
-      status: user.status || 'pending'
+      status: user.status || 'pending',
+      password: '' // Empty password field for security
     });
     
     setEditingUser(user);
