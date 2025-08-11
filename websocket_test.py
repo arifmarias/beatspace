@@ -71,12 +71,12 @@ class WebSocketTester:
             self.log(f"   Connecting to: {ws_url}")
             
             # Set up headers with authentication if provided
-            headers = {}
+            additional_headers = {}
             if token:
-                headers["Authorization"] = f"Bearer {token}"
+                additional_headers["Authorization"] = f"Bearer {token}"
             
             # Connect to WebSocket
-            async with websockets.connect(ws_url, extra_headers=headers, ping_interval=20, ping_timeout=10) as websocket:
+            async with websockets.connect(ws_url, additional_headers=additional_headers, ping_interval=20, ping_timeout=10) as websocket:
                 self.log(f"✅ WebSocket connected successfully")
                 
                 # Test basic message exchange
