@@ -2847,31 +2847,23 @@ async def create_monitoring_service(
 async def get_monitoring_services(current_user: User = Depends(get_current_user)):
     """Get monitoring services for current user"""
     try:
-        # Return empty data first to test endpoint structure
-        return {"services": []}
+        query = {"buyer_id": current_user.id} if current_user.role == UserRole.BUYER else {}
         
-        # TODO: Re-enable after confirming endpoint works
-        # query = {"buyer_id": current_user.id} if current_user.role == UserRole.BUYER else {}
-        # 
-        # if current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
-        #     # Admins and managers can see all services
-        #     query = {}
-        # 
-        # # Check if collection exists, if not return empty list
-        # try:
-        #     services = await db.monitoring_subscriptions.find(query).to_list(1000)
-        # except Exception:
-        #     # Collection might not exist yet
-        #     services = []
-        # 
-        # # Convert ObjectIds to strings and clean data
-        # cleaned_services = []
-        # for service in services:
-        #     if "_id" in service:
-        #         del service["_id"]  # Remove MongoDB ObjectId
-        #     cleaned_services.append(service)
-        # 
-        # return {"services": cleaned_services}
+        if current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
+            # Admins and managers can see all services
+            query = {}
+        
+        # Test: Just try the database query
+        try:
+            services = await db.monitoring_subscriptions.find(query).to_list(1000)
+            logger.info(f"Found {len(services)} services in database")
+            
+            # Return empty for now to isolate the issue
+            return {"services": [], "debug_count": len(services)}
+            
+        except Exception as e:
+            logger.error(f"Database query error: {str(e)}")
+            return {"services": [], "error": str(e)}
         
     except Exception as e:
         logger.error(f"Error fetching monitoring services: {str(e)}")
