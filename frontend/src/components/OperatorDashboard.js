@@ -314,6 +314,16 @@ const OperatorDashboard = () => {
                 )}
                 <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
               </div>
+              
+              {/* Logout Button */}
+              <Button
+                variant="ghost"
+                onClick={logout}
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                Sign Out
+              </Button>
             </div>
           </div>
         </div>
