@@ -3218,6 +3218,197 @@ def calculate_gps_distance(loc1: Dict[str, float], loc2: Dict[str, float]) -> fl
     except Exception:
         return 999.0  # Return large distance if calculation fails
 
+# ============= PHOTO UPLOAD & MANAGEMENT =============
+
+@api_router.post("/monitoring/upload-photo")
+async def upload_monitoring_photo(
+    file: UploadFile = File(...),
+    task_id: str = Form(...),
+    angle: str = Form(...),
+    gps_lat: float = Form(...),
+    gps_lng: float = Form(...),
+    operator: User = Depends(require_monitoring_operator)
+):
+    """Upload photo for monitoring task with GPS validation"""
+    try:
+        # Verify task belongs to operator
+        task = await db.monitoring_tasks.find_one({"id": task_id, "assigned_operator_id": operator.id})
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found or not assigned to you")
+        
+        # Validate file type
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Only image files are allowed")
+        
+        # Generate unique filename
+        file_extension = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+        unique_filename = f"monitoring_{task_id}_{angle}_{int(datetime.utcnow().timestamp())}.{file_extension}"
+        
+        # For demo purposes, save to local storage (in production, use cloud storage)
+        import os
+        upload_dir = "/app/uploads/monitoring"
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, unique_filename)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        # Calculate GPS distance from asset location
+        gps_location = {"lat": gps_lat, "lng": gps_lng}
+        distance_accuracy = 999.0
+        location_verified = False
+        
+        if task.get("asset_location"):
+            distance_accuracy = calculate_gps_distance(gps_location, task["asset_location"])
+            location_verified = distance_accuracy <= 50.0  # 50 meter tolerance
+        
+        # Create photo metadata
+        photo_metadata = {
+            "id": str(uuid.uuid4()),
+            "url": f"/uploads/monitoring/{unique_filename}",
+            "angle": angle,
+            "timestamp": datetime.utcnow().isoformat(),
+            "gps_location": gps_location,
+            "distance_accuracy": distance_accuracy,
+            "location_verified": location_verified,
+            "file_size": len(content),
+            "filename": unique_filename,
+            "quality_score": 8.5  # Auto-calculated in production
+        }
+        
+        # Store photo metadata in task
+        await db.monitoring_tasks.update_one(
+            {"id": task_id},
+            {
+                "$push": {"photos": photo_metadata},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        return {
+            "message": "Photo uploaded successfully",
+            "photo_id": photo_metadata["id"],
+            "location_verified": location_verified,
+            "distance_accuracy": round(distance_accuracy, 2)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading photo: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error uploading photo: {str(e)}")
+
+@api_router.get("/monitoring/photos/{photo_filename}")
+async def get_monitoring_photo(
+    photo_filename: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Retrieve monitoring photo with access control"""
+    try:
+        import os
+        from fastapi.responses import FileResponse
+        
+        file_path = f"/app/uploads/monitoring/{photo_filename}"
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Photo not found")
+        
+        # For production, add proper access control based on subscription ownership
+        # For now, allow any authenticated user to view photos
+        
+        return FileResponse(
+            path=file_path,
+            media_type="image/jpeg",
+            headers={"Cache-Control": "public, max-age=3600"}
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving photo: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving photo: {str(e)}")
+
+# ============= AUTOMATED TASK GENERATION =============
+
+@api_router.post("/monitoring/generate-tasks")
+async def generate_tasks_for_date(
+    date: str,
+    manager: User = Depends(require_manager)
+):
+    """Generate monitoring tasks for a specific date"""
+    try:
+        target_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
+        
+        # Get all active subscriptions
+        subscriptions = await db.monitoring_subscriptions.find({"status": "active"}).to_list(1000)
+        
+        tasks_created = 0
+        for subscription in subscriptions:
+            # Check if this date matches the subscription frequency
+            if should_generate_task_for_date(subscription, target_date):
+                for asset_id in subscription["asset_ids"]:
+                    # Check if task already exists for this date
+                    existing_task = await db.monitoring_tasks.find_one({
+                        "subscription_id": subscription["id"],
+                        "asset_id": asset_id,
+                        "scheduled_date": {
+                            "$gte": target_date.replace(hour=0, minute=0, second=0),
+                            "$lt": target_date.replace(hour=23, minute=59, second=59)
+                        }
+                    })
+                    
+                    if not existing_task:
+                        # Get asset location
+                        asset = await db.assets.find_one({"id": asset_id})
+                        asset_location = asset.get("gps_coordinates") if asset else None
+                        
+                        # Create task
+                        task = MonitoringTask(
+                            subscription_id=subscription["id"],
+                            asset_id=asset_id,
+                            scheduled_date=target_date,
+                            due_date=target_date + timedelta(hours=4),
+                            asset_location=asset_location,
+                            priority=TaskPriority.MEDIUM
+                        )
+                        
+                        await db.monitoring_tasks.insert_one(task.dict())
+                        tasks_created += 1
+        
+        return {"message": f"Generated {tasks_created} monitoring tasks for {date}", "tasks_created": tasks_created}
+        
+    except Exception as e:
+        logger.error(f"Error generating tasks: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating tasks: {str(e)}")
+
+def should_generate_task_for_date(subscription: dict, target_date: datetime) -> bool:
+    """Determine if a task should be generated for the given date based on frequency"""
+    try:
+        start_date = subscription.get("start_date")
+        if isinstance(start_date, str):
+            start_date = datetime.fromisoformat(start_date)
+        
+        # Calculate days since start
+        days_diff = (target_date.date() - start_date.date()).days
+        
+        frequency = subscription.get("frequency")
+        
+        if frequency == MonitoringFrequency.DAILY:
+            return days_diff >= 0
+        elif frequency == MonitoringFrequency.WEEKLY:
+            return days_diff >= 0 and days_diff % 7 == 0
+        elif frequency == MonitoringFrequency.BI_WEEKLY:
+            return days_diff >= 0 and days_diff % 14 == 0
+        elif frequency == MonitoringFrequency.MONTHLY:
+            return days_diff >= 0 and days_diff % 30 == 0
+        else:  # CUSTOM
+            # Custom frequency handling would go here
+            return False
+            
+    except Exception:
+        return False
+
 # WebSocket endpoint for real-time updates
 # WebSocket endpoints moved to app level - router endpoints removed
 
