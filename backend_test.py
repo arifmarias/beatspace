@@ -1308,7 +1308,7 @@ class BeatSpaceAPITester:
         if self.buyer_token:
             print("   Test 2: Buyer dashboard WebSocket connection")
             buyer_integration_success = self._test_frontend_websocket_scenario(
-                user_id="buyer@company.com",
+                user_id="buy@demo.com",
                 token=self.buyer_token,
                 scenario="buyer_dashboard"
             )
