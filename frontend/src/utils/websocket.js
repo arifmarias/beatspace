@@ -54,30 +54,26 @@ export const useWebSocket = (userId, onMessage) => {
       return null;
     }
     
-    // WebSocket URL detection - Force localhost backend in containerized environment
+    // Force localhost backend in container environment - override all detection
     const currentUrl = window.location.href;
-    const isLocalDevelopment = currentUrl.includes('localhost:3000') || currentUrl.includes('127.0.0.1:3000');
-    const isContainerEnvironment = true; // Force localhost backend in container
+    const FORCE_LOCALHOST_BACKEND = true; // Always use localhost:8001 for WebSocket in container
     
     console.log('🔍 WebSocket URL Detection:');
     console.log(`   Current URL: ${currentUrl}`);
     console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`   isLocalDevelopment: ${isLocalDevelopment}`);
-    console.log(`   isContainerEnvironment: ${isContainerEnvironment}`);
+    console.log(`   FORCE_LOCALHOST_BACKEND: ${FORCE_LOCALHOST_BACKEND}`);
     
     let wsUrl;
-    if (isLocalDevelopment || isContainerEnvironment) {
-      // Development/Container: use local WebSocket with authentication
+    if (FORCE_LOCALHOST_BACKEND) {
+      // Container: Always use localhost backend regardless of frontend domain
       wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
-      console.log('🏠 WebSocket: Using local backend URL (localhost:8001)');
+      console.log('🚀 WebSocket: FORCED localhost backend URL (localhost:8001)');
     } else {
-      // Production: use environment URL - convert HTTPS to WSS
+      // This branch should never be reached in container environment
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
       const wsBaseUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
       wsUrl = `${wsBaseUrl}/api/ws/${userId}?token=${token}`;
       console.log('🌐 WebSocket: Using production URL');
-      console.log(`   Backend URL: ${backendUrl}`);
-      console.log(`   WebSocket URL: ${wsUrl.substring(0, 80)}...`);
     }
     
     return wsUrl;
