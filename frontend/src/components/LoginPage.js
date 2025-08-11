@@ -64,6 +64,12 @@ const LoginPage = () => {
         case 'admin':
           navigate('/admin/dashboard');
           break;
+        case 'manager':
+          navigate('/manager/dashboard');
+          break;
+        case 'monitoring_operator':
+          navigate('/operator/dashboard');
+          break;
         default:
           navigate('/marketplace');
       }
