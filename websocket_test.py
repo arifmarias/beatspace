@@ -50,6 +50,8 @@ class WebSocketTester:
 
         # Buyer login - try multiple buyer accounts
         buyer_accounts = [
+            {"email": "buy@demo.com", "password": "demo123"},
+            {"email": "buy2@demo.com", "password": "demo123"},
             {"email": "marketing@grameenphone.com", "password": "buyer123"},
             {"email": "buyer@company.com", "password": "buyer123"}
         ]
