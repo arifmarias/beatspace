@@ -380,6 +380,188 @@ class MonitoringRecordCreate(BaseModel):
     inspector: str = ""
     gps_location: Optional[Dict[str, float]] = None
 
+# ====================================
+# MONITORING SERVICE DATA MODELS - PHASE 1
+# ====================================
+
+class MonitoringFrequency(str, Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BI_WEEKLY = "bi_weekly"
+    MONTHLY = "monthly"
+    CUSTOM = "custom"
+
+class TaskStatus(str, Enum):
+    PENDING = "pending"
+    ASSIGNED = "assigned"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    OVERDUE = "overdue"
+    CANCELLED = "cancelled"
+
+class TaskPriority(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
+
+class MonitoringServiceSubscription(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    buyer_id: str
+    asset_ids: List[str]
+    frequency: MonitoringFrequency
+    start_date: datetime
+    end_date: datetime
+    custom_schedule: Optional[Dict[str, Any]] = None  # For custom frequencies
+    notification_preferences: Dict[str, bool] = Field(default_factory=lambda: {
+        "email": True,
+        "in_app": True,
+        "sms": False
+    })
+    service_level: str = "standard"  # standard, premium
+    status: str = "active"  # active, paused, expired, cancelled
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class MonitoringTask(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    subscription_id: str
+    asset_id: str
+    assigned_operator_id: Optional[str] = None
+    status: TaskStatus = TaskStatus.PENDING
+    priority: TaskPriority = TaskPriority.MEDIUM
+    scheduled_date: datetime
+    due_date: datetime
+    completed_at: Optional[datetime] = None
+    estimated_duration: int = 30  # minutes
+    
+    # GPS and Location
+    asset_location: Optional[Dict[str, float]] = None  # lat, lng
+    operator_location: Optional[Dict[str, float]] = None
+    location_verified: bool = False
+    
+    # Task Requirements
+    required_photos: List[str] = Field(default_factory=lambda: ["front", "back", "close_up"])
+    required_checks: List[str] = Field(default_factory=lambda: ["condition", "lighting", "visibility"])
+    special_instructions: str = ""
+    
+    # Route Optimization
+    route_order: Optional[int] = None
+    estimated_travel_time: Optional[int] = None  # minutes from previous task
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class MonitoringReport(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    task_id: str
+    operator_id: str
+    asset_id: str
+    subscription_id: str
+    
+    # Photo Documentation
+    photos: List[Dict[str, Any]] = []  # {url, angle, timestamp, gps, quality_score}
+    photo_metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    # Condition Assessment
+    overall_condition: int = Field(ge=1, le=10)  # 1-10 rating
+    condition_details: Dict[str, Any] = Field(default_factory=dict)
+    issues_found: List[str] = []
+    maintenance_required: bool = False
+    urgent_issues: bool = False
+    
+    # Environmental Data
+    weather_condition: str = "clear"
+    lighting_condition: str = "good"
+    visibility_rating: int = Field(ge=1, le=10)
+    
+    # Operator Notes
+    notes: str = ""
+    voice_notes: List[str] = []  # URLs to voice recordings
+    completion_time: int = 0  # minutes spent on task
+    
+    # GPS Verification
+    gps_location: Dict[str, float] = Field(default_factory=dict)  # actual location when report submitted
+    location_accuracy: float = 0.0  # meters
+    location_verified: bool = False
+    
+    # Quality Control
+    quality_score: float = 0.0  # auto-calculated quality score
+    requires_review: bool = False
+    reviewed_by: Optional[str] = None
+    review_notes: Optional[str] = None
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    submitted_at: Optional[datetime] = None
+
+class OperatorPerformance(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    operator_id: str
+    date: datetime
+    
+    # Task Metrics
+    tasks_assigned: int = 0
+    tasks_completed: int = 0
+    tasks_overdue: int = 0
+    completion_rate: float = 0.0
+    
+    # Quality Metrics
+    average_quality_score: float = 0.0
+    reports_requiring_review: int = 0
+    customer_satisfaction: float = 0.0
+    
+    # Efficiency Metrics
+    average_task_time: float = 0.0  # minutes
+    route_efficiency: float = 0.0  # actual vs optimal travel time
+    photos_per_task: float = 0.0
+    
+    # Location and Movement
+    total_distance_traveled: float = 0.0  # kilometers
+    locations_visited: int = 0
+    gps_accuracy_average: float = 0.0
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+# Create/Update Models for API endpoints
+class MonitoringServiceCreate(BaseModel):
+    campaign_id: str
+    asset_ids: List[str]
+    frequency: MonitoringFrequency
+    start_date: datetime
+    end_date: datetime
+    custom_schedule: Optional[Dict[str, Any]] = None
+    notification_preferences: Optional[Dict[str, bool]] = None
+    service_level: str = "standard"
+
+class TaskAssignment(BaseModel):
+    task_ids: List[str]
+    operator_id: str
+    priority: Optional[TaskPriority] = None
+    special_instructions: Optional[str] = None
+
+class TaskUpdate(BaseModel):
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    assigned_operator_id: Optional[str] = None
+    special_instructions: Optional[str] = None
+    scheduled_date: Optional[datetime] = None
+
+class MonitoringReportSubmit(BaseModel):
+    photos: List[Dict[str, Any]]
+    overall_condition: int = Field(ge=1, le=10)
+    condition_details: Optional[Dict[str, Any]] = None
+    issues_found: Optional[List[str]] = []
+    maintenance_required: bool = False
+    urgent_issues: bool = False
+    weather_condition: Optional[str] = "clear"
+    lighting_condition: Optional[str] = "good"
+    visibility_rating: Optional[int] = Field(ge=1, le=10, default=8)
+    notes: Optional[str] = ""
+    voice_notes: Optional[List[str]] = []
+    gps_location: Dict[str, float]
+    completion_time: Optional[int] = None
+
 class FinalOfferCreate(BaseModel):
     request_id: str
     campaign_id: str
