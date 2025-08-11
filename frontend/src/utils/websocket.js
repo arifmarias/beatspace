@@ -60,14 +60,8 @@ export const useWebSocket = (userId, onMessage) => {
     
     let wsUrl;
     if (isLocalDevelopment || process.env.NODE_ENV === 'development') {
-      // TEMPORARY: Test with simple WebSocket endpoint first
-      if (userId === 'admin') {
-        console.log('🧪 WebSocket: Using test endpoint for debugging');
-        wsUrl = `ws://localhost:8001/api/test-ws`;
-      } else {
-        // Development: use local WebSocket with authentication
-        wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
-      }
+      // Development: use local WebSocket with authentication
+      wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
       console.log('🏠 WebSocket: Using local development URL (localhost:8001)');
     } else {
       // Production: use environment URL
