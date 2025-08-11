@@ -651,8 +651,9 @@ const ManagerDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {operators.map((operator) => {
-                      const operatorTasks = tasks.filter(t => t.assigned_operator_id === operator.id);
+                    {(Array.isArray(operators) ? operators : []).map((operator) => {
+                      const safeTasks = Array.isArray(tasks) ? tasks : [];
+                      const operatorTasks = safeTasks.filter(t => t.assigned_operator_id === operator.id);
                       const activeTasks = operatorTasks.filter(t => ['assigned', 'in_progress'].includes(t.status));
                       const completedToday = operatorTasks.filter(t => 
                         t.status === 'completed' && 
