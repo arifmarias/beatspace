@@ -219,13 +219,17 @@ const ManagerDashboard = () => {
       
       notify.success(`Assigned ${selectedTasks.length} tasks to operator`);
       
-      // Reset state and refresh data
+      // Reset state and refresh data (with debouncing)
       setSelectedTasks([]);
       setSelectedOperator('');
       setTaskPriority('medium');
       setSpecialInstructions('');
       setAssignmentDialog(false);
-      fetchDashboardData();
+      
+      // Only refresh if not already fetching
+      if (!fetchInProgress) {
+        setTimeout(() => fetchDashboardData(), 500); // Small delay to prevent rapid-fire requests
+      }
       
     } catch (error) {
       console.error('Error assigning tasks:', error);
