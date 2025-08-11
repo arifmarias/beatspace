@@ -3235,6 +3235,18 @@ const AdminDashboard = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password *
+                </label>
+                <Input
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({...userForm, password: e.target.value})}
+                  placeholder="Enter password"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Role *
                 </label>
                 <Select 
