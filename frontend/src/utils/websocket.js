@@ -228,8 +228,15 @@ export const useWebSocket = (userId, onMessage) => {
       };
 
       websocketRef.current.onerror = (error) => {
-        console.error('🚫 WebSocket: Connection error:', error);
-        setError('WebSocket connection error');
+        clearTimeout(connectionTimeout);
+        console.error('🚫 WebSocket: Connection error occurred:', error);
+        console.error('🚫 WebSocket: Error event details:', {
+          type: error.type,
+          target: error.target,
+          readyState: error.target?.readyState
+        });
+        console.error('🚫 WebSocket: Attempted URL:', wsUrl.replace(/token=[^&]+/, 'token=***'));
+        setError(`WebSocket connection error: ${error.type || 'Unknown error'}`);
         setIsConnected(false);
         connectingRef.current = false; // Clear connecting flag on error
       };
