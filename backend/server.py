@@ -1802,16 +1802,21 @@ async def refresh_application_data(current_user: User = Depends(require_admin)):
 async def get_live_assets(current_user: User = Depends(get_current_user)):
     """Get live assets for the current buyer"""
     try:
-        # Filter assets by buyer and Live status
+        # Filter assets by buyer and Live status, excluding demo/test data
         live_assets = await db.assets.find({
             "status": AssetStatus.LIVE,
-            "buyer_id": current_user.id
+            "buyer_id": current_user.id,
+            # Exclude demo/test data by filtering out common demo patterns
+            "name": {"$not": {"$regex": "(?i)demo|test|sample"}},
+            "seller_name": {"$not": {"$regex": "(?i)demo|test|sample"}}
         }).to_list(None)
         
-        # Get approved/accepted offers for campaign details
+        # Get approved/accepted offers for campaign details, excluding demo campaigns
         approved_offers = await db.offer_requests.find({
             "buyer_id": current_user.id,
-            "status": {"$in": ["Approved", "Accepted"]}  # Include both statuses
+            "status": {"$in": ["Approved", "Accepted"]},  # Include both statuses
+            # Exclude demo/test campaigns
+            "campaign_name": {"$not": {"$regex": "(?i)demo|test|sample"}}
         }).to_list(None)
         
         # Create lookup for offers by asset_id for campaign details
