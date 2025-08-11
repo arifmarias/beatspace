@@ -89,6 +89,22 @@ const BuyerDashboard = () => {
     sms: false
   });
   
+  // Monitoring Subscription Form State
+  const [monitoringFormData, setMonitoringFormData] = useState({
+    frequency: 'weekly',
+    startDate: null,
+    endDate: null,
+    selectedAssets: [],
+    serviceLevel: 'standard',
+    notificationPreferences: {
+      email: true,
+      in_app: true,
+      sms: false
+    }
+  });
+  const [campaignAssetsForMonitoring, setCampaignAssetsForMonitoring] = useState([]);
+  const [monitoringSubmitting, setMonitoringSubmitting] = useState(false);
+  
   // Initialize activeTab based on URL parameter, default to 'my-assets'
   const [activeTab, setActiveTab] = useState(() => {
     const urlParams = new URLSearchParams(location.search);
