@@ -3141,7 +3141,7 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleCreateUser}
                 className="bg-blue-600 hover:bg-blue-700"
-                disabled={!userForm.company_name || !userForm.contact_name || !userForm.email}
+                disabled={!userForm.company_name || !userForm.contact_name || !userForm.email || !userForm.password}
               >
                 Create User
               </Button>
