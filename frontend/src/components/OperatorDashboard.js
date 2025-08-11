@@ -8,7 +8,7 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useWebSocket } from '../utils/websocket';
 import { useNotifications } from '../contexts/NotificationContext';
-import { getUser, getAuthHeaders } from '../utils/auth';
+import { getUser, getAuthHeaders, logout } from '../utils/auth';
 import axios from 'axios';
 import {
   Home, ClipboardList, Navigation, Settings, MapPin, Camera,
