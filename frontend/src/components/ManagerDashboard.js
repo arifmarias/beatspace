@@ -189,10 +189,8 @@ const ManagerDashboard = () => {
       setSpecialInstructions('');
       setAssignmentDialog(false);
       
-      // Only refresh if not already fetching
-      if (!fetchInProgress) {
-        setTimeout(() => fetchDashboardData(), 500); // Small delay to prevent rapid-fire requests
-      }
+      // Refresh data with small delay
+      setTimeout(() => fetchDashboardData(), 500); // Small delay to prevent rapid-fire requests
       
     } catch (error) {
       console.error('Error assigning tasks:', error);
