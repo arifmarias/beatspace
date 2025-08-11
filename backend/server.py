@@ -2793,6 +2793,431 @@ async def request_inspection(asset_id: str, request_data: dict, current_user: di
 async def root():
     return {"message": "BeatSpace API v3.0 - Advanced Features Ready", "version": "3.0.0"}
 
+# ====================================
+# MONITORING SERVICE API ENDPOINTS - PHASE 1 & 2
+# ====================================
+
+# ============= MONITORING SERVICE MANAGEMENT =============
+
+@api_router.post("/monitoring/services")
+async def create_monitoring_service(
+    service_data: MonitoringServiceCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new monitoring service subscription for a campaign"""
+    try:
+        # Verify the user owns the campaign
+        campaign = await db.campaigns.find_one({"id": service_data.campaign_id, "buyer_id": current_user.id})
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found or access denied")
+        
+        # Create monitoring subscription
+        subscription = MonitoringServiceSubscription(**service_data.dict(), buyer_id=current_user.id)
+        await db.monitoring_subscriptions.insert_one(subscription.dict())
+        
+        # Generate initial tasks based on frequency and schedule
+        await generate_monitoring_tasks(subscription.id, subscription)
+        
+        return {"message": "Monitoring service created successfully", "subscription_id": subscription.id}
+        
+    except Exception as e:
+        logger.error(f"Error creating monitoring service: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating monitoring service: {str(e)}")
+
+@api_router.get("/monitoring/services")
+async def get_monitoring_services(current_user: User = Depends(get_current_user)):
+    """Get monitoring services for current user"""
+    try:
+        query = {"buyer_id": current_user.id} if current_user.role == UserRole.BUYER else {}
+        
+        if current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
+            # Admins and managers can see all services
+            query = {}
+        
+        services = await db.monitoring_subscriptions.find(query).to_list(1000)
+        return {"services": services}
+        
+    except Exception as e:
+        logger.error(f"Error fetching monitoring services: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching monitoring services: {str(e)}")
+
+@api_router.get("/monitoring/services/{subscription_id}")
+async def get_monitoring_service(
+    subscription_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get specific monitoring service details"""
+    try:
+        service = await db.monitoring_subscriptions.find_one({"id": subscription_id})
+        if not service:
+            raise HTTPException(status_code=404, detail="Monitoring service not found")
+        
+        # Check permissions
+        if current_user.role == UserRole.BUYER and service["buyer_id"] != current_user.id:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        return {"service": service}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching monitoring service: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching monitoring service: {str(e)}")
+
+# ============= TASK MANAGEMENT =============
+
+@api_router.get("/monitoring/tasks")
+async def get_monitoring_tasks(
+    status: Optional[str] = None,
+    operator_id: Optional[str] = None,
+    current_user: User = Depends(require_monitoring_staff)
+):
+    """Get monitoring tasks (filtered by role)"""
+    try:
+        query = {}
+        
+        if current_user.role == UserRole.MONITORING_OPERATOR:
+            # Operators only see their assigned tasks
+            query["assigned_operator_id"] = current_user.id
+        
+        if status:
+            query["status"] = status
+        if operator_id and current_user.role == UserRole.MANAGER:
+            query["assigned_operator_id"] = operator_id
+        
+        tasks = await db.monitoring_tasks.find(query).sort("scheduled_date", 1).to_list(1000)
+        return {"tasks": tasks}
+        
+    except Exception as e:
+        logger.error(f"Error fetching monitoring tasks: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching monitoring tasks: {str(e)}")
+
+@api_router.post("/monitoring/tasks/assign")
+async def assign_monitoring_tasks(
+    assignment: TaskAssignment,
+    manager: User = Depends(require_manager)
+):
+    """Assign monitoring tasks to operators"""
+    try:
+        # Verify operator exists and has correct role
+        operator = await db.users.find_one({"id": assignment.operator_id, "role": UserRole.MONITORING_OPERATOR})
+        if not operator:
+            raise HTTPException(status_code=404, detail="Monitoring operator not found")
+        
+        # Update tasks
+        result = await db.monitoring_tasks.update_many(
+            {"id": {"$in": assignment.task_ids}},
+            {
+                "$set": {
+                    "assigned_operator_id": assignment.operator_id,
+                    "status": TaskStatus.ASSIGNED,
+                    "priority": assignment.priority or TaskPriority.MEDIUM,
+                    "special_instructions": assignment.special_instructions or "",
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Send real-time notification to operator
+        await websocket_manager.send_to_user(assignment.operator_id, {
+            "type": "tasks_assigned",
+            "message": f"{result.modified_count} new tasks assigned to you",
+            "task_count": result.modified_count,
+            "priority": assignment.priority
+        })
+        
+        return {"message": f"Assigned {result.modified_count} tasks to operator", "updated_count": result.modified_count}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error assigning tasks: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error assigning tasks: {str(e)}")
+
+@api_router.put("/monitoring/tasks/{task_id}")
+async def update_monitoring_task(
+    task_id: str,
+    update_data: TaskUpdate,
+    current_user: User = Depends(require_monitoring_staff)
+):
+    """Update monitoring task"""
+    try:
+        # Verify task exists and permissions
+        task = await db.monitoring_tasks.find_one({"id": task_id})
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        
+        # Check permissions
+        if current_user.role == UserRole.MONITORING_OPERATOR:
+            if task["assigned_operator_id"] != current_user.id:
+                raise HTTPException(status_code=403, detail="You can only update your assigned tasks")
+            # Operators can only update status and completion
+            allowed_fields = {"status"}
+            update_dict = {k: v for k, v in update_data.dict(exclude_unset=True).items() if k in allowed_fields}
+        else:
+            # Managers can update all fields
+            update_dict = update_data.dict(exclude_unset=True)
+        
+        update_dict["updated_at"] = datetime.utcnow()
+        
+        result = await db.monitoring_tasks.update_one(
+            {"id": task_id},
+            {"$set": update_dict}
+        )
+        
+        return {"message": "Task updated successfully", "updated": result.modified_count > 0}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating task: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating task: {str(e)}")
+
+# ============= MONITORING REPORTS =============
+
+@api_router.post("/monitoring/tasks/{task_id}/report")
+async def submit_monitoring_report(
+    task_id: str,
+    report_data: MonitoringReportSubmit,
+    operator: User = Depends(require_monitoring_operator)
+):
+    """Submit monitoring report for a completed task"""
+    try:
+        # Verify task exists and is assigned to operator
+        task = await db.monitoring_tasks.find_one({"id": task_id, "assigned_operator_id": operator.id})
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found or not assigned to you")
+        
+        # Create monitoring report
+        report = MonitoringReport(
+            task_id=task_id,
+            operator_id=operator.id,
+            asset_id=task["asset_id"],
+            subscription_id=task["subscription_id"],
+            **report_data.dict()
+        )
+        
+        # Calculate quality score based on completeness and GPS accuracy
+        quality_score = calculate_report_quality(report)
+        report.quality_score = quality_score
+        report.submitted_at = datetime.utcnow()
+        
+        # Validate GPS location (within 50 meters of asset)
+        if task.get("asset_location"):
+            distance = calculate_gps_distance(report.gps_location, task["asset_location"])
+            report.location_accuracy = distance
+            report.location_verified = distance <= 50.0  # 50 meter radius
+        
+        # Save report
+        await db.monitoring_reports.insert_one(report.dict())
+        
+        # Update task status
+        await db.monitoring_tasks.update_one(
+            {"id": task_id},
+            {
+                "$set": {
+                    "status": TaskStatus.COMPLETED,
+                    "completed_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Get subscription details for notifications
+        subscription = await db.monitoring_subscriptions.find_one({"id": task["subscription_id"]})
+        if subscription:
+            # Send real-time notification to buyer
+            await websocket_manager.send_to_user(subscription["buyer_id"], {
+                "type": "monitoring_update",
+                "message": f"Monitoring update received for your asset",
+                "asset_id": task["asset_id"],
+                "report_id": report.id,
+                "condition_rating": report.overall_condition
+            })
+        
+        return {
+            "message": "Monitoring report submitted successfully",
+            "report_id": report.id,
+            "quality_score": quality_score,
+            "location_verified": report.location_verified
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error submitting monitoring report: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error submitting monitoring report: {str(e)}")
+
+@api_router.get("/monitoring/reports")
+async def get_monitoring_reports(
+    asset_id: Optional[str] = None,
+    subscription_id: Optional[str] = None,
+    operator_id: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Get monitoring reports (filtered by role and permissions)"""
+    try:
+        query = {}
+        
+        if current_user.role == UserRole.BUYER:
+            # Buyers can only see reports for their subscriptions
+            subscriptions = await db.monitoring_subscriptions.find({"buyer_id": current_user.id}).to_list(1000)
+            subscription_ids = [s["id"] for s in subscriptions]
+            query["subscription_id"] = {"$in": subscription_ids}
+        elif current_user.role == UserRole.MONITORING_OPERATOR:
+            # Operators can only see their own reports
+            query["operator_id"] = current_user.id
+        
+        # Apply filters
+        if asset_id:
+            query["asset_id"] = asset_id
+        if subscription_id:
+            query["subscription_id"] = subscription_id
+        if operator_id and current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
+            query["operator_id"] = operator_id
+        
+        reports = await db.monitoring_reports.find(query).sort("created_at", -1).to_list(1000)
+        return {"reports": reports}
+        
+    except Exception as e:
+        logger.error(f"Error fetching monitoring reports: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching monitoring reports: {str(e)}")
+
+# ============= PERFORMANCE & ANALYTICS =============
+
+@api_router.get("/monitoring/performance")
+async def get_monitoring_performance(
+    operator_id: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    manager: User = Depends(require_admin_or_manager)
+):
+    """Get monitoring performance metrics"""
+    try:
+        query = {}
+        if operator_id:
+            query["operator_id"] = operator_id
+        
+        # Date range filtering
+        if date_from or date_to:
+            date_filter = {}
+            if date_from:
+                date_filter["$gte"] = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            if date_to:
+                date_filter["$lte"] = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            query["date"] = date_filter
+        
+        performance_data = await db.operator_performance.find(query).sort("date", -1).to_list(1000)
+        return {"performance": performance_data}
+        
+    except Exception as e:
+        logger.error(f"Error fetching performance data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching performance data: {str(e)}")
+
+# ============= HELPER FUNCTIONS =============
+
+async def generate_monitoring_tasks(subscription_id: str, subscription: MonitoringServiceSubscription):
+    """Generate monitoring tasks based on subscription schedule"""
+    try:
+        tasks = []
+        current_date = subscription.start_date
+        
+        while current_date <= subscription.end_date:
+            for asset_id in subscription.asset_ids:
+                # Get asset location for GPS verification
+                asset = await db.assets.find_one({"id": asset_id})
+                asset_location = asset.get("gps_coordinates") if asset else None
+                
+                # Calculate due date based on frequency
+                due_date = current_date + timedelta(hours=2)  # 2-hour completion window
+                
+                task = MonitoringTask(
+                    subscription_id=subscription_id,
+                    asset_id=asset_id,
+                    scheduled_date=current_date,
+                    due_date=due_date,
+                    asset_location=asset_location,
+                    priority=TaskPriority.MEDIUM
+                )
+                tasks.append(task.dict())
+            
+            # Calculate next date based on frequency
+            if subscription.frequency == MonitoringFrequency.DAILY:
+                current_date += timedelta(days=1)
+            elif subscription.frequency == MonitoringFrequency.WEEKLY:
+                current_date += timedelta(weeks=1)
+            elif subscription.frequency == MonitoringFrequency.BI_WEEKLY:
+                current_date += timedelta(weeks=2)
+            elif subscription.frequency == MonitoringFrequency.MONTHLY:
+                current_date += timedelta(days=30)
+            else:  # CUSTOM
+                break  # Custom schedules need special handling
+        
+        if tasks:
+            await db.monitoring_tasks.insert_many(tasks)
+        
+        return len(tasks)
+        
+    except Exception as e:
+        logger.error(f"Error generating monitoring tasks: {str(e)}")
+        return 0
+
+def calculate_report_quality(report: MonitoringReport) -> float:
+    """Calculate quality score for monitoring report"""
+    score = 0.0
+    
+    # Photo completeness (40% of score)
+    if len(report.photos) >= 3:
+        score += 40.0
+    elif len(report.photos) >= 2:
+        score += 30.0
+    elif len(report.photos) >= 1:
+        score += 20.0
+    
+    # Notes completeness (20% of score)
+    if len(report.notes) >= 50:
+        score += 20.0
+    elif len(report.notes) >= 20:
+        score += 15.0
+    elif len(report.notes) >= 5:
+        score += 10.0
+    
+    # Condition assessment (20% of score)
+    if report.overall_condition > 0:
+        score += 20.0
+    
+    # GPS accuracy (20% of score)
+    if report.location_verified:
+        score += 20.0
+    elif report.location_accuracy < 100.0:
+        score += 15.0
+    elif report.location_accuracy < 200.0:
+        score += 10.0
+    
+    return min(score, 100.0)  # Cap at 100
+
+def calculate_gps_distance(loc1: Dict[str, float], loc2: Dict[str, float]) -> float:
+    """Calculate distance between two GPS coordinates in meters"""
+    try:
+        from math import radians, cos, sin, asin, sqrt
+        
+        # Convert to radians
+        lat1, lon1 = radians(loc1["lat"]), radians(loc1["lng"])
+        lat2, lon2 = radians(loc2["lat"]), radians(loc2["lng"])
+        
+        # Haversine formula
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a))
+        
+        # Earth radius in meters
+        r = 6371000
+        return c * r
+        
+    except Exception:
+        return 999.0  # Return large distance if calculation fails
+
 # WebSocket endpoint for real-time updates
 # WebSocket endpoints moved to app level - router endpoints removed
 
