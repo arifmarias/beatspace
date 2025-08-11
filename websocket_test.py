@@ -201,10 +201,9 @@ class WebSocketTester:
         # Test 3: Invalid token
         self.tests_run += 1
         try:
-            ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}"
-            additional_headers = {"Authorization": "Bearer invalid_token_123"}
+            ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}?token=invalid_token_123"
             
-            async with websockets.connect(ws_url, additional_headers=additional_headers, ping_timeout=5) as websocket:
+            async with websockets.connect(ws_url, ping_timeout=5) as websocket:
                 self.log("❌ Invalid token should have been rejected")
                 return False
         except websockets.exceptions.ConnectionClosed:
