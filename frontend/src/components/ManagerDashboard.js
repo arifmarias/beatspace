@@ -103,62 +103,31 @@ const ManagerDashboard = () => {
     }
   }, [currentUser, navigate]);
 
-  const fetchDashboardData = async (retryCount = 0) => {
-    // Prevent concurrent requests
-    if (fetchInProgress) {
-      console.log('Fetch already in progress, skipping...');
-      return;
-    }
-
+  const fetchDashboardData = async () => {
     try {
-      setFetchInProgress(true);
+      console.log('Fetching manager dashboard data...');
       setLoading(true);
       const headers = getAuthHeaders();
       
-      console.log('Fetching dashboard data...');
-      
-      // Fetch all data concurrently with timeout
-      const requestConfig = { 
-        headers, 
-        timeout: 10000 // 10 second timeout
-      };
-      
-      const [tasksRes, operatorsRes, servicesRes, performanceRes] = await Promise.all([
-        axios.get(`${API}/api/monitoring/tasks`, requestConfig),
-        axios.get(`${API}/api/users?role=monitoring_operator`, requestConfig),
-        axios.get(`${API}/api/monitoring/services`, requestConfig),
-        axios.get(`${API}/api/monitoring/performance`, requestConfig)
+      // Simple API calls without complex retry logic
+      const [tasksRes, operatorsRes, servicesRes, performanceRes] = await Promise.allSettled([
+        axios.get(`${API}/api/monitoring/tasks`, { headers, timeout: 8000 }),
+        axios.get(`${API}/api/users?role=monitoring_operator`, { headers, timeout: 8000 }),
+        axios.get(`${API}/api/monitoring/services`, { headers, timeout: 8000 }),
+        axios.get(`${API}/api/monitoring/performance`, { headers, timeout: 8000 })
       ]);
       
-      console.log('Dashboard data fetched successfully');
+      // Handle results safely
+      setTasks(tasksRes.status === 'fulfilled' ? (tasksRes.value.data.tasks || []) : []);
+      setOperators(operatorsRes.status === 'fulfilled' ? (operatorsRes.value.data || []) : []);
+      setServices(servicesRes.status === 'fulfilled' ? (servicesRes.value.data.services || []) : []);
+      setPerformance(performanceRes.status === 'fulfilled' ? (performanceRes.value.data || {}) : {});
       
-      setTasks(tasksRes.data.tasks || []);
-      setOperators(operatorsRes.data || []); // Note: users endpoint returns users directly, not nested in 'users'
-      setServices(servicesRes.data.services || []);
-      setPerformance(performanceRes.data || {});
-      
-      // Calculate statistics
-      calculateStats(tasksRes.data.tasks || []);
+      console.log('Manager dashboard data loaded successfully');
       
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      
-      // Implement exponential backoff for retries
-      if (retryCount < 3 && error.code !== 'ECONNABORTED') {
-        const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-        console.log(`Retrying in ${delay}ms... (attempt ${retryCount + 1}/3)`);
-        
-        setTimeout(() => {
-          setFetchInProgress(false); // Reset flag before retry
-          fetchDashboardData(retryCount + 1);
-        }, delay);
-        return;
-      }
-      
-      // Show user-friendly error after all retries failed
-      notify.error(`Failed to load dashboard data${retryCount > 0 ? ' after ' + (retryCount + 1) + ' attempts' : ''}`);
-      
-      // Set empty arrays to prevent undefined errors
+      // Set empty defaults to prevent crashes
       setTasks([]);
       setOperators([]);
       setServices([]);
@@ -167,6 +136,7 @@ const ManagerDashboard = () => {
       setLoading(false);
       setFetchInProgress(false);
     }
+  };
   };
 
   const calculateStats = (taskList = []) => {
