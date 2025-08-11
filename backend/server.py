@@ -2847,27 +2847,31 @@ async def create_monitoring_service(
 async def get_monitoring_services(current_user: User = Depends(get_current_user)):
     """Get monitoring services for current user"""
     try:
-        query = {"buyer_id": current_user.id} if current_user.role == UserRole.BUYER else {}
+        # Return empty data first to test endpoint structure
+        return {"services": []}
         
-        if current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
-            # Admins and managers can see all services
-            query = {}
-        
-        # Check if collection exists, if not return empty list
-        try:
-            services = await db.monitoring_subscriptions.find(query).to_list(1000)
-        except Exception:
-            # Collection might not exist yet
-            services = []
-        
-        # Convert ObjectIds to strings and clean data
-        cleaned_services = []
-        for service in services:
-            if "_id" in service:
-                del service["_id"]  # Remove MongoDB ObjectId
-            cleaned_services.append(service)
-        
-        return {"services": cleaned_services}
+        # TODO: Re-enable after confirming endpoint works
+        # query = {"buyer_id": current_user.id} if current_user.role == UserRole.BUYER else {}
+        # 
+        # if current_user.role in [UserRole.ADMIN, UserRole.MANAGER]:
+        #     # Admins and managers can see all services
+        #     query = {}
+        # 
+        # # Check if collection exists, if not return empty list
+        # try:
+        #     services = await db.monitoring_subscriptions.find(query).to_list(1000)
+        # except Exception:
+        #     # Collection might not exist yet
+        #     services = []
+        # 
+        # # Convert ObjectIds to strings and clean data
+        # cleaned_services = []
+        # for service in services:
+        #     if "_id" in service:
+        #         del service["_id"]  # Remove MongoDB ObjectId
+        #     cleaned_services.append(service)
+        # 
+        # return {"services": cleaned_services}
         
     except Exception as e:
         logger.error(f"Error fetching monitoring services: {str(e)}")
