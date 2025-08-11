@@ -94,12 +94,9 @@ const ManagerDashboard = () => {
   // Data Fetching
 
   useEffect(() => {
-    if (currentUser?.role === 'manager') {
-      fetchDashboardData();
-    } else if (currentUser && currentUser.role !== 'manager') {
-      navigate('/login');
-    }
-  }, [currentUser, navigate]);
+    // ProtectedRoute handles authentication - just fetch data
+    fetchDashboardData();
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
