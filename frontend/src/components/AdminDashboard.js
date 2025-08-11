@@ -945,7 +945,8 @@ const AdminDashboard = () => {
       website: '',
       address: '',
       role: 'buyer',
-      status: 'pending'
+      status: 'pending',
+      password: ''
     });
   };
 
