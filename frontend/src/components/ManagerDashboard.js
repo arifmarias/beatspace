@@ -733,7 +733,7 @@ const ManagerDashboard = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-sm font-medium">
-                            {tasks.filter(t => t.assigned_operator_id === operator.id && t.status === 'completed').length}
+                            {(Array.isArray(tasks) ? tasks : []).filter(t => t.assigned_operator_id === operator.id && t.status === 'completed').length}
                           </div>
                           <div className="text-xs text-gray-500">completed</div>
                         </div>
