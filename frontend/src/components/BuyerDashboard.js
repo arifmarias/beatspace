@@ -435,29 +435,7 @@ const BuyerDashboard = () => {
         })
       );
       
-      // TEMPORARY: If no real live assets, show demo data for testing
-      if (assetsWithInspectionData.length === 0) {
-        console.log('ℹ️ No live assets found, showing demo data for testing');
-        const demoAssets = [
-          {
-            id: 'demo-asset-1',
-            name: 'Demo Billboard - Dhanmondi Lake',
-            address: 'Dhanmondi Lake, Road 32, Dhaka 1209',
-            type: 'Billboard',
-            campaignName: 'Demo Campaign',
-            duration: '3 months',
-            cost: 90000, // Demo cost
-            expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
-            lastStatus: 'Live',
-            location: { lat: 23.7461, lng: 90.3742 },
-            images: [],
-            lastInspectionDate: null
-          }
-        ];
-        setLiveAssets(demoAssets);
-      } else {
-        setLiveAssets(assetsWithInspectionData);
-      }
+      setLiveAssets(assetsWithInspectionData);
       
       // Clear timeout on success
       clearTimeout(timeoutId);
