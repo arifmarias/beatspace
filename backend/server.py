@@ -2803,7 +2803,7 @@ async def websocket_endpoint_main(websocket: WebSocket, user_id: str):
             
         # Add to manager and handle messages
         await websocket_manager.connect(websocket, user_id)
-        await websocket_manager.send_personal_message(websocket, {
+        await websocket_manager.send_to_user(user_id, {
             "type": "connection_status",
             "message": "Connected successfully",
             "user_id": user_id
