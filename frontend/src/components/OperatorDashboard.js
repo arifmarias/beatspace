@@ -89,11 +89,12 @@ const OperatorDashboard = () => {
     if (currentUser?.role === 'monitoring_operator') {
       fetchMyTasks();
       setupLocationTracking();
-      setupOfflineHandling();
-    } else {
-      navigate('/login');
+      
+      // Setup offline handling with cleanup
+      const cleanup = setupOfflineHandling();
+      return cleanup; // Return cleanup function
     }
-  }, [currentUser, navigate]);
+  }, [currentUser]);
 
   // Setup location tracking
   const setupLocationTracking = () => {
