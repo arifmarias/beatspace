@@ -99,19 +99,16 @@ const AdminDashboard = () => {
       return;
     }
     
-    // Debounce refresh calls using setTimeout to prevent rapid successive calls
-    const scheduleRefresh = () => {
-      setTimeout(() => {
-        console.log('🔄 Scheduled refresh triggered after WebSocket event');
-        if (typeof fetchOfferRequests === 'function') {
-          fetchOfferRequests();
-        }
-      }, 2000); // Increased to 2 second delay for more stability
-    };
-    
+    // Add notification to bell based on message type
     switch (message.type) {
       case WEBSOCKET_EVENTS.OFFER_APPROVED:
         console.log('🎯 Processing OFFER_APPROVED event');
+        addNotification(
+          'success',
+          'Offer Approved! 🎉',
+          `${message.buyer_name || 'A buyer'} approved offer for ${message.asset_name}`,
+          { offerId: message.offer_id, assetName: message.asset_name }
+        );
         notifySuccess(
           'Offer Approved! 🎉', 
           `${message.buyer_name || 'A buyer'} approved offer for ${message.asset_name}`
@@ -121,6 +118,12 @@ const AdminDashboard = () => {
         
       case WEBSOCKET_EVENTS.OFFER_REJECTED:
         console.log('🎯 Processing OFFER_REJECTED event');
+        addNotification(
+          'warning',
+          'Offer Rejected',
+          `${message.buyer_name || 'A buyer'} rejected offer for ${message.asset_name}`,
+          { offerId: message.offer_id, assetName: message.asset_name }
+        );
         notifyInfo(
           'Offer Rejected', 
           `${message.buyer_name || 'A buyer'} rejected offer for ${message.asset_name}`
@@ -130,16 +133,28 @@ const AdminDashboard = () => {
         
       case WEBSOCKET_EVENTS.REVISION_REQUESTED:
         console.log('🎯 Processing REVISION_REQUESTED event');
+        addNotification(
+          'info',
+          'Revision Requested 🔄',
+          `${message.buyer_name || 'A buyer'} requested revision for ${message.asset_name}`,
+          { offerId: message.offer_id, assetName: message.asset_name, notes: message.notes }
+        );
         notifyWarning(
           'Revision Requested ✏️', 
           `${message.buyer_name || 'A buyer'} requested revision for ${message.asset_name}`
         );
         scheduleRefresh();
         break;
-        
+
       case WEBSOCKET_EVENTS.NEW_OFFER_REQUEST:
         console.log('🎯 Processing NEW_OFFER_REQUEST event');
         console.log('🎯 About to call notifySuccess for new offer request');
+        addNotification(
+          'info',
+          'New Offer Request 📝',
+          `New offer request received for ${message.asset_name}`,
+          { campaignId: message.campaign_id, assetName: message.asset_name }
+        );
         notifySuccess(
           'New Offer Request! 📝', 
           `New offer request received for ${message.asset_name}`
@@ -147,15 +162,56 @@ const AdminDashboard = () => {
         console.log('🎯 notifySuccess called successfully');
         scheduleRefresh();
         break;
+
+      case 'new_offer_request':
+        console.log('🎯 Processing NEW_OFFER_REQUEST event');
+        addNotification(
+          'info',
+          'New Offer Request 📝',
+          `New offer request from ${message.buyer_name || 'a buyer'}`,
+          { campaignId: message.campaign_id, buyerName: message.buyer_name }
+        );
+        notifyInfo(
+          'New Offer Request 📝', 
+          `New offer request from ${message.buyer_name || 'a buyer'}`
+        );
+        scheduleRefresh();
+        break;
         
       case WEBSOCKET_EVENTS.CONNECTION_STATUS:
         console.log(`📊 WebSocket Status: ${message.message} (${message.active_connections} active)`);
+        // Don't add notification for connection status, just log it
+        break;
+        
+      case 'connection_status':
+        console.log('🎯 Processing CONNECTION_STATUS event');
+        // Don't add notification for connection status, just log it
+        break;
+        
+      case 'pong':
+        // Don't add notification for pong messages
         break;
         
       default:
         console.log('📥 Unknown message type:', message.type);
         console.log('📥 Expected types:', Object.values(WEBSOCKET_EVENTS));
+        addNotification(
+          'info',
+          'New Update',
+          `Received: ${message.type}`,
+          { messageType: message.type, data: message }
+        );
     }
+    
+    // Debounce refresh calls using setTimeout to prevent rapid successive calls
+    const scheduleRefresh = () => {
+      setTimeout(() => {
+        console.log('🔄 Scheduled refresh triggered after WebSocket event');
+        if (typeof fetchOfferRequests === 'function') {
+          fetchOfferRequests();
+        }
+      }, 2000); // Increased to 2 second delay for more stability
+    };
   };
 
   const currentUser = getUser() || { email: 'admin@beatspace.com', role: 'admin' }; // Fallback for admin
