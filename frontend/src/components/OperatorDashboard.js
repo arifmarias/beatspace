@@ -229,7 +229,7 @@ const OperatorDashboard = () => {
       if (isOnline) {
         // Upload immediately if online
         const headers = getAuthHeaders();
-        const response = await axios.post(`${API}/monitoring/upload-photo`, formData, {
+        const response = await axios.post(`${API}/api/monitoring/upload-photo`, formData, {
           headers: {
             ...headers,
             'Content-Type': 'multipart/form-data'
