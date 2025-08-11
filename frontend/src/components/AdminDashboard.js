@@ -3097,6 +3097,8 @@ const AdminDashboard = () => {
                   <SelectContent>
                     <SelectItem value="buyer">Buyer</SelectItem>
                     <SelectItem value="seller">Seller</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="monitoring_operator">Monitoring Operator</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
