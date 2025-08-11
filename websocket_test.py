@@ -485,9 +485,9 @@ class WebSocketTester:
         self.tests_run += 1
         try:
             ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}"
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            additional_headers = {"Authorization": f"Bearer {self.admin_token}"}
             
-            async with websockets.connect(ws_url, extra_headers=headers) as websocket:
+            async with websockets.connect(ws_url, additional_headers=additional_headers) as websocket:
                 # Send test message
                 test_message = {
                     "type": "format_test",
