@@ -97,14 +97,11 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     if (currentUser?.role === 'manager') {
-      if (!fetchInProgress) {
-        fetchDashboardData();
-      }
+      fetchDashboardData();
     } else if (currentUser?.role && currentUser.role !== 'manager') {
-      // Only redirect if we have a user role but it's not manager
       navigate('/login');
     }
-  }, [currentUser, fetchInProgress, navigate]);
+  }, [currentUser, navigate]);
 
   const fetchDashboardData = async (retryCount = 0) => {
     // Prevent concurrent requests
