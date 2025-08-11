@@ -660,6 +660,25 @@ async def require_manager_or_admin(current_user: User = Depends(get_current_user
         raise HTTPException(status_code=403, detail="Manager or Admin access required")
     return current_user
 
+def clean_mongodb_doc(doc):
+    """Recursively clean MongoDB documents by removing ObjectIds and converting them to strings"""
+    if isinstance(doc, dict):
+        cleaned = {}
+        for key, value in doc.items():
+            if key == "_id":
+                # Skip MongoDB _id field entirely
+                continue
+            else:
+                cleaned[key] = clean_mongodb_doc(value)
+        return cleaned
+    elif isinstance(doc, list):
+        return [clean_mongodb_doc(item) for item in doc]
+    elif hasattr(doc, '__dict__'):
+        # Handle objects with attributes
+        return clean_mongodb_doc(doc.__dict__)
+    else:
+        return doc
+
 # Email notification functions
 def send_notification_email(to_email: str, subject: str, content: str):
     """Send notification email (demo implementation)"""
