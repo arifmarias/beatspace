@@ -246,7 +246,11 @@ const ManagerDashboard = () => {
       const response = await axios.post(`${API}/api/monitoring/generate-tasks`, { date: today }, { headers });
       
       notify.success(response.data.message);
-      fetchDashboardData();
+      
+      // Only refresh if not already fetching
+      if (!fetchInProgress) {
+        setTimeout(() => fetchDashboardData(), 500); // Small delay to prevent rapid-fire requests
+      }
       
     } catch (error) {
       console.error('Error generating tasks:', error);
