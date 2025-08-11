@@ -3352,11 +3352,15 @@ async def get_monitoring_photo(
 
 @api_router.post("/monitoring/generate-tasks")
 async def generate_tasks_for_date(
-    date: str,
-    manager: User = Depends(require_manager)
+    request: dict,
+    current_user: User = Depends(require_admin_or_manager)
 ):
     """Generate monitoring tasks for a specific date"""
     try:
+        date = request.get("date")
+        if not date:
+            raise HTTPException(status_code=400, detail="Date is required")
+        
         target_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
         
         # Get all active subscriptions
