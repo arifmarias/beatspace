@@ -12,11 +12,11 @@ def test_monitoring_api():
     print("🚀 BeatSpace Monitoring Service API Test")
     print("="*50)
     
-    # Step 1: Login as buyer
-    print("\n1. Testing buyer login...")
+    # Step 1: Login as admin (fallback for testing)
+    print("\n1. Testing admin login...")
     login_data = {
-        "email": "buy@demo.com",
-        "password": "buyer123"
+        "email": "admin@beatspace.com",
+        "password": "admin123"
     }
     
     try:
