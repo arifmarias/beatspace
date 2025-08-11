@@ -763,6 +763,7 @@ const OperatorDashboard = () => {
 
                       {task.status !== 'completed' && (
                         <Button 
+                          onClick={() => startTask(task)}
                           className="w-full mt-3" 
                           size="sm"
                         >
