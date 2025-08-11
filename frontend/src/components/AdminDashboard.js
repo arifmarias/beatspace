@@ -56,7 +56,6 @@ import { useWebSocket, getWebSocketUserId, WEBSOCKET_EVENTS } from '../utils/web
 import { useNavigate } from 'react-router-dom';
 import { NotificationBell } from './ui/notification-bell';
 import { useNotification } from './ui/notification';
-import NotificationBell from './ui/notification-bell';
 import { useNotifications } from '../contexts/NotificationContext';
 import OfferMediationPanel from './OfferMediationPanel';
 import AdvancedAnalytics from './AdvancedAnalytics';
