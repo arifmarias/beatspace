@@ -129,12 +129,15 @@ const ManagerDashboard = () => {
     }
   };
 
-  const calculateStats = (taskList) => {
-    const totalTasks = taskList.length;
-    const completedTasks = taskList.filter(t => t.status === 'completed').length;
-    const pendingTasks = taskList.filter(t => t.status === 'pending').length;
-    const overdueTasks = taskList.filter(t => t.status === 'overdue').length;
-    const activeOperators = new Set(taskList.filter(t => t.assigned_operator_id).map(t => t.assigned_operator_id)).size;
+  const calculateStats = (taskList = []) => {
+    // Ensure taskList is an array
+    const safeTaskList = Array.isArray(taskList) ? taskList : [];
+    
+    const totalTasks = safeTaskList.length;
+    const completedTasks = safeTaskList.filter(t => t.status === 'completed').length;
+    const pendingTasks = safeTaskList.filter(t => t.status === 'pending').length;
+    const overdueTasks = safeTaskList.filter(t => t.status === 'overdue').length;
+    const activeOperators = new Set(safeTaskList.filter(t => t.assigned_operator_id).map(t => t.assigned_operator_id)).size;
     
     setStats({
       totalTasks,
