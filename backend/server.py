@@ -2854,7 +2854,15 @@ async def get_monitoring_services(current_user: User = Depends(get_current_user)
             query = {}
         
         services = await db.monitoring_subscriptions.find(query).to_list(1000)
-        return {"services": services}
+        
+        # Convert ObjectIds to strings and clean data
+        cleaned_services = []
+        for service in services:
+            if "_id" in service:
+                del service["_id"]  # Remove MongoDB ObjectId
+            cleaned_services.append(service)
+        
+        return {"services": cleaned_services}
         
     except Exception as e:
         logger.error(f"Error fetching monitoring services: {str(e)}")
