@@ -643,8 +643,8 @@ async def require_monitoring_operator(current_user: User = Depends(get_current_u
     return current_user
 
 async def require_monitoring_staff(current_user: User = Depends(get_current_user)):
-    """Require Manager or Monitoring Operator role for monitoring operations"""
-    if current_user.role not in [UserRole.MANAGER, UserRole.MONITORING_OPERATOR]:
+    """Require Manager, Monitoring Operator, or Admin role for monitoring operations"""
+    if current_user.role not in [UserRole.MANAGER, UserRole.MONITORING_OPERATOR, UserRole.ADMIN]:
         raise HTTPException(status_code=403, detail="Monitoring staff access required")
     return current_user
 
