@@ -286,7 +286,7 @@ const ManagerDashboard = () => {
                     Generate Today's Tasks
                   </Button>
                   <Button variant="outline" onClick={() => setAssignmentDialog(true)}>
-                    <AssignmentTurnedIn className="w-4 h-4 mr-2" />
+                    <UserCheck className="w-4 h-4 mr-2" />
                     Bulk Assign Tasks
                   </Button>
                   <Button variant="outline">
