@@ -4371,6 +4371,338 @@ const BuyerDashboard = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Monitoring Service Subscription Dialog */}
+        <Dialog open={showMonitoringSubscription} onOpenChange={(open) => {
+          setShowMonitoringSubscription(open);
+          if (!open) {
+            setSelectedCampaign(null);
+            setCampaignAssetsForMonitoring([]);
+            setMonitoringFormData({
+              frequency: 'weekly',
+              startDate: null,
+              endDate: null,
+              selectedAssets: [],
+              serviceLevel: 'standard',
+              notificationPreferences: {
+                email: true,
+                in_app: true,
+                sms: false
+              }
+            });
+          }
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-green-600" />
+                <span>Subscribe to Monitoring Service</span>
+              </DialogTitle>
+              <p className="text-sm text-gray-600 mt-1">
+                Set up real-time monitoring for your campaign assets
+              </p>
+            </DialogHeader>
+            
+            {selectedCampaign && (
+              <div className="space-y-6">
+                {/* Campaign Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-2 flex items-center">
+                    <Building className="w-5 h-5 mr-2 text-blue-600" />
+                    {selectedCampaign.name}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">Status:</span>
+                      <Badge className="ml-2 bg-green-100 text-green-800">{selectedCampaign.status}</Badge>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Budget:</span>
+                      <span className="font-medium text-green-600 ml-2">৳{selectedCampaign.budget?.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Asset Selection */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                    Select Assets to Monitor
+                    <span className="text-sm font-normal text-gray-500 ml-2">
+                      ({monitoringFormData.selectedAssets.length} of {campaignAssetsForMonitoring.length} selected)
+                    </span>
+                  </h4>
+                  
+                  {campaignAssetsForMonitoring.length > 0 ? (
+                    <div className="space-y-2 max-h-40 overflow-y-auto border rounded-lg p-3">
+                      {campaignAssetsForMonitoring.map((asset) => (
+                        <div key={asset.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                          <input
+                            type="checkbox"
+                            id={`asset-${asset.id}`}
+                            checked={monitoringFormData.selectedAssets.includes(asset.id)}
+                            onChange={(e) => handleAssetSelectionChange(asset.id, e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                          />
+                          <label htmlFor={`asset-${asset.id}`} className="flex-1 cursor-pointer">
+                            <div className="font-medium text-gray-900">{asset.name}</div>
+                            <div className="text-sm text-gray-500">{asset.address} • {asset.type}</div>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <AlertCircle className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                      <p>No assets found for this campaign</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Monitoring Frequency */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                    Monitoring Frequency
+                  </h4>
+                  <Select
+                    value={monitoringFormData.frequency}
+                    onValueChange={(value) => setMonitoringFormData(prev => ({...prev, frequency: value}))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select monitoring frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily Monitoring</SelectItem>
+                      <SelectItem value="weekly">Weekly Monitoring</SelectItem>
+                      <SelectItem value="bi_weekly">Bi-weekly Monitoring</SelectItem>
+                      <SelectItem value="monthly">Monthly Monitoring</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                    <div className="font-medium mb-1">Frequency Details:</div>
+                    {monitoringFormData.frequency === 'daily' && <p>• Daily photos and condition reports</p>}
+                    {monitoringFormData.frequency === 'weekly' && <p>• Weekly detailed inspections with photo documentation</p>}
+                    {monitoringFormData.frequency === 'bi_weekly' && <p>• Bi-weekly comprehensive monitoring reports</p>}
+                    {monitoringFormData.frequency === 'monthly' && <p>• Monthly thorough asset health assessments</p>}
+                  </div>
+                </div>
+
+                {/* Date Range */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Monitoring Start Date
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {monitoringFormData.startDate ? monitoringFormData.startDate.toLocaleDateString() : "Select start date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={monitoringFormData.startDate}
+                          onSelect={(date) => setMonitoringFormData(prev => ({...prev, startDate: date}))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Monitoring End Date
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {monitoringFormData.endDate ? monitoringFormData.endDate.toLocaleDateString() : "Select end date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={monitoringFormData.endDate}
+                          onSelect={(date) => setMonitoringFormData(prev => ({...prev, endDate: date}))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                {/* Service Level */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <Star className="w-4 h-4 mr-2 text-yellow-600" />
+                    Service Level
+                  </h4>
+                  <Select
+                    value={monitoringFormData.serviceLevel}
+                    onValueChange={(value) => setMonitoringFormData(prev => ({...prev, serviceLevel: value}))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select service level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Standard Monitoring</SelectItem>
+                      <SelectItem value="premium">Premium Monitoring</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="font-medium mb-1">Standard Level:</div>
+                        <ul className="text-xs space-y-1">
+                          <li>• Photo documentation</li>
+                          <li>• Condition reporting</li>
+                          <li>• Basic maintenance alerts</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="font-medium mb-1">Premium Level:</div>
+                        <ul className="text-xs space-y-1">
+                          <li>• All standard features</li>
+                          <li>• Detailed analytics</li>
+                          <li>• Priority support</li>
+                          <li>• Real-time notifications</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notification Preferences */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <MessageSquare className="w-4 h-4 mr-2 text-purple-600" />
+                    Notification Preferences
+                  </h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="email-notifications"
+                        checked={monitoringFormData.notificationPreferences.email}
+                        onChange={(e) => setMonitoringFormData(prev => ({
+                          ...prev,
+                          notificationPreferences: {
+                            ...prev.notificationPreferences,
+                            email: e.target.checked
+                          }
+                        }))}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <label htmlFor="email-notifications" className="text-sm text-gray-700">
+                        Email notifications for monitoring reports and alerts
+                      </label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="app-notifications"
+                        checked={monitoringFormData.notificationPreferences.in_app}
+                        onChange={(e) => setMonitoringFormData(prev => ({
+                          ...prev,
+                          notificationPreferences: {
+                            ...prev.notificationPreferences,
+                            in_app: e.target.checked
+                          }
+                        }))}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <label htmlFor="app-notifications" className="text-sm text-gray-700">
+                        In-app notifications and dashboard alerts
+                      </label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="sms-notifications"
+                        checked={monitoringFormData.notificationPreferences.sms}
+                        onChange={(e) => setMonitoringFormData(prev => ({
+                          ...prev,
+                          notificationPreferences: {
+                            ...prev.notificationPreferences,
+                            sms: e.target.checked
+                          }
+                        }))}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <label htmlFor="sms-notifications" className="text-sm text-gray-700">
+                        SMS alerts for urgent issues (premium feature)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="font-medium text-green-900 mb-2">📋 Subscription Summary</h4>
+                  <div className="text-sm text-green-700 space-y-1">
+                    <p><strong>Campaign:</strong> {selectedCampaign.name}</p>
+                    <p><strong>Assets:</strong> {monitoringFormData.selectedAssets.length} selected</p>
+                    <p><strong>Frequency:</strong> {monitoringFormData.frequency.replace('_', '-')} monitoring</p>
+                    <p><strong>Duration:</strong> {monitoringFormData.startDate && monitoringFormData.endDate 
+                      ? `${monitoringFormData.startDate.toLocaleDateString()} - ${monitoringFormData.endDate.toLocaleDateString()}`
+                      : 'Please select dates'
+                    }</p>
+                    <p><strong>Service Level:</strong> {monitoringFormData.serviceLevel} monitoring</p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-3 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowMonitoringSubscription(false)}
+                    disabled={monitoringSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleCreateMonitoringSubscription}
+                    className="bg-green-600 hover:bg-green-700"
+                    disabled={
+                      monitoringSubmitting ||
+                      monitoringFormData.selectedAssets.length === 0 ||
+                      !monitoringFormData.startDate ||
+                      !monitoringFormData.endDate
+                    }
+                  >
+                    {monitoringSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Create Monitoring Service
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
