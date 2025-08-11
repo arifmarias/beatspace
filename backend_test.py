@@ -9851,21 +9851,12 @@ if __name__ == "__main__":
     print("\n📋 STEP 1: AUTHENTICATION SETUP")
     print("-" * 40)
     
-    # First login as admin to create buyer if needed
-    admin_success, _ = tester.test_admin_login()
-    if not admin_success:
-        print("❌ CRITICAL: Admin login failed - cannot create buyer user")
-        sys.exit(1)
-    
-    # Create buyer user if it doesn't exist
-    tester.create_buyer_if_not_exists()
-    
-    # Now try buyer login
+    # Try buyer login with existing buyer account
     buyer_success, buyer_response = tester.test_buyer_login()
     
     if not buyer_success:
         print("❌ CRITICAL: Buyer login failed - monitoring service tests cannot proceed")
-        print("   Expected credentials: marketing@grameenphone.com / buyer123")
+        print("   Tried existing buyer: buy@demo.com / buyer123")
         sys.exit(1)
     
     print(f"✅ Authentication setup complete")
