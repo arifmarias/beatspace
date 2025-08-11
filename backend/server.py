@@ -2380,8 +2380,10 @@ async def get_campaigns(current_user: User = Depends(get_current_user)):
     
     if current_user.role == UserRole.BUYER:
         query["buyer_id"] = current_user.id
+        # Exclude demo/test campaigns for buyers
+        query["name"] = {"$not": {"$regex": "(?i)demo|test|sample"}}
     elif current_user.role == UserRole.ADMIN:
-        # Admin can see all campaigns
+        # Admin can see all campaigns (including demo for debugging)
         pass
     else:
         # Sellers can see campaigns that include their assets
