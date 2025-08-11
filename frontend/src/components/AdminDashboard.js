@@ -901,6 +901,11 @@ const AdminDashboard = () => {
         ...userForm
       };
 
+      // Only include password if it's not empty (optional password change)
+      if (!userForm.password) {
+        delete updateData.password;
+      }
+
       await axios.put(`${API}/admin/users/${editingUser.id}`, updateData, { headers });
       alert('User updated successfully!');
       
