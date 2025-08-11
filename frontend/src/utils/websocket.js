@@ -99,12 +99,24 @@ export const useWebSocket = (userId, onMessage) => {
 
     try {
       connectingRef.current = true; // Set connecting flag
-      console.log(`🔌 WebSocket: Connecting to ${wsUrl.replace(/token=[^&]+/, 'token=***')}`);
+      console.log(`🔌 WebSocket: Attempting connection to: ${wsUrl.replace(/token=[^&]+/, 'token=***')}`);
+      
+      // Add connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (websocketRef.current && websocketRef.current.readyState === WebSocket.CONNECTING) {
+          console.error('❌ WebSocket: Connection timeout after 10 seconds');
+          websocketRef.current.close();
+          setError('Connection timeout');
+          connectingRef.current = false;
+        }
+      }, 10000); // 10 second timeout
       
       websocketRef.current = new WebSocket(wsUrl);
 
       websocketRef.current.onopen = () => {
-        console.log(`✅ WebSocket: Connected as ${userId}`);
+        clearTimeout(connectionTimeout);
+        console.log(`✅ WebSocket: Successfully connected as ${userId}`);
+        console.log(`🔌 WebSocket: Connection ready state: ${websocketRef.current.readyState}`);
         setIsConnected(true);
         setError(null);
         reconnectAttempts.current = 0;
@@ -113,6 +125,7 @@ export const useWebSocket = (userId, onMessage) => {
         // Send initial ping to activate connection (only when connection is open)
         const sendInitialPing = () => {
           if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            console.log('📤 WebSocket: Sending initial ping');
             websocketRef.current.send(JSON.stringify({
               type: 'ping',
               timestamp: new Date().toISOString()
@@ -126,6 +139,7 @@ export const useWebSocket = (userId, onMessage) => {
         // Start heartbeat to keep connection alive
         heartbeatIntervalRef.current = setInterval(() => {
           if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            console.log('💓 WebSocket: Sending heartbeat ping');
             websocketRef.current.send(JSON.stringify({
               type: 'ping',
               timestamp: new Date().toISOString()
