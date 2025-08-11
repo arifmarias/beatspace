@@ -258,9 +258,9 @@ class WebSocketTester:
             for i in range(3):
                 self.tests_run += 1
                 ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}"
-                headers = {"Authorization": f"Bearer {self.admin_token}"}
+                additional_headers = {"Authorization": f"Bearer {self.admin_token}"}
                 
-                websocket = await websockets.connect(ws_url, extra_headers=headers)
+                websocket = await websockets.connect(ws_url, additional_headers=additional_headers)
                 connections.append(websocket)
                 self.log(f"✅ Connection {i+1} established")
                 self.tests_passed += 1
