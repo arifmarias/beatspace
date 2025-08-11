@@ -143,6 +143,21 @@ frontend:
 user_problem_statement: "Complete the WebSocket real-time synchronization fix between Admin and Buyer dashboards. The WebSocket endpoints have been moved from api_router to main FastAPI app and uvicorn --workers parameter removed. Need to verify that real-time notifications work for offer quotes, approvals, rejections, revision requests, and new offer creations between dashboards without manual refreshes."
 
 backend:
+  - task: "WebSocket Real-time Synchronization Implementation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Fixed critical WebSocket registration issue - moved WebSocket endpoints from api_router to main FastAPI app (@app.websocket). Removed --workers parameter from uvicorn configuration as it breaks WebSocket connections (WebSockets require single process). Enhanced ConnectionManager for proper bidirectional communication. Implemented test endpoint /api/test-ws and main endpoint /api/ws/{user_id} with JWT authentication."
+        - working: true
+          agent: "main" 
+          comment: "✅ WEBSOCKET ENDPOINTS FULLY FUNCTIONAL - Both test and main WebSocket endpoints working perfectly. Test results: 1) Test endpoint /api/test-ws connects successfully and echoes messages, 2) Main endpoint /api/ws/{user_id} accepts JWT authentication, validates tokens, sends welcome messages, and responds to ping/pong heartbeat. ConnectionManager properly handles multiple user connections. All WebSocket infrastructure ready for real-time dashboard synchronization."
+
   - task: "Booked Assets Endpoint - GET /api/assets/booked"
     implemented: true
     working: true
