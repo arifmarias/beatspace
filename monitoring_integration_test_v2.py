@@ -191,7 +191,7 @@ class BeatSpaceMonitoringIntegrationTester:
             if success:
                 print(f"   📊 Found {len(tasks)} monitoring tasks")
                 if tasks:
-                    self.test_task_ids = [t['id'] for t in tasks[:2]]
+                    self.test_task_ids = [t['id'] for t in tasks[:2] if 'id' in t]
             else:
                 endpoint_success = False
         
