@@ -72,6 +72,41 @@ function App() {
             } 
           />
 
+          {/* Monitoring Service Routes */}
+          <Route 
+            path="/manager/dashboard" 
+            element={
+              <ProtectedRoute requiredRole="manager">
+                <ManagerDashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/operator/dashboard" 
+            element={
+              <ProtectedRoute requiredRole="monitoring_operator">
+                <OperatorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Legacy routes for new roles */}
+          <Route 
+            path="/admin" 
+            element={<Navigate to="/admin/dashboard" replace />}
+          />
+          
+          <Route 
+            path="/manager" 
+            element={<Navigate to="/manager/dashboard" replace />}
+          />
+          
+          <Route 
+            path="/operator" 
+            element={<Navigate to="/operator/dashboard" replace />}
+          />
+
           {/* Redirect authenticated users to appropriate dashboard */}
           <Route 
             path="/dashboard" 
