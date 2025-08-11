@@ -106,16 +106,18 @@ class BeatSpaceAPITester:
         return success, response
 
     def test_buyer_login(self):
-        """Test buyer login"""
+        """Test buyer login with specified credentials"""
         login_data = {
-            "email": "buy@demo.com",  # Use existing buyer
+            "email": "marketing@grameenphone.com",  # Use specified buyer credentials
             "password": "buyer123"
         }
         success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
         if success and 'access_token' in response:
             self.buyer_token = response['access_token']
+            self.buyer_user_id = response.get('user', {}).get('id')
             print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
             print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
+            print(f"   User ID: {self.buyer_user_id}")
         return success, response
 
     # Critical Public Endpoints Tests
