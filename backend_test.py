@@ -9922,7 +9922,7 @@ if __name__ == "__main__":
     print("\n🎯 STEP 2: MONITORING SERVICE API TESTS")
     print("-" * 60)
     
-    monitoring_passed, monitoring_total, monitoring_results = tester.run_monitoring_service_comprehensive_test_suite()
+    monitoring_passed, monitoring_total, monitoring_results = tester.run_monitoring_service_tests()
     
     # Step 3: Quick Backend API Health Check
     print("\n🔍 STEP 3: BACKEND API HEALTH CHECK")
