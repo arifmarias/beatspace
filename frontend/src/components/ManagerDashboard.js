@@ -17,7 +17,7 @@ import axios from 'axios';
 import {
   Users, ClipboardList, TrendingUp, Clock, CheckCircle2,
   AlertCircle, MapPin, Camera, Calendar, Filter, Search,
-  MoreVertical, Plus, AssignmentTurnedIn, Analytics,
+  MoreVertical, Plus, UserCheck, Analytics,
   Settings, Download, Upload, RefreshCw, User
 } from 'lucide-react';
 
