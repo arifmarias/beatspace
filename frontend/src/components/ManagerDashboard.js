@@ -132,9 +132,7 @@ const ManagerDashboard = () => {
       setPerformance({});
     } finally {
       setLoading(false);
-      setFetchInProgress(false);
     }
-  };
   };
 
   const calculateStats = (taskList = []) => {
