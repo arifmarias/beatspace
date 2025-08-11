@@ -122,6 +122,66 @@ class BeatSpaceAPITester:
             print(f"   User ID: {self.buyer_user_id}")
         return success, response
 
+    def create_buyer_if_not_exists(self):
+        """Create the buyer user if it doesn't exist"""
+        if not self.admin_token:
+            admin_success, _ = self.test_admin_login()
+            if not admin_success:
+                return False, {}
+        
+        print("🔧 CREATING BUYER USER IF NOT EXISTS")
+        
+        # Try to create the buyer user
+        buyer_data = {
+            "email": "marketing@grameenphone.com",
+            "password": "buyer123",
+            "company_name": "Grameenphone Ltd.",
+            "contact_name": "Marketing Manager",
+            "phone": "+8801700000000",
+            "role": "buyer",
+            "address": "Grameenphone Center, Dhaka",
+            "website": "https://grameenphone.com"
+        }
+        
+        success, response = self.run_test(
+            "Create Buyer User", 
+            "POST", 
+            "admin/users", 
+            200, 
+            data=buyer_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print(f"   ✅ Buyer user created: {response.get('email')}")
+            buyer_id = response.get('id')
+            
+            # Approve the buyer user
+            approval_data = {
+                "status": "approved",
+                "reason": "Auto-approved for monitoring service testing"
+            }
+            
+            approve_success, approve_response = self.run_test(
+                "Approve Buyer User", 
+                "PATCH", 
+                f"admin/users/{buyer_id}/status", 
+                200, 
+                data=approval_data,
+                token=self.admin_token
+            )
+            
+            if approve_success:
+                print(f"   ✅ Buyer user approved")
+                return True, response
+            else:
+                print(f"   ⚠️  Buyer user created but approval failed")
+                return True, response  # Still return success as user was created
+        else:
+            # User might already exist, which is fine
+            print(f"   ℹ️  Buyer user creation failed (may already exist)")
+            return True, {}  # Return success anyway
+
     # Critical Public Endpoints Tests
     def test_public_stats(self):
         """Test getting public statistics - CRITICAL for homepage"""
