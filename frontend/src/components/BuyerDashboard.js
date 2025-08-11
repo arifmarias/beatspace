@@ -153,6 +153,14 @@ const BuyerDashboard = () => {
   // Notification system
   const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
   const { success: notifySuccess, error: notifyError, info: notifyInfo, warning: notifyWarning } = useNotifications();
+  
+  // Create a notify object for backward compatibility
+  const notify = {
+    success: notifySuccess,
+    error: notifyError,
+    info: notifyInfo,
+    warning: notifyWarning
+  };
 
   // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
