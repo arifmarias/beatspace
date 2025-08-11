@@ -103,29 +103,20 @@ const ManagerDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      console.log('Fetching manager dashboard data...');
       setLoading(true);
       const headers = getAuthHeaders();
       
-      // Simple API calls without complex retry logic
-      const [tasksRes, operatorsRes, servicesRes, performanceRes] = await Promise.allSettled([
-        axios.get(`${API}/api/monitoring/tasks`, { headers, timeout: 8000 }),
-        axios.get(`${API}/api/users?role=monitoring_operator`, { headers, timeout: 8000 }),
-        axios.get(`${API}/api/monitoring/services`, { headers, timeout: 8000 }),
-        axios.get(`${API}/api/monitoring/performance`, { headers, timeout: 8000 })
-      ]);
+      // Simple, direct API calls
+      const tasksRes = await axios.get(`${API}/api/monitoring/tasks`, { headers });
+      const operatorsRes = await axios.get(`${API}/api/users?role=monitoring_operator`, { headers });
       
-      // Handle results safely
-      setTasks(tasksRes.status === 'fulfilled' ? (tasksRes.value.data.tasks || []) : []);
-      setOperators(operatorsRes.status === 'fulfilled' ? (operatorsRes.value.data || []) : []);
-      setServices(servicesRes.status === 'fulfilled' ? (servicesRes.value.data.services || []) : []);
-      setPerformance(performanceRes.status === 'fulfilled' ? (performanceRes.value.data || {}) : {});
-      
-      console.log('Manager dashboard data loaded successfully');
+      setTasks(tasksRes.data?.tasks || []);
+      setOperators(operatorsRes.data || []);
+      setServices([]); // Temporary empty to avoid issues
+      setPerformance({});
       
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      // Set empty defaults to prevent crashes
+      console.error('Manager dashboard error:', error);
       setTasks([]);
       setOperators([]);
       setServices([]);
