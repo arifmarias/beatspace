@@ -108,21 +108,29 @@ class BeatSpaceAPITester:
         return success, response
 
     def test_buyer_login(self):
-        """Test buyer login with existing buyer credentials"""
-        # Try the existing buyer first
-        login_data = {
-            "email": "buy@demo.com",  # Use existing buyer
-            "password": "buyer123"
-        }
-        success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
-        if success and 'access_token' in response:
-            self.buyer_token = response['access_token']
-            self.buyer_user_id = response.get('user', {}).get('id')
-            print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
-            print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
-            print(f"   User ID: {self.buyer_user_id}")
-            print(f"   Using existing buyer: {response.get('user', {}).get('email')}")
-        return success, response
+        """Test buyer login - try multiple existing buyers"""
+        # Try different existing buyers
+        buyer_credentials = [
+            ("buy@demo.com", "buyer123"),
+            ("buy2@demo.com", "buyer123"),
+            ("testbuyer@beatspace.com", "buyer123"),
+            ("websocket_test_buyer@beatspace.com", "buyer123")
+        ]
+        
+        for email, password in buyer_credentials:
+            login_data = {"email": email, "password": password}
+            success, response = self.run_test(f"Buyer Login ({email})", "POST", "auth/login", 200, data=login_data)
+            if success and 'access_token' in response:
+                self.buyer_token = response['access_token']
+                self.buyer_user_id = response.get('user', {}).get('id')
+                print(f"   ✅ Buyer authenticated: {email}")
+                print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
+                print(f"   User role: {response.get('user', {}).get('role', 'N/A')}")
+                print(f"   User ID: {self.buyer_user_id}")
+                return True, response
+        
+        print("   ❌ All buyer login attempts failed")
+        return False, {}
 
     def create_buyer_if_not_exists(self):
         """Create the buyer user if it doesn't exist"""
