@@ -241,8 +241,52 @@ const ManagerDashboard = () => {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <div>Loading Manager Dashboard...</div>;
   }
+
+  // Render minimal dashboard first
+  return (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <h1 className="text-2xl font-bold mb-4">Manager Dashboard</h1>
+      
+      {/* Basic stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded shadow">
+          <h3>Total Tasks</h3>
+          <p className="text-2xl font-bold">{tasks.length}</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h3>Operators</h3>
+          <p className="text-2xl font-bold">{operators.length}</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h3>Services</h3>
+          <p className="text-2xl font-bold">{services.length}</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h3>Status</h3>
+          <p className="text-2xl font-bold text-green-600">Online</p>
+        </div>
+      </div>
+
+      {/* Tasks list */}
+      <div className="bg-white rounded shadow p-4">
+        <h2 className="text-xl font-semibold mb-4">Recent Tasks</h2>
+        {tasks.length > 0 ? (
+          <div className="space-y-2">
+            {tasks.slice(0, 5).map(task => (
+              <div key={task.id} className="border-b pb-2">
+                <p className="font-medium">{task.asset_id}</p>
+                <p className="text-sm text-gray-500">Status: {task.status}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No tasks available</p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
