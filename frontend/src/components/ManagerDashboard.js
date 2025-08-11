@@ -92,13 +92,21 @@ const ManagerDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Data Fetching
+  // Add request debouncing to prevent infinite loops
+  const [fetchInProgress, setFetchInProgress] = useState(false);
+
   useEffect(() => {
     if (currentUser?.role === 'manager') {
-      fetchDashboardData();
-    } else {
+      if (!fetchInProgress) {
+        fetchDashboardData();
+      }
+    } else if (currentUser?.role && currentUser.role !== 'manager') {
+      // Only redirect if we have a user role but it's not manager
       navigate('/login');
     }
-  }, [currentUser, navigate]);
+    // Remove navigate from dependencies to prevent infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const fetchDashboardData = async () => {
     try {
