@@ -52,8 +52,11 @@ const OperatorDashboard = () => {
   const currentUser = getUser();
   const fileInputRef = useRef(null);
   
-  // WebSocket Integration
-  const { isConnected } = useWebSocket();
+  // WebSocket Integration - Fixed with proper parameters
+  const { isConnected } = useWebSocket(currentUser?.id, (message) => {
+    console.log('Operator received WebSocket message:', message);
+    // Handle real-time updates here if needed
+  });
   
   // State Management
   const [loading, setLoading] = useState(true);
