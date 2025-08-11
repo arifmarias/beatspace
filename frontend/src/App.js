@@ -8,6 +8,8 @@ import MarketplacePage from './components/MarketplacePage';
 import BuyerDashboard from './components/BuyerDashboard';
 import SellerDashboard from './components/SellerDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import ManagerDashboard from './components/ManagerDashboard';
+import OperatorDashboard from './components/OperatorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { NotificationProvider } from './components/ui/notification';
 import { NotificationProvider as GlobalNotificationProvider } from './contexts/NotificationContext';
