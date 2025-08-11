@@ -273,7 +273,7 @@ const ManagerDashboard = () => {
               {/* Notification Bell */}
               <NotificationBell
                 notifications={notifications}
-                unreadCount={notifications.filter(n => !n.read).length}
+                unreadCount={(Array.isArray(notifications) ? notifications : []).filter(n => !n.read).length}
                 onMarkAsRead={markNotificationAsRead}
                 onClearAll={clearAllNotifications}
                 isConnected={isConnected}
