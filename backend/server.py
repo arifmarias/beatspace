@@ -288,6 +288,7 @@ class User(BaseModel):
     business_license: Optional[str] = None
     last_login: Optional[datetime] = None
     subscription_plan: Optional[str] = "basic"
+    password_hash: Optional[str] = None  # Store hashed password
 
 class Token(BaseModel):
     access_token: str
