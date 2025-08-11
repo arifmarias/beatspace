@@ -2896,6 +2896,17 @@ async def get_monitoring_service(
         logger.error(f"Error fetching monitoring service: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching monitoring service: {str(e)}")
 
+# TEST ENDPOINT FOR DEBUGGING
+@api_router.get("/test/monitoring-tasks")
+async def test_monitoring_tasks(current_user: User = Depends(require_monitoring_staff)):
+    """Test endpoint for monitoring tasks"""
+    try:
+        logger.info("Testing monitoring tasks endpoint")
+        return {"message": "Test successful", "user_role": current_user.role.value}
+    except Exception as e:
+        logger.error(f"Test error: {str(e)}")
+        return {"error": str(e)}
+
 # ============= TASK MANAGEMENT =============
 
 @api_router.get("/monitoring/tasks")
