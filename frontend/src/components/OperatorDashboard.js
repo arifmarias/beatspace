@@ -89,15 +89,12 @@ const OperatorDashboard = () => {
 
   // Initialize
   useEffect(() => {
-    if (currentUser?.role === 'monitoring_operator') {
-      fetchMyTasks();
-      setupLocationTracking();
-    } else if (currentUser && currentUser.role !== 'monitoring_operator') {
-      navigate('/login');
-    }
-  }, [currentUser, navigate]);
+    // ProtectedRoute handles authentication - just fetch data and setup
+    fetchMyTasks();
+    setupLocationTracking();
+  }, []);
 
-  // Separate useEffect for offline handling to avoid conflicts
+  // Separate useEffect for offline handling
   useEffect(() => {
     const cleanup = setupOfflineHandling();
     return cleanup;
