@@ -98,7 +98,7 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (currentUser?.role === 'manager') {
       fetchDashboardData();
-    } else if (currentUser?.role && currentUser.role !== 'manager') {
+    } else if (currentUser && currentUser.role !== 'manager') {
       navigate('/login');
     }
   }, [currentUser, navigate]);
