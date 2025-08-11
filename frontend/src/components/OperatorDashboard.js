@@ -32,7 +32,7 @@ import { Textarea } from './ui/textarea';
 import { Progress } from './ui/progress';
 import { getAuthHeaders, getUser, logout } from '../utils/auth';
 import { useWebSocket } from '../utils/websocket';
-import { useNotification } from '../contexts/NotificationContext';
+import { useNotifications } from '../contexts/NotificationContext';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL;
