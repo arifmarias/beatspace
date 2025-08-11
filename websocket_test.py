@@ -352,15 +352,13 @@ class WebSocketTester:
         
         try:
             # Connect admin WebSocket
-            admin_ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}"
-            admin_additional_headers = {"Authorization": f"Bearer {self.admin_token}"}
-            admin_ws = await websockets.connect(admin_ws_url, additional_headers=admin_additional_headers)
+            admin_ws_url = f"{self.ws_base}/api/ws/{self.admin_user_id}?token={self.admin_token}"
+            admin_ws = await websockets.connect(admin_ws_url)
             self.log("✅ Admin WebSocket connected for real-time testing")
             
             # Connect buyer WebSocket
-            buyer_ws_url = f"{self.ws_base}/api/ws/{self.buyer_user_id}"
-            buyer_additional_headers = {"Authorization": f"Bearer {self.buyer_token}"}
-            buyer_ws = await websockets.connect(buyer_ws_url, additional_headers=buyer_additional_headers)
+            buyer_ws_url = f"{self.ws_base}/api/ws/{self.buyer_user_id}?token={self.buyer_token}"
+            buyer_ws = await websockets.connect(buyer_ws_url)
             self.log("✅ Buyer WebSocket connected for real-time testing")
             
             # Test 1: New offer request event
