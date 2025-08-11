@@ -132,7 +132,43 @@ class BeatSpaceAPITester:
         print("   ❌ All buyer login attempts failed")
         return False, {}
 
-    def create_buyer_if_not_exists(self):
+    def create_test_campaign_for_monitoring(self):
+        """Create a test campaign using admin privileges for monitoring service tests"""
+        if not self.admin_token:
+            admin_success, _ = self.test_admin_login()
+            if not admin_success:
+                return False, {}
+        
+        print("🔧 CREATING TEST CAMPAIGN FOR MONITORING SERVICE")
+        
+        # Create a test campaign
+        campaign_data = {
+            "name": "Test Monitoring Campaign",
+            "description": "Test campaign for monitoring service API testing",
+            "budget": 50000,
+            "start_date": "2025-01-15T00:00:00Z",
+            "end_date": "2025-03-15T00:00:00Z",
+            "status": "Live",
+            "buyer_id": self.buyer_user_id or "test_buyer_id",
+            "buyer_name": "Test Buyer Company"
+        }
+        
+        success, response = self.run_test(
+            "Create Test Campaign", 
+            "POST", 
+            "admin/campaigns", 
+            200, 
+            data=campaign_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            self.existing_campaign_id = response.get('id')
+            print(f"   ✅ Test campaign created: {response.get('name')} (ID: {self.existing_campaign_id})")
+            return True, response
+        else:
+            print(f"   ❌ Test campaign creation failed")
+            return False, {}
         """Create the buyer user if it doesn't exist"""
         if not self.admin_token:
             admin_success, _ = self.test_admin_login()
