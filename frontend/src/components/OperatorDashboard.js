@@ -97,6 +97,12 @@ const OperatorDashboard = () => {
     }
   }, [currentUser, navigate]);
 
+  // Separate useEffect for offline handling to avoid conflicts
+  useEffect(() => {
+    const cleanup = setupOfflineHandling();
+    return cleanup;
+  }, []);
+
   // Setup location tracking
   const setupLocationTracking = () => {
     if (navigator.geolocation) {
