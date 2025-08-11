@@ -443,6 +443,66 @@ const OperatorDashboard = () => {
   const totalToday = todayTasks.length;
 
   return (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <h1 className="text-2xl font-bold mb-4">Operator Dashboard</h1>
+      
+      {/* Status indicator */}
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <div className="flex items-center justify-between">
+          <span>Connection Status:</span>
+          <span className={`px-2 py-1 rounded text-sm ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <span>Network:</span>
+          <span className={`px-2 py-1 rounded text-sm ${isOnline ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+            {isOnline ? 'Online' : 'Offline'}
+          </span>
+        </div>
+      </div>
+
+      {/* Tasks */}
+      <div className="bg-white rounded shadow p-4">
+        <h2 className="text-xl font-semibold mb-4">Today's Tasks ({tasks.length})</h2>
+        {loading ? (
+          <p>Loading tasks...</p>
+        ) : tasks.length > 0 ? (
+          <div className="space-y-3">
+            {tasks.map(task => (
+              <div key={task.id} className="border border-gray-200 rounded p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{task.asset_id}</p>
+                    <p className="text-sm text-gray-500">Status: {task.status}</p>
+                  </div>
+                  <button
+                    onClick={() => startTask(task)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    disabled={task.status === 'completed'}
+                  >
+                    {task.status === 'completed' ? 'Completed' : 'Start'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No tasks assigned</p>
+        )}
+      </div>
+
+      {/* Location info */}
+      {location.lat && (
+        <div className="bg-white rounded shadow p-4 mt-4">
+          <h3 className="font-semibold mb-2">Current Location</h3>
+          <p className="text-sm text-gray-600">
+            Lat: {location.lat.toFixed(6)}, Lng: {location.lng.toFixed(6)}
+          </p>
+        </div>
+      )}
+    </div>
+  );
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
