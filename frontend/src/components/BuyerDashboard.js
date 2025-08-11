@@ -2462,6 +2462,20 @@ const BuyerDashboard = () => {
                                   Campaign Planning PDF
                                 </DropdownMenuItem>
                                 
+                                {/* Monitoring Service Option for Live/Active campaigns */}
+                                {(campaign.status === 'Live' || campaign.status === 'Approved') && (
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedCampaign(campaign);
+                                      setShowMonitoringSubscription(true);
+                                    }}
+                                    className="cursor-pointer text-green-600"
+                                  >
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    Monitoring Service
+                                  </DropdownMenuItem>
+                                )}
+                                
                                 {/* Only show delete for Draft campaigns */}
                                 {campaign.status === 'Draft' && (
                                   <DropdownMenuItem
