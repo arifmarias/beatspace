@@ -57,8 +57,7 @@ class ConnectionManager:
         self.active_connections: Dict[str, List[WebSocket]] = {}
         
     async def connect(self, websocket: WebSocket, user_id: str):
-        """Accept connection and add to active connections"""
-        await websocket.accept()
+        """Add connection to active connections (connection should already be accepted)"""
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
         self.active_connections[user_id].append(websocket)
