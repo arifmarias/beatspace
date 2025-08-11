@@ -2912,7 +2912,12 @@ async def get_monitoring_tasks(
         if operator_id and current_user.role == UserRole.MANAGER:
             query["assigned_operator_id"] = operator_id
         
-        tasks = await db.monitoring_tasks.find(query).sort("scheduled_date", 1).to_list(1000)
+        # Check if collection exists, if not return empty list
+        try:
+            tasks = await db.monitoring_tasks.find(query).sort("scheduled_date", 1).to_list(1000)
+        except Exception:
+            # Collection might not exist yet
+            tasks = []
         
         # Convert ObjectIds to strings and clean data
         cleaned_tasks = []
