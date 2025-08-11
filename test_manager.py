@@ -5,7 +5,7 @@ Test script for Manager Dashboard backend endpoints
 import requests
 import json
 
-API_BASE = "https://150b8d57-e3ef-4be4-8a16-f1cc8ccb066d.preview.emergentagent.com/api"
+API_BASE = "https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com/api"
 
 def test_manager_endpoints():
     print("🚀 Manager Dashboard Backend Endpoints Test")

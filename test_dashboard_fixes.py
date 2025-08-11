@@ -5,7 +5,7 @@ Test Manager Dashboard Access after Critical Fixes
 import requests
 import time
 
-API = "https://150b8d57-e3ef-4be4-8a16-f1cc8ccb066d.preview.emergentagent.com/api"
+API = "https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com/api"
 
 print("🔧 Testing Manager Dashboard Fixes")
 print("="*50)
@@ -81,7 +81,7 @@ print(f"\n🎯 MANUAL TESTING INSTRUCTIONS:")
 print("="*50)
 print("To test the Manager Dashboard fix manually:")
 print()
-print("1. Open: https://150b8d57-e3ef-4be4-8a16-f1cc8ccb066d.preview.emergentagent.com/login")
+print("1. Open: https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com/login")
 print("2. Login with:")
 print("   Email: manager@beatspace.com")
 print("   Password: manager123")

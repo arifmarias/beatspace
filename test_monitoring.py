@@ -6,7 +6,7 @@ import requests
 import json
 from datetime import datetime
 
-API_BASE = "https://150b8d57-e3ef-4be4-8a16-f1cc8ccb066d.preview.emergentagent.com/api"
+API_BASE = "https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com/api"
 
 def test_monitoring_api():
     print("🚀 BeatSpace Monitoring Service API Test")
