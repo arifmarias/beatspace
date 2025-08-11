@@ -327,7 +327,7 @@ const OperatorDashboard = () => {
       };
 
       if (isOnline) {
-        await axios.post(`${API}/monitoring/tasks/${currentTask.id}/report`, reportPayload, { headers });
+        await axios.post(`${API}/api/monitoring/tasks/${currentTask.id}/report`, reportPayload, { headers });
         
         notify.success('Monitoring report submitted successfully!');
         
