@@ -626,6 +626,34 @@ async def require_admin(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
+# ====================================
+# MONITORING SERVICE AUTH HELPERS - PHASE 1
+# ====================================
+
+async def require_manager(current_user: User = Depends(get_current_user)):
+    """Require Manager role for monitoring operations management"""
+    if current_user.role != UserRole.MANAGER:
+        raise HTTPException(status_code=403, detail="Manager access required")
+    return current_user
+
+async def require_monitoring_operator(current_user: User = Depends(get_current_user)):
+    """Require Monitoring Operator role for field operations"""
+    if current_user.role != UserRole.MONITORING_OPERATOR:
+        raise HTTPException(status_code=403, detail="Monitoring Operator access required")
+    return current_user
+
+async def require_monitoring_staff(current_user: User = Depends(get_current_user)):
+    """Require Manager or Monitoring Operator role for monitoring operations"""
+    if current_user.role not in [UserRole.MANAGER, UserRole.MONITORING_OPERATOR]:
+        raise HTTPException(status_code=403, detail="Monitoring staff access required")
+    return current_user
+
+async def require_admin_or_manager(current_user: User = Depends(get_current_user)):
+    """Require Admin or Manager role for monitoring oversight"""
+    if current_user.role not in [UserRole.ADMIN, UserRole.MANAGER]:
+        raise HTTPException(status_code=403, detail="Admin or Manager access required")
+    return current_user
+
 # Email notification functions
 def send_notification_email(to_email: str, subject: str, content: str):
     """Send notification email (demo implementation)"""
