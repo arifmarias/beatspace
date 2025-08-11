@@ -54,26 +54,28 @@ export const useWebSocket = (userId, onMessage) => {
       return null;
     }
     
-    // TEMPORARY: Force localhost for debugging
+    // WebSocket URL detection based on environment
     const currentUrl = window.location.href;
-    const isLocalDevelopment = true; // Force local for debugging
+    const isLocalDevelopment = currentUrl.includes('localhost:3000') || currentUrl.includes('127.0.0.1:3000');
     
     console.log('🔍 WebSocket URL Detection:');
     console.log(`   Current URL: ${currentUrl}`);
     console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`   isLocalDevelopment: ${isLocalDevelopment} (forced)`);
+    console.log(`   isLocalDevelopment: ${isLocalDevelopment}`);
     
     let wsUrl;
-    if (isLocalDevelopment || process.env.NODE_ENV === 'development') {
+    if (isLocalDevelopment) {
       // Development: use local WebSocket with authentication
       wsUrl = `ws://localhost:8001/api/ws/${userId}?token=${token}`;
       console.log('🏠 WebSocket: Using local development URL (localhost:8001)');
     } else {
-      // Production: use environment URL
+      // Production: use environment URL - convert HTTPS to WSS
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
       const wsBaseUrl = backendUrl.replace(/^https?/, backendUrl.includes('https') ? 'wss' : 'ws');
       wsUrl = `${wsBaseUrl}/api/ws/${userId}?token=${token}`;
       console.log('🌐 WebSocket: Using production URL');
+      console.log(`   Backend URL: ${backendUrl}`);
+      console.log(`   WebSocket URL: ${wsUrl.substring(0, 80)}...`);
     }
     
     return wsUrl;
