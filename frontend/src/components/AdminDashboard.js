@@ -158,37 +158,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Notification system state
-  const [notifications, setNotifications] = useState([]);
-  const [notificationId, setNotificationId] = useState(1);
-
-  // Add notification helper
-  const addNotification = (type, title, message, data = {}) => {
-    const notification = {
-      id: notificationId,
-      type,
-      title,
-      message,
-      timestamp: new Date().toISOString(),
-      read: false,
-      data
-    };
-    setNotifications(prev => [notification, ...prev]);
-    setNotificationId(prev => prev + 1);
-  };
-
-  // Mark notification as read
-  const markNotificationAsRead = (id) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
-  };
-
-  // Clear all notifications
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
-
   const currentUser = getUser() || { email: 'admin@beatspace.com', role: 'admin' }; // Fallback for admin
   const websocketUserId = currentUser.id || currentUser.email || 'admin'; // Use actual user ID for WebSocket connection
   const { isConnected, connectionCount, sendMessage, userInfo, error } = useWebSocket(websocketUserId, handleWebSocketMessage);
