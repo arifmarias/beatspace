@@ -270,7 +270,10 @@ export const useWebSocket = (userId, onMessage) => {
   useEffect(() => {
     if (userId) {
       console.log(`🔌 WebSocket: Initializing connection for user: ${userId}`);
+      console.log(`🔌 WebSocket: Current isConnected state: ${isConnected}`);
       connect();
+    } else {
+      console.warn('🚫 WebSocket: No userId provided for connection');
     }
 
     // Cleanup on unmount - but NOT on userId changes
@@ -284,6 +287,7 @@ export const useWebSocket = (userId, onMessage) => {
 
   // Separate effect to handle reconnection attempts
   useEffect(() => {
+    console.log(`🔄 WebSocket: Connection state changed - isConnected: ${isConnected}, userId: ${userId}`);
     if (!isConnected && userId && reconnectAttempts.current < maxReconnectAttempts) {
       console.log('🔄 WebSocket: Connection lost, attempting to reconnect...');
       const timer = setTimeout(() => {
@@ -293,6 +297,14 @@ export const useWebSocket = (userId, onMessage) => {
       return () => clearTimeout(timer);
     }
   }, [isConnected, userId]); // Reconnect when connection is lost
+
+  // Log connection state changes
+  useEffect(() => {
+    console.log(`📊 WebSocket Status Update: Connected=${isConnected}, User=${userId}, Error=${error}, ConnectionCount=${connectionCount}`);
+    if (userInfo) {
+      console.log(`👤 WebSocket User Info:`, userInfo);
+    }
+  }, [isConnected, error, userId, connectionCount, userInfo]);
 
   // Handle page visibility changes (reconnect when tab becomes active) - DISABLED to prevent connection loops
   // useEffect(() => {
