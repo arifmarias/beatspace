@@ -554,10 +554,13 @@ const ManagerDashboard = () => {
 
           {/* Performance Tab */}
           <TabsContent value="performance" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Task Completion Trends</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Task Completion Trends
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -578,7 +581,10 @@ const ManagerDashboard = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <Analytics className="w-5 h-5 mr-2" />
+                    Performance Metrics
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
