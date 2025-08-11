@@ -856,8 +856,7 @@ const AdminDashboard = () => {
       const headers = getAuthHeaders();
       
       const userData = {
-        ...userForm,
-        password: 'tempPassword123' // Default password for admin-created users
+        ...userForm
       };
 
       const response = await axios.post(`${API}/auth/register`, userData, { headers });
