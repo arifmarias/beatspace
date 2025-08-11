@@ -1277,22 +1277,28 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Helper function to get total asset count for a campaign (only live and requested assets)
+  // Helper function to get total asset count for a campaign (only what's actually displayed)
   const getCampaignAssetCount = (campaign) => {
-    const campaignAssets = (campaign.campaign_assets || []).length;
+    // Count direct campaign assets
+    const directAssets = (campaign.campaign_assets || []).length;
     
-    // Count ACTIVE and LIVE offers for this campaign
+    // Count assets from offer requests that are NOT already in campaign_assets
     const activeCampaignOffers = (requestedOffers || []).filter(offer => 
-      offer.campaign_name === campaign.name &&
-      // Include live/booked/approved assets AND exclude only cancelled/rejected
-      offer.status !== 'Rejected' && 
-      offer.status !== 'Cancelled' &&
-      offer.status !== 'rejected' &&
-      offer.status !== 'cancelled'
-      // Remove exclusion of 'Approved' and 'Accepted' as these are live assets
+      (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) &&
+      // Include active statuses only (same as fetchCampaignAssets logic)
+      (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
+       offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
     );
     
-    return campaignAssets + activeCampaignOffers.length; // Add both counts together
+    // Only count requested assets that are NOT already in campaign_assets
+    const uniqueRequestedAssets = activeCampaignOffers.filter(offer => {
+      const isAlreadyInCampaign = (campaign.campaign_assets || []).some(
+        campaignAsset => campaignAsset.asset_id === offer.asset_id
+      );
+      return !isAlreadyInCampaign;
+    });
+    
+    return directAssets + uniqueRequestedAssets.length; // No double counting
   };
 
   // Add asset to campaign from marketplace request
