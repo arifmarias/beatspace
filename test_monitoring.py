@@ -43,9 +43,24 @@ def test_monitoring_api():
                 print(f"   ✅ Found {len(campaigns)} campaigns")
                 
                 if campaigns:
+                    # For admin testing, let's get campaigns but note the ownership issue
                     campaign = campaigns[0]
                     campaign_id = campaign.get('id')
                     print(f"   Using campaign: {campaign.get('name')} (ID: {campaign_id})")
+                    print(f"   Campaign owner: {campaign.get('buyer_id', 'N/A')}")
+                    
+                    # Check if admin can access buyer campaigns
+                    print("\n2.5. Testing admin access to campaigns...")
+                    admin_campaigns_response = requests.get(f"{API_BASE}/admin/campaigns", headers=headers)
+                    print(f"   Admin campaigns status: {admin_campaigns_response.status_code}")
+                    if admin_campaigns_response.status_code == 200:
+                        admin_campaigns = admin_campaigns_response.json()
+                        print(f"   ✅ Admin found {len(admin_campaigns)} campaigns via admin endpoint")
+                        if admin_campaigns:
+                            # Use a campaign from admin endpoint
+                            campaign = admin_campaigns[0]
+                            campaign_id = campaign.get('id')
+                            print(f"   Using admin campaign: {campaign.get('name')} (ID: {campaign_id})")
                     
                     # Step 3: Test monitoring service authentication
                     print("\n3. Testing monitoring service authentication...")
