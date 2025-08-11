@@ -345,6 +345,10 @@ const BuyerDashboard = () => {
         totalBudget,
         totalOfferRequests
       });
+
+      // Fetch monitoring services
+      fetchMonitoringServices();
+      
     } catch (error) {
       console.error('Error fetching buyer data:', error);
       // Set default empty states on error
