@@ -2853,7 +2853,12 @@ async def get_monitoring_services(current_user: User = Depends(get_current_user)
             # Admins and managers can see all services
             query = {}
         
-        services = await db.monitoring_subscriptions.find(query).to_list(1000)
+        # Check if collection exists, if not return empty list
+        try:
+            services = await db.monitoring_subscriptions.find(query).to_list(1000)
+        except Exception:
+            # Collection might not exist yet
+            services = []
         
         # Convert ObjectIds to strings and clean data
         cleaned_services = []
