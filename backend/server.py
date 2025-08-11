@@ -2684,7 +2684,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         print(f"❌ WebSocket: Token expired for user {user_id}")
         await websocket.close(code=4002, reason="Token expired")
         return
-    except jwt.InvalidTokenError as e:
+    except JWTError as e:
         logger.error(f"❌ WebSocket: Invalid token for user {user_id}: {e}")
         print(f"❌ WebSocket: Invalid token for user {user_id}: {e}")
         await websocket.close(code=4003, reason="Invalid token")
