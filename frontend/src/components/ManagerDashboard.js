@@ -432,7 +432,7 @@ const ManagerDashboard = () => {
                         {selectedTasks.length} tasks selected
                       </span>
                       <Button onClick={() => setAssignmentDialog(true)} size="sm">
-                        <AssignmentTurnedIn className="w-4 h-4 mr-2" />
+                        <UserCheck className="w-4 h-4 mr-2" />
                         Assign Tasks
                       </Button>
                     </div>
