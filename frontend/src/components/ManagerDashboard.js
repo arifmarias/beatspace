@@ -582,7 +582,7 @@ const ManagerDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <Analytics className="w-5 h-5 mr-2" />
+                    <BarChart3 className="w-5 h-5 mr-2" />
                     Performance Metrics
                   </CardTitle>
                 </CardHeader>
