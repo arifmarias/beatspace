@@ -926,7 +926,7 @@ class BeatSpaceAPITester:
         buyer_test_success = True
         if self.buyer_token:
             print(f"   Test 4: Buyer token with buyer user ID")
-            buyer_user_id = "buyer@company.com"
+            buyer_user_id = "buy@demo.com"
             buyer_test_success = self._test_websocket_auth(ws_base_url, buyer_user_id, self.buyer_token, should_succeed=True)
         
         total_tests = 4 if self.buyer_token else 3
