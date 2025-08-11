@@ -107,10 +107,10 @@ const ManagerDashboard = () => {
       
       // Fetch all data concurrently
       const [tasksRes, operatorsRes, servicesRes, performanceRes] = await Promise.all([
-        axios.get(`${API}/monitoring/tasks`, { headers }),
-        axios.get(`${API}/users?role=monitoring_operator`, { headers }),
-        axios.get(`${API}/monitoring/services`, { headers }),
-        axios.get(`${API}/monitoring/performance`, { headers })
+        axios.get(`${API}/api/monitoring/tasks`, { headers }),
+        axios.get(`${API}/api/users?role=monitoring_operator`, { headers }),
+        axios.get(`${API}/api/monitoring/services`, { headers }),
+        axios.get(`${API}/api/monitoring/performance`, { headers })
       ]);
       
       setTasks(tasksRes.data.tasks || []);
