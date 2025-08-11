@@ -43,7 +43,16 @@ const API = process.env.REACT_APP_BACKEND_URL;
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
-  const { notify } = useNotification();
+  const { success: notifySuccess, error: notifyError, info: notifyInfo, warning: notifyWarning } = useNotifications();
+  
+  // Create a notify object for backward compatibility
+  const notify = {
+    success: notifySuccess,
+    error: notifyError,
+    info: notifyInfo,
+    warning: notifyWarning
+  };
+  
   const currentUser = getUser();
   
   // WebSocket Integration
