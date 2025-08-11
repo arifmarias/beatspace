@@ -78,6 +78,17 @@ const BuyerDashboard = () => {
   const [editingOffer, setEditingOffer] = useState(null);
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
   
+  // Monitoring Service State
+  const [monitoringServices, setMonitoringServices] = useState([]);
+  const [monitoringReports, setMonitoringReports] = useState([]);
+  const [showMonitoringSubscription, setShowMonitoringSubscription] = useState(false);
+  const [monitoringFrequency, setMonitoringFrequency] = useState('weekly');
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    email: true,
+    in_app: true,
+    sms: false
+  });
+  
   // Initialize activeTab based on URL parameter, default to 'my-assets'
   const [activeTab, setActiveTab] = useState(() => {
     const urlParams = new URLSearchParams(location.search);
