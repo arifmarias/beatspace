@@ -1379,6 +1379,155 @@ const BuyerDashboard = () => {
     fetchMonitoringData(asset.id);
   };
 
+  // Monitoring Subscription Functions
+  const fetchCampaignAssetsForMonitoring = async (campaignId) => {
+    try {
+      // Get campaign details to extract asset information
+      const campaignResponse = await axios.get(`${API}/campaigns/${campaignId}`, {
+        headers: getAuthHeaders()
+      });
+      const campaign = campaignResponse.data;
+      
+      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+        // Extract asset details from campaign_assets
+        const assetPromises = campaign.campaign_assets.map(async (campaignAsset) => {
+          try {
+            const assetResponse = await axios.get(`${API}/assets/${campaignAsset.asset_id}`, {
+              headers: getAuthHeaders()
+            });
+            return {
+              id: campaignAsset.asset_id,
+              name: campaignAsset.asset_name,
+              address: assetResponse.data.address || 'N/A',
+              type: assetResponse.data.type || 'N/A'
+            };
+          } catch (error) {
+            console.error(`Failed to fetch asset ${campaignAsset.asset_id}:`, error);
+            return {
+              id: campaignAsset.asset_id,
+              name: campaignAsset.asset_name,
+              address: 'N/A',
+              type: 'N/A'
+            };
+          }
+        });
+        
+        const assets = await Promise.all(assetPromises);
+        setCampaignAssetsForMonitoring(assets);
+        
+        // Pre-select all assets by default
+        setMonitoringFormData(prev => ({
+          ...prev,
+          selectedAssets: assets.map(asset => asset.id)
+        }));
+      } else {
+        setCampaignAssetsForMonitoring([]);
+        setMonitoringFormData(prev => ({
+          ...prev,
+          selectedAssets: []
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching campaign assets for monitoring:', error);
+      notify.error('Failed to load campaign assets');
+    }
+  };
+
+  const handleMonitoringSubscriptionOpen = (campaign) => {
+    setSelectedCampaign(campaign);
+    setShowMonitoringSubscription(true);
+    
+    // Reset form data
+    setMonitoringFormData({
+      frequency: 'weekly',
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days from now
+      selectedAssets: [],
+      serviceLevel: 'standard',
+      notificationPreferences: {
+        email: true,
+        in_app: true,
+        sms: false
+      }
+    });
+    
+    // Fetch campaign assets
+    fetchCampaignAssetsForMonitoring(campaign.id);
+  };
+
+  const handleCreateMonitoringSubscription = async () => {
+    if (!selectedCampaign) {
+      notify.error('No campaign selected');
+      return;
+    }
+
+    if (monitoringFormData.selectedAssets.length === 0) {
+      notify.error('Please select at least one asset to monitor');
+      return;
+    }
+
+    if (!monitoringFormData.startDate || !monitoringFormData.endDate) {
+      notify.error('Please select start and end dates');
+      return;
+    }
+
+    if (monitoringFormData.endDate <= monitoringFormData.startDate) {
+      notify.error('End date must be after start date');
+      return;
+    }
+
+    try {
+      setMonitoringSubmitting(true);
+      
+      const subscriptionData = {
+        campaign_id: selectedCampaign.id,
+        asset_ids: monitoringFormData.selectedAssets,
+        frequency: monitoringFormData.frequency,
+        start_date: monitoringFormData.startDate.toISOString(),
+        end_date: monitoringFormData.endDate.toISOString(),
+        service_level: monitoringFormData.serviceLevel,
+        notification_preferences: monitoringFormData.notificationPreferences
+      };
+
+      const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
+        headers: getAuthHeaders()
+      });
+
+      notify.success('Monitoring service subscription created successfully!');
+      setShowMonitoringSubscription(false);
+      setSelectedCampaign(null);
+      
+      // Refresh monitoring services
+      fetchMonitoringServices();
+
+    } catch (error) {
+      console.error('Error creating monitoring subscription:', error);
+      notify.error(error.response?.data?.detail || 'Failed to create monitoring subscription');
+    } finally {
+      setMonitoringSubmitting(false);
+    }
+  };
+
+  const fetchMonitoringServices = async () => {
+    try {
+      const response = await axios.get(`${API}/monitoring/services`, {
+        headers: getAuthHeaders()
+      });
+      setMonitoringServices(response.data);
+    } catch (error) {
+      console.error('Error fetching monitoring services:', error);
+    }
+  };
+
+  const handleAssetSelectionChange = (assetId, checked) => {
+    setMonitoringFormData(prev => ({
+      ...prev,
+      selectedAssets: checked 
+        ? [...prev.selectedAssets, assetId]
+        : prev.selectedAssets.filter(id => id !== assetId)
+    }));
+  };
+
   // Creative management functions
   const handleEditCreative = (asset) => {
     setEditingCreative(asset.id);
