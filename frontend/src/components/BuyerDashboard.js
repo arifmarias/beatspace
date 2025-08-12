@@ -1352,6 +1352,10 @@ const BuyerDashboard = () => {
       
       // Immediate refresh for real-time updates
       await fetchBuyerData();
+      // Also refresh requested offers if user is on that tab
+      if (activeTab === 'requested-offers') {
+        fetchRequestedOffers();
+      }
       console.log('✅ Data refreshed after revision request');
     } catch (error) {
       console.error('Error requesting revision:', error);
