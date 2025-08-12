@@ -1782,10 +1782,20 @@ const BuyerDashboard = () => {
         return false;
       }
       
-      // Filter by location (using address for location filtering)
+      // Filter by location (using area field primarily, fallback to address)
       if (mapFilters.location !== 'all') {
-        const addressLower = asset.address?.toLowerCase() || '';
-        if (!addressLower.includes(mapFilters.location.toLowerCase())) {
+        let locationMatch = false;
+        
+        // First check area field if available
+        if (asset.area && asset.area.trim()) {
+          locationMatch = asset.area.toLowerCase().includes(mapFilters.location.toLowerCase());
+        } else {
+          // Fallback to address-based filtering if no area field
+          const addressLower = asset.address?.toLowerCase() || '';
+          locationMatch = addressLower.includes(mapFilters.location.toLowerCase());
+        }
+        
+        if (!locationMatch) {
           return false;
         }
       }
