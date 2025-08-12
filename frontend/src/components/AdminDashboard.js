@@ -4009,17 +4009,52 @@ const AdminDashboard = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Division *
+                    </label>
+                    <Select 
+                      value={assetForm.division} 
+                      onValueChange={(value) => {
+                        setAssetForm({
+                          ...assetForm, 
+                          division: value,
+                          district: '', // Reset district when division changes
+                          area: '' // Reset area when division changes
+                        });
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select division" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getDivisions().map((division) => (
+                          <SelectItem key={division} value={division}>
+                            {division}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       District *
                     </label>
                     <Select 
                       value={assetForm.district} 
-                      onValueChange={(value) => setAssetForm({...assetForm, district: value})}
+                      onValueChange={(value) => {
+                        setAssetForm({
+                          ...assetForm, 
+                          district: value,
+                          area: '' // Reset area when district changes
+                        });
+                      }}
+                      disabled={!assetForm.division}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select district" />
+                        <SelectValue placeholder={assetForm.division ? "Select district" : "Select division first"} />
                       </SelectTrigger>
                       <SelectContent className="max-h-48 overflow-y-auto">
                         {assetForm.division && getDistricts(assetForm.division).map((district) => (
@@ -4035,23 +4070,30 @@ const AdminDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Division *
+                      Area *
                     </label>
                     <Select 
-                      value={assetForm.division} 
-                      onValueChange={(value) => setAssetForm({...assetForm, division: value})}
+                      value={assetForm.area} 
+                      onValueChange={(value) => setAssetForm({...assetForm, area: value})}
+                      disabled={!assetForm.district}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select division" />
+                        <SelectValue placeholder={assetForm.district ? "Select area" : "Select district first"} />
                       </SelectTrigger>
-                      <SelectContent>
-                        {getDivisions().map((division) => (
-                          <SelectItem key={division} value={division}>
-                            {division}
+                      <SelectContent className="max-h-48 overflow-y-auto">
+                        {assetForm.division && assetForm.district && getAreas(assetForm.division, assetForm.district).map((area) => (
+                          <SelectItem key={area} value={area}>
+                            {area}
                           </SelectItem>
                         ))}
+                        {(!assetForm.division || !assetForm.district) && (
+                          <SelectItem value="" disabled>
+                            Please select division and district first
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
