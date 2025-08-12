@@ -1616,58 +1616,131 @@ const AdminDashboard = () => {
           longitude = coords.lng;
         }
         
-        // Extract district and division for Bangladesh
-        let district = '';
+        // Extract district, division, and area for Bangladesh using new location data
         let division = '';
+        let district = '';
+        let area = '';
         
         console.log('Address components for debugging:', addressComponents);
+        
+        // First, try to extract from Google's address components
+        let administrativeArea1 = '';
+        let administrativeArea2 = '';
+        let locality = '';
+        let sublocality = '';
         
         for (const component of addressComponents) {
           const types = component.types;
           console.log('Component:', component.long_name, 'Types:', types);
           
-          // Try multiple types for district (Bangladesh specific)
-          if (types.includes('sublocality_level_1') || 
-              types.includes('sublocality') ||
-              types.includes('locality') ||
-              types.includes('administrative_area_level_2') ||
-              types.includes('neighborhood')) {
-            if (!district || component.long_name.length > district.length) { 
-              // Take the most specific/longest name
-              district = component.long_name;
-            }
-          } else if (types.includes('administrative_area_level_1')) {
-            division = component.long_name.replace(' Division', '');
+          if (types.includes('administrative_area_level_1')) {
+            administrativeArea1 = component.long_name.replace(' Division', '');
+          } else if (types.includes('administrative_area_level_2')) {
+            administrativeArea2 = component.long_name;
+          } else if (types.includes('locality')) {
+            locality = component.long_name;
+          } else if (types.includes('sublocality_level_1')) {
+            sublocality = component.long_name;
           }
         }
         
-        // If no district found from components, try to extract from formatted address
-        if (!district && formattedAddress) {
-          const addressParts = formattedAddress.split(',');
-          // For Bangladesh, district is often mentioned in the address
-          for (let part of addressParts) {
-            part = part.trim();
-            // Check if this part contains district-like keywords or is a known area
-            if (part.match(/\b(Dhaka|Mirpur|Gulshan|Dhanmondi|Uttara|Banani|Bashundhara|Wari|Tejgaon)\b/i)) {
-              if (!district) {
-                district = part;
+        // Match against our location data structure
+        const divisions = getDivisions();
+        
+        // Find division
+        division = divisions.find(div => 
+          div.toLowerCase() === administrativeArea1.toLowerCase()
+        ) || '';
+        
+        if (division) {
+          const districts = getDistricts(division);
+          
+          // Try to find district from various address components
+          const districtCandidates = [administrativeArea2, locality, sublocality].filter(Boolean);
+          
+          for (const candidate of districtCandidates) {
+            const foundDistrict = districts.find(dist => 
+              dist.toLowerCase().includes(candidate.toLowerCase()) ||
+              candidate.toLowerCase().includes(dist.toLowerCase())
+            );
+            if (foundDistrict) {
+              district = foundDistrict;
+              break;
+            }
+          }
+          
+          // If district found, try to find area
+          if (district) {
+            const areas = getAreas(division, district);
+            
+            // Try to find area from various address components
+            const areaCandidates = [sublocality, locality, administrativeArea2].filter(Boolean);
+            
+            for (const candidate of areaCandidates) {
+              const foundArea = areas.find(ar => 
+                ar.toLowerCase().includes(candidate.toLowerCase()) ||
+                candidate.toLowerCase().includes(ar.toLowerCase())
+              );
+              if (foundArea) {
+                area = foundArea;
                 break;
               }
             }
           }
         }
         
+        // Fallback: try to extract from formatted address using known patterns
+        if (!division || !district) {
+          const addressParts = formattedAddress.split(',').map(part => part.trim());
+          
+          // Try to match any part of the address against our location data
+          for (const part of addressParts) {
+            if (!division) {
+              const foundDivision = divisions.find(div => 
+                part.toLowerCase().includes(div.toLowerCase())
+              );
+              if (foundDivision) {
+                division = foundDivision;
+              }
+            }
+            
+            if (division && !district) {
+              const districts = getDistricts(division);
+              const foundDistrict = districts.find(dist => 
+                part.toLowerCase().includes(dist.toLowerCase()) ||
+                dist.toLowerCase().includes(part.toLowerCase())
+              );
+              if (foundDistrict) {
+                district = foundDistrict;
+              }
+            }
+            
+            if (division && district && !area) {
+              const areas = getAreas(division, district);
+              const foundArea = areas.find(ar => 
+                part.toLowerCase().includes(ar.toLowerCase()) ||
+                ar.toLowerCase().includes(part.toLowerCase())
+              );
+              if (foundArea) {
+                area = foundArea;
+              }
+            }
+          }
+        }
+        
         console.log('Final extracted values:', {
+          division: division,
           district: district,
-          division: division
+          area: area
         });
 
         // Update form with all extracted data
         setAssetForm(prev => ({
           ...prev,
           address: formattedAddress,
-          district: district,
           division: division,
+          district: district,
+          area: area,
           location: latitude && longitude ? {
             lat: latitude,
             lng: longitude
@@ -1676,12 +1749,14 @@ const AdminDashboard = () => {
 
         console.log('Geocoding success:', {
           address: formattedAddress,
-          district,
           division,
+          district,
+          area,
           coordinates: latitude && longitude ? {lat: latitude, lng: longitude} : 'Not found'
         });
 
-        notify.success('Address information populated successfully!');
+        const locationInfo = [division, district, area].filter(Boolean).join(' → ');
+        notify.success(`Address populated successfully! ${locationInfo ? `Location: ${locationInfo}` : 'Please verify location details.'}`);
       } else {
         throw new Error(data.error_message || 'Geocoding failed');
       }
