@@ -4940,10 +4940,10 @@ const BuyerDashboard = () => {
                       <label className="flex items-center space-x-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={monitoringFormData.notifications.email}
+                          checked={monitoringFormData.notificationPreferences.email}
                           onChange={(e) => setMonitoringFormData(prev => ({
                             ...prev,
-                            notifications: {...prev.notifications, email: e.target.checked}
+                            notificationPreferences: {...prev.notificationPreferences, email: e.target.checked}
                           }))}
                           className="text-blue-600 focus:ring-blue-500 rounded"
                         />
@@ -4952,10 +4952,10 @@ const BuyerDashboard = () => {
                       <label className="flex items-center space-x-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={monitoringFormData.notifications.sms}
+                          checked={monitoringFormData.notificationPreferences.sms}
                           onChange={(e) => setMonitoringFormData(prev => ({
                             ...prev,
-                            notifications: {...prev.notifications, sms: e.target.checked}
+                            notificationPreferences: {...prev.notificationPreferences, sms: e.target.checked}
                           }))}
                           className="text-blue-600 focus:ring-blue-500 rounded"
                         />
