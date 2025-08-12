@@ -1388,6 +1388,12 @@ const BuyerDashboard = () => {
       }
       return [...prev, asset];
     });
+    
+    // Refresh live assets to ensure "My Assets" tab is up to date
+    setTimeout(() => {
+      fetchLiveAssets(true);
+    }, 500);
+    
     notify.success(`${asset.name} added to campaign!`);
   };
   
