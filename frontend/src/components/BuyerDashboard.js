@@ -355,6 +355,11 @@ const BuyerDashboard = () => {
       // Fetch monitoring services
       fetchMonitoringServices();
       
+      // Also refresh live assets to ensure "My Assets" tab is synchronized
+      if (activeTab === 'my-assets' || assetsFetched) {
+        fetchLiveAssets(true);
+      }
+      
     } catch (error) {
       console.error('Error fetching buyer data:', error);
       // Set default empty states on error
