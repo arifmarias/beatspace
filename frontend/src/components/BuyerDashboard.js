@@ -283,11 +283,16 @@ const BuyerDashboard = () => {
   // State to track if we've fetched assets for this session
   const [assetsFetched, setAssetsFetched] = useState(false);
 
-  // Fetch live assets only when My Assets tab is accessed
+  // Refresh assets when switching to My Assets tab
   useEffect(() => {
-    if (activeTab === 'my-assets' && isAuthenticated() && !assetsFetched) {
-      fetchLiveAssets();
-      setAssetsFetched(true);
+    if (activeTab === 'my-assets' && isAuthenticated()) {
+      if (!assetsFetched) {
+        fetchLiveAssets();
+        setAssetsFetched(true);
+      } else {
+        // Always refresh when switching to My Assets to ensure latest data
+        fetchLiveAssets(true);
+      }
     }
   }, [activeTab, assetsFetched]);
 
