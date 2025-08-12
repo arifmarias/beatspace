@@ -34,7 +34,8 @@ import {
   Activity,
   Tag,
   CalendarDays,
-  RotateCcw
+  RotateCcw,
+  RefreshCw
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
