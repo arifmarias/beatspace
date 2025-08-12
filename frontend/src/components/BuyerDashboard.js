@@ -2503,7 +2503,8 @@ const BuyerDashboard = () => {
                                       </div>
                                     </div>
                                   );
-                                })}
+                                });
+                                })()}
                               </div>
                             </div>
                             
