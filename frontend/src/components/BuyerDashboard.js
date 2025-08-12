@@ -528,6 +528,14 @@ const BuyerDashboard = () => {
         })
       );
       
+      console.log('✅ Live assets fetched successfully:', assetsWithInspectionData.length, 'assets');
+      console.log('📊 Live assets details:', assetsWithInspectionData.map(a => ({
+        id: a.id,
+        name: a.name,
+        status: a.status,
+        campaignName: a.campaignName
+      })));
+      
       setLiveAssets(assetsWithInspectionData);
       
       // Clear timeout on success
