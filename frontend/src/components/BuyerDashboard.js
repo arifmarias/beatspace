@@ -1436,6 +1436,10 @@ const BuyerDashboard = () => {
     // Refresh live assets to ensure "My Assets" tab is up to date
     setTimeout(() => {
       fetchLiveAssets(true);
+      // Also refresh campaign data if user is on campaigns tab
+      if (activeTab === 'campaigns') {
+        fetchBuyerData();
+      }
     }, 500);
     
     notify.success(`${asset.name} added to campaign!`);
