@@ -2394,7 +2394,7 @@ const BuyerDashboard = () => {
                                       <SelectValue placeholder="Location" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="all">All Locations</SelectItem>
+                                      <SelectItem value="all">All Areas</SelectItem>
                                       {getUniqueLocations().map((location) => (
                                         <SelectItem key={location} value={location}>
                                           📍 {location}
