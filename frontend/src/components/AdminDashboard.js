@@ -384,8 +384,9 @@ const AdminDashboard = () => {
     google_map_link: '', // NEW: Google Maps link field
     address: '',
     location: { lat: '', lng: '' }, // NEW: Location coordinates
-    district: '',
     division: '',
+    district: '',
+    area: '',
     type: 'Billboard',
     dimensions: '',
     traffic_volume: '',
