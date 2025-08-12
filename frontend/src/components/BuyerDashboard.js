@@ -877,6 +877,10 @@ const BuyerDashboard = () => {
 
   // Helper function to get monitoring subscription for an asset
   const getAssetMonitoringSubscription = (assetId) => {
+    // Ensure monitoringServices is an array before using .find()
+    if (!Array.isArray(monitoringServices)) {
+      return null;
+    }
     return monitoringServices.find(service => 
       service.asset_ids && service.asset_ids.includes(assetId)
     );
