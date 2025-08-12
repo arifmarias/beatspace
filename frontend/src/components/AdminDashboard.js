@@ -4368,7 +4368,7 @@ const AdminDashboard = () => {
                         <SelectValue placeholder="Select district" />
                       </SelectTrigger>
                       <SelectContent className="max-h-48 overflow-y-auto">
-                        {bangladeshDistricts.map((district) => (
+                        {assetForm.division && getDistricts(assetForm.division).map((district) => (
                           <SelectItem key={district} value={district}>
                             {district}
                           </SelectItem>
