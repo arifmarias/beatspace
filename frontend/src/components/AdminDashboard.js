@@ -4388,7 +4388,7 @@ const AdminDashboard = () => {
                         <SelectValue placeholder="Select division" />
                       </SelectTrigger>
                       <SelectContent>
-                        {bangladeshDivisions.map((division) => (
+                        {getDivisions().map((division) => (
                           <SelectItem key={division} value={division}>
                             {division}
                           </SelectItem>
