@@ -3110,12 +3110,17 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                   <Button 
-                    onClick={fetchBookedAssets}
+                    onClick={() => {
+                      console.log('🔄 Manual monitoring refresh clicked');
+                      fetchBookedAssets();
+                    }}
                     variant="outline" 
                     size="sm"
                     disabled={monitoringLoading}
+                    className="flex items-center space-x-2"
                   >
-                    {monitoringLoading ? 'Loading...' : 'Refresh'}
+                    <RefreshCw className="w-4 h-4" />
+                    <span>{monitoringLoading ? 'Loading...' : 'Refresh'}</span>
                   </Button>
                 </div>
               </CardHeader>
