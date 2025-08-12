@@ -426,7 +426,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (activeTab === 'monitoring') {
       const timeoutId = setTimeout(() => {
-        fetchMonitoringData(); // Subtle refresh for monitoring
+        fetchBookedAssets(); // Subtle refresh for monitoring
       }, 100);
       
       return () => clearTimeout(timeoutId);
