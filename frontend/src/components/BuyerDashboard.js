@@ -2097,7 +2097,7 @@ const BuyerDashboard = () => {
                                             ...prev,
                                             selectedAssets: [asset.id]
                                           }));
-                                          setShowMonitoringDialog(true);
+                                          setShowMonitoringSubscription(true);
                                         }}
                                       >
                                         {buttonInfo.text}
