@@ -2336,34 +2336,6 @@ const BuyerDashboard = () => {
                                   <span className="text-sm font-medium text-gray-700">Filters:</span>
                                 </div>
                                 
-                                {/* Asset Selection Filter */}
-                                <div className="flex items-center space-x-2">
-                                  <Building className="w-4 h-4 text-gray-500" />
-                                  <Select
-                                    value={selectedMapAsset?.id || 'all'}
-                                    onValueChange={(value) => {
-                                      if (value === 'all') {
-                                        setSelectedMapAsset(null);
-                                      } else {
-                                        const asset = liveAssets.find(a => a.id === value);
-                                        setSelectedMapAsset(asset);
-                                      }
-                                    }}
-                                  >
-                                    <SelectTrigger className="w-48 h-8 text-xs">
-                                      <SelectValue placeholder="Select Asset" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="all">All Assets</SelectItem>
-                                      {liveAssets.map((asset) => (
-                                        <SelectItem key={asset.id} value={asset.id}>
-                                          🏢 {asset.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                
                                 {/* Asset Type Filter */}
                                 <div className="flex items-center space-x-2">
                                   <Tag className="w-4 h-4 text-gray-500" />
