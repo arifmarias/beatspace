@@ -308,6 +308,28 @@ const BuyerDashboard = () => {
     }
   }, [activeTab]);
 
+  // Additional effect to refresh campaigns when switching to campaigns tab
+  useEffect(() => {
+    if (activeTab === 'campaigns' && isAuthenticated()) {
+      const timeoutId = setTimeout(() => {
+        fetchBuyerData(); // Refresh campaign data
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab]);
+
+  // Additional effect to refresh requested offers when switching to requested offers tab
+  useEffect(() => {
+    if (activeTab === 'requested-offers' && isAuthenticated()) {
+      const timeoutId = setTimeout(() => {
+        fetchRequestedOffers(); // Refresh requested offers data
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab]);
+
   const fetchBuyerData = async () => {
     try {
       setLoading(true);
