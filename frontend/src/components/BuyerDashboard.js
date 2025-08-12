@@ -1942,33 +1942,34 @@ const BuyerDashboard = () => {
                     
                     {/* View Toggle Buttons */}
                     <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
-                    <Button
-                      variant={myAssetsView === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setMyAssetsView('list')}
-                      className="px-3 py-1"
-                    >
-                      <List className="w-4 h-4 mr-1" />
-                      List
-                    </Button>
-                    <Button
-                      variant={myAssetsView === 'map' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setMyAssetsView('map')}
-                      className="px-3 py-1"
-                    >
-                      <Map className="w-4 h-4 mr-1" />
-                      Map
-                    </Button>
-                    <Button
-                      variant={myAssetsView === 'campaign' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setMyAssetsView('campaign')}
-                      className="px-3 py-1"
-                    >
-                      <FolderOpen className="w-4 h-4 mr-1" />
-                      Campaign
-                    </Button>
+                      <Button
+                        variant={myAssetsView === 'list' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setMyAssetsView('list')}
+                        className="px-3 py-1"
+                      >
+                        <List className="w-4 h-4 mr-1" />
+                        List
+                      </Button>
+                      <Button
+                        variant={myAssetsView === 'map' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setMyAssetsView('map')}
+                        className="px-3 py-1"
+                      >
+                        <Map className="w-4 h-4 mr-1" />
+                        Map
+                      </Button>
+                      <Button
+                        variant={myAssetsView === 'campaign' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setMyAssetsView('campaign')}
+                        className="px-3 py-1"
+                      >
+                        <Building className="w-4 h-4 mr-1" />
+                        Campaign
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardHeader>
