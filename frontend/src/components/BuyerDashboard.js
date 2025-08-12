@@ -1488,7 +1488,7 @@ const BuyerDashboard = () => {
     
     // Refresh live assets to ensure "My Assets" tab is up to date
     setTimeout(() => {
-      fetchLiveAssets(true);
+      fetchLiveAssets(true, false); // No spinner for automatic updates
       // Also refresh campaign data if user is on campaigns tab (subtle refresh)
       if (activeTab === 'campaigns') {
         fetchCampaignsOnly();
