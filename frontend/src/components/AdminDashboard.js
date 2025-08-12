@@ -1216,8 +1216,9 @@ const AdminDashboard = () => {
       google_map_link: asset.google_map_link || '', // Include google_map_link field
       address: asset.address || '',
       location: asset.location || { lat: '', lng: '' }, // Include location coordinates
-      district: asset.district || '',
       division: asset.division || '',
+      district: asset.district || '',
+      area: asset.area || '',
       type: asset.type || 'Billboard',
       dimensions: asset.dimensions || '',
       traffic_volume: asset.traffic_volume?.toString() || '',
