@@ -2756,16 +2756,6 @@ const AdminDashboard = () => {
                       }}
                       className="w-64"
                     />
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={fetchOfferRequests}
-                      disabled={offerMediationLoading}
-                      className="flex items-center space-x-1"
-                    >
-                      <Activity className="w-4 h-4" />
-                      <span>{offerMediationLoading ? 'Loading...' : 'Refresh'}</span>
-                    </Button>
                   </div>
                 </div>
               </CardHeader>
