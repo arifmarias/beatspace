@@ -2722,19 +2722,6 @@ const AdminDashboard = () => {
                     <MessageSquare className="w-5 h-5 text-blue-600" />
                     <span>Offer Mediation</span>
                   </CardTitle>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      console.log('🔄 Manual offer mediation refresh clicked');
-                      fetchOfferRequests();
-                    }}
-                    className="flex items-center space-x-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    <span>Refresh</span>
-                  </Button>
                   <div className="flex items-center space-x-2">
                     <Select value={buyerStatusFilter} onValueChange={setBuyerStatusFilter}>
                       <SelectTrigger className="w-48">
