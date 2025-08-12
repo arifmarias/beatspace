@@ -399,6 +399,11 @@ const BuyerDashboard = () => {
         fetchLiveAssets(true);
       }
       
+      // Refresh requested offers if on that tab
+      if (activeTab === 'requested-offers') {
+        fetchRequestedOffers();
+      }
+      
     } catch (error) {
       console.error('Error fetching buyer data:', error);
       // Set default empty states on error
