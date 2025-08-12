@@ -397,7 +397,7 @@ const BuyerDashboard = () => {
       
       // Also refresh live assets to ensure "My Assets" tab is synchronized
       if (activeTab === 'my-assets' || assetsFetched) {
-        fetchLiveAssets(true);
+        fetchLiveAssets(true, false); // No spinner for automatic refresh
       }
       
       // Refresh requested offers if on that tab
