@@ -464,14 +464,20 @@ const BuyerDashboard = () => {
     }
   };
 
-  const fetchLiveAssets = async (isManualRefresh = false) => {
+  const fetchLiveAssets = async (isManualRefresh = false, showSpinner = true) => {
     console.log('🔄 fetchLiveAssets called', isManualRefresh ? '(manual refresh)' : '');
-    setAssetsLoading(true);
+    
+    // Only show spinner if explicitly requested (for initial loads and manual refresh)
+    if (showSpinner) {
+      setAssetsLoading(true);
+    }
     
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.log('⏰ API call timeout - stopping loading');
-      setAssetsLoading(false);
+      if (showSpinner) {
+        setAssetsLoading(false);
+      }
     }, 10000); // 10 seconds timeout
     
     try {
