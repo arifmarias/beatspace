@@ -888,6 +888,16 @@ const BuyerDashboard = () => {
 
   // Helper function to get monitoring button text and state
   const getMonitoringButtonInfo = (assetId) => {
+    // Safety check for assetId
+    if (!assetId) {
+      return {
+        text: 'Subscribe to Monitoring',
+        subscribed: false,
+        variant: 'default',
+        className: 'bg-blue-600 hover:bg-blue-700 text-white'
+      };
+    }
+
     const subscription = getAssetMonitoringSubscription(assetId);
     if (subscription) {
       const frequency = subscription.frequency || 'monthly';
