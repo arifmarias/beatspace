@@ -542,7 +542,9 @@ const BuyerDashboard = () => {
       // Clear timeout on error
       clearTimeout(timeoutId);
     } finally {
-      setAssetsLoading(false);
+      if (showSpinner) {
+        setAssetsLoading(false);
+      }
     }
   };
 
