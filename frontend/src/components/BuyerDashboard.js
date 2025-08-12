@@ -587,6 +587,27 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Subtle refresh functions without full page loading
+  const fetchCampaignsOnly = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const campaignsRes = await axios.get(`${API}/campaigns`, { headers });
+      setCampaigns(campaignsRes.data || []);
+      console.log('✅ Campaigns refreshed subtly');
+    } catch (error) {
+      console.error('Error refreshing campaigns:', error);
+    }
+  };
+
+  const fetchAssetsOnly = async () => {
+    try {
+      await fetchLiveAssets(true);
+      console.log('✅ Assets refreshed subtly');
+    } catch (error) {
+      console.error('Error refreshing assets:', error);
+    }
+  };
+
   const updateCampaignStatus = async (campaignId, newStatus) => {
     try {
       const headers = getAuthHeaders();
