@@ -411,6 +411,28 @@ const AdminDashboard = () => {
     fetchBookedAssets(); // Add this to fetch live assets for monitoring
   }, []);
 
+  // Tab refresh functionality - auto refresh when switching to offer mediation tab
+  useEffect(() => {
+    if (activeTab === 'offers') {
+      const timeoutId = setTimeout(() => {
+        fetchOfferRequests(); // Subtle refresh for offer mediation
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab]);
+
+  // Tab refresh functionality - auto refresh when switching to monitoring tab
+  useEffect(() => {
+    if (activeTab === 'monitoring') {
+      const timeoutId = setTimeout(() => {
+        fetchMonitoringData(); // Subtle refresh for monitoring
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab]);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
