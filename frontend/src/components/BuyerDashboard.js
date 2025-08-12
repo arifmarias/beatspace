@@ -2672,13 +2672,27 @@ const BuyerDashboard = () => {
                   <ShoppingBag className="w-5 h-5" />
                   <span>Your Campaigns</span>
                 </CardTitle>
-                <Button 
-                  onClick={() => setShowCreateCampaign(true)}
-                  className="bg-orange-600 hover:bg-orange-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Campaign
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      console.log('🔄 Manual campaigns refresh clicked');
+                      fetchCampaignsOnly();
+                    }}
+                    className="flex items-center space-x-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Refresh</span>
+                  </Button>
+                  <Button 
+                    onClick={() => setShowCreateCampaign(true)}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Campaign
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {(campaigns || []).length === 0 ? (
