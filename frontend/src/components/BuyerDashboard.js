@@ -1554,9 +1554,12 @@ const BuyerDashboard = () => {
       const response = await axios.get(`${API}/monitoring/services`, {
         headers: getAuthHeaders()
       });
-      setMonitoringServices(response.data);
+      // Ensure response.data is an array before setting state
+      setMonitoringServices(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching monitoring services:', error);
+      // Set to empty array on error to prevent runtime errors
+      setMonitoringServices([]);
     }
   };
 
