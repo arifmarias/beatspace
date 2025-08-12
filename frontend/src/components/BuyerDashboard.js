@@ -296,6 +296,18 @@ const BuyerDashboard = () => {
     }
   }, [activeTab, assetsFetched]);
 
+  // Additional effect to refresh assets when coming back from campaigns tab
+  useEffect(() => {
+    // If user switches from campaigns tab to my-assets tab, always refresh
+    if (activeTab === 'my-assets' && assetsFetched) {
+      const timeoutId = setTimeout(() => {
+        fetchLiveAssets(true);
+      }, 100); // Small delay to avoid rapid successive calls
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab]);
+
   const fetchBuyerData = async () => {
     try {
       setLoading(true);
