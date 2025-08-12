@@ -301,7 +301,7 @@ const BuyerDashboard = () => {
     // If user switches from campaigns tab to my-assets tab, always refresh
     if (activeTab === 'my-assets' && assetsFetched) {
       const timeoutId = setTimeout(() => {
-        fetchLiveAssets(true);
+        fetchAssetsOnly(); // Subtle refresh without loading spinner
       }, 100); // Small delay to avoid rapid successive calls
       
       return () => clearTimeout(timeoutId);
