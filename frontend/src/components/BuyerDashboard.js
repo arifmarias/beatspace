@@ -1794,16 +1794,21 @@ const BuyerDashboard = () => {
     });
   };
 
-  // Get unique locations from assets for location filter
+  // Get unique locations from assets for location filter - use area field
   const getUniqueLocations = () => {
     const locations = liveAssets.map(asset => {
-      // Extract city/area from address (simple logic)
+      // Use area field if available, otherwise fallback to extracting from address
+      if (asset.area && asset.area.trim()) {
+        return asset.area.trim();
+      }
+      
+      // Fallback: Extract city/area from address
       const address = asset.address || '';
       const parts = address.split(',');
       return parts.length > 1 ? parts[parts.length - 2].trim() : parts[0].split(' ')[0];
-    }).filter(loc => loc);
+    }).filter(loc => loc && loc !== '');
     
-    return [...new Set(locations)];
+    return [...new Set(locations)].sort();
   };
 
   if (loading) {
