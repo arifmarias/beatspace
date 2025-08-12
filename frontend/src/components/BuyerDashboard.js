@@ -1331,6 +1331,10 @@ const BuyerDashboard = () => {
       
       // Refresh buyer data
       await fetchBuyerData();
+      // Also refresh requested offers if user is on that tab  
+      if (activeTab === 'requested-offers') {
+        fetchRequestedOffers();
+      }
       
     } catch (error) {
       console.error('🚨 Error rejecting offer:', error);
