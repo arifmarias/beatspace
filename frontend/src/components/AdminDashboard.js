@@ -2743,6 +2743,18 @@ const AdminDashboard = () => {
                       }}
                       className="w-64"
                     />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        console.log('🔄 Manual offer mediation refresh clicked');
+                        fetchOfferRequests();
+                      }}
+                      className="flex items-center space-x-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Refresh</span>
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
