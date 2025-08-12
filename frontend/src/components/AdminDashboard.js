@@ -261,6 +261,9 @@ const AdminDashboard = () => {
   const [assetSearchTerm, setAssetSearchTerm] = useState('');
   const [buyerStatusFilter, setBuyerStatusFilter] = useState('all'); // Filter for buyer status
   const [offerMediationLoading, setOfferMediationLoading] = useState(false); // Loading state for offer mediation refresh
+  
+  // Controlled tab state for auto refresh functionality
+  const [activeTab, setActiveTab] = useState('users');
 
   // Bangladesh location data structure (Division -> District -> Area)
   const [locationData] = useState({
