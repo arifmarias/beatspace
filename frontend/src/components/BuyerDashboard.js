@@ -312,7 +312,7 @@ const BuyerDashboard = () => {
   useEffect(() => {
     if (activeTab === 'campaigns' && isAuthenticated()) {
       const timeoutId = setTimeout(() => {
-        fetchBuyerData(); // Refresh campaign data
+        fetchCampaignsOnly(); // Subtle refresh without full page loading
       }, 100);
       
       return () => clearTimeout(timeoutId);
