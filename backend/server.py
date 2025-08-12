@@ -2327,9 +2327,10 @@ async def update_user_admin(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Don't allow updating password through this endpoint
-    if "password" in user_data:
-        del user_data["password"]
+    # Handle password update with proper hashing
+    if "password" in user_data and user_data["password"]:
+        user_data["password_hash"] = hash_password(user_data["password"])
+        del user_data["password"]  # Remove plain text password
     
     # Don't allow updating created_at
     if "created_at" in user_data:
