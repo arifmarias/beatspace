@@ -2064,6 +2064,9 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
                 "id": asset["id"],
                 "name": asset["name"],
                 "address": asset.get("address", "Address not available"),
+                "area": asset.get("area", ""), # Include area field
+                "district": asset.get("district", ""), # Include district field
+                "division": asset.get("division", ""), # Include division field
                 "type": asset.get("type", "Billboard"),
                 "campaignName": offer.get("campaign_name", "Unknown Campaign") if offer else "Unknown Campaign",
                 "assetStartDate": offer.get("confirmed_start_date") or offer.get("tentative_start_date") if offer else None,
