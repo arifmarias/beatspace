@@ -1538,49 +1538,72 @@ const AdminDashboard = () => {
         if (addressMatch) {
           const addressFromUrl = decodeURIComponent(addressMatch[1].replace(/\+/g, ' '));
           
-          // Simple parsing for Bangladesh addresses
+          // Simple parsing for Bangladesh addresses using new location data structure
           const parts = addressFromUrl.split(',').map(part => part.trim());
           
-          // Try to identify district from address parts
-          let extractedDistrict = '';
+          // Try to identify division, district, and area from address parts
           let extractedDivision = '';
+          let extractedDistrict = '';
+          let extractedArea = '';
           
-          // Look for known Bangladesh districts/areas
+          const divisions = getDivisions();
+          
+          // Look for division, district, and area in the address parts
           for (let part of parts) {
-            if (part.match(/\b(Dhaka|Mirpur|Gulshan|Dhanmondi|Uttara|Banani|Bashundhara|Wari|Tejgaon|Chittagong|Sylhet|Rajshahi|Khulna|Barisal|Rangpur|Mymensingh)\b/i)) {
-              if (!extractedDistrict) {
-                extractedDistrict = part;
-              }
-              if (part.match(/\b(Dhaka|Chittagong|Sylhet|Rajshahi|Khulna|Barisal|Rangpur|Mymensingh)\b/i)) {
-                extractedDivision = part;
+            // Check for division
+            if (!extractedDivision) {
+              const foundDivision = divisions.find(div => 
+                part.toLowerCase().includes(div.toLowerCase())
+              );
+              if (foundDivision) {
+                extractedDivision = foundDivision;
               }
             }
-          }
-          
-          // Fallback to simple parsing
-          if (!extractedDistrict && parts.length > 1) {
-            extractedDistrict = parts[parts.length - 2];
-          }
-          if (!extractedDivision && parts.length > 2) {
-            extractedDivision = parts[parts.length - 1];
+            
+            // Check for district if we have a division
+            if (extractedDivision && !extractedDistrict) {
+              const districts = getDistricts(extractedDivision);
+              const foundDistrict = districts.find(dist => 
+                part.toLowerCase().includes(dist.toLowerCase()) ||
+                dist.toLowerCase().includes(part.toLowerCase())
+              );
+              if (foundDistrict) {
+                extractedDistrict = foundDistrict;
+              }
+            }
+            
+            // Check for area if we have both division and district
+            if (extractedDivision && extractedDistrict && !extractedArea) {
+              const areas = getAreas(extractedDivision, extractedDistrict);
+              const foundArea = areas.find(ar => 
+                part.toLowerCase().includes(ar.toLowerCase()) ||
+                ar.toLowerCase().includes(part.toLowerCase())
+              );
+              if (foundArea) {
+                extractedArea = foundArea;
+              }
+            }
           }
           
           setAssetForm(prev => ({
             ...prev,
             address: addressFromUrl,
-            district: extractedDistrict,
             division: extractedDivision,
+            district: extractedDistrict,
+            area: extractedArea,
             location: coords ? coords : prev.location // Use extracted coords if available
           }));
           
           console.log('URL parsing success:', {
             address: addressFromUrl,
-            district: extractedDistrict,
             division: extractedDivision,
+            district: extractedDistrict,
+            area: extractedArea,
             coordinates: coords || 'Not found'
           });
           
-          notify.success('Address extracted from URL. Please verify and adjust if needed.');
+          const locationInfo = [extractedDivision, extractedDistrict, extractedArea].filter(Boolean).join(' → ');
+          notify.success(`Address extracted from URL. ${locationInfo ? `Location: ${locationInfo}` : 'Please verify location details.'}`);
           return;
         } else {
           throw new Error('Could not extract location information from the link');
