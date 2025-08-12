@@ -2083,6 +2083,28 @@ const BuyerDashboard = () => {
                                 <TableCell>
                                   {asset.expiryDate ? new Date(asset.expiryDate).toLocaleDateString() : 'N/A'}
                                 </TableCell>
+                                <TableCell onClick={(e) => e.stopPropagation()}>
+                                  {(() => {
+                                    const buttonInfo = getMonitoringButtonInfo(asset.id);
+                                    return (
+                                      <Button
+                                        size="sm"
+                                        variant={buttonInfo.variant}
+                                        className={`${buttonInfo.className} text-xs px-2 py-1`}
+                                        onClick={() => {
+                                          // Pre-select this asset in the monitoring form
+                                          setMonitoringFormData(prev => ({
+                                            ...prev,
+                                            selectedAssets: [asset.id]
+                                          }));
+                                          setShowMonitoringDialog(true);
+                                        }}
+                                      >
+                                        {buttonInfo.text}
+                                      </Button>
+                                    );
+                                  })()}
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
