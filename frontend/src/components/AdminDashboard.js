@@ -4184,11 +4184,6 @@ const AdminDashboard = () => {
                             {area}
                           </SelectItem>
                         ))}
-                        {(!assetForm.division || !assetForm.district) && (
-                          <SelectItem value="" disabled>
-                            Please select division and district first
-                          </SelectItem>
-                        )}
                       </SelectContent>
                     </Select>
                   </div>
