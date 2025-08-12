@@ -5001,7 +5001,7 @@ const BuyerDashboard = () => {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleSubscriptionSubmit}
+                    onClick={handleCreateMonitoringSubscription}
                     disabled={monitoringSubmitting || monitoringFormData.selectedAssets.length === 0}
                     className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
                   >
