@@ -1925,8 +1925,23 @@ const BuyerDashboard = () => {
                     <span>My Assets</span>
                   </CardTitle>
                   
-                  {/* View Toggle Buttons */}
-                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    {/* Refresh Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        console.log('🔄 Manual assets refresh clicked');
+                        fetchAssetsOnly();
+                      }}
+                      className="flex items-center space-x-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Refresh</span>
+                    </Button>
+                    
+                    {/* View Toggle Buttons */}
+                    <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
                     <Button
                       variant={myAssetsView === 'list' ? 'default' : 'ghost'}
                       size="sm"
