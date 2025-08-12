@@ -2720,11 +2720,21 @@ const AdminDashboard = () => {
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center space-x-2">
                     <MessageSquare className="w-5 h-5 text-blue-600" />
-                    <span>Active Offers by Buyer</span>
-                    <Badge variant="secondary" className="ml-2">
-                      {getFilteredOfferRequests().filter(offer => offer.status !== 'Approved' && offer.status !== 'Rejected' && offer.status !== 'Accepted').length} Active
-                    </Badge>
+                    <span>Offer Mediation</span>
                   </CardTitle>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      console.log('🔄 Manual offer mediation refresh clicked');
+                      fetchOfferRequests();
+                    }}
+                    className="flex items-center space-x-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Refresh</span>
+                  </Button>
                   <div className="flex items-center space-x-2">
                     <Select value={buyerStatusFilter} onValueChange={setBuyerStatusFilter}>
                       <SelectTrigger className="w-48">
