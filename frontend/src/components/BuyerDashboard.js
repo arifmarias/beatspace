@@ -2449,22 +2449,33 @@ const BuyerDashboard = () => {
                               
                               {/* Asset markers overlay */}
                               <div className="absolute inset-0 pointer-events-none">
-                                {getMapFilteredAssets().map((asset, index) => {
-                                  if (!asset.location?.lat || !asset.location?.lng) return null;
+                                {(() => {
+                                  // Determine which assets to show markers for
+                                  let assetsToShow = [];
                                   
-                                  // Calculate approximate position on the map
-                                  // This is a simplified approach - for production, use proper map libraries
-                                  const centerLat = 23.8103;
-                                  const centerLng = 90.4125;
-                                  const mapWidth = 100; // percentage
-                                  const mapHeight = 100; // percentage
+                                  if (selectedMapAsset) {
+                                    // If a specific asset is selected, only show that asset's marker
+                                    assetsToShow = [selectedMapAsset];
+                                  } else {
+                                    // If no specific asset selected, show filtered assets
+                                    assetsToShow = getMapFilteredAssets();
+                                  }
                                   
-                                  // Simple offset calculation (not precise, but gives visual indication)
-                                  const latDiff = asset.location.lat - centerLat;
-                                  const lngDiff = asset.location.lng - centerLng;
-                                  
-                                  const left = Math.max(5, Math.min(95, 50 + (lngDiff * 20))); // rough conversion
-                                  const top = Math.max(5, Math.min(95, 50 - (latDiff * 20))); // rough conversion
+                                  return assetsToShow.map((asset, index) => {
+                                    if (!asset.location?.lat || !asset.location?.lng) return null;
+                                    
+                                    // Calculate approximate position on the map
+                                    const centerLat = selectedMapAsset?.location?.lat || 23.8103;
+                                    const centerLng = selectedMapAsset?.location?.lng || 90.4125;
+                                    const mapWidth = 100; // percentage
+                                    const mapHeight = 100; // percentage
+                                    
+                                    // Simple offset calculation (not precise, but gives visual indication)
+                                    const latDiff = asset.location.lat - centerLat;
+                                    const lngDiff = asset.location.lng - centerLng;
+                                    
+                                    const left = Math.max(5, Math.min(95, 50 + (lngDiff * 20))); // rough conversion
+                                    const top = Math.max(5, Math.min(95, 50 - (latDiff * 20))); // rough conversion
                                   
                                   return (
                                     <div
