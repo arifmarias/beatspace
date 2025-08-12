@@ -26,6 +26,7 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
+  RefreshCw,
   Mail,
   Phone,
   Globe,
