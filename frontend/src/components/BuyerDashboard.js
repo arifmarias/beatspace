@@ -4554,6 +4554,7 @@ const BuyerDashboard = () => {
               </p>
             </DialogHeader>
             
+            {/* Content for campaign-based monitoring */}
             {selectedCampaign && (
               <div className="space-y-6">
                 {/* Campaign Information */}
