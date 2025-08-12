@@ -875,6 +875,33 @@ const BuyerDashboard = () => {
     return Math.ceil(filteredAssets.length / assetsItemsPerPage);
   };
 
+  // Helper function to get monitoring subscription for an asset
+  const getAssetMonitoringSubscription = (assetId) => {
+    return monitoringServices.find(service => 
+      service.asset_ids && service.asset_ids.includes(assetId)
+    );
+  };
+
+  // Helper function to get monitoring button text and state
+  const getMonitoringButtonInfo = (assetId) => {
+    const subscription = getAssetMonitoringSubscription(assetId);
+    if (subscription) {
+      const frequency = subscription.frequency || 'monthly';
+      return {
+        text: `Subscribed (${frequency.charAt(0).toUpperCase() + frequency.slice(1)})`,
+        subscribed: true,
+        variant: 'outline',
+        className: 'text-green-600 border-green-200 hover:bg-green-50'
+      };
+    }
+    return {
+      text: 'Subscribe to Monitoring',
+      subscribed: false,
+      variant: 'default',
+      className: 'bg-blue-600 hover:bg-blue-700 text-white'
+    };
+  };
+
   const getPaginatedCampaignAssets = () => {
     // Group assets by campaign first
     const groupedAssets = {};
