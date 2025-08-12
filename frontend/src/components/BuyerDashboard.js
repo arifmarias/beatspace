@@ -610,7 +610,7 @@ const BuyerDashboard = () => {
 
   const fetchAssetsOnly = async () => {
     try {
-      await fetchLiveAssets(true);
+      await fetchLiveAssets(true, false); // Manual refresh but no spinner
       console.log('✅ Assets refreshed subtly');
     } catch (error) {
       console.error('Error refreshing assets:', error);
