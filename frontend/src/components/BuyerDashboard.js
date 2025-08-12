@@ -1941,7 +1941,7 @@ const BuyerDashboard = () => {
                       size="sm"
                       onClick={() => {
                         console.log('🔄 Manual assets refresh clicked');
-                        fetchAssetsOnly();
+                        fetchLiveAssets(true, true); // Manual refresh with spinner for user feedback
                       }}
                       className="flex items-center space-x-2"
                     >
