@@ -3865,6 +3865,80 @@ const BuyerDashboard = () => {
                   </div>
                 </div>
 
+                {/* Monitoring Subscription Status */}
+                {(() => {
+                  const subscription = getAssetMonitoringSubscription(selectedAssetMonitoring.id);
+                  return (
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                        <Activity className="w-5 h-5 mr-2 text-green-600" />
+                        Monitoring Service Status
+                      </h4>
+                      {subscription ? (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Status:</span>
+                            <Badge className="bg-green-100 text-green-800 border-green-200">
+                              Active - {subscription.frequency.charAt(0).toUpperCase() + subscription.frequency.slice(1)} Monitoring
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-600">Service Level:</span>
+                              <div className="font-medium">{subscription.service_level}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Monthly Cost:</span>
+                              <div className="font-medium text-green-600">৳{subscription.cost?.toLocaleString() || '0'}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Start Date:</span>
+                              <div className="font-medium">{subscription.start_date ? new Date(subscription.start_date).toLocaleDateString() : 'N/A'}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Next Inspection:</span>
+                              <div className="font-medium">{subscription.end_date ? new Date(subscription.end_date).toLocaleDateString() : 'N/A'}</div>
+                            </div>
+                          </div>
+                          {subscription.notification_preferences && (
+                            <div>
+                              <span className="text-gray-600 text-sm">Notifications:</span>
+                              <div className="flex gap-2 mt-1">
+                                {subscription.notification_preferences.email && (
+                                  <Badge variant="outline" className="text-xs">📧 Email</Badge>
+                                )}
+                                {subscription.notification_preferences.sms && (
+                                  <Badge variant="outline" className="text-xs">📱 SMS</Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-600 mb-3">No monitoring service active for this asset</p>
+                          <Button
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={() => {
+                              // Pre-select this asset and open monitoring dialog
+                              setMonitoringFormData(prev => ({
+                                ...prev,
+                                selectedAssets: [selectedAssetMonitoring.id]
+                              }));
+                              setSelectedAssetMonitoring(null); // Close this dialog
+                              setShowMonitoringSubscription(true); // Open subscription dialog
+                            }}
+                          >
+                            Subscribe to Monitoring Service
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
                 {monitoringLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="text-center">
