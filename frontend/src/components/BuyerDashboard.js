@@ -5061,7 +5061,18 @@ const BuyerDashboard = () => {
                     </label>
                     <select
                       value={monitoringFormData.serviceLevel}
-                      onChange={(e) => setMonitoringFormData(prev => ({...prev, serviceLevel: e.target.value}))}
+                      onChange={(e) => {
+                        const newServiceLevel = e.target.value;
+                        setMonitoringFormData(prev => ({
+                          ...prev, 
+                          serviceLevel: newServiceLevel,
+                          // Auto-uncheck WhatsApp if switching to Standard
+                          notificationPreferences: {
+                            ...prev.notificationPreferences,
+                            whatsapp: newServiceLevel === 'premium' ? prev.notificationPreferences.whatsapp : false
+                          }
+                        }));
+                      }}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="standard">Standard - Photo + condition report</option>
