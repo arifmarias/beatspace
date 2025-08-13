@@ -4932,7 +4932,7 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleUpdateAsset}
                 className="bg-blue-600 hover:bg-blue-700"
-                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.monthly_rate || !assetForm.seller_id}
+                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.area || !assetForm.pricing.monthly_rate || !assetForm.seller_id}
               >
                 Update Asset
               </Button>
