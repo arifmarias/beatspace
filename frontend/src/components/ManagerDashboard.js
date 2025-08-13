@@ -131,6 +131,9 @@ const ManagerDashboard = () => {
       setServices(servicesRes.data?.services || []);
       setPerformance(performanceRes.data || {});
       
+      // Fetch monitoring assets data
+      await fetchMonitoringAssets();
+      
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       notify.error('Failed to load dashboard data');
