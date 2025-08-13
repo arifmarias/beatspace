@@ -1515,7 +1515,7 @@ const AdminDashboard = () => {
     );
     
     const grouped = filtered.reduce((acc, asset) => {
-      const campaignName = asset.buyer_name || 'Unknown Campaign';
+      const campaignName = asset.campaign_name || asset.buyer_name || 'Unknown Campaign';
       if (!acc[campaignName]) {
         acc[campaignName] = [];
       }
