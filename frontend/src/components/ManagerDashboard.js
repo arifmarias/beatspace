@@ -828,13 +828,42 @@ const ManagerDashboard = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Task Assignment Dialog */}
+        {/* Asset Assignment Dialog */}
         <Dialog open={assignmentDialog} onOpenChange={setAssignmentDialog}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Assign Tasks to Operator</DialogTitle>
+              <DialogTitle>Assign Assets to Operator</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Select Assets</label>
+                <div className="border rounded-lg max-h-48 overflow-y-auto">
+                  {monitoringAssets.map((asset) => (
+                    <div key={asset.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50">
+                      <Checkbox
+                        checked={selectedTasks.includes(asset.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedTasks([...selectedTasks, asset.id]);
+                          } else {
+                            setSelectedTasks(selectedTasks.filter(id => id !== asset.id));
+                          }
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{asset.assetName}</div>
+                        <div className="text-xs text-gray-500">{asset.area} • {asset.serviceLevel}</div>
+                      </div>
+                    </div>
+                  ))}
+                  {monitoringAssets.length === 0 && (
+                    <div className="p-4 text-center text-gray-500">
+                      No monitoring assets available
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <label className="text-sm font-medium mb-2 block">Select Operator</label>
                 <Select value={selectedOperator} onValueChange={setSelectedOperator}>
@@ -852,21 +881,6 @@ const ManagerDashboard = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Priority Level</label>
-                <Select value={taskPriority} onValueChange={setTaskPriority}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low Priority</SelectItem>
-                    <SelectItem value="medium">Medium Priority</SelectItem>
-                    <SelectItem value="high">High Priority</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
                 <label className="text-sm font-medium mb-2 block">Special Instructions</label>
                 <Input
                   placeholder="Any special instructions..."
@@ -879,8 +893,11 @@ const ManagerDashboard = () => {
                 <Button variant="outline" onClick={() => setAssignmentDialog(false)}>
                   Cancel
                 </Button>
-                <Button onClick={assignTasksToOperator}>
-                  Assign {selectedTasks.length} Tasks
+                <Button 
+                  onClick={assignTasksToOperator}
+                  disabled={selectedTasks.length === 0 || !selectedOperator}
+                >
+                  Assign {selectedTasks.length} Asset{selectedTasks.length !== 1 ? 's' : ''}
                 </Button>
               </div>
             </div>
