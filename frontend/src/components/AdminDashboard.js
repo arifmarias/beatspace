@@ -3231,7 +3231,7 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {Object.entries(getGroupedBookedAssets()).map(([campaignName, assets]) => {
-                      const isCollapsed = collapsedCampaigns[campaignName] === true; // Default to expanded (false)
+                      const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed (true)
                       
                       return (
                         <div key={campaignName} className="border rounded-lg overflow-hidden">
