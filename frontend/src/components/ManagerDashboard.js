@@ -1150,6 +1150,15 @@ const ManagerDashboard = () => {
                     })}
                   </TableBody>
                 </Table>
+                
+                {/* Pagination for Operators */}
+                <PaginationControls
+                  currentPage={operatorsCurrentPage}
+                  totalPages={getTotalPages((Array.isArray(operators) ? operators : []).length, itemsPerPage)}
+                  onPageChange={handleOperatorsPageChange}
+                  totalItems={(Array.isArray(operators) ? operators : []).length}
+                  itemsPerPage={itemsPerPage}
+                />
               </CardContent>
             </Card>
           </TabsContent>
