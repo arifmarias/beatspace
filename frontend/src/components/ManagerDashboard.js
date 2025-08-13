@@ -34,7 +34,7 @@ const ManagerDashboard = () => {
   const [monitoringAssets, setMonitoringAssets] = useState([]);
   
   // UI state
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('tasks'); // Default to monitoring tab
   const [monitoringViewMode, setMonitoringViewMode] = useState('list'); // list, calendar, board
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [assignmentDialog, setAssignmentDialog] = useState(false);
