@@ -711,7 +711,7 @@ const ManagerDashboard = () => {
                     <TableRow>
                       <TableHead>Operator</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Active Tasks</TableHead>
+                      <TableHead>Assigned Tasks</TableHead>
                       <TableHead>Completed Today</TableHead>
                       <TableHead>Performance</TableHead>
                       <TableHead>Last Active</TableHead>
@@ -719,13 +719,10 @@ const ManagerDashboard = () => {
                   </TableHeader>
                   <TableBody>
                     {(Array.isArray(operators) ? operators : []).map((operator) => {
-                      const safeTasks = Array.isArray(tasks) ? tasks : [];
-                      const operatorTasks = safeTasks.filter(t => t.assigned_operator_id === operator.id);
-                      const activeTasks = operatorTasks.filter(t => ['assigned', 'in_progress'].includes(t.status));
-                      const completedToday = operatorTasks.filter(t => 
-                        t.status === 'completed' && 
-                        new Date(t.completed_at || t.updated_at).toDateString() === new Date().toDateString()
-                      );
+                      // Calculate assigned assets for this operator
+                      const assignedAssets = Object.values(assetAssignments).filter(
+                        assigneeName => assigneeName === operator.contact_name
+                      ).length;
                       
                       return (
                         <TableRow key={operator.id}>
@@ -734,22 +731,17 @@ const ManagerDashboard = () => {
                               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <User className="w-4 h-4 text-blue-600" />
                               </div>
-                              <div>
-                                <div className="font-medium">{operator.contact_name}</div>
-                                <div className="text-sm text-gray-500">{operator.email}</div>
-                              </div>
+                              <div className="font-medium">{operator.contact_name}</div>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={activeTasks.length > 0 ? 'default' : 'secondary'}>
-                              {activeTasks.length > 0 ? 'Active' : 'Available'}
+                            <Badge variant={assignedAssets > 0 ? 'default' : 'secondary'}>
+                              {assignedAssets > 0 ? 'Active' : 'Available'}
                             </Badge>
                           </TableCell>
-                          <TableCell>{activeTasks.length}</TableCell>
+                          <TableCell>{assignedAssets}</TableCell>
                           <TableCell>
-                            <div className="text-sm font-medium">
-                              {completedToday.length}
-                            </div>
+                            <div className="text-sm font-medium">0</div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center">
