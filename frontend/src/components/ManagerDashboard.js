@@ -49,6 +49,10 @@ const ManagerDashboard = () => {
   const [operatorDetailsDialog, setOperatorDetailsDialog] = useState(false);
   const [selectedOperatorDetails, setSelectedOperatorDetails] = useState(null);
   
+  // Calendar view filters
+  const [calendarAssigneeFilter, setCalendarAssigneeFilter] = useState('all');
+  const [calendarAreaFilter, setCalendarAreaFilter] = useState('all');
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [operatorFilter, setOperatorFilter] = useState('all');
