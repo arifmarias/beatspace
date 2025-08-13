@@ -1622,6 +1622,63 @@ const BuyerDashboard = () => {
   };
 
   const handleCreateMonitoringSubscription = async () => {
+    // Handle individual asset monitoring (no campaign selected)
+    if (!selectedCampaign && monitoringFormData.selectedAssets.length > 0) {
+      if (monitoringFormData.selectedAssets.length === 0) {
+        notify.error('Please select at least one asset to monitor');
+        return;
+      }
+
+      try {
+        setMonitoringSubmitting(true);
+        
+        const subscriptionData = {
+          asset_ids: monitoringFormData.selectedAssets,
+          frequency: monitoringFormData.frequency,
+          service_level: monitoringFormData.serviceLevel,
+          notification_preferences: monitoringFormData.notificationPreferences,
+          start_date: new Date().toISOString(),
+          end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+        };
+
+        const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
+          headers: getAuthHeaders()
+        });
+
+        notify.success('Monitoring service subscription created successfully!');
+        setShowMonitoringSubscription(false);
+        
+        // Reset form data
+        setMonitoringFormData({
+          startDate: null,
+          endDate: null,
+          selectedAssets: [],
+          frequency: 'monthly',
+          serviceLevel: 'standard',
+          notificationPreferences: {
+            email: true,
+            in_app: true,
+            whatsapp: false
+          }
+        });
+        
+        // Refresh monitoring services to update button states
+        await fetchMonitoringServices();
+        
+        // Also refresh live assets to ensure button state changes are reflected
+        await fetchLiveAssets(true, false);
+
+        return;
+      } catch (error) {
+        console.error('Error creating individual asset monitoring subscription:', error);
+        notify.error(error.response?.data?.detail || 'Failed to create monitoring subscription');
+        return;
+      } finally {
+        setMonitoringSubmitting(false);
+      }
+    }
+
+    // Handle campaign-based monitoring (original logic)
     if (!selectedCampaign) {
       notify.error('No campaign selected');
       return;
@@ -1663,8 +1720,11 @@ const BuyerDashboard = () => {
       setShowMonitoringSubscription(false);
       setSelectedCampaign(null);
       
-      // Refresh monitoring services
-      fetchMonitoringServices();
+      // Refresh monitoring services to update button states
+      await fetchMonitoringServices();
+      
+      // Also refresh live assets to ensure button state changes are reflected
+      await fetchLiveAssets(true, false);
 
     } catch (error) {
       console.error('Error creating monitoring subscription:', error);
