@@ -874,7 +874,9 @@ const ManagerDashboard = () => {
               <div>
                 <label className="text-sm font-medium mb-2 block">Select Assets</label>
                 <div className="border rounded-lg max-h-48 overflow-y-auto">
-                  {monitoringAssets.map((asset) => (
+                  {monitoringAssets
+                    .filter(asset => !assetAssignments[asset.id] || assetAssignments[asset.id] === 'Unassigned')
+                    .map((asset) => (
                     <div key={asset.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50">
                       <Checkbox
                         checked={selectedTasks.includes(asset.id)}
@@ -892,9 +894,9 @@ const ManagerDashboard = () => {
                       </div>
                     </div>
                   ))}
-                  {monitoringAssets.length === 0 && (
+                  {monitoringAssets.filter(asset => !assetAssignments[asset.id] || assetAssignments[asset.id] === 'Unassigned').length === 0 && (
                     <div className="p-4 text-center text-gray-500">
-                      No monitoring assets available
+                      No unassigned monitoring assets available
                     </div>
                   )}
                 </div>
