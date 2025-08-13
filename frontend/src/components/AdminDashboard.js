@@ -1332,13 +1332,19 @@ const AdminDashboard = () => {
   const fetchBookedAssets = async () => {
     try {
       setMonitoringLoading(true);
-      const [assetsResponse, offersResponse] = await Promise.all([
+      const [assetsResponse, offersResponse, monitoringResponse] = await Promise.all([
         axios.get(`${API}/assets`, { headers: getAuthHeaders() }),
-        axios.get(`${API}/offers/requests`, { headers: getAuthHeaders() })
+        axios.get(`${API}/offers/requests`, { headers: getAuthHeaders() }),
+        axios.get(`${API}/monitoring/services`, { headers: getAuthHeaders() })
       ]);
       
       const allAssets = assetsResponse.data;
       const allOffers = offersResponse.data;
+      
+      // Handle monitoring services response format
+      const services = monitoringResponse.data?.services || monitoringResponse.data;
+      setMonitoringServices(Array.isArray(services) ? services : []);
+      console.log('📊 Admin monitoring services loaded:', services);
       
       // Filter only live assets and add campaign names from offer requests
       const live = allAssets
@@ -1356,6 +1362,7 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching live assets:', error);
       notify.error('Failed to load live assets');
+      setMonitoringServices([]); // Set empty array on error
     } finally {
       setMonitoringLoading(false);
     }
