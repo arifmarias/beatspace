@@ -3270,6 +3270,7 @@ const AdminDashboard = () => {
                                   onUpdate={updateMonitoringData}
                                   monitoringService={getAssetMonitoringService(asset.id)}
                                   onEditMonitoringService={handleEditMonitoringService}
+                                  onDeactivateMonitoringService={handleDeactivateMonitoringService}
                                 />
                               ))}
                             </div>
