@@ -105,13 +105,22 @@ const ManagerDashboard = () => {
           service.asset_ids.forEach(assetId => {
             const assetDetails = allAssets.find(asset => asset.id === assetId);
             if (assetDetails) {
+              // Debug: Log asset details to see the structure
+              console.log('Asset details for area debugging:', {
+                id: assetDetails.id,
+                name: assetDetails.name,
+                area: assetDetails.area,
+                location: assetDetails.location,
+                fullAsset: assetDetails
+              });
+              
               monitoringAssetsData.push({
                 id: `${service.id}_${assetId}`,
                 serviceId: service.id,
                 assetId: assetId,
                 assetName: assetDetails.name || 'Unknown Asset',
                 address: assetDetails.address || 'N/A',
-                area: assetDetails.area || 'N/A',
+                area: assetDetails.area || assetDetails.location?.area || 'N/A',
                 serviceLevel: service.service_level || 'standard',
                 frequency: service.frequency || 'monthly',
                 expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
