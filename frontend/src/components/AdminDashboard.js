@@ -2497,17 +2497,26 @@ const AdminDashboard = () => {
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center space-x-2">
-                    <Building className="w-5 h-5" />
-                    <span>Asset Management</span>
+                  <CardTitle className="flex items-center">
+                    <Building2 className="w-5 h-5 mr-2" />
+                    Asset Management
                   </CardTitle>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={populateMissingAreaData}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Populate Missing Areas</span>
+                    </Button>
                     <Button 
                       onClick={() => setShowAddAsset(true)}
-                      className="bg-orange-600 hover:bg-orange-700"
+                      className="flex items-center space-x-2"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Asset
+                      <Plus className="w-4 h-4" />
+                      <span>Add Asset</span>
                     </Button>
                     <Input
                       placeholder="Search assets..."
