@@ -98,7 +98,7 @@ const BuyerDashboard = () => {
     notificationPreferences: {
       email: true,
       in_app: true,
-      sms: false
+      whatsapp: false
     }
   });
   const [campaignAssetsForMonitoring, setCampaignAssetsForMonitoring] = useState([]);
