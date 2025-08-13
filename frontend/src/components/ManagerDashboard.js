@@ -74,16 +74,26 @@ const ManagerDashboard = () => {
   // Handle operator assignment to monitoring assets
   const handleAssigneeChange = (assetId, operatorId) => {
     if (operatorId === 'unassigned') {
-      setAssetAssignments(prev => ({
-        ...prev,
-        [assetId]: 'Unassigned'
-      }));
+      setAssetAssignments(prev => {
+        const updated = {
+          ...prev,
+          [assetId]: 'Unassigned'
+        };
+        // Save to localStorage
+        localStorage.setItem('managerAssetAssignments', JSON.stringify(updated));
+        return updated;
+      });
     } else {
       const operator = operators.find(op => op.id === operatorId);
-      setAssetAssignments(prev => ({
-        ...prev,
-        [assetId]: operator ? operator.contact_name : 'Unassigned'
-      }));
+      setAssetAssignments(prev => {
+        const updated = {
+          ...prev,
+          [assetId]: operator ? operator.contact_name : 'Unassigned'
+        };
+        // Save to localStorage
+        localStorage.setItem('managerAssetAssignments', JSON.stringify(updated));
+        return updated;
+      });
     }
     
     // Here you could also make an API call to persist the assignment
