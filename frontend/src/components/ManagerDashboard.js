@@ -99,6 +99,7 @@ const ManagerDashboard = () => {
       
       // Create monitoring assets data by combining services with asset details
       const monitoringAssetsData = [];
+      const assetServiceMap = new Map(); // To track assets and their services
       
       monitoringServices.forEach(service => {
         if (service.asset_ids && Array.isArray(service.asset_ids)) {
@@ -114,27 +115,49 @@ const ManagerDashboard = () => {
                 fullAsset: assetDetails
               });
               
-              monitoringAssetsData.push({
-                id: `${service.id}_${assetId}`,
-                serviceId: service.id,
-                assetId: assetId,
-                assetName: assetDetails.name || 'Unknown Asset',
-                address: assetDetails.address || 'N/A',
-                area: assetDetails.area || assetDetails.location?.area || 'N/A',
-                serviceLevel: service.service_level || 'standard',
-                frequency: service.frequency || 'monthly',
-                expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
-                lastUpdateDate: service.updated_at ? new Date(service.updated_at).toLocaleDateString() : 'N/A',
-                assignee: assetAssignments[`${service.id}_${assetId}`] || 'Unassigned',
-                nextInspectionDate: calculateNextInspectionDate(service),
-                status: 'active',
-                startDate: service.start_date,
-                subscription: service
-              });
+              // Check if this asset already exists in our map
+              const assetKey = assetId;
+              if (assetServiceMap.has(assetKey)) {
+                // Asset already exists, update with higher service level if premium
+                const existingAsset = assetServiceMap.get(assetKey);
+                if (service.service_level === 'premium' && existingAsset.serviceLevel === 'standard') {
+                  existingAsset.serviceLevel = 'premium';
+                  existingAsset.serviceId = service.id;
+                  existingAsset.subscription = service;
+                  existingAsset.frequency = service.frequency || 'monthly';
+                  existingAsset.expiryDate = service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A';
+                  existingAsset.lastUpdateDate = service.updated_at ? new Date(service.updated_at).toLocaleDateString() : 'N/A';
+                  existingAsset.nextInspectionDate = calculateNextInspectionDate(service);
+                  existingAsset.startDate = service.start_date;
+                }
+              } else {
+                // New asset, add to map
+                const assetData = {
+                  id: `${service.id}_${assetId}`,
+                  serviceId: service.id,
+                  assetId: assetId,
+                  assetName: assetDetails.name || 'Unknown Asset',
+                  address: assetDetails.address || 'N/A',
+                  area: assetDetails.area || assetDetails.location?.area || 'N/A',
+                  serviceLevel: service.service_level || 'standard',
+                  frequency: service.frequency || 'monthly',
+                  expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
+                  lastUpdateDate: service.updated_at ? new Date(service.updated_at).toLocaleDateString() : 'N/A',
+                  assignee: assetAssignments[`${service.id}_${assetId}`] || 'Unassigned',
+                  nextInspectionDate: calculateNextInspectionDate(service),
+                  status: 'active',
+                  startDate: service.start_date,
+                  subscription: service
+                };
+                assetServiceMap.set(assetKey, assetData);
+              }
             }
           });
         }
       });
+      
+      // Convert map to array
+      monitoringAssetsData.push(...Array.from(assetServiceMap.values()));
       
       setMonitoringAssets(monitoringAssetsData);
     } catch (error) {
