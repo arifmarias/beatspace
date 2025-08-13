@@ -1380,6 +1380,56 @@ const AdminDashboard = () => {
       notify.error('Failed to update monitoring data');
     }
   };
+
+  // Get monitoring service for a specific asset
+  const getAssetMonitoringService = (assetId) => {
+    if (!Array.isArray(monitoringServices)) return null;
+    return monitoringServices.find(service => 
+      service.asset_ids && service.asset_ids.includes(assetId)
+    );
+  };
+
+  // Handle editing monitoring service
+  const handleEditMonitoringService = (service) => {
+    setEditingMonitoringService({
+      id: service.id,
+      service_level: service.service_level || 'standard',
+      frequency: service.frequency || 'weekly',
+      notification_preferences: service.notification_preferences || {
+        email: true,
+        in_app: true,
+        whatsapp: false
+      },
+      end_date: service.end_date ? new Date(service.end_date) : new Date()
+    });
+    setShowEditMonitoringDialog(true);
+  };
+
+  // Update monitoring service
+  const updateMonitoringService = async () => {
+    try {
+      const updateData = {
+        service_level: editingMonitoringService.service_level,
+        frequency: editingMonitoringService.frequency,
+        notification_preferences: editingMonitoringService.notification_preferences,
+        end_date: editingMonitoringService.end_date.toISOString()
+      };
+
+      await axios.put(`${API}/monitoring/services/${editingMonitoringService.id}`, updateData, {
+        headers: getAuthHeaders()
+      });
+
+      notify.success('Monitoring service updated successfully!');
+      setShowEditMonitoringDialog(false);
+      setEditingMonitoringService(null);
+      
+      // Refresh monitoring services
+      fetchBookedAssets();
+    } catch (error) {
+      console.error('Error updating monitoring service:', error);
+      notify.error('Failed to update monitoring service: ' + (error.response?.data?.detail || error.message));
+    }
+  };
   
   // Fetch offer requests for mediation (similar to fetchBookedAssets but for offers only)
   const fetchOfferRequests = async () => {
