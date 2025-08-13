@@ -3247,6 +3247,8 @@ const AdminDashboard = () => {
                                   key={asset.id} 
                                   asset={asset} 
                                   onUpdate={updateMonitoringData}
+                                  monitoringService={getAssetMonitoringService(asset.id)}
+                                  onEditMonitoringService={handleEditMonitoringService}
                                 />
                               ))}
                             </div>
