@@ -41,6 +41,7 @@ const ManagerDashboard = () => {
   const [selectedOperator, setSelectedOperator] = useState('');
   const [taskPriority, setTaskPriority] = useState('medium');
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [assetAssignments, setAssetAssignments] = useState({}); // Track operator assignments for each asset
   
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
