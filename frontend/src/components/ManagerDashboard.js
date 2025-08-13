@@ -754,7 +754,11 @@ const ManagerDashboard = () => {
                       ).length;
                       
                       return (
-                        <TableRow key={operator.id}>
+                        <TableRow 
+                          key={operator.id} 
+                          className="cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={() => handleOperatorClick(operator)}
+                        >
                           <TableCell>
                             <div className="flex items-center space-x-2">
                               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
