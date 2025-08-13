@@ -106,15 +106,6 @@ const ManagerDashboard = () => {
           service.asset_ids.forEach(assetId => {
             const assetDetails = allAssets.find(asset => asset.id === assetId);
             if (assetDetails) {
-              // Debug: Log asset details to see the structure
-              console.log('Asset details for area debugging:', {
-                id: assetDetails.id,
-                name: assetDetails.name,
-                area: assetDetails.area,
-                location: assetDetails.location,
-                fullAsset: assetDetails
-              });
-              
               // Check if this asset already exists in our map
               const assetKey = assetId;
               if (assetServiceMap.has(assetKey)) {
