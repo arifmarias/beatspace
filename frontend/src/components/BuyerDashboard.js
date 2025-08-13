@@ -1653,6 +1653,8 @@ const BuyerDashboard = () => {
           // Note: campaign_id is intentionally omitted for individual asset monitoring
         };
 
+        console.log('📝 Creating individual asset monitoring subscription:', subscriptionData);
+        
         const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
           headers: getAuthHeaders()
         });
