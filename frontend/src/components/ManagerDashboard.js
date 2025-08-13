@@ -691,7 +691,6 @@ const ManagerDashboard = () => {
                           <TableHead>Last Update</TableHead>
                           <TableHead>Assignee</TableHead>
                           <TableHead>Next Inspection</TableHead>
-                          <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
