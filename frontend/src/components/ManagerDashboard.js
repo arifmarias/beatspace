@@ -1532,6 +1532,301 @@ const ManagerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Asset Details Dialog */}
+        <Dialog open={assetDetailsDialog} onOpenChange={setAssetDetailsDialog}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold">{selectedAssetDetails?.assetName}</div>
+                  <div className="text-sm text-gray-500">Asset Monitoring Details</div>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {selectedAssetDetails && (
+                <>
+                  {/* Asset Overview Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Service Level</div>
+                          <div className="font-semibold capitalize">{selectedAssetDetails.serviceLevel}</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Frequency</div>
+                          <div className="font-semibold capitalize">{selectedAssetDetails.frequency}</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <MapPin className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Area</div>
+                          <div className="font-semibold">{selectedAssetDetails.area}</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">Assignee</div>
+                          <div className="font-semibold">{selectedAssetDetails.assignee}</div>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Main Content Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Asset Information */}
+                    <div className="space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <Building2 className="w-5 h-5 mr-2" />
+                            Asset Information
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Asset Name</label>
+                              <div className="font-semibold text-lg">{selectedAssetDetails.assetName}</div>
+                            </div>
+                            
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Address</label>
+                              <div className="text-gray-700">{selectedAssetDetails.address}</div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Area</label>
+                                <Badge variant="secondary" className="mt-1">
+                                  {selectedAssetDetails.area}
+                                </Badge>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Service Level</label>
+                                <Badge 
+                                  variant={selectedAssetDetails.serviceLevel === 'premium' ? 'default' : 'outline'}
+                                  className="mt-1"
+                                >
+                                  {selectedAssetDetails.serviceLevel}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Monitoring Schedule */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <Calendar className="w-5 h-5 mr-2" />
+                            Monitoring Schedule
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Frequency</label>
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <Clock className="w-4 h-4 text-gray-400" />
+                                  <span className="font-semibold capitalize">{selectedAssetDetails.frequency}</span>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Next Inspection</label>
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <Calendar className="w-4 h-4 text-green-600" />
+                                  <span className="font-semibold text-green-600">{selectedAssetDetails.nextInspectionDate}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Last Update</label>
+                                <div className="font-medium">{selectedAssetDetails.lastUpdateDate}</div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Subscription Expires</label>
+                                <div className="font-medium">{selectedAssetDetails.expiryDate}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Assignment Information */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <User className="w-5 h-5 mr-2" />
+                            Assignment Details
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Assigned Operator</label>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${getOperatorColor(selectedAssetDetails.assignee)}`}>
+                                  <User className="w-3 h-3" />
+                                </div>
+                                <span className="font-semibold">{selectedAssetDetails.assignee}</span>
+                              </div>
+                            </div>
+                            {selectedAssetDetails.assignee !== 'Unassigned' && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  const operator = operators.find(op => op.contact_name === selectedAssetDetails.assignee);
+                                  if (operator) {
+                                    setSelectedOperatorDetails(operator);
+                                    setAssetDetailsDialog(false);
+                                    setOperatorDetailsDialog(true);
+                                  }
+                                }}
+                              >
+                                View Operator Details
+                              </Button>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Map View */}
+                    <div className="space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <MapPin className="w-5 h-5 mr-2" />
+                            Asset Location
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {/* Google Maps Embed */}
+                            <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+                              {selectedAssetDetails.address ? (
+                                <iframe
+                                  width="100%"
+                                  height="100%"
+                                  frameBorder="0"
+                                  style={{ border: 0 }}
+                                  src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9x7SyQPAF5Bg&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
+                                  allowFullScreen
+                                  title="Asset Location Map"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <div className="text-center">
+                                    <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                                    <p className="text-gray-500">No location data available</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Location Details */}
+                            <div className="space-y-2">
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">Full Address</label>
+                                <div className="text-gray-700 bg-gray-50 p-2 rounded border">
+                                  {selectedAssetDetails.address}
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-4 text-sm">
+                                <div className="flex items-center space-x-1">
+                                  <MapPin className="w-4 h-4 text-gray-400" />
+                                  <span>Area: {selectedAssetDetails.area}</span>
+                                </div>
+                                {selectedAssetDetails.address && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(selectedAssetDetails.address)}`, '_blank')}
+                                  >
+                                    <Navigation className="w-4 h-4 mr-1" />
+                                    Open in Maps
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Quick Actions */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <Settings className="w-5 h-5 mr-2" />
+                            Quick Actions
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 gap-3">
+                            <Button variant="outline" className="justify-start">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              View Inspection History
+                            </Button>
+                            <Button variant="outline" className="justify-start">
+                              <Camera className="w-4 h-4 mr-2" />
+                              View Latest Photos
+                            </Button>
+                            <Button variant="outline" className="justify-start">
+                              <Download className="w-4 h-4 mr-2" />
+                              Download Reports
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="flex justify-end pt-4 border-t">
+              <Button variant="outline" onClick={() => setAssetDetailsDialog(false)}>
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
