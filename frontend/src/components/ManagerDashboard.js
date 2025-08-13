@@ -774,7 +774,7 @@ const ManagerDashboard = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {monitoringAssets.map((asset) => (
+                        {getPaginatedData(monitoringAssets, monitoringCurrentPage, itemsPerPage).map((asset) => (
                           <TableRow 
                             key={asset.id} 
                             className="cursor-pointer hover:bg-gray-50 transition-colors"
