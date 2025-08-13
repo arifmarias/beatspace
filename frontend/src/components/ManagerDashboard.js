@@ -371,6 +371,12 @@ const ManagerDashboard = () => {
     setDateDetailsDialog(true);
   };
 
+  // Handle asset row click to show asset details
+  const handleAssetClick = (asset) => {
+    setSelectedAssetDetails(asset);
+    setAssetDetailsDialog(true);
+  };
+
   // Generate tasks
   const generateTasks = async () => {
     try {
