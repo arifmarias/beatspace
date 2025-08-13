@@ -2899,6 +2899,51 @@ async def get_monitoring_services(current_user: User = Depends(get_current_user)
         logger.error(f"Error fetching monitoring services: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching monitoring services: {str(e)}")
 
+@api_router.put("/monitoring/services/{service_id}")
+async def update_monitoring_service(
+    service_id: str,
+    update_data: dict,
+    current_user: User = Depends(require_admin_or_manager)
+):
+    """Update a monitoring service (admin/manager only)"""
+    try:
+        # Validate the service exists
+        existing_service = await db.monitoring_subscriptions.find_one({"id": service_id})
+        if not existing_service:
+            raise HTTPException(status_code=404, detail="Monitoring service not found")
+        
+        # Prepare update data
+        allowed_fields = ["service_level", "frequency", "notification_preferences", "end_date"]
+        update_doc = {}
+        
+        for field in allowed_fields:
+            if field in update_data:
+                update_doc[field] = update_data[field]
+        
+        # Add updated timestamp
+        update_doc["updated_at"] = datetime.utcnow()
+        
+        # Update the service
+        result = await db.monitoring_subscriptions.update_one(
+            {"id": service_id},
+            {"$set": update_doc}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No changes made to monitoring service")
+        
+        # Fetch and return updated service
+        updated_service = await db.monitoring_subscriptions.find_one({"id": service_id})
+        cleaned_service = clean_mongodb_doc(updated_service)
+        
+        return {"message": "Monitoring service updated successfully", "service": cleaned_service}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating monitoring service: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating monitoring service: {str(e)}")
+
 @api_router.get("/monitoring/services/{subscription_id}")
 async def get_monitoring_service(
     subscription_id: str,
