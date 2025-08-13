@@ -569,7 +569,7 @@ const ManagerDashboard = () => {
                                   </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">
+                                  <SelectItem value="unassigned">
                                     <div className="flex items-center space-x-2">
                                       <User className="w-4 h-4 text-gray-400" />
                                       <span>Unassigned</span>
