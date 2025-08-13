@@ -349,6 +349,24 @@ const ManagerDashboard = () => {
     return colors[Math.abs(hash) % colors.length];
   };
 
+  // Handle calendar date click
+  const handleDateClick = (date, month, year) => {
+    const assetsForDate = getAssetsForDate(date, month, year);
+    setSelectedDateDetails({
+      date,
+      month,
+      year,
+      formattedDate: new Date(year, month, date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric', 
+        month: 'long',
+        day: 'numeric'
+      }),
+      assets: assetsForDate
+    });
+    setDateDetailsDialog(true);
+  };
+
   // Generate tasks
   const generateTasks = async () => {
     try {
