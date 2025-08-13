@@ -1326,6 +1326,198 @@ const ManagerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Date Details Dialog */}
+        <Dialog open={dateDetailsDialog} onOpenChange={setDateDetailsDialog}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold">
+                    {selectedDateDetails?.formattedDate}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Scheduled Monitoring Inspections
+                  </div>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {selectedDateDetails && (
+                <>
+                  {/* Summary Statistics */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">
+                            {selectedDateDetails.assets.length}
+                          </div>
+                          <div className="text-sm text-gray-500">Total Assets</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">
+                            {[...new Set(selectedDateDetails.assets.map(a => a.assignedOperator))].length}
+                          </div>
+                          <div className="text-sm text-gray-500">Operators</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <MapPin className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">
+                            {[...new Set(selectedDateDetails.assets.map(a => a.area))].length}
+                          </div>
+                          <div className="text-sm text-gray-500">Areas</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">
+                            {selectedDateDetails.assets.filter(a => a.serviceLevel === 'premium').length}
+                          </div>
+                          <div className="text-sm text-gray-500">Premium</div>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Assets by Operator */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <User className="w-5 h-5 mr-2" />
+                      Assets by Operator
+                    </h3>
+                    
+                    {selectedDateDetails.assets.length === 0 ? (
+                      <Card className="p-8 text-center">
+                        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <h4 className="text-lg font-medium text-gray-900 mb-2">No Inspections Scheduled</h4>
+                        <p className="text-gray-500">No monitoring inspections are scheduled for this date.</p>
+                      </Card>
+                    ) : (
+                      <div className="space-y-4">
+                        {Object.entries(
+                          selectedDateDetails.assets.reduce((acc, asset) => {
+                            if (!acc[asset.assignedOperator]) {
+                              acc[asset.assignedOperator] = [];
+                            }
+                            acc[asset.assignedOperator].push(asset);
+                            return acc;
+                          }, {})
+                        ).map(([operatorName, assets]) => {
+                          const operatorColor = getOperatorColor(operatorName);
+                          return (
+                            <Card key={operatorName} className="p-4">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                      <User className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold text-lg">{operatorName}</div>
+                                      <div className="text-sm text-gray-500">
+                                        {assets.length} asset{assets.length !== 1 ? 's' : ''} assigned
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className={`px-3 py-1 rounded-full text-sm font-medium border ${operatorColor}`}>
+                                    {operatorName}
+                                  </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {assets.map((asset) => (
+                                    <div key={asset.id} className="border rounded-lg p-3 bg-gray-50">
+                                      <div className="space-y-2">
+                                        <div className="flex items-start justify-between">
+                                          <div>
+                                            <h4 className="font-semibold">{asset.assetName}</h4>
+                                            <p className="text-sm text-gray-600 truncate">{asset.address}</p>
+                                          </div>
+                                          <Badge variant={asset.serviceLevel === 'premium' ? 'default' : 'outline'} className="text-xs">
+                                            {asset.serviceLevel}
+                                          </Badge>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                          <div>
+                                            <span className="text-gray-500">Area:</span>
+                                            <div className="font-medium">{asset.area}</div>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-500">Frequency:</span>
+                                            <div className="font-medium capitalize">{asset.frequency}</div>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-500">Next Due:</span>
+                                            <div className="font-medium text-green-600">{asset.nextInspectionDate}</div>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-500">Expires:</span>
+                                            <div className="font-medium">{asset.expiryDate}</div>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between pt-2 border-t">
+                                          <div className="flex items-center space-x-1">
+                                            <MapPin className="w-3 h-3 text-gray-400" />
+                                            <span className="text-xs text-gray-600">{asset.area}</span>
+                                          </div>
+                                          <div className="flex items-center space-x-1">
+                                            <Clock className="w-3 h-3 text-blue-600" />
+                                            <span className="text-xs text-blue-600 capitalize">{asset.frequency}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="flex justify-end pt-4 border-t">
+              <Button variant="outline" onClick={() => setDateDetailsDialog(false)}>
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
