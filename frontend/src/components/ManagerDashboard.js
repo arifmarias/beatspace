@@ -695,7 +695,11 @@ const ManagerDashboard = () => {
                       </TableHeader>
                       <TableBody>
                         {monitoringAssets.map((asset) => (
-                          <TableRow key={asset.id}>
+                          <TableRow 
+                            key={asset.id} 
+                            className="cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => handleAssetClick(asset)}
+                          >
                             <TableCell className="font-medium">
                               <div className="flex items-center space-x-2">
                                 <Building2 className="w-4 h-4 text-blue-600" />
