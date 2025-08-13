@@ -65,6 +65,18 @@ const ManagerDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Handle operator assignment to monitoring assets
+  const handleAssigneeChange = (assetId, operatorId) => {
+    const operator = operators.find(op => op.id === operatorId);
+    setAssetAssignments(prev => ({
+      ...prev,
+      [assetId]: operator ? operator.contact_name : 'Unassigned'
+    }));
+    
+    // Here you could also make an API call to persist the assignment
+    // Example: axios.post(`${API}/api/monitoring/assets/${assetId}/assign`, { operator_id: operatorId })
+  };
+
   // Fetch monitoring assets with subscription data
   const fetchMonitoringAssets = async () => {
     try {
