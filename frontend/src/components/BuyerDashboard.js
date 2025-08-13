@@ -85,7 +85,7 @@ const BuyerDashboard = () => {
   const [notificationPreferences, setNotificationPreferences] = useState({
     email: true,
     in_app: true,
-    sms: false
+    whatsapp: false
   });
   
   // Monitoring Subscription Form State
