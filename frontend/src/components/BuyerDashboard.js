@@ -5144,9 +5144,9 @@ const BuyerDashboard = () => {
                     <div>
                       <span className="text-gray-600">Notifications:</span>
                       <div className="font-medium">
-                        {monitoringFormData.notificationPreferences.email && monitoringFormData.notificationPreferences.sms ? 'Email + SMS' :
+                        {monitoringFormData.notificationPreferences.email && monitoringFormData.notificationPreferences.whatsapp ? 'Email + WhatsApp' :
                          monitoringFormData.notificationPreferences.email ? 'Email only' :
-                         monitoringFormData.notificationPreferences.sms ? 'SMS only' : 'None'}
+                         monitoringFormData.notificationPreferences.whatsapp ? 'WhatsApp only' : 'None'}
                       </div>
                     </div>
                   </div>
