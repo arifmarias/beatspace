@@ -5109,17 +5109,23 @@ const BuyerDashboard = () => {
                         />
                         <span className="text-sm text-gray-700">📧 Email notifications</span>
                       </label>
-                      <label className="flex items-center space-x-2 cursor-pointer">
+                      <label className={`flex items-center space-x-2 cursor-pointer ${monitoringFormData.serviceLevel !== 'premium' ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         <input
                           type="checkbox"
                           checked={monitoringFormData.notificationPreferences.whatsapp}
+                          disabled={monitoringFormData.serviceLevel !== 'premium'}
                           onChange={(e) => setMonitoringFormData(prev => ({
                             ...prev,
                             notificationPreferences: {...prev.notificationPreferences, whatsapp: e.target.checked}
                           }))}
-                          className="text-blue-600 focus:ring-blue-500 rounded"
+                          className="text-blue-600 focus:ring-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                        <span className="text-sm text-gray-700">📱 WhatsApp notifications</span>
+                        <span className="text-sm text-gray-700">
+                          📱 WhatsApp notifications 
+                          {monitoringFormData.serviceLevel !== 'premium' && (
+                            <span className="text-xs text-gray-500 ml-1">(Premium only)</span>
+                          )}
+                        </span>
                       </label>
                     </div>
                   </div>
