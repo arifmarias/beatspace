@@ -980,6 +980,7 @@ const BuyerDashboard = () => {
       return {
         text: 'Subscribe to Monitoring',
         subscribed: false,
+        disabled: false,
         variant: 'default',
         className: 'bg-blue-600 hover:bg-blue-700 text-white'
       };
@@ -991,13 +992,15 @@ const BuyerDashboard = () => {
       return {
         text: `Subscribed (${frequency.charAt(0).toUpperCase() + frequency.slice(1)})`,
         subscribed: true,
+        disabled: true, // Disable subscribed buttons
         variant: 'outline',
-        className: 'text-green-600 border-green-200 hover:bg-green-50'
+        className: 'text-green-600 border-green-300 bg-green-50 cursor-not-allowed opacity-75'
       };
     }
     return {
       text: 'Subscribe to Monitoring',
       subscribed: false,
+      disabled: false,
       variant: 'default',
       className: 'bg-blue-600 hover:bg-blue-700 text-white'
     };
