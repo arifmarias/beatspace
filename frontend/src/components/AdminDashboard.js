@@ -1430,6 +1430,27 @@ const AdminDashboard = () => {
       notify.error('Failed to update monitoring service: ' + (error.response?.data?.detail || error.message));
     }
   };
+
+  // Deactivate monitoring service
+  const handleDeactivateMonitoringService = async (serviceId) => {
+    try {
+      if (!confirm('Are you sure you want to deactivate this monitoring service? The buyer will be able to subscribe again.')) {
+        return;
+      }
+
+      await axios.delete(`${API}/monitoring/services/${serviceId}`, {
+        headers: getAuthHeaders()
+      });
+
+      notify.success('Monitoring service deactivated successfully!');
+      
+      // Refresh monitoring services
+      fetchBookedAssets();
+    } catch (error) {
+      console.error('Error deactivating monitoring service:', error);
+      notify.error('Failed to deactivate monitoring service: ' + (error.response?.data?.detail || error.message));
+    }
+  };
   
   // Fetch offer requests for mediation (similar to fetchBookedAssets but for offers only)
   const fetchOfferRequests = async () => {
