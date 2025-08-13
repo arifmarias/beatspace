@@ -762,11 +762,131 @@ const ManagerDashboard = () => {
 
                 {/* Calendar View */}
                 {monitoringViewMode === 'calendar' && (
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <div className="text-center">
-                      <CalendarDays className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Calendar View</h3>
-                      <p className="text-gray-500">Calendar view for monitoring schedules coming soon...</p>
+                  <div className="space-y-4">
+                    {/* Calendar Filters */}
+                    <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <User className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm font-medium">Filter by Assignee:</span>
+                        <Select value={calendarAssigneeFilter} onValueChange={setCalendarAssigneeFilter}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Assignees</SelectItem>
+                            {[...new Set(Object.values(assetAssignments).filter(name => name !== 'Unassigned'))].map(assignee => (
+                              <SelectItem key={assignee} value={assignee}>
+                                {assignee}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm font-medium">Filter by Area:</span>
+                        <Select value={calendarAreaFilter} onValueChange={setCalendarAreaFilter}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Areas</SelectItem>
+                            {[...new Set(monitoringAssets.map(asset => asset.area).filter(Boolean))].map(area => (
+                              <SelectItem key={area} value={area}>
+                                {area}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Calendar */}
+                    <div className="bg-white border rounded-lg">
+                      {(() => {
+                        const { year, month, monthName, today } = getCurrentMonth();
+                        const daysInMonth = getDaysInMonth(year, month);
+                        const firstDay = getFirstDayOfMonth(year, month);
+                        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                        
+                        return (
+                          <div>
+                            {/* Calendar Header */}
+                            <div className="p-4 border-b bg-gray-50">
+                              <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold">{monthName} {year}</h3>
+                                <div className="text-sm text-gray-500">
+                                  Monitoring Schedule Calendar
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Calendar Grid */}
+                            <div className="p-4">
+                              {/* Day Headers */}
+                              <div className="grid grid-cols-7 gap-2 mb-2">
+                                {days.map(day => (
+                                  <div key={day} className="p-2 text-center font-medium text-gray-600 text-sm">
+                                    {day}
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Calendar Days */}
+                              <div className="grid grid-cols-7 gap-2">
+                                {/* Empty cells for days before month starts */}
+                                {Array.from({ length: firstDay }, (_, i) => (
+                                  <div key={`empty-${i}`} className="h-24 p-1 border border-gray-100"></div>
+                                ))}
+                                
+                                {/* Month days */}
+                                {Array.from({ length: daysInMonth }, (_, i) => {
+                                  const date = i + 1;
+                                  const assetsForDate = getAssetsForDate(date, month, year);
+                                  const isToday = date === today;
+                                  
+                                  return (
+                                    <div key={date} className={`h-24 p-1 border border-gray-200 ${isToday ? 'bg-blue-50 border-blue-300' : 'bg-white'} hover:bg-gray-50 transition-colors`}>
+                                      <div className="h-full flex flex-col">
+                                        <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-800' : 'text-gray-700'}`}>
+                                          {date}
+                                        </div>
+                                        
+                                        <div className="flex-1 space-y-1 overflow-y-auto">
+                                          {assetsForDate.slice(0, 3).map((asset, index) => {
+                                            const operatorColor = getOperatorColor(asset.assignedOperator);
+                                            return (
+                                              <div 
+                                                key={`${asset.id}-${index}`}
+                                                className={`px-1 py-0.5 rounded text-xs border ${operatorColor} truncate`}
+                                                title={`${asset.assetName} - ${asset.assignedOperator} - ${asset.area}`}
+                                              >
+                                                <div className="font-medium truncate">
+                                                  {asset.assetName}
+                                                </div>
+                                                <div className="text-xs opacity-75 truncate">
+                                                  {asset.assignedOperator} • {asset.area}
+                                                </div>
+                                              </div>
+                                            );
+                                          })}
+                                          
+                                          {assetsForDate.length > 3 && (
+                                            <div className="text-xs text-gray-500 px-1">
+                                              +{assetsForDate.length - 3} more
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}
