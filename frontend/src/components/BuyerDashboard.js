@@ -1683,7 +1683,25 @@ const BuyerDashboard = () => {
         return;
       } catch (error) {
         console.error('Error creating individual asset monitoring subscription:', error);
-        notify.error(error.response?.data?.detail || 'Failed to create monitoring subscription');
+        
+        // Handle validation errors properly
+        let errorMessage = 'Failed to create monitoring subscription';
+        if (error.response?.data?.detail) {
+          if (typeof error.response.data.detail === 'string') {
+            errorMessage = error.response.data.detail;
+          } else if (Array.isArray(error.response.data.detail)) {
+            // Handle Pydantic validation errors
+            errorMessage = error.response.data.detail.map(err => 
+              typeof err === 'string' ? err : err.msg || 'Validation error'
+            ).join(', ');
+          } else {
+            errorMessage = 'Validation error occurred';
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        notify.error(errorMessage);
         return;
       } finally {
         setMonitoringSubmitting(false);
