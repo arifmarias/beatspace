@@ -185,32 +185,29 @@ const ManagerDashboard = () => {
     }
   };
 
-  // Task assignment
+  // Assign assets to operator
   const assignTasksToOperator = async () => {
     if (!selectedOperator || selectedTasks.length === 0) {
-      notify.error('Please select an operator and at least one task');
+      notify.error('Please select an operator and at least one asset');
       return;
     }
 
     try {
-      const headers = getAuthHeaders();
-      await axios.post(`${API}/api/monitoring/tasks/assign`, {
-        task_ids: selectedTasks,
-        operator_id: selectedOperator,
-        priority: taskPriority,
-        special_instructions: specialInstructions
-      }, { headers });
+      // Update assignments locally
+      selectedTasks.forEach(assetId => {
+        handleAssigneeChange(assetId, selectedOperator);
+      });
 
-      notify.success('Tasks assigned successfully!');
+      notify.success(`Successfully assigned ${selectedTasks.length} assets to operator!`);
       setSelectedTasks([]);
       setSelectedOperator('');
       setTaskPriority('medium');
       setSpecialInstructions('');
       setAssignmentDialog(false);
-      fetchDashboardData();
+      
     } catch (error) {
-      console.error('Error assigning tasks:', error);
-      notify.error('Failed to assign tasks');
+      console.error('Error assigning assets:', error);
+      notify.error('Failed to assign assets');
     }
   };
 
