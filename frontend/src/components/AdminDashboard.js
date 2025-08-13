@@ -5460,7 +5460,7 @@ const AdminDashboard = () => {
 };
 
 // Monitoring Asset Card Component
-const MonitoringAssetCard = ({ asset, onUpdate }) => {
+const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitoringService }) => {
   const [monitoringForm, setMonitoringForm] = useState({
     condition_status: 'Excellent',
     maintenance_status: 'Up to date',
@@ -5559,6 +5559,127 @@ const MonitoringAssetCard = ({ asset, onUpdate }) => {
     setIsEditing(false);
     fetchMonitoringData(); // Reset form to original data
   };
+
+  return (
+    <div className="border rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start space-x-4">
+          {/* Asset Image */}
+          {asset.photos && asset.photos[0] && (
+            <img 
+              src={asset.photos[0]} 
+              alt={asset.name}
+              className="w-16 h-16 object-cover rounded-lg"
+            />
+          )}
+          
+          {/* Asset Info */}
+          <div>
+            <h4 className="font-semibold text-gray-900">{asset.name}</h4>
+            <p className="text-sm text-blue-600 font-medium">{asset.campaign_name || 'Unknown Campaign'}</p>
+            <p className="text-sm text-gray-600">{asset.address}</p>
+            <p className="text-xs text-gray-500">{asset.district}, {asset.division}</p>
+            <div className="flex items-center space-x-2 mt-1">
+              <Badge className="bg-green-100 text-green-800 text-xs">
+                {asset.status}
+              </Badge>
+            </div>
+          </div>
+        </div>
+        
+        {/* Action Button */}
+        <div>
+          {!isEditing ? (
+            <Button 
+              onClick={() => setIsEditing(true)}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Edit Monitoring
+            </Button>
+          ) : (
+            <div className="flex space-x-2">
+              <Button 
+                onClick={handleSave}
+                size="sm"
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {loading ? 'Saving...' : 'Save'}
+              </Button>
+              <Button 
+                onClick={handleCancel}
+                size="sm"
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Monitoring Service Information */}
+      {monitoringService && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h5 className="font-medium text-green-900 flex items-center">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Monitoring Service Active
+            </h5>
+            <Button
+              onClick={() => onEditMonitoringService(monitoringService)}
+              size="sm"
+              variant="outline"
+              className="text-green-700 border-green-300 hover:bg-green-100"
+            >
+              <Settings className="w-3 h-3 mr-1" />
+              Edit Service
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="text-gray-600">Service Level:</span>
+              <div className="font-medium capitalize">{monitoringService.service_level}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">Frequency:</span>
+              <div className="font-medium capitalize">{monitoringService.frequency}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">Expiry Date:</span>
+              <div className="font-medium">
+                {monitoringService.end_date ? new Date(monitoringService.end_date).toLocaleDateString() : 'N/A'}
+              </div>
+            </div>
+            <div>
+              <span className="text-gray-600">Notifications:</span>
+              <div className="flex gap-1 mt-1">
+                {monitoringService.notification_preferences?.email && (
+                  <Badge variant="outline" className="text-xs">📧 Email</Badge>
+                )}
+                {monitoringService.notification_preferences?.whatsapp && (
+                  <Badge variant="outline" className="text-xs">📱 WhatsApp</Badge>
+                )}
+                {monitoringService.notification_preferences?.in_app && (
+                  <Badge variant="outline" className="text-xs">🔔 In-App</Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* No Monitoring Service Information */}
+      {!monitoringService && (
+        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center text-gray-600">
+            <AlertCircle className="w-4 h-4 mr-2" />
+            <span className="text-sm">No monitoring service activated for this asset</span>
+          </div>
+        </div>
+      )}
 
   return (
     <div className="border rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
