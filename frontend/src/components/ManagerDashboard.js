@@ -438,35 +438,6 @@ const ManagerDashboard = () => {
             <TabsTrigger value="performance">Performance</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="w-5 h-5 mr-2" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-3">
-                  <Button onClick={generateTasks}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Generate Today's Tasks
-                  </Button>
-                  <Button variant="outline" onClick={() => setAssignmentDialog(true)}>
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Bulk Assign Tasks
-                  </Button>
-                  <Button variant="outline">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Reports
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           {/* Monitoring Assets Tab */}
           <TabsContent value="tasks" className="space-y-4">
             <Card>
