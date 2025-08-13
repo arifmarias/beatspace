@@ -377,6 +377,25 @@ const ManagerDashboard = () => {
     setDateDetailsDialog(true);
   };
 
+  // Pagination helper functions
+  const getPaginatedData = (data, currentPage, itemsPerPage) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = (totalItems, itemsPerPage) => {
+    return Math.ceil(totalItems / itemsPerPage);
+  };
+
+  const handleMonitoringPageChange = (page) => {
+    setMonitoringCurrentPage(page);
+  };
+
+  const handleOperatorsPageChange = (page) => {
+    setOperatorsCurrentPage(page);
+  };
+
   // Handle asset row click to show asset details
   const handleAssetClick = (asset) => {
     setSelectedAssetDetails(asset);
