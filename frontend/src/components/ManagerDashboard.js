@@ -555,10 +555,36 @@ const ManagerDashboard = () => {
                             <TableCell>{asset.expiryDate}</TableCell>
                             <TableCell>{asset.lastUpdateDate}</TableCell>
                             <TableCell>
-                              <div className="flex items-center space-x-2">
-                                <User className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-600">{asset.assignee}</span>
-                              </div>
+                              <Select 
+                                value={assetAssignments[asset.id] ? 
+                                  operators.find(op => op.contact_name === assetAssignments[asset.id])?.id || '' : ''} 
+                                onValueChange={(operatorId) => handleAssigneeChange(asset.id, operatorId)}
+                              >
+                                <SelectTrigger className="w-40">
+                                  <SelectValue placeholder="Assign operator">
+                                    <div className="flex items-center space-x-2">
+                                      <User className="w-4 h-4 text-gray-400" />
+                                      <span>{asset.assignee}</span>
+                                    </div>
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">
+                                    <div className="flex items-center space-x-2">
+                                      <User className="w-4 h-4 text-gray-400" />
+                                      <span>Unassigned</span>
+                                    </div>
+                                  </SelectItem>
+                                  {operators.map(operator => (
+                                    <SelectItem key={operator.id} value={operator.id}>
+                                      <div className="flex items-center space-x-2">
+                                        <User className="w-4 h-4 text-blue-600" />
+                                        <span>{operator.contact_name}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center space-x-1">
