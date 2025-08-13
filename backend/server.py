@@ -318,6 +318,7 @@ class Asset(BaseModel):
     traffic_volume: str = "Medium"
     district: str = ""
     division: str = ""
+    area: str = ""  # Add area field to match frontend expectations
     total_bookings: int = 0
     total_revenue: float = 0
     last_monitored: Optional[datetime] = None
