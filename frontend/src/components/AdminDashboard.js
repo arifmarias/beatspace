@@ -1240,13 +1240,6 @@ const AdminDashboard = () => {
   };
 
   const editAsset = (asset) => {
-    // Debug: Log the asset structure to understand area field location
-    console.log('Edit Asset Debug - Full asset object:', asset);
-    console.log('Edit Asset Debug - Area field:', asset.area);
-    console.log('Edit Asset Debug - Location:', asset.location);
-    console.log('Edit Asset Debug - Division:', asset.division);
-    console.log('Edit Asset Debug - District:', asset.district);
-    
     setAssetForm({
       name: asset.name || '',
       description: asset.description || '',
