@@ -1656,6 +1656,7 @@ const BuyerDashboard = () => {
           headers: getAuthHeaders()
         });
 
+        console.log('✅ Monitoring service created successfully:', response.data);
         notify.success('Monitoring service subscription created successfully!');
         setShowMonitoringSubscription(false);
         
