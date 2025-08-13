@@ -1307,6 +1307,59 @@ const AdminDashboard = () => {
     }
   };
 
+  // Function to populate missing area data for existing assets
+  const populateMissingAreaData = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const response = await axios.get(`${API}/assets/public`, { headers });
+      const allAssets = response.data || [];
+      
+      const assetsWithoutArea = allAssets.filter(asset => !asset.area || asset.area === '');
+      
+      if (assetsWithoutArea.length === 0) {
+        notify.success('All assets already have area data populated!');
+        return;
+      }
+
+      const confirmMessage = `Found ${assetsWithoutArea.length} assets without area data. Do you want to populate them based on their address/location data?`;
+      
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+
+      let updatedCount = 0;
+      for (const asset of assetsWithoutArea) {
+        try {
+          // Try to extract area from address or use default based on district
+          let area = 'N/A';
+          
+          if (asset.district) {
+            // Get areas for the district and use the first one as default
+            const areasForDistrict = getAreas(asset.division || 'Dhaka', asset.district);
+            if (areasForDistrict.length > 0) {
+              area = areasForDistrict[0]; // Use first area as default
+            }
+          }
+          
+          // Update the asset with the area
+          const updateData = { ...asset, area: area };
+          await axios.put(`${API}/assets/${asset.id}`, updateData, { headers });
+          updatedCount++;
+          
+        } catch (error) {
+          console.error(`Error updating asset ${asset.id}:`, error);
+        }
+      }
+      
+      notify.success(`Successfully updated ${updatedCount} assets with area data!`);
+      fetchDashboardData(); // Refresh the assets list
+      
+    } catch (error) {
+      console.error('Error populating area data:', error);
+      notify.error('Failed to populate area data: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const deleteAsset = async (asset) => {
     const confirmMessage = `Are you sure you want to delete the asset "${asset.name}"?\n\nThis action cannot be undone.`;
     
