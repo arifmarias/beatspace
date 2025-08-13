@@ -61,6 +61,11 @@ const ManagerDashboard = () => {
   const [assetDetailsDialog, setAssetDetailsDialog] = useState(false);
   const [selectedAssetDetails, setSelectedAssetDetails] = useState(null);
   
+  // Pagination state
+  const [monitoringCurrentPage, setMonitoringCurrentPage] = useState(1);
+  const [operatorsCurrentPage, setOperatorsCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Items per page for both tables
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [operatorFilter, setOperatorFilter] = useState('all');
