@@ -97,7 +97,7 @@ const ManagerDashboard = () => {
                 frequency: service.frequency || 'monthly',
                 expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
                 lastUpdateDate: service.updated_at ? new Date(service.updated_at).toLocaleDateString() : 'N/A',
-                assignee: 'TBD', // This would come from task assignments
+                assignee: assetAssignments[`${service.id}_${assetId}`] || 'Unassigned',
                 nextInspectionDate: calculateNextInspectionDate(service),
                 status: 'active',
                 startDate: service.start_date,
