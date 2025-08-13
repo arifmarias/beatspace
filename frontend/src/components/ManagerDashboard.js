@@ -64,6 +64,56 @@ const ManagerDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Fetch monitoring assets with subscription data
+  const fetchMonitoringAssets = async () => {
+    try {
+      const headers = getAuthHeaders();
+      
+      // Get all monitoring services
+      const servicesRes = await axios.get(`${API}/api/monitoring/services`, { headers });
+      const monitoringServices = servicesRes.data?.services || [];
+      
+      // Get all assets to map asset details
+      const assetsRes = await axios.get(`${API}/api/assets/public`, { headers });
+      const allAssets = assetsRes.data || [];
+      
+      // Create monitoring assets data by combining services with asset details
+      const monitoringAssetsData = [];
+      
+      monitoringServices.forEach(service => {
+        if (service.asset_ids && Array.isArray(service.asset_ids)) {
+          service.asset_ids.forEach(assetId => {
+            const assetDetails = allAssets.find(asset => asset.id === assetId);
+            if (assetDetails) {
+              monitoringAssetsData.push({
+                id: `${service.id}_${assetId}`,
+                serviceId: service.id,
+                assetId: assetId,
+                assetName: assetDetails.name || 'Unknown Asset',
+                address: assetDetails.address || 'N/A',
+                area: assetDetails.location?.city || assetDetails.location?.area || 'N/A',
+                serviceLevel: service.service_level || 'standard',
+                frequency: service.frequency || 'monthly',
+                expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
+                lastUpdateDate: service.updated_at ? new Date(service.updated_at).toLocaleDateString() : 'N/A',
+                assignee: 'TBD', // This would come from task assignments
+                nextInspectionDate: calculateNextInspectionDate(service),
+                status: 'active',
+                startDate: service.start_date,
+                subscription: service
+              });
+            }
+          });
+        }
+      });
+      
+      setMonitoringAssets(monitoringAssetsData);
+    } catch (error) {
+      console.error('Error fetching monitoring assets:', error);
+      setMonitoringAssets([]);
+    }
+  };
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
