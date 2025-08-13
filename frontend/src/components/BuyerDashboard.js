@@ -4241,7 +4241,7 @@ const BuyerDashboard = () => {
                             </div>
                             <div>
                               <span className="text-gray-600">Next Inspection:</span>
-                              <div className="font-medium">{subscription.end_date ? new Date(subscription.end_date).toLocaleDateString() : 'N/A'}</div>
+                              <div className="font-medium">{calculateNextInspectionDate(subscription)}</div>
                             </div>
                           </div>
                           {subscription.notification_preferences && (
