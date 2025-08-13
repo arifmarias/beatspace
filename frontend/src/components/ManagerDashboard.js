@@ -158,6 +158,7 @@ const ManagerDashboard = () => {
                   assetName: assetDetails.name || 'Unknown Asset',
                   address: assetDetails.address || 'N/A',
                   area: assetDetails.area || assetDetails.location?.area || 'N/A',
+                  location: assetDetails.location || { lat: '', lng: '' }, // Include location coordinates
                   serviceLevel: service.service_level || 'standard',
                   frequency: service.frequency || 'monthly',
                   expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
