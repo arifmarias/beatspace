@@ -1740,46 +1740,26 @@ const ManagerDashboard = () => {
                           <div className="space-y-4">
                             {/* Google Maps Embed */}
                             <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                              {selectedAssetDetails.subscription?.asset_ids && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
-                                // First check if we have lat/lng coordinates from the asset location
-                                (() => {
-                                  // Try to get the actual asset data with location
-                                  const fullAssetData = monitoringAssets.find(a => a.id === selectedAssetDetails.id);
-                                  if (fullAssetData && fullAssetData.subscription) {
-                                    // Get the actual asset from the assets API to get location data
-                                    return (
-                                      <iframe
-                                        width="100%"
-                                        height="100%"
-                                        frameBorder="0"
-                                        style={{ border: 0 }}
-                                        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
-                                        allowFullScreen
-                                        loading="lazy"
-                                        title="Asset Location Map"
-                                      />
-                                    );
-                                  } else {
-                                    return (
-                                      <iframe
-                                        width="100%"
-                                        height="100%"
-                                        frameBorder="0"
-                                        style={{ border: 0 }}
-                                        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
-                                        allowFullScreen
-                                        loading="lazy"
-                                        title="Asset Location Map"
-                                      />
-                                    );
-                                  }
-                                })()
+                              {selectedAssetDetails.address && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
+                                <iframe
+                                  width="100%"
+                                  height="100%"
+                                  frameBorder="0"
+                                  style={{ border: 0 }}
+                                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
+                                  allowFullScreen
+                                  loading="lazy"
+                                  title="Asset Location Map"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                   <div className="text-center">
                                     <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                                    <p className="text-gray-500">Map view not available</p>
-                                    <p className="text-xs text-gray-400">Google Maps API key not configured</p>
+                                    <p className="text-gray-500">
+                                      {!process.env.REACT_APP_GOOGLE_MAPS_API_KEY 
+                                        ? "Google Maps API key not configured" 
+                                        : "No location data available"}
+                                    </p>
                                   </div>
                                 </div>
                               )}
