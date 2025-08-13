@@ -1009,6 +1009,37 @@ const BuyerDashboard = () => {
     };
   };
 
+  // Helper function to calculate next inspection date based on frequency
+  const calculateNextInspectionDate = (subscription) => {
+    if (!subscription || !subscription.start_date) {
+      return 'N/A';
+    }
+
+    const startDate = new Date(subscription.start_date);
+    const frequency = subscription.frequency?.toLowerCase() || 'monthly';
+    
+    let nextInspectionDate = new Date(startDate);
+    
+    switch (frequency) {
+      case 'daily':
+        nextInspectionDate.setDate(startDate.getDate() + 1);
+        break;
+      case 'weekly':
+        nextInspectionDate.setDate(startDate.getDate() + 7);
+        break;
+      case 'bi_weekly':
+      case 'bi-weekly':
+        nextInspectionDate.setDate(startDate.getDate() + 14);
+        break;
+      case 'monthly':
+      default:
+        nextInspectionDate.setMonth(startDate.getMonth() + 1);
+        break;
+    }
+    
+    return nextInspectionDate.toLocaleDateString();
+  };
+
   const getPaginatedCampaignAssets = () => {
     // Group assets by campaign first
     const groupedAssets = {};
