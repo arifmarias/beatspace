@@ -18,7 +18,8 @@ import {
   Users, ClipboardList, TrendingUp, Clock, CheckCircle2,
   AlertCircle, MapPin, Camera, Calendar, Filter, Search,
   MoreVertical, Plus, UserCheck, BarChart3,
-  Settings, Download, Upload, RefreshCw, User
+  Settings, Download, Upload, RefreshCw, User,
+  List, CalendarDays, Layout, Building2, Navigation
 } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
