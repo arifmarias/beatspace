@@ -91,7 +91,7 @@ const ManagerDashboard = () => {
                 assetId: assetId,
                 assetName: assetDetails.name || 'Unknown Asset',
                 address: assetDetails.address || 'N/A',
-                area: assetDetails.location?.city || assetDetails.location?.area || 'N/A',
+                area: assetDetails.area || 'N/A',
                 serviceLevel: service.service_level || 'standard',
                 frequency: service.frequency || 'monthly',
                 expiryDate: service.end_date ? new Date(service.end_date).toLocaleDateString() : 'N/A',
