@@ -2371,14 +2371,17 @@ const BuyerDashboard = () => {
                                       <Button
                                         size="sm"
                                         variant={buttonInfo.variant}
+                                        disabled={buttonInfo.disabled}
                                         className={`${buttonInfo.className} text-xs px-2 py-1`}
                                         onClick={() => {
-                                          // Pre-select this asset in the monitoring form
-                                          setMonitoringFormData(prev => ({
-                                            ...prev,
-                                            selectedAssets: [asset.id]
-                                          }));
-                                          setShowMonitoringSubscription(true);
+                                          if (!buttonInfo.disabled) {
+                                            // Pre-select this asset in the monitoring form
+                                            setMonitoringFormData(prev => ({
+                                              ...prev,
+                                              selectedAssets: [asset.id]
+                                            }));
+                                            setShowMonitoringSubscription(true);
+                                          }
                                         }}
                                       >
                                         {buttonInfo.text}
