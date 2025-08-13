@@ -425,124 +425,133 @@ const ManagerDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Tasks Tab */}
+          {/* Monitoring Assets Tab */}
           <TabsContent value="tasks" className="space-y-4">
-            {/* Task Management Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <ClipboardList className="w-5 h-5 mr-2" />
-                  Task Management
+                  <Building2 className="w-5 h-5 mr-2" />
+                  Asset Monitoring Management
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Filters */}
-                <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex items-center space-x-2">
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <Input
-                      placeholder="Search tasks..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-64"
-                    />
+                {/* View Mode Selector */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Search className="w-4 h-4 text-gray-400" />
+                      <Input
+                        placeholder="Search assets..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-64"
+                      />
+                    </div>
+                    
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="expired">Expired</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="assigned">Assigned</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="overdue">Overdue</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  <Select value={operatorFilter} onValueChange={setOperatorFilter}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Operator" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Operators</SelectItem>
-                      {operators.map(op => (
-                        <SelectItem key={op.id} value={op.id}>
-                          {op.contact_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* View Mode Toggle */}
+                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+                    <Button
+                      variant={monitoringViewMode === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMonitoringViewMode('list')}
+                      className="flex items-center space-x-2"
+                    >
+                      <List className="w-4 h-4" />
+                      <span>List</span>
+                    </Button>
+                    <Button
+                      variant={monitoringViewMode === 'calendar' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMonitoringViewMode('calendar')}
+                      className="flex items-center space-x-2"
+                    >
+                      <CalendarDays className="w-4 h-4" />
+                      <span>Calendar</span>
+                    </Button>
+                    <Button
+                      variant={monitoringViewMode === 'board' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setMonitoringViewMode('board')}
+                      className="flex items-center space-x-2"
+                    >
+                      <Layout className="w-4 h-4" />
+                      <span>Board</span>
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Tasks Table */}
-                <div className="border rounded-lg">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-12">
-                          <Checkbox
-                            checked={selectedTasks.length === filteredTasks.length && filteredTasks.length > 0}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedTasks(filteredTasks.map(t => t.id));
-                              } else {
-                                setSelectedTasks([]);
-                              }
-                            }}
-                          />
-                        </TableHead>
-                        <TableHead>Task ID</TableHead>
-                        <TableHead>Asset</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Assigned To</TableHead>
-                        <TableHead>Priority</TableHead>
-                        <TableHead>Due Date</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredTasks.map((task) => {
-                        const assignedOperator = operators.find(op => op.id === task.assigned_operator_id);
-                        return (
-                          <TableRow key={task.id}>
-                            <TableCell>
-                              <Checkbox
-                                checked={selectedTasks.includes(task.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setSelectedTasks([...selectedTasks, task.id]);
-                                  } else {
-                                    setSelectedTasks(selectedTasks.filter(id => id !== task.id));
-                                  }
-                                }}
-                              />
-                            </TableCell>
+                {/* List View */}
+                {monitoringViewMode === 'list' && (
+                  <div className="border rounded-lg">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Asset Name</TableHead>
+                          <TableHead>Address</TableHead>
+                          <TableHead>Area</TableHead>
+                          <TableHead>Service Level</TableHead>
+                          <TableHead>Frequency</TableHead>
+                          <TableHead>Expiry Date</TableHead>
+                          <TableHead>Last Update</TableHead>
+                          <TableHead>Assignee</TableHead>
+                          <TableHead>Next Inspection</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {monitoringAssets.map((asset) => (
+                          <TableRow key={asset.id}>
                             <TableCell className="font-medium">
-                              {task.id.slice(0, 8)}...
+                              <div className="flex items-center space-x-2">
+                                <Building2 className="w-4 h-4 text-blue-600" />
+                                <span>{asset.assetName}</span>
+                              </div>
                             </TableCell>
-                            <TableCell>{task.asset_id}</TableCell>
                             <TableCell>
-                              <Badge variant={
-                                task.status === 'completed' ? 'default' :
-                                task.status === 'in_progress' ? 'secondary' :
-                                task.status === 'overdue' ? 'destructive' : 'outline'
-                              }>
-                                {task.status}
+                              <div className="max-w-xs truncate" title={asset.address}>
+                                {asset.address}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">{asset.area}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={asset.serviceLevel === 'premium' ? 'default' : 'outline'}>
+                                {asset.serviceLevel}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {assignedOperator ? assignedOperator.contact_name : 'Unassigned'}
+                              <div className="flex items-center space-x-1">
+                                <Clock className="w-3 h-3 text-gray-400" />
+                                <span className="capitalize">{asset.frequency}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>{asset.expiryDate}</TableCell>
+                            <TableCell>{asset.lastUpdateDate}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center space-x-2">
+                                <User className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-600">{asset.assignee}</span>
+                              </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={task.priority === 'high' ? 'destructive' : 'outline'}>
-                                {task.priority || 'medium'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {task.scheduled_date ? new Date(task.scheduled_date).toLocaleDateString() : '-'}
+                              <div className="flex items-center space-x-1">
+                                <Calendar className="w-3 h-3 text-green-600" />
+                                <span className="text-green-600 font-medium">{asset.nextInspectionDate}</span>
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Button variant="ghost" size="sm">
@@ -550,22 +559,94 @@ const ManagerDashboard = () => {
                               </Button>
                             </TableCell>
                           </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    
+                    {monitoringAssets.length === 0 && (
+                      <div className="text-center py-8">
+                        <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Monitoring Assets</h3>
+                        <p className="text-gray-500">No assets are currently subscribed to monitoring services.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-                {selectedTasks.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-blue-600">
-                        {selectedTasks.length} tasks selected
-                      </span>
-                      <Button onClick={() => setAssignmentDialog(true)} size="sm">
-                        <UserCheck className="w-4 h-4 mr-2" />
-                        Assign Tasks
-                      </Button>
+                {/* Calendar View */}
+                {monitoringViewMode === 'calendar' && (
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <div className="text-center">
+                      <CalendarDays className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Calendar View</h3>
+                      <p className="text-gray-500">Calendar view for monitoring schedules coming soon...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Board View */}
+                {monitoringViewMode === 'board' && (
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Active Column */}
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <h3 className="font-medium text-green-800">Active</h3>
+                        <Badge variant="secondary" className="ml-auto">
+                          {monitoringAssets.filter(a => a.status === 'active').length}
+                        </Badge>
+                      </div>
+                      <div className="space-y-3">
+                        {monitoringAssets.filter(a => a.status === 'active').map(asset => (
+                          <Card key={asset.id} className="p-3 bg-white border-green-200">
+                            <div className="font-medium text-sm mb-1">{asset.assetName}</div>
+                            <div className="text-xs text-gray-500 mb-2">{asset.area}</div>
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-xs">{asset.frequency}</Badge>
+                              <span className="text-xs text-green-600">{asset.nextInspectionDate}</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Pending Column */}
+                    <div className="bg-yellow-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <h3 className="font-medium text-yellow-800">Pending</h3>
+                        <Badge variant="secondary" className="ml-auto">0</Badge>
+                      </div>
+                      <div className="text-center py-8">
+                        <Clock className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
+                        <p className="text-sm text-yellow-600">No pending inspections</p>
+                      </div>
+                    </div>
+
+                    {/* In Progress Column */}
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <h3 className="font-medium text-blue-800">In Progress</h3>
+                        <Badge variant="secondary" className="ml-auto">0</Badge>
+                      </div>
+                      <div className="text-center py-8">
+                        <Navigation className="w-8 h-8 text-blue-300 mx-auto mb-2" />
+                        <p className="text-sm text-blue-600">No inspections in progress</p>
+                      </div>
+                    </div>
+
+                    {/* Completed Column */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                        <h3 className="font-medium text-gray-800">Completed</h3>
+                        <Badge variant="secondary" className="ml-auto">0</Badge>
+                      </div>
+                      <div className="text-center py-8">
+                        <CheckCircle2 className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600">No completed inspections</p>
+                      </div>
                     </div>
                   </div>
                 )}
