@@ -1494,7 +1494,7 @@ const AdminDashboard = () => {
   const toggleCampaignCollapse = (campaignName) => {
     setCollapsedCampaigns(prev => ({
       ...prev,
-      [campaignName]: !prev[campaignName]
+      [campaignName]: prev[campaignName] === true ? false : true
     }));
   };
   
