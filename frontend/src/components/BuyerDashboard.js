@@ -4096,8 +4096,8 @@ const BuyerDashboard = () => {
                                 {subscription.notification_preferences.email && (
                                   <Badge variant="outline" className="text-xs">📧 Email</Badge>
                                 )}
-                                {subscription.notification_preferences.sms && (
-                                  <Badge variant="outline" className="text-xs">📱 SMS</Badge>
+                                {subscription.notification_preferences.whatsapp && (
+                                  <Badge variant="outline" className="text-xs">📱 WhatsApp</Badge>
                                 )}
                               </div>
                             </div>
