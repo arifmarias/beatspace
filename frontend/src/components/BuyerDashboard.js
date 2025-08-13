@@ -1632,13 +1632,24 @@ const BuyerDashboard = () => {
       try {
         setMonitoringSubmitting(true);
         
+        // Get the selected asset to use its expiry date
+        const selectedAsset = liveAssets.find(asset => 
+          monitoringFormData.selectedAssets.includes(asset.id)
+        );
+        
+        // Use asset expiry date or default to 30 days from now
+        let endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default fallback
+        if (selectedAsset && selectedAsset.expiryDate) {
+          endDate = new Date(selectedAsset.expiryDate);
+        }
+        
         const subscriptionData = {
           asset_ids: monitoringFormData.selectedAssets,
           frequency: monitoringFormData.frequency,
           service_level: monitoringFormData.serviceLevel,
           notification_preferences: monitoringFormData.notificationPreferences,
           start_date: new Date().toISOString(),
-          end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+          end_date: endDate.toISOString()
         };
 
         const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
