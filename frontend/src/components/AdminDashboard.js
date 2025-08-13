@@ -5780,15 +5780,29 @@ const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitor
               <CheckCircle className="w-4 h-4 mr-2" />
               Monitoring Service Active
             </h5>
-            <Button
-              onClick={() => onEditMonitoringService(monitoringService)}
-              size="sm"
-              variant="outline"
-              className="text-green-700 border-green-300 hover:bg-green-100"
-            >
-              <Settings className="w-3 h-3 mr-1" />
-              Edit Service
-            </Button>
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => {
+                  console.log('Edit Service clicked with service:', monitoringService);
+                  onEditMonitoringService(monitoringService);
+                }}
+                size="sm"
+                variant="outline"
+                className="text-green-700 border-green-300 hover:bg-green-100"
+              >
+                <Settings className="w-3 h-3 mr-1" />
+                Edit Service
+              </Button>
+              <Button
+                onClick={() => handleDeactivateMonitoringService(monitoringService.id)}
+                size="sm"
+                variant="outline"
+                className="text-red-700 border-red-300 hover:bg-red-100"
+              >
+                <X className="w-3 h-3 mr-1" />
+                Deactivate
+              </Button>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
