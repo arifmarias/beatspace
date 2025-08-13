@@ -861,6 +861,15 @@ const ManagerDashboard = () => {
                       </TableBody>
                     </Table>
                     
+                    {/* Pagination for Monitoring Assets */}
+                    <PaginationControls
+                      currentPage={monitoringCurrentPage}
+                      totalPages={getTotalPages(monitoringAssets.length, itemsPerPage)}
+                      onPageChange={handleMonitoringPageChange}
+                      totalItems={monitoringAssets.length}
+                      itemsPerPage={itemsPerPage}
+                    />
+                    
                     {monitoringAssets.length === 0 && (
                       <div className="text-center py-8">
                         <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
