@@ -5112,14 +5112,14 @@ const BuyerDashboard = () => {
                       <label className="flex items-center space-x-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={monitoringFormData.notificationPreferences.sms}
+                          checked={monitoringFormData.notificationPreferences.whatsapp}
                           onChange={(e) => setMonitoringFormData(prev => ({
                             ...prev,
-                            notificationPreferences: {...prev.notificationPreferences, sms: e.target.checked}
+                            notificationPreferences: {...prev.notificationPreferences, whatsapp: e.target.checked}
                           }))}
                           className="text-blue-600 focus:ring-blue-500 rounded"
                         />
-                        <span className="text-sm text-gray-700">📱 SMS notifications</span>
+                        <span className="text-sm text-gray-700">📱 WhatsApp notifications</span>
                       </label>
                     </div>
                   </div>
