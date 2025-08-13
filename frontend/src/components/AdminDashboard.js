@@ -5894,4 +5894,158 @@ const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitor
   );
 };
 
+        {/* Edit Monitoring Service Dialog */}
+        <Dialog open={showEditMonitoringDialog} onOpenChange={(open) => {
+          setShowEditMonitoringDialog(open);
+          if (!open) setEditingMonitoringService(null);
+        }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Monitoring Service</DialogTitle>
+            </DialogHeader>
+            
+            {editingMonitoringService && (
+              <div className="space-y-4">
+                {/* Service Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service Level
+                  </label>
+                  <Select 
+                    value={editingMonitoringService.service_level}
+                    onValueChange={(value) => setEditingMonitoringService({
+                      ...editingMonitoringService,
+                      service_level: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Standard</SelectItem>
+                      <SelectItem value="premium">Premium</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Frequency */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Monitoring Frequency
+                  </label>
+                  <Select 
+                    value={editingMonitoringService.frequency}
+                    onValueChange={(value) => setEditingMonitoringService({
+                      ...editingMonitoringService,
+                      frequency: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Notification Preferences */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Notification Preferences
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox"
+                        id="email-notifications"
+                        checked={editingMonitoringService.notification_preferences?.email || false}
+                        onChange={(e) => setEditingMonitoringService({
+                          ...editingMonitoringService,
+                          notification_preferences: {
+                            ...editingMonitoringService.notification_preferences,
+                            email: e.target.checked
+                          }
+                        })}
+                        className="rounded"
+                      />
+                      <label htmlFor="email-notifications" className="text-sm">Email Notifications</label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox"
+                        id="whatsapp-notifications"
+                        checked={editingMonitoringService.notification_preferences?.whatsapp || false}
+                        onChange={(e) => setEditingMonitoringService({
+                          ...editingMonitoringService,
+                          notification_preferences: {
+                            ...editingMonitoringService.notification_preferences,
+                            whatsapp: e.target.checked
+                          }
+                        })}
+                        className="rounded"
+                      />
+                      <label htmlFor="whatsapp-notifications" className="text-sm">WhatsApp Notifications</label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox"
+                        id="inapp-notifications"
+                        checked={editingMonitoringService.notification_preferences?.in_app || false}
+                        onChange={(e) => setEditingMonitoringService({
+                          ...editingMonitoringService,
+                          notification_preferences: {
+                            ...editingMonitoringService.notification_preferences,
+                            in_app: e.target.checked
+                          }
+                        })}
+                        className="rounded"
+                      />
+                      <label htmlFor="inapp-notifications" className="text-sm">In-App Notifications</label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expiry Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service Expiry Date
+                  </label>
+                  <Input
+                    type="date"
+                    value={editingMonitoringService.end_date instanceof Date ? 
+                      editingMonitoringService.end_date.toISOString().split('T')[0] : 
+                      new Date(editingMonitoringService.end_date).toISOString().split('T')[0]
+                    }
+                    onChange={(e) => setEditingMonitoringService({
+                      ...editingMonitoringService,
+                      end_date: new Date(e.target.value)
+                    })}
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-2 mt-6">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowEditMonitoringDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={updateMonitoringService}>
+                    Update Service
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
 export default AdminDashboard;
