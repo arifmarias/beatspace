@@ -2503,15 +2503,6 @@ const AdminDashboard = () => {
                   </CardTitle>
                   <div className="flex space-x-2">
                     <Button 
-                      onClick={populateMissingAreaData}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center space-x-2"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      <span>Populate Missing Areas</span>
-                    </Button>
-                    <Button 
                       onClick={() => setShowAddAsset(true)}
                       className="flex items-center space-x-2"
                     >
