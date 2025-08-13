@@ -2944,6 +2944,32 @@ async def update_monitoring_service(
         logger.error(f"Error updating monitoring service: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error updating monitoring service: {str(e)}")
 
+@api_router.delete("/monitoring/services/{service_id}")
+async def deactivate_monitoring_service(
+    service_id: str,
+    current_user: User = Depends(require_admin_or_manager)
+):
+    """Deactivate a monitoring service (admin/manager only)"""
+    try:
+        # Verify the service exists
+        existing_service = await db.monitoring_subscriptions.find_one({"id": service_id})
+        if not existing_service:
+            raise HTTPException(status_code=404, detail="Monitoring service not found")
+        
+        # Delete the service
+        result = await db.monitoring_subscriptions.delete_one({"id": service_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to deactivate monitoring service")
+        
+        return {"message": "Monitoring service deactivated successfully", "service_id": service_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deactivating monitoring service: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error deactivating monitoring service: {str(e)}")
+
 @api_router.get("/monitoring/services/{subscription_id}")
 async def get_monitoring_service(
     subscription_id: str,
