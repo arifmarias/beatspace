@@ -5751,7 +5751,7 @@ const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitor
           {/* Asset Info */}
           <div>
             <h4 className="font-semibold text-gray-900">{asset.name}</h4>
-            <p className="text-sm text-blue-600 font-medium">{asset.campaign_name || 'Unknown Campaign'}</p>
+            <p className="text-sm text-blue-600 font-medium">{asset.buyer_name || 'Unknown Buyer'}</p>
             <p className="text-sm text-gray-600">{asset.address}</p>
             <p className="text-xs text-gray-500">{asset.district}, {asset.division}</p>
             <div className="flex items-center space-x-2 mt-1">
