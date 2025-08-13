@@ -408,7 +408,7 @@ class TaskPriority(str, Enum):
 
 class MonitoringServiceSubscription(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    campaign_id: str
+    campaign_id: Optional[str] = None  # Optional for individual asset monitoring
     buyer_id: str
     asset_ids: List[str]
     frequency: MonitoringFrequency
