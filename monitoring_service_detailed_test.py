@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
 class DetailedMonitoringTester:
-    def __init__(self, base_url="https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://beatspace-monitor.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.admin_token = None
         self.manager_token = None

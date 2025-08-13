@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 
 class WebSocketTester:
-    def __init__(self, base_url="https://5b2f6014-c866-4e2a-afff-a5479a2b7b76.preview.emergentagent.com"):
+    def __init__(self, base_url="https://beatspace-monitor.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_base = f"{base_url}/api"
         self.ws_base = base_url.replace("https://", "wss://").replace("http://", "ws://")
