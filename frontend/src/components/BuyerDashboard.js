@@ -1650,6 +1650,7 @@ const BuyerDashboard = () => {
           notification_preferences: monitoringFormData.notificationPreferences,
           start_date: new Date().toISOString(),
           end_date: endDate.toISOString()
+          // Note: campaign_id is intentionally omitted for individual asset monitoring
         };
 
         const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
