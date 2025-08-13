@@ -538,6 +538,9 @@ const BuyerDashboard = () => {
       
       setLiveAssets(assetsWithInspectionData);
       
+      // Fetch monitoring services to ensure monitoring column shows latest data
+      await fetchMonitoringServices();
+      
       // Clear timeout on success
       clearTimeout(timeoutId);
       
