@@ -526,7 +526,7 @@ class OperatorPerformance(BaseModel):
 
 # Create/Update Models for API endpoints
 class MonitoringServiceCreate(BaseModel):
-    campaign_id: str
+    campaign_id: Optional[str] = None  # Optional for individual asset monitoring
     asset_ids: List[str]
     frequency: MonitoringFrequency
     start_date: datetime
