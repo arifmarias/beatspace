@@ -776,11 +776,6 @@ const ManagerDashboard = () => {
                                 <span className="text-green-600 font-medium">{asset.nextInspectionDate}</span>
                               </div>
                             </TableCell>
-                            <TableCell>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="w-4 h-4" />
-                              </Button>
-                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
