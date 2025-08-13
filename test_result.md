@@ -264,11 +264,11 @@ backend:
 frontend:
   - task: "Monitoring Service Subscription Interface in BuyerDashboard"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/BuyerDashboard.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "main"
