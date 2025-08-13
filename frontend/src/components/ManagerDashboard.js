@@ -41,7 +41,13 @@ const ManagerDashboard = () => {
   const [selectedOperator, setSelectedOperator] = useState('');
   const [taskPriority, setTaskPriority] = useState('medium');
   const [specialInstructions, setSpecialInstructions] = useState('');
-  const [assetAssignments, setAssetAssignments] = useState({}); // Track operator assignments for each asset
+  const [assetAssignments, setAssetAssignments] = useState(() => {
+    // Load assignments from localStorage on initialization
+    const saved = localStorage.getItem('managerAssetAssignments');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [operatorDetailsDialog, setOperatorDetailsDialog] = useState(false);
+  const [selectedOperatorDetails, setSelectedOperatorDetails] = useState(null);
   
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
