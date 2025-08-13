@@ -67,11 +67,18 @@ const ManagerDashboard = () => {
 
   // Handle operator assignment to monitoring assets
   const handleAssigneeChange = (assetId, operatorId) => {
-    const operator = operators.find(op => op.id === operatorId);
-    setAssetAssignments(prev => ({
-      ...prev,
-      [assetId]: operator ? operator.contact_name : 'Unassigned'
-    }));
+    if (operatorId === 'unassigned') {
+      setAssetAssignments(prev => ({
+        ...prev,
+        [assetId]: 'Unassigned'
+      }));
+    } else {
+      const operator = operators.find(op => op.id === operatorId);
+      setAssetAssignments(prev => ({
+        ...prev,
+        [assetId]: operator ? operator.contact_name : 'Unassigned'
+      }));
+    }
     
     // Here you could also make an API call to persist the assignment
     // Example: axios.post(`${API}/api/monitoring/assets/${assetId}/assign`, { operator_id: operatorId })
