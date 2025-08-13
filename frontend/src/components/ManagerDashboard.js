@@ -53,6 +53,10 @@ const ManagerDashboard = () => {
   const [calendarAssigneeFilter, setCalendarAssigneeFilter] = useState('all');
   const [calendarAreaFilter, setCalendarAreaFilter] = useState('all');
   
+  // Date details dialog
+  const [dateDetailsDialog, setDateDetailsDialog] = useState(false);
+  const [selectedDateDetails, setSelectedDateDetails] = useState(null);
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [operatorFilter, setOperatorFilter] = useState('all');
