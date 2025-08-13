@@ -853,13 +853,16 @@ class MonitoringServiceAdminTester:
 
 def main():
     """Main test execution"""
-    print("🔍 Starting Monitoring Service Admin Editing Test Suite...")
+    print("🔍 Starting Monitoring Service Admin Deactivation Test Suite...")
+    print("🎯 Focus: Complete admin workflow including deactivation functionality")
     
     tester = MonitoringServiceAdminTester()
-    success = tester.run_comprehensive_test_suite()
+    
+    # Run the comprehensive deactivation test suite
+    success = tester.run_deactivation_comprehensive_test_suite()
     
     if success:
-        print("\n✅ All critical monitoring service admin tests passed!")
+        print("\n✅ All critical monitoring service admin deactivation tests passed!")
         sys.exit(0)
     else:
         print("\n❌ Some critical tests failed - review results above")
