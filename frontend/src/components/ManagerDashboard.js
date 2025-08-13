@@ -1107,7 +1107,7 @@ const ManagerDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {(Array.isArray(operators) ? operators : []).map((operator) => {
+                    {getPaginatedData((Array.isArray(operators) ? operators : []), operatorsCurrentPage, itemsPerPage).map((operator) => {
                       // Calculate assigned assets for this operator
                       const assignedAssets = Object.values(assetAssignments).filter(
                         assigneeName => assigneeName === operator.contact_name
