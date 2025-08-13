@@ -5634,7 +5634,7 @@ const AdminDashboard = () => {
 };
 
 // Monitoring Asset Card Component
-const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitoringService }) => {
+const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitoringService, onDeactivateMonitoringService }) => {
   const [monitoringForm, setMonitoringForm] = useState({
     condition_status: 'Excellent',
     maintenance_status: 'Up to date',
