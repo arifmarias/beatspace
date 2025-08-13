@@ -227,6 +227,19 @@ const ManagerDashboard = () => {
     }
   };
 
+  // Handle operator row click to show assigned assets
+  const handleOperatorClick = (operator) => {
+    setSelectedOperatorDetails(operator);
+    setOperatorDetailsDialog(true);
+  };
+
+  // Get assigned assets for an operator
+  const getAssignedAssetsForOperator = (operatorName) => {
+    return monitoringAssets.filter(asset => 
+      assetAssignments[asset.id] === operatorName
+    );
+  };
+
   // Generate tasks
   const generateTasks = async () => {
     try {
