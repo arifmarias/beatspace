@@ -31,9 +31,11 @@ const ManagerDashboard = () => {
   const [operators, setOperators] = useState([]);
   const [services, setServices] = useState([]);
   const [performance, setPerformance] = useState({});
+  const [monitoringAssets, setMonitoringAssets] = useState([]);
   
   // UI state
   const [activeTab, setActiveTab] = useState('overview');
+  const [monitoringViewMode, setMonitoringViewMode] = useState('list'); // list, calendar, board
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [assignmentDialog, setAssignmentDialog] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState('');
