@@ -57,6 +57,10 @@ const ManagerDashboard = () => {
   const [dateDetailsDialog, setDateDetailsDialog] = useState(false);
   const [selectedDateDetails, setSelectedDateDetails] = useState(null);
   
+  // Asset details dialog
+  const [assetDetailsDialog, setAssetDetailsDialog] = useState(false);
+  const [selectedAssetDetails, setSelectedAssetDetails] = useState(null);
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [operatorFilter, setOperatorFilter] = useState('all');
