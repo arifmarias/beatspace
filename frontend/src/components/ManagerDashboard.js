@@ -588,15 +588,26 @@ const ManagerDashboard = () => {
                             <TableCell>{asset.lastUpdateDate}</TableCell>
                             <TableCell>
                               <Select 
-                                value={assetAssignments[asset.id] && assetAssignments[asset.id] !== 'Unassigned' ? 
-                                  operators.find(op => op.contact_name === assetAssignments[asset.id])?.id || 'unassigned' : 'unassigned'} 
+                                value={(() => {
+                                  const assignedName = assetAssignments[asset.id];
+                                  if (!assignedName || assignedName === 'Unassigned') {
+                                    return 'unassigned';
+                                  }
+                                  const operator = operators.find(op => op.contact_name === assignedName);
+                                  return operator ? operator.id : 'unassigned';
+                                })()}
                                 onValueChange={(operatorId) => handleAssigneeChange(asset.id, operatorId)}
                               >
                                 <SelectTrigger className="w-40">
-                                  <SelectValue placeholder="Assign operator">
+                                  <SelectValue>
                                     <div className="flex items-center space-x-2">
                                       <User className="w-4 h-4 text-gray-400" />
-                                      <span>{asset.assignee}</span>
+                                      <span>
+                                        {assetAssignments[asset.id] && assetAssignments[asset.id] !== 'Unassigned' 
+                                          ? assetAssignments[asset.id]
+                                          : 'Unassigned'
+                                        }
+                                      </span>
                                     </div>
                                   </SelectValue>
                                 </SelectTrigger>
