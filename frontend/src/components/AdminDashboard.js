@@ -5816,7 +5816,7 @@ const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitor
                 Edit Service
               </Button>
               <Button
-                onClick={() => handleDeactivateMonitoringService(monitoringService.id)}
+                onClick={() => onDeactivateMonitoringService(monitoringService.id)}
                 size="sm"
                 variant="outline"
                 className="text-red-700 border-red-300 hover:bg-red-100"
