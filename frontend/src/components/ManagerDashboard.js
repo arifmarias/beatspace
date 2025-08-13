@@ -1741,7 +1741,18 @@ const ManagerDashboard = () => {
                           <div className="space-y-4">
                             {/* Google Maps Embed */}
                             <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                              {selectedAssetDetails.address && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
+                              {selectedAssetDetails.location && selectedAssetDetails.location.lat && selectedAssetDetails.location.lng && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
+                                <iframe
+                                  width="100%"
+                                  height="100%"
+                                  frameBorder="0"
+                                  style={{ border: 0 }}
+                                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${selectedAssetDetails.location.lat},${selectedAssetDetails.location.lng}&zoom=16`}
+                                  allowFullScreen
+                                  loading="lazy"
+                                  title="Asset Location Map"
+                                />
+                              ) : selectedAssetDetails.address && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                                 <iframe
                                   width="100%"
                                   height="100%"
