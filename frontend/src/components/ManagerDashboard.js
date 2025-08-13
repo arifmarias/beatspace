@@ -244,6 +244,107 @@ const ManagerDashboard = () => {
     );
   };
 
+  // Calendar helper functions
+  const getCurrentMonth = () => {
+    const now = new Date();
+    return {
+      year: now.getFullYear(),
+      month: now.getMonth(),
+      monthName: now.toLocaleString('default', { month: 'long' }),
+      today: now.getDate()
+    };
+  };
+
+  const getDaysInMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (year, month) => {
+    return new Date(year, month, 1).getDay();
+  };
+
+  // Calculate recurring inspection dates based on frequency
+  const getRecurringDates = (asset, currentMonth, currentYear) => {
+    const dates = [];
+    const startDate = new Date(asset.startDate);
+    const frequency = asset.frequency?.toLowerCase() || 'monthly';
+    
+    let intervalDays;
+    switch (frequency) {
+      case 'daily': intervalDays = 1; break;
+      case 'weekly': intervalDays = 7; break;
+      case 'bi_weekly':
+      case 'bi-weekly': intervalDays = 14; break;
+      case 'monthly': intervalDays = 30; break;
+      default: intervalDays = 30;
+    }
+
+    // Generate dates for the current month
+    const monthStart = new Date(currentYear, currentMonth, 1);
+    const monthEnd = new Date(currentYear, currentMonth + 1, 0);
+    
+    let currentDate = new Date(startDate);
+    while (currentDate <= monthEnd) {
+      if (currentDate >= monthStart && currentDate <= monthEnd) {
+        dates.push(new Date(currentDate));
+      }
+      currentDate.setDate(currentDate.getDate() + intervalDays);
+    }
+    
+    return dates;
+  };
+
+  // Get assets for a specific date
+  const getAssetsForDate = (date, currentMonth, currentYear) => {
+    const targetDate = new Date(currentYear, currentMonth, date);
+    const assetsForDate = [];
+
+    monitoringAssets.forEach(asset => {
+      const assignedOperator = assetAssignments[asset.id];
+      if (!assignedOperator || assignedOperator === 'Unassigned') return;
+
+      // Apply filters
+      if (calendarAssigneeFilter !== 'all' && assignedOperator !== calendarAssigneeFilter) return;
+      if (calendarAreaFilter !== 'all' && asset.area !== calendarAreaFilter) return;
+
+      const recurringDates = getRecurringDates(asset, currentMonth, currentYear);
+      const hasInspectionOnDate = recurringDates.some(recurDate => 
+        recurDate.getDate() === date
+      );
+
+      if (hasInspectionOnDate) {
+        assetsForDate.push({
+          ...asset,
+          assignedOperator
+        });
+      }
+    });
+
+    return assetsForDate;
+  };
+
+  // Get operator colors (consistent colors for each operator)
+  const getOperatorColor = (operatorName) => {
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'bg-green-100 text-green-800 border-green-200', 
+      'bg-purple-100 text-purple-800 border-purple-200',
+      'bg-orange-100 text-orange-800 border-orange-200',
+      'bg-pink-100 text-pink-800 border-pink-200',
+      'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'bg-red-100 text-red-800 border-red-200',
+      'bg-yellow-100 text-yellow-800 border-yellow-200'
+    ];
+    
+    let hash = 0;
+    for (let i = 0; i < operatorName.length; i++) {
+      const char = operatorName.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   // Generate tasks
   const generateTasks = async () => {
     try {
