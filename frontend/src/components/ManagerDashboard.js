@@ -869,7 +869,11 @@ const ManagerDashboard = () => {
                                   const isToday = date === today;
                                   
                                   return (
-                                    <div key={date} className={`h-24 p-1 border border-gray-200 ${isToday ? 'bg-blue-50 border-blue-300' : 'bg-white'} hover:bg-gray-50 transition-colors`}>
+                                    <div 
+                                      key={date} 
+                                      className={`h-24 p-1 border border-gray-200 cursor-pointer ${isToday ? 'bg-blue-50 border-blue-300' : 'bg-white'} hover:bg-gray-50 transition-colors`}
+                                      onClick={() => handleDateClick(date, month, year)}
+                                    >
                                       <div className="h-full flex flex-col">
                                         <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-800' : 'text-gray-700'}`}>
                                           {date}
