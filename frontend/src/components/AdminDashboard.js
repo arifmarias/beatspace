@@ -83,6 +83,9 @@ const AdminDashboard = () => {
   const [monitoringSearch, setMonitoringSearch] = useState('');
   const [collapsedCampaigns, setCollapsedCampaigns] = useState({});
   const [collapsedBuyers, setCollapsedBuyers] = useState({}); // Collapsible state for buyers in Offer Mediation
+  const [monitoringServices, setMonitoringServices] = useState([]);
+  const [editingMonitoringService, setEditingMonitoringService] = useState(null);
+  const [showEditMonitoringDialog, setShowEditMonitoringDialog] = useState(false);
   
   // Notification system  
   const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
