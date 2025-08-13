@@ -5681,6 +5681,219 @@ const MonitoringAssetCard = ({ asset, onUpdate, monitoringService, onEditMonitor
         </div>
       )}
 
+      {/* Monitoring Form */}
+      {isEditing ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          {/* Condition Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Overall Condition *
+            </label>
+            <Select 
+              value={monitoringForm.condition_status}
+              onValueChange={(value) => setMonitoringForm({...monitoringForm, condition_status: value})}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Excellent">Excellent</SelectItem>
+                <SelectItem value="Good">Good</SelectItem>
+                <SelectItem value="Fair">Fair</SelectItem>
+                <SelectItem value="Needs Attention">Needs Attention</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Maintenance Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Maintenance Status *
+            </label>
+            <Select 
+              value={monitoringForm.maintenance_status}
+              onValueChange={(value) => setMonitoringForm({...monitoringForm, maintenance_status: value})}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Up to date">Up to date</SelectItem>
+                <SelectItem value="Due soon">Due soon</SelectItem>
+                <SelectItem value="Overdue">Overdue</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Active Issues */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Active Issues
+            </label>
+            <Textarea
+              placeholder="Describe any current issues with the asset (leave empty if none)..."
+              value={monitoringForm.active_issues}
+              onChange={(e) => setMonitoringForm({...monitoringForm, active_issues: e.target.value})}
+              rows={2}
+            />
+          </div>
+
+          {/* Inspection Notes */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Inspection Notes
+            </label>
+            <Textarea
+              placeholder="Add detailed inspection notes, observations, or maintenance recommendations..."
+              value={monitoringForm.inspection_notes}
+              onChange={(e) => setMonitoringForm({...monitoringForm, inspection_notes: e.target.value})}
+              rows={3}
+            />
+          </div>
+
+          {/* Photo Management */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Asset Photos ({monitoringForm.photos.length} photos)
+            </label>
+            
+            {/* Current Photos */}
+            {monitoringForm.photos.length > 0 && (
+              <div className="grid grid-cols-4 gap-3 mb-3">
+                {monitoringForm.photos.map((photo, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={photo}
+                      alt={`Asset photo ${index + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Photo Upload */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+              <div className="text-center">
+                <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <div className="flex items-center justify-center">
+                  <label className="cursor-pointer">
+                    <span className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                      {photoUploading ? 'Uploading...' : 'Upload new photos'}
+                    </span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      multiple
+                      onChange={handlePhotoUpload}
+                      disabled={photoUploading}
+                    />
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Click to add monitoring photos (JPG, PNG)
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+          {/* Display Current Status */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">CONDITION</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.condition_status === 'Excellent' ? 'bg-green-100 text-green-800' :
+              monitoringForm.condition_status === 'Good' ? 'bg-yellow-100 text-yellow-800' :
+              monitoringForm.condition_status === 'Fair' ? 'bg-orange-100 text-orange-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              <CheckCircle className="w-3 h-3 mr-1" />
+              {monitoringForm.condition_status}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">MAINTENANCE</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.maintenance_status === 'Up to date' ? 'bg-green-100 text-green-800' :
+              monitoringForm.maintenance_status === 'Due soon' ? 'bg-yellow-100 text-yellow-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              <Clock className="w-3 h-3 mr-1" />
+              {monitoringForm.maintenance_status}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">ISSUES</label>
+            <div className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
+              monitoringForm.active_issues ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+            }`}>
+              {monitoringForm.active_issues ? <AlertCircle className="w-3 h-3 mr-1" /> : <CheckCircle className="w-3 h-3 mr-1" />}
+              {monitoringForm.active_issues ? 'Has Issues' : 'No Issues'}
+            </div>
+          </div>
+
+          {/* Current Photos Display */}  
+          {monitoringForm.photos.length > 0 && (
+            <div className="md:col-span-3">
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                RECENT PHOTOS ({monitoringForm.photos.length})
+              </label>
+              <div className="flex space-x-2 overflow-x-auto">
+                {monitoringForm.photos.slice(0, 4).map((photo, index) => (
+                  <img
+                    key={index}
+                    src={photo}
+                    alt={`Asset photo ${index + 1}`}
+                    className="w-16 h-16 object-cover rounded-lg border flex-shrink-0"
+                  />
+                ))}
+                {monitoringForm.photos.length > 4 && (
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center text-xs text-gray-500 flex-shrink-0">
+                    +{monitoringForm.photos.length - 4} more
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Notes Display */}
+          {(monitoringForm.active_issues || monitoringForm.inspection_notes) && (
+            <div className="md:col-span-3">
+              {monitoringForm.active_issues && (
+                <div className="mb-2">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">ACTIVE ISSUES</label>
+                  <p className="text-sm text-red-700 bg-red-50 p-2 rounded border border-red-200">
+                    {monitoringForm.active_issues}
+                  </p>
+                </div>
+              )}
+              {monitoringForm.inspection_notes && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">INSPECTION NOTES</label>
+                  <p className="text-sm text-gray-700 bg-blue-50 p-2 rounded border border-blue-200">
+                    {monitoringForm.inspection_notes}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
   return (
     <div className="border rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between mb-4">
