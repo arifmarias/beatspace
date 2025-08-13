@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Monitoring Service Admin Editing Test Suite
-Testing monitoring service functionality and admin editing capabilities as requested in review.
+Monitoring Service Admin Deactivation Workflow Test Suite
+Testing complete admin workflow including deactivation functionality as requested in review.
 
 Focus Areas:
-1. Test Monitoring Services CRUD (GET and PUT endpoints)
-2. Test Data Structure (services format, required fields)
-3. Test Update Functionality (service_level, frequency, notification_preferences, end_date)
-4. Test Authorization (admin, manager, buyer access control)
+1. Test Service Deactivation via DELETE /api/monitoring/services/{service_id}
+2. Test Complete Admin Workflow (login, view, edit, deactivate)
+3. Test Buyer State After Deactivation
+4. Test Backend Data Integrity After Deactivation
+5. Test Concurrent Operations Don't Cause Data Corruption
 """
 
 import requests
