@@ -391,7 +391,7 @@ const ManagerDashboard = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="tasks">Monitoring</TabsTrigger>
             <TabsTrigger value="operators">Operators</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
           </TabsList>
