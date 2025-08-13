@@ -1740,21 +1740,46 @@ const ManagerDashboard = () => {
                           <div className="space-y-4">
                             {/* Google Maps Embed */}
                             <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                              {selectedAssetDetails.address ? (
-                                <iframe
-                                  width="100%"
-                                  height="100%"
-                                  frameBorder="0"
-                                  style={{ border: 0 }}
-                                  src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9x7SyQPAF5Bg&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
-                                  allowFullScreen
-                                  title="Asset Location Map"
-                                />
+                              {selectedAssetDetails.subscription?.asset_ids && process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
+                                // First check if we have lat/lng coordinates from the asset location
+                                (() => {
+                                  // Try to get the actual asset data with location
+                                  const fullAssetData = monitoringAssets.find(a => a.id === selectedAssetDetails.id);
+                                  if (fullAssetData && fullAssetData.subscription) {
+                                    // Get the actual asset from the assets API to get location data
+                                    return (
+                                      <iframe
+                                        width="100%"
+                                        height="100%"
+                                        frameBorder="0"
+                                        style={{ border: 0 }}
+                                        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
+                                        allowFullScreen
+                                        loading="lazy"
+                                        title="Asset Location Map"
+                                      />
+                                    );
+                                  } else {
+                                    return (
+                                      <iframe
+                                        width="100%"
+                                        height="100%"
+                                        frameBorder="0"
+                                        style={{ border: 0 }}
+                                        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedAssetDetails.address)}&zoom=15`}
+                                        allowFullScreen
+                                        loading="lazy"
+                                        title="Asset Location Map"
+                                      />
+                                    );
+                                  }
+                                })()
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                   <div className="text-center">
                                     <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                                    <p className="text-gray-500">No location data available</p>
+                                    <p className="text-gray-500">Map view not available</p>
+                                    <p className="text-xs text-gray-400">Google Maps API key not configured</p>
                                   </div>
                                 </div>
                               )}
