@@ -727,7 +727,7 @@ const ManagerDashboard = () => {
                             </TableCell>
                             <TableCell>{asset.expiryDate}</TableCell>
                             <TableCell>{asset.lastUpdateDate}</TableCell>
-                            <TableCell>
+                            <TableCell onClick={(e) => e.stopPropagation()}>
                               <Select 
                                 value={(() => {
                                   const assignedName = assetAssignments[asset.id];
