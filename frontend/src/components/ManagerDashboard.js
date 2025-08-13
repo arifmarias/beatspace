@@ -928,6 +928,140 @@ const ManagerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Operator Details Dialog */}
+        <Dialog open={operatorDetailsDialog} onOpenChange={setOperatorDetailsDialog}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold">{selectedOperatorDetails?.contact_name}</div>
+                  <div className="text-sm text-gray-500">Monitoring Operator</div>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {selectedOperatorDetails && (
+                <>
+                  {/* Operator Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">
+                            {getAssignedAssetsForOperator(selectedOperatorDetails.contact_name).length}
+                          </div>
+                          <div className="text-sm text-gray-500">Assigned Assets</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">0</div>
+                          <div className="text-sm text-gray-500">Completed Today</div>
+                        </div>
+                      </div>
+                    </Card>
+                    
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <TrendingUp className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold">85%</div>
+                          <div className="text-sm text-gray-500">Performance</div>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Assigned Assets List */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <Building2 className="w-5 h-5 mr-2" />
+                      Assigned Assets ({getAssignedAssetsForOperator(selectedOperatorDetails.contact_name).length})
+                    </h3>
+                    
+                    {getAssignedAssetsForOperator(selectedOperatorDetails.contact_name).length === 0 ? (
+                      <Card className="p-8 text-center">
+                        <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <h4 className="text-lg font-medium text-gray-900 mb-2">No Assets Assigned</h4>
+                        <p className="text-gray-500">This operator has no monitoring assets assigned yet.</p>
+                      </Card>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {getAssignedAssetsForOperator(selectedOperatorDetails.contact_name).map((asset) => (
+                          <Card key={asset.id} className="p-4 hover:shadow-md transition-shadow">
+                            <div className="space-y-3">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h4 className="font-semibold text-lg">{asset.assetName}</h4>
+                                  <p className="text-sm text-gray-600">{asset.address}</p>
+                                </div>
+                                <Badge variant={asset.serviceLevel === 'premium' ? 'default' : 'outline'}>
+                                  {asset.serviceLevel}
+                                </Badge>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <span className="text-gray-500">Area:</span>
+                                  <div className="font-medium">{asset.area}</div>
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">Frequency:</span>
+                                  <div className="font-medium capitalize">{asset.frequency}</div>
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">Next Inspection:</span>
+                                  <div className="font-medium text-green-600">{asset.nextInspectionDate}</div>
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">Expiry:</span>
+                                  <div className="font-medium">{asset.expiryDate}</div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between pt-2 border-t">
+                                <div className="flex items-center space-x-2">
+                                  <MapPin className="w-4 h-4 text-gray-400" />
+                                  <span className="text-sm text-gray-600">Location</span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Calendar className="w-4 h-4 text-green-600" />
+                                  <span className="text-sm text-green-600">Due: {asset.nextInspectionDate}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="flex justify-end pt-4 border-t">
+              <Button variant="outline" onClick={() => setOperatorDetailsDialog(false)}>
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
