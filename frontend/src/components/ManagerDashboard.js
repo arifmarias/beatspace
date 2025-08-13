@@ -563,8 +563,8 @@ const ManagerDashboard = () => {
                             <TableCell>{asset.lastUpdateDate}</TableCell>
                             <TableCell>
                               <Select 
-                                value={assetAssignments[asset.id] ? 
-                                  operators.find(op => op.contact_name === assetAssignments[asset.id])?.id || '' : ''} 
+                                value={assetAssignments[asset.id] && assetAssignments[asset.id] !== 'Unassigned' ? 
+                                  operators.find(op => op.contact_name === assetAssignments[asset.id])?.id || 'unassigned' : 'unassigned'} 
                                 onValueChange={(operatorId) => handleAssigneeChange(asset.id, operatorId)}
                               >
                                 <SelectTrigger className="w-40">
