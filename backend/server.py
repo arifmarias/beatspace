@@ -2844,12 +2844,20 @@ async def create_monitoring_service(
     service_data: MonitoringServiceCreate,
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new monitoring service subscription for a campaign"""
+    """Create a new monitoring service subscription for a campaign or individual assets"""
     try:
-        # Verify the user owns the campaign
-        campaign = await db.campaigns.find_one({"id": service_data.campaign_id, "buyer_id": current_user.id})
-        if not campaign:
-            raise HTTPException(status_code=404, detail="Campaign not found or access denied")
+        # Handle campaign-based monitoring
+        if service_data.campaign_id:
+            # Verify the user owns the campaign
+            campaign = await db.campaigns.find_one({"id": service_data.campaign_id, "buyer_id": current_user.id})
+            if not campaign:
+                raise HTTPException(status_code=404, detail="Campaign not found or access denied")
+        else:
+            # Handle individual asset monitoring - verify user owns all assets
+            for asset_id in service_data.asset_ids:
+                asset = await db.assets.find_one({"id": asset_id, "buyer_id": current_user.id})
+                if not asset:
+                    raise HTTPException(status_code=404, detail=f"Asset {asset_id} not found or access denied")
         
         # Create monitoring subscription
         subscription = MonitoringServiceSubscription(**service_data.dict(), buyer_id=current_user.id)
