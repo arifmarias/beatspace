@@ -1833,37 +1833,6 @@ const ManagerDashboard = () => {
                           </div>
                         </div>
                       )}
-                      
-                      {/* Streamlined Selection Overlay - Bottom Toast Style */}
-                      {selectedMapAssets.length > 0 && (
-                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white rounded-full px-6 py-3 shadow-lg z-10 flex items-center space-x-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center font-bold">
-                              {selectedMapAssets.length}
-                            </div>
-                            <span className="font-semibold">
-                              {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} ready for assignment
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            <Button 
-                              size="sm" 
-                              className="bg-white text-orange-500 hover:bg-gray-100 font-medium"
-                              onClick={() => setAssignmentPanelOpen(true)}
-                            >
-                              Assign Now
-                            </Button>
-                            <button
-                              onClick={() => setSelectedMapAssets([])}
-                              className="text-orange-200 hover:text-white p-1 text-lg"
-                              title="Clear selection"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
