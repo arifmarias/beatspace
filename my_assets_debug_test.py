@@ -17,7 +17,7 @@ import sys
 from datetime import datetime
 
 class MyAssetsDebugTester:
-    def __init__(self, base_url="https://fieldview-monitor.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://mapview-dash.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.admin_token = None
         self.buyer_token = None

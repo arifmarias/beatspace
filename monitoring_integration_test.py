@@ -11,7 +11,7 @@ class BeatSpaceMonitoringIntegrationTester:
     Phase 4: End-to-End Integration Testing across all user roles
     """
     
-    def __init__(self, base_url="https://fieldview-monitor.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://mapview-dash.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
