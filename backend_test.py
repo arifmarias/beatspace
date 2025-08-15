@@ -1559,6 +1559,11 @@ class BeatSpaceAPITester:
         if admin_success:
             auth_success += 1
         
+        # Create test users if they don't exist
+        if admin_success:
+            print("\n🔧 CREATING TEST USERS FOR ASSET CATEGORY TESTING")
+            self.create_test_users_for_asset_testing()
+        
         seller_success, _ = self.test_seller_login()
         if seller_success:
             auth_success += 1
@@ -1628,6 +1633,79 @@ class BeatSpaceAPITester:
         
         print(f"\nFinal Success Rate: {success_rate:.1f}%")
         return test_results
+    
+    def create_test_users_for_asset_testing(self):
+        """Create test users needed for asset category testing"""
+        if not self.admin_token:
+            return
+        
+        # Create seller user
+        seller_data = {
+            "email": "sell@demo.com",
+            "password": "seller123",
+            "company_name": "Demo Seller Company",
+            "contact_name": "Seller User",
+            "phone": "+8801234567890",
+            "role": "seller",
+            "address": "Seller Address, Dhaka"
+        }
+        
+        success, response = self.run_test(
+            "Create Seller User",
+            "POST",
+            "admin/users",
+            200,
+            data=seller_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            seller_id = response.get('id')
+            # Approve seller
+            approval_data = {"status": "approved", "reason": "Auto-approved for testing"}
+            self.run_test(
+                "Approve Seller User",
+                "PATCH",
+                f"admin/users/{seller_id}/status",
+                200,
+                data=approval_data,
+                token=self.admin_token
+            )
+            print("   ✅ Seller user created and approved")
+        
+        # Create buyer user
+        buyer_data = {
+            "email": "buy@demo.com",
+            "password": "buyer123",
+            "company_name": "Demo Buyer Company",
+            "contact_name": "Buyer User",
+            "phone": "+8801234567891",
+            "role": "buyer",
+            "address": "Buyer Address, Dhaka"
+        }
+        
+        success, response = self.run_test(
+            "Create Buyer User",
+            "POST",
+            "admin/users",
+            200,
+            data=buyer_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            buyer_id = response.get('id')
+            # Approve buyer
+            approval_data = {"status": "approved", "reason": "Auto-approved for testing"}
+            self.run_test(
+                "Approve Buyer User",
+                "PATCH",
+                f"admin/users/{buyer_id}/status",
+                200,
+                data=approval_data,
+                token=self.admin_token
+            )
+            print("   ✅ Buyer user created and approved")
 
     # ========================================
     # WEBSOCKET REAL-TIME SYNCHRONIZATION TESTS
