@@ -3127,7 +3127,7 @@ const BuyerDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Requested Offers Tab */}
+          {/* Enhanced Requested Offers Tab with Categorization */}
           <TabsContent value="requested-offers" className="space-y-6">
             <Card>
               <CardHeader>
@@ -3156,48 +3156,37 @@ const BuyerDashboard = () => {
                     <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Offer Requests Yet</h3>
                     <p className="text-gray-500 mb-4">
-                      You haven't submitted any "Request Best Offer" requests yet.
+                      You haven't submitted any requests yet.
                     </p>
                     <Button onClick={() => navigate('/marketplace')} className="bg-orange-600 hover:bg-orange-700">
                       Explore Marketplace
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {/* Search Bar */}
-                    <div className="flex items-center space-x-2">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <Input
-                          placeholder="Search offers by asset, campaign, or status..."
-                          value={offerSearch}
-                          onChange={(e) => {
-                            setOfferSearch(e.target.value);
-                            setOfferCurrentPage(1); // Reset to first page when searching
-                          }}
-                          className="pl-10"
-                        />
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {getFilteredOffers().length} of {(requestedOffers || []).filter(offer => 
-                          // Use same filtering logic as display - exclude cancelled and approved offers
-                          offer.status !== 'Rejected' && 
-                          offer.status !== 'Cancelled' &&
-                          offer.status !== 'rejected' &&
-                          offer.status !== 'cancelled' &&
-                          offer.status !== 'Approved' && 
-                          offer.status !== 'Accepted'
-                        ).length} offers
-                      </div>
-                    </div>
-
-                    {/* Grouped Offers with Collapsible View */}
-                    <div className="space-y-4">
-                      {Object.entries(getGroupedAndFilteredOffers()).map(([campaignName, offers]) => {
-                        // Calculate total offered price for this campaign's offers
-                        const totalEstimatedBudget = offers.reduce((sum, offer) => sum + (offer.admin_quoted_price || 0), 0);
-                        
-                        const isCollapsed = collapsedCampaigns[campaignName] !== false; // Default to collapsed (true)
+                  <RequestsCategoryTabs 
+                    requestedOffers={requestedOffers}
+                    offerSearch={offerSearch}
+                    setOfferSearch={setOfferSearch}
+                    selectedOfferDetails={selectedOfferDetails}
+                    setSelectedOfferDetails={setSelectedOfferDetails}
+                    collapsedCampaigns={collapsedCampaigns}
+                    toggleCampaignCollapse={toggleCampaignCollapse}
+                    getFilteredOffers={getFilteredOffers}
+                    getGroupedAndFilteredOffers={getGroupedAndFilteredOffers}
+                    offerCurrentPage={offerCurrentPage}
+                    setOfferCurrentPage={setOfferCurrentPage}
+                    handleApproveOffer={handleApproveOffer}
+                    handleRejectOffer={handleRejectOffer}
+                    handleRequestRevision={handleRequestRevision}
+                    handleCancelRequest={handleCancelRequest}
+                    setOfferToCancel={setOfferToCancel}
+                    setShowCancelDialog={setShowCancelDialog}
+                    navigate={navigate}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
                         
                         return (
                           <div key={campaignName} className="border rounded-lg overflow-hidden">
