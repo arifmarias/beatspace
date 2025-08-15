@@ -267,7 +267,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping authenticated assets test - no seller token")
+            print("⚠️  Skipping authenticated assets test - no authentication token")
             return False, {}
         
         success, response = self.run_test("Get Assets (Authenticated)", "GET", "assets", 200, token=self.seller_token)
@@ -288,7 +288,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping asset creation test - no seller token")
+            print("⚠️  Skipping asset creation test - no authentication token")
             return False, {}
         
         asset_data = {
@@ -437,7 +437,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping single asset test - no seller token")
+            print("⚠️  Skipping single asset test - no authentication token")
             return False, {}
         
         success, response = self.run_test(f"Get Single Asset", "GET", f"assets/{asset_id}", 200, token=self.seller_token)
@@ -963,7 +963,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping existing asset creation test - no seller token")
+            print("⚠️  Skipping existing asset creation test - no authentication token")
             return False, {}
         
         # Create EXISTING ASSET with required fields: asset_expiry_date, buyer_name
@@ -1029,7 +1029,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping private asset creation test - no seller token")
+            print("⚠️  Skipping private asset creation test - no authentication token")
             return False, {}
         
         # Create PRIVATE ASSET with required fields: one_off_investment, buyer_name
@@ -1093,7 +1093,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping validation test - no seller token")
+            print("⚠️  Skipping validation test - no authentication token")
             return False, {}
         
         validation_tests = []
@@ -1306,7 +1306,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping asset model test - no seller token")
+            print("⚠️  Skipping asset model test - no authentication token")
             return False, {}
         
         # Create an asset with all new fields
@@ -1406,7 +1406,7 @@ class BeatSpaceAPITester:
         # Use admin token if seller token not available
         token_to_use = self.seller_token or self.admin_token
         if not token_to_use:
-            print("⚠️  Skipping edge cases test - no seller token")
+            print("⚠️  Skipping edge cases test - no authentication token")
             return False, {}
         
         edge_case_tests = []
