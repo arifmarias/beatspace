@@ -713,7 +713,9 @@ const ManagerDashboard = () => {
       });
 
       marker.addListener('mouseover', () => {
-        const assignee = assetAssignments[asset.id] || 'Unassigned';
+        // Get current assignment state (not closure value)
+        const currentAssignments = JSON.parse(localStorage.getItem('managerAssetAssignments') || '{}');
+        const assignee = currentAssignments[asset.id] || 'Unassigned';
         const serviceLevelColor = asset.serviceLevel === 'premium' ? '#10B981' : '#3B82F6';
         const serviceLevelBg = asset.serviceLevel === 'premium' ? '#ECFDF5' : '#EFF6FF';
         const assigneeColor = assignee === 'Unassigned' ? '#EF4444' : '#059669';
