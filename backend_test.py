@@ -270,7 +270,7 @@ class BeatSpaceAPITester:
             print("⚠️  Skipping authenticated assets test - no authentication token")
             return False, {}
         
-        success, response = self.run_test("Get Assets (Authenticated)", "GET", "assets", 200, token=self.seller_token)
+        success, response = self.run_test("Get Assets (Authenticated)", "GET", "assets", 200, token=token_to_use)
         if success:
             print(f"   Found {len(response)} assets for seller")
             if response:
@@ -307,7 +307,7 @@ class BeatSpaceAPITester:
             "division": "Dhaka"
         }
         
-        success, response = self.run_test("Create Asset", "POST", "assets", 200, data=asset_data, token=self.seller_token)
+        success, response = self.run_test("Create Asset", "POST", "assets", 200, data=asset_data, token=token_to_use)
         if success and 'id' in response:
             self.created_asset_id = response['id']
             print(f"   Created asset ID: {self.created_asset_id}")
@@ -440,7 +440,7 @@ class BeatSpaceAPITester:
             print("⚠️  Skipping single asset test - no authentication token")
             return False, {}
         
-        success, response = self.run_test(f"Get Single Asset", "GET", f"assets/{asset_id}", 200, token=self.seller_token)
+        success, response = self.run_test(f"Get Single Asset", "GET", f"assets/{asset_id}", 200, token=token_to_use)
         return success, response
 
     def test_update_asset(self):
@@ -460,7 +460,7 @@ class BeatSpaceAPITester:
             f"assets/{self.created_asset_id}", 
             200, 
             data=update_data, 
-            token=self.seller_token
+            token=token_to_use
         )
         return success, response
 
@@ -475,7 +475,7 @@ class BeatSpaceAPITester:
             "DELETE", 
             f"assets/{self.created_asset_id}", 
             200, 
-            token=self.seller_token
+            token=token_to_use
         )
         return success, response
 
@@ -882,7 +882,7 @@ class BeatSpaceAPITester:
                 "GET", 
                 "admin/users", 
                 403,  # Should fail with 403 Forbidden
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -998,7 +998,7 @@ class BeatSpaceAPITester:
             "assets",
             200,
             data=existing_asset_data,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if success:
@@ -1061,7 +1061,7 @@ class BeatSpaceAPITester:
             "assets",
             200,
             data=private_asset_data,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if success:
@@ -1117,7 +1117,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=existing_asset_invalid,
-            token=self.seller_token
+            token=token_to_use
         )
         validation_tests.append(("Missing asset_expiry_date", success))
         
@@ -1140,7 +1140,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=existing_asset_invalid2,
-            token=self.seller_token
+            token=token_to_use
         )
         validation_tests.append(("Missing buyer_name", success))
         
@@ -1162,7 +1162,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=private_asset_invalid,
-            token=self.seller_token
+            token=token_to_use
         )
         validation_tests.append(("Missing one_off_investment", success))
         
@@ -1184,7 +1184,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=private_asset_invalid2,
-            token=self.seller_token
+            token=token_to_use
         )
         validation_tests.append(("Missing buyer_name for private", success))
         
@@ -1276,7 +1276,7 @@ class BeatSpaceAPITester:
                 "assets",
                 200,
                 params={"marketplace": "true"},
-                token=self.seller_token
+                token=token_to_use
             )
             role_tests.append(("Seller", success, len(response) if success else 0))
         
@@ -1339,7 +1339,7 @@ class BeatSpaceAPITester:
             "assets",
             200,
             data=test_asset_data,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if not success:
@@ -1355,7 +1355,7 @@ class BeatSpaceAPITester:
             "GET",
             f"assets/{asset_id}",
             200,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if success:
@@ -1430,7 +1430,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=invalid_date_asset,
-            token=self.seller_token
+            token=token_to_use
         )
         edge_case_tests.append(("Invalid date format", success))
         
@@ -1452,7 +1452,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=negative_investment_asset,
-            token=self.seller_token
+            token=token_to_use
         )
         edge_case_tests.append(("Negative investment", success))
         
@@ -1480,7 +1480,7 @@ class BeatSpaceAPITester:
             "assets",
             200,  # Should succeed
             data=no_category_asset,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if success:
@@ -1512,7 +1512,7 @@ class BeatSpaceAPITester:
             "assets",
             200,  # Should succeed
             data=large_investment_asset,
-            token=self.seller_token
+            token=token_to_use
         )
         edge_case_tests.append(("Large investment value", success))
         
@@ -1534,7 +1534,7 @@ class BeatSpaceAPITester:
             "assets",
             400,  # Should fail with validation error
             data=empty_buyer_name_asset,
-            token=self.seller_token
+            token=token_to_use
         )
         edge_case_tests.append(("Empty buyer name", success))
         
@@ -3401,7 +3401,7 @@ class BeatSpaceAPITester:
                 "admin/campaigns", 
                 403,  # Should fail with 403 Forbidden
                 data=campaign_data,
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -4041,7 +4041,7 @@ class BeatSpaceAPITester:
                 "offers/request", 
                 403,  # Should fail with 403 Forbidden
                 data=offer_request_data,
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -4218,7 +4218,7 @@ class BeatSpaceAPITester:
                 f"offers/requests/{request_id}", 
                 403,  # Should fail with 403 Forbidden
                 data=updated_data,
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -4375,7 +4375,7 @@ class BeatSpaceAPITester:
                 "DELETE", 
                 "offers/requests/test-id", 
                 403,  # Should fail with 403 Forbidden
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -8428,7 +8428,7 @@ def run_admin_campaign_management_tests():
                 "admin/offer-requests/test-id/status", 
                 403,  # Should fail with 403 Forbidden
                 data=status_update,
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -9213,7 +9213,7 @@ def run_create_campaign_fix_tests():
                 "admin/offer-requests/test-id/status", 
                 403,  # Should fail with 403 Forbidden
                 data=status_update,
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
@@ -10373,7 +10373,7 @@ def run_campaign_delete_tests():
                 "offers/test-id/respond", 
                 403,  # Should fail with 403 Forbidden
                 data={"action": "accept"},
-                token=self.seller_token
+                token=token_to_use
             )
             
             if success:
