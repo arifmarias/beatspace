@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps Test</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Google Maps Integration Test</h1>
+    <div id="status"></div>
+    <div id="map"></div>
+    
+    <script>
+        const API_KEY = 'AIzaSyAasIb40G6F48t-lDI-9dF1y2NIsQYx2-4';
+        const statusDiv = document.getElementById('status');
+        
+        function updateStatus(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            statusDiv.appendChild(div);
+        }
+        
+        function initMap() {
+            updateStatus('Initializing Google Maps...');
+            
+            try {
+                const center = { lat: 23.8103, lng: 90.4125 }; // Dhaka, Bangladesh
+                
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 12,
+                    center: center,
+                });
+                
+                updateStatus('Google Maps initialized successfully!');
+                
+                // Add test markers
+                const testAssets = [
+                    { id: 1, name: "T&T Crossing", lat: 23.8052116, lng: 90.3612349 },
+                    { id: 2, name: "My Test Asset", lat: 23.8048487, lng: 90.3740552 }
+                ];
+                
+                testAssets.forEach(asset => {
+                    const marker = new google.maps.Marker({
+                        position: { lat: asset.lat, lng: asset.lng },
+                        map: map,
+                        title: asset.name,
+                        animation: google.maps.Animation.DROP
+                    });
+                    
+                    updateStatus(`Added marker for ${asset.name}`);
+                });
+                
+                updateStatus('All markers added successfully!');
+                
+            } catch (error) {
+                updateStatus(`Error initializing map: ${error.message}`, 'error');
+            }
+        }
+        
+        function loadGoogleMaps() {
+            updateStatus('Loading Google Maps script...');
+            
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                updateStatus('Failed to load Google Maps script', 'error');
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Start loading
+        updateStatus('Starting Google Maps test...');
+        loadGoogleMaps();
+    </script>
+</body>
+</html>
