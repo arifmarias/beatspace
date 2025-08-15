@@ -912,33 +912,59 @@ const ManagerDashboard = () => {
     }
   }, [loadGoogleMapsScript]);
 
-  // Tab refresh functionality - similar to buyer portal
+  // Tab refresh functionality - properly handle map visibility on tab switch
   useEffect(() => {
     if (activeTab === 'route') {
-      console.log('Route Assignment tab activated - refreshing all data...');
+      console.log('Route Assignment tab activated - ensuring map visibility...');
       
-      // Reset map bounds flag to allow proper fitting
-      window.mapBoundsSet = false;
-      
-      // Refresh monitoring assets data when tab is activated (like buyer portal)
+      // Refresh monitoring assets data when tab is activated
       fetchMonitoringAssets();
       
-      // Handle map initialization/refresh
-      if (window.google && mapRef.current) {
-        if (!mapInstanceRef.current) {
-          // Map needs initial setup
-          setTimeout(() => initializeMap(), 300);
-        } else {
-          // Map exists but might need refresh due to tab switching
-          setTimeout(() => {
-            // Re-trigger map resize and marker update after tab switch
+      // Handle map initialization/restoration with proper timing
+      const ensureMapVisibility = () => {
+        if (window.google && mapRef.current) {
+          if (!mapInstanceRef.current) {
+            // Map needs initial setup
+            console.log('Initializing map for first time');
+            initializeMap();
+          } else {
+            // Map exists but might be hidden due to tab switching
+            console.log('Restoring map after tab switch');
+            
+            // Force map to be visible and properly sized
             window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
-            if (monitoringAssets.length > 0) {
-              updateMapMarkers();
-            }
-          }, 300);
+            
+            // Ensure map is centered and visible
+            setTimeout(() => {
+              if (mapInstanceRef.current) {
+                mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
+                
+                // If we have markers, fit bounds to show them
+                if (markersRef.current.length > 0) {
+                  const bounds = new window.google.maps.LatLngBounds();
+                  markersRef.current.forEach(marker => {
+                    bounds.extend(marker.getPosition());
+                  });
+                  mapInstanceRef.current.fitBounds(bounds);
+                  
+                  // Ensure minimum zoom
+                  setTimeout(() => {
+                    if (mapInstanceRef.current.getZoom() > 16) {
+                      mapInstanceRef.current.setZoom(16);
+                    }
+                  }, 100);
+                } else if (monitoringAssets.length > 0) {
+                  // We have assets but no markers, create them
+                  updateMapMarkers();
+                }
+              }
+            }, 500);
+          }
         }
-      }
+      };
+
+      // Use longer timeout to ensure DOM is ready after tab switch
+      setTimeout(ensureMapVisibility, 100);
     }
   }, [activeTab, fetchMonitoringAssets, initializeMap, updateMapMarkers, monitoringAssets.length]);
 
