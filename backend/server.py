@@ -2841,11 +2841,11 @@ async def root():
 # ============= MONITORING SERVICE MANAGEMENT =============
 
 @api_router.post("/monitoring/services")
-async def create_monitoring_service(
+async def create_monitoring_service_request(
     service_data: MonitoringServiceCreate,
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new monitoring service subscription for a campaign or individual assets"""
+    """Create a new monitoring service request for admin approval"""
     try:
         # Handle campaign-based monitoring
         if service_data.campaign_id:
@@ -2860,18 +2860,24 @@ async def create_monitoring_service(
                 if not asset:
                     raise HTTPException(status_code=404, detail=f"Asset {asset_id} not found or access denied")
         
-        # Create monitoring subscription
-        subscription = MonitoringServiceSubscription(**service_data.dict(), buyer_id=current_user.id)
-        await db.monitoring_subscriptions.insert_one(subscription.dict())
+        # Create monitoring service request as offer request
+        offer_request = {
+            "id": str(uuid.uuid4()),
+            "buyer_id": current_user.id,
+            "request_type": "monitoring_service",
+            "service_details": service_data.dict(),
+            "status": "Pending",
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
         
-        # Generate initial tasks based on frequency and schedule
-        await generate_monitoring_tasks(subscription.id, subscription)
+        await db.offer_requests.insert_one(offer_request)
         
-        return {"message": "Monitoring service created successfully", "subscription_id": subscription.id}
+        return {"message": "Monitoring service request submitted successfully. Admin will review and provide quote.", "request_id": offer_request["id"]}
         
     except Exception as e:
-        logger.error(f"Error creating monitoring service: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error creating monitoring service: {str(e)}")
+        logger.error(f"Error creating monitoring service request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating monitoring service request: {str(e)}")
 
 @api_router.get("/monitoring/services")
 async def get_monitoring_services(current_user: User = Depends(get_current_user)):
