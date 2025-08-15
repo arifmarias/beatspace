@@ -1619,37 +1619,62 @@ const ManagerDashboard = () => {
                         </div>
                       )}
                       
-                      {/* Asset Selection Info Overlay */}
+                      {/* Asset Selection Info Overlay - Enhanced UX */}
                       {selectedMapAssets.length > 0 && (
-                        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 border max-w-sm">
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                              <span className="font-medium">
-                                {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
-                              </span>
+                        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 border max-w-md z-10">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-xs font-bold">{selectedMapAssets.length}</span>
+                                </div>
+                                <span className="font-semibold text-gray-900">
+                                  {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => setSelectedMapAssets([])}
+                                className="text-gray-400 hover:text-gray-600"
+                                title="Clear selection"
+                              >
+                                ✕
+                              </button>
                             </div>
-                            <div className="text-xs text-gray-600 max-h-16 overflow-y-auto">
-                              {selectedMapAssets.map(id => {
-                                const asset = monitoringAssets.find(a => a.id === id);
-                                return asset ? asset.assetName : '';
-                              }).filter(name => name).join(', ')}
+                            
+                            <div className="max-h-20 overflow-y-auto bg-gray-50 rounded p-2">
+                              <div className="text-xs text-gray-600 space-y-1">
+                                {selectedMapAssets.map((id, index) => {
+                                  const asset = monitoringAssets.find(a => a.id === id);
+                                  return asset ? (
+                                    <div key={id} className="flex justify-between">
+                                      <span>{asset.assetName}</span>
+                                      <span className="text-gray-400">{asset.area}</span>
+                                    </div>
+                                  ) : null;
+                                }).filter(Boolean)}
+                              </div>
                             </div>
+                            
                             <div className="flex gap-2">
                               <Button 
                                 size="sm" 
-                                variant="outline"
+                                className="flex-1 bg-blue-500 hover:bg-blue-600"
                                 onClick={() => setAssignmentPanelOpen(true)}
                               >
-                                Assign to Operator
+                                🏃‍♂️ Assign to Operator
                               </Button>
                               <Button 
                                 size="sm" 
-                                variant="ghost"
+                                variant="outline"
                                 onClick={() => setSelectedMapAssets([])}
+                                className="px-3"
                               >
                                 Clear
                               </Button>
+                            </div>
+                            
+                            <div className="text-xs text-gray-500 border-t pt-2">
+                              💡 <strong>Tips:</strong> Click markers to select • Hold Ctrl+Click for multi-select • Use buttons above for bulk selection
                             </div>
                           </div>
                         </div>
