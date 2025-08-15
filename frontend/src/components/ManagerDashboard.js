@@ -1815,7 +1815,7 @@ const ManagerDashboard = () => {
                     <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden relative">
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                         <div 
-                          ref={mapRef}
+                          ref={routeMapRef}
                           id="route-assignment-map"
                           className="w-full h-full"
                           style={{ minHeight: '600px', backgroundColor: '#f0f0f0' }}
