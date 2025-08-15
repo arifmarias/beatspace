@@ -774,12 +774,12 @@ const ManagerDashboard = () => {
     }
   }, [activeTab, fetchMonitoringAssets, loadRouteMapsScript]);
 
-  // Create markers when data changes
+  // Create markers when data changes (FIXED - no loops)
   useEffect(() => {
     if (activeTab === 'route' && routeMapLoaded && monitoringAssets.length > 0) {
       createRouteMarkers();
     }
-  }, [activeTab, routeMapLoaded, monitoringAssets, mapFilters, mapSearchTerm, createRouteMarkers]);
+  }, [activeTab, routeMapLoaded, monitoringAssets.length, mapFilters.serviceTier, mapFilters.assignmentStatus, mapFilters.operator, mapSearchTerm]);
 
   // Update marker colors when selection changes
   useEffect(() => {
