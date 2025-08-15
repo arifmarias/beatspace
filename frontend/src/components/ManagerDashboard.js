@@ -1617,12 +1617,47 @@ const ManagerDashboard = () => {
                     {/* Google Maps Container */}
                     <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden relative">
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
-                        <div 
-                          ref={routeMapRef}
-                          id="route-assignment-map"
-                          className="w-full h-full relative"
-                          style={{ minHeight: '600px', backgroundColor: '#f0f0f0' }}
-                        />
+                        <div className="w-full h-full relative">
+                          <div
+                            ref={routeMapRef}
+                            id="route-assignment-map"
+                            className="w-full h-full"
+                            style={{ minHeight: '600px', backgroundColor: '#f0f0f0' }}
+                          />
+                          {/* Floating controls (fullscreen + inline assign) */}
+                          <div className="absolute right-4 top-4 flex gap-2 z-10">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => {
+                                const elem = document.getElementById('route-assignment-map');
+                                if (!elem) return;
+                                if (!document.fullscreenElement) elem.requestFullscreen?.();
+                                else document.exitFullscreen?.();
+                              }}
+                            >
+                              Fullscreen
+                            </Button>
+                            {selectedMapAssets.length > 0 && (
+                              <>
+                                <Select value={bulkAssignmentOperator} onValueChange={setBulkAssignmentOperator}>
+                                  <SelectTrigger className="w-44 bg-white">
+                                    <SelectValue placeholder="Assign operator" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                                    {operators.map(op => (
+                                      <SelectItem key={op.id} value={op.id}>{op.contact_name}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Button size="sm" onClick={handleBulkMapAssignment} disabled={!bulkAssignmentOperator}>
+                                  Apply
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <div className="text-center">
