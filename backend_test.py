@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 class BeatSpaceAPITester:
-    def __init__(self, base_url="https://route-map-hover.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://636aa27d-2810-4006-ad2f-fe96a698edcc.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
