@@ -80,6 +80,11 @@ const ManagerDashboard = () => {
   const [mapAssetDetails, setMapAssetDetails] = useState(null);
   const [mapAssignmentModal, setMapAssignmentModal] = useState(false);
   
+  // Google Maps references
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [operatorFilter, setOperatorFilter] = useState('all');
