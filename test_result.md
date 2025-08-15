@@ -116,6 +116,15 @@ test_plan:
      - agent: "main"
        message: "✅ SELECTITEM RUNTIME ERROR FIXED IN MANAGER DASHBOARD: Resolved critical React runtime error when clicking Monitoring tab. ERROR: SelectItem component cannot have empty string as value prop. SOLUTION: 1) Changed SelectItem value from '' to 'unassigned' for the unassigned option, 2) Updated handleAssigneeChange() function to properly handle 'unassigned' value, 3) Modified Select value logic to return 'unassigned' instead of empty string. FIX VERIFIED: Backend logs show successful API calls to monitoring endpoints without errors, indicating the component now renders properly. Monitoring tab should now load without runtime errors and display the assignee dropdown correctly."
      - agent: "main"
+test_plan:
+  current_focus:
+    - "Manager Dashboard Route Assignment: Google Maps flicker and multi-select fix"
+    - "Verify no Google Maps double-load; stable marker updates and selection overlay"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+
      - agent: "main"
        message: "🎯 ROUTE ASSIGNMENT STABILIZATION PLAN APPROVED: Proceeding to fully fix Route Assignment tab. Key actions: 1) Switch to @googlemaps/js-api-loader to avoid multiple script loads and InvalidValueError, 2) Initialize map once and reuse single InfoWindow, 3) Manage markers with stable [{marker, assetId}] list and update icons in-place to eliminate flicker, 4) Robust multi-select (click=single, Ctrl/Cmd+click=toggle, buttons for Select All/Unassigned/Clear), 5) Keep Quick Actions removed and UI streamlined. No URL/port changes; only frontend edits in ManagerDashboard.js."
 
