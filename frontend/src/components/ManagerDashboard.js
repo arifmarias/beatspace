@@ -519,24 +519,45 @@ const ManagerDashboard = () => {
 
   // Route Assignment Map Selection
   const handleMapAssetSelection = (asset, isCtrlKey = false) => {
+    console.log('handleMapAssetSelection called:', { 
+      assetId: asset.id, 
+      assetName: asset.assetName, 
+      isCtrlKey, 
+      currentSelection: selectedMapAssets 
+    });
+    
     setSelectedMapAssets(prev => {
+      let newSelection;
+      
       if (isCtrlKey) {
         // Multi-select with Ctrl key
         if (prev.includes(asset.id)) {
           // Remove if already selected
-          return prev.filter(id => id !== asset.id);
+          newSelection = prev.filter(id => id !== asset.id);
+          console.log('Removing asset from multi-selection:', asset.assetName);
         } else {
           // Add to selection
-          return [...prev, asset.id];
+          newSelection = [...prev, asset.id];
+          console.log('Adding asset to multi-selection:', asset.assetName);
         }
       } else {
         // Single select (toggle)
         if (prev.includes(asset.id)) {
-          return prev.filter(id => id !== asset.id);
+          newSelection = prev.filter(id => id !== asset.id);
+          console.log('Removing asset from single selection:', asset.assetName);
         } else {
-          return [asset.id];
+          newSelection = [asset.id];
+          console.log('Single selecting asset:', asset.assetName);
         }
       }
+      
+      console.log('Selection updated:', { 
+        from: prev, 
+        to: newSelection, 
+        count: newSelection.length 
+      });
+      
+      return newSelection;
     });
   };
 
