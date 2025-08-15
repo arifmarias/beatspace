@@ -771,13 +771,25 @@ const ManagerDashboard = () => {
 
   // Load Google Maps when component mounts
   useEffect(() => {
-    if (process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+    console.log('Manager Dashboard mounted - checking Google Maps...', { apiKey: !!apiKey });
+    
+    if (apiKey) {
       loadGoogleMapsScript();
+    } else {
+      console.error('Google Maps API key is missing');
     }
   }, [loadGoogleMapsScript]);
 
   // Update markers when data changes
   useEffect(() => {
+    console.log('Dependencies changed, updating markers...', {
+      hasMapInstance: !!mapInstanceRef.current,
+      filtersChanged: mapFilters,
+      searchTerm: mapSearchTerm,
+      assetsCount: monitoringAssets.length
+    });
+    
     if (mapInstanceRef.current) {
       updateMapMarkers();
     }
