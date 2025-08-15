@@ -602,8 +602,8 @@ const ManagerDashboard = () => {
   // [{ marker: google.maps.Marker, assetId: string }]
   const routeMarkers = useRef([]);
   const routePolylines = useRef([]);
-  const routeMapControlRef = useRef(null);
   const [routeMapLoaded, setRouteMapLoaded] = useState(false);
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   // Clean marker management
   const clearAllRouteMarkers = () => {
