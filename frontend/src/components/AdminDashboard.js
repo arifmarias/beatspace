@@ -4628,7 +4628,16 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleCreateAsset}
                 className="bg-orange-600 hover:bg-orange-700"
-                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.pricing.monthly_rate || !assetForm.seller_id}
+                disabled={
+                  !assetForm.name || 
+                  !assetForm.address || 
+                  !assetForm.district || 
+                  !assetForm.division || 
+                  !assetForm.pricing.monthly_rate || 
+                  !assetForm.seller_id ||
+                  (assetForm.category === 'Existing Asset' && (!assetForm.asset_expiry_date || !assetForm.buyer_name)) ||
+                  (assetForm.category === 'Private Asset' && (!assetForm.one_off_investment || !assetForm.buyer_name))
+                }
               >
                 Create Asset
               </Button>
