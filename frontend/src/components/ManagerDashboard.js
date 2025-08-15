@@ -804,52 +804,7 @@ const ManagerDashboard = () => {
     }
   }, [selectedMapAssets, updateRouteMarkerColors, activeTab, routeMapLoaded]);
 
-  // Load Google Maps when component mounts or when Route Assignment tab is activated
-  useEffect(() => {
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-    console.log('Manager Dashboard mounted - checking Google Maps...', { 
-      apiKey: !!apiKey, 
-      fullApiKey: apiKey,
-      activeTab: activeTab 
-    });
-    
-    if (apiKey) {
-      loadGoogleMapsScript();
-    } else {
-      console.error('Google Maps API key is missing');
-    }
-  }, [loadGoogleMapsScript]);
 
-  // Tab refresh functionality - simple and clean (no infinite loops)
-  useEffect(() => {
-    if (activeTab === 'route') {
-      console.log('Route Assignment tab activated - refreshing data...');
-      
-      // Only refresh data, not map
-      fetchMonitoringAssets();
-      
-      // Handle map initialization ONCE
-      if (window.google && mapRef.current && !mapInstanceRef.current) {
-        console.log('Initializing map for first time');
-        setTimeout(() => initializeMap(), 200);
-      }
-    }
-  }, [activeTab, fetchMonitoringAssets, initializeMap]);
-
-  // Simple marker update ONLY for filters/search - NOT for selection
-  useEffect(() => {
-    console.log('Filters or search changed, checking if marker update needed...', {
-      hasMapInstance: !!mapInstanceRef.current,
-      assetsCount: monitoringAssets.length,
-      activeTab: activeTab
-    });
-    
-    // Only update if we're on route tab, have map, and assets changed significantly
-    if (activeTab === 'route' && mapInstanceRef.current && monitoringAssets.length > 0) {
-      // Only update markers if the asset count changed (real data change)
-      updateMapMarkers();
-    }
-  }, [updateMapMarkers, mapFilters, mapSearchTerm, monitoringAssets]);
 
   // Generate tasks
   const generateTasks = async () => {
