@@ -892,8 +892,10 @@ class BeatSpaceAPITester:
         """Test Asset Creation with Public Category - PRIORITY TEST"""
         print("🎯 TESTING ASSET CREATION WITH PUBLIC CATEGORY")
         
-        if not self.seller_token:
-            print("⚠️  Skipping public asset creation test - no seller token")
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
+            print("⚠️  Skipping public asset creation test - no authentication token")
             return False, {}
         
         # Create PUBLIC asset with all standard fields
