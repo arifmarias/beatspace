@@ -1560,7 +1560,42 @@ async def get_offer_requests(current_user: User = Depends(get_current_user)):
         query["asset_id"] = {"$in": asset_ids}
     
     requests = await db.offer_requests.find(query).sort("created_at", -1).to_list(1000)
-    return [OfferRequest(**request) for request in requests]
+    
+    # Clean and validate offer requests, handling missing fields gracefully
+    valid_requests = []
+    for req in requests:
+        try:
+            # Clean MongoDB document
+            cleaned_req = clean_mongodb_doc(req)
+            
+            # Ensure required fields exist with defaults
+            if 'buyer_name' not in cleaned_req:
+                cleaned_req['buyer_name'] = cleaned_req.get('buyer_id', 'Unknown Buyer')
+            if 'asset_name' not in cleaned_req:
+                cleaned_req['asset_name'] = cleaned_req.get('asset_id', 'Unknown Asset')
+            if 'campaign_name' not in cleaned_req:
+                cleaned_req['campaign_name'] = 'Legacy Campaign'
+            if 'campaign_type' not in cleaned_req:
+                cleaned_req['campaign_type'] = 'existing'
+            if 'contract_duration' not in cleaned_req:
+                cleaned_req['contract_duration'] = '1_month'
+            if 'service_bundles' not in cleaned_req:
+                cleaned_req['service_bundles'] = {
+                    'printing': False,
+                    'setup': False,
+                    'monitoring': False
+                }
+            
+            # Create OfferRequest object
+            offer_request = OfferRequest(**cleaned_req)
+            valid_requests.append(offer_request)
+            
+        except Exception as e:
+            # Log the error but continue processing other requests
+            print(f"⚠️  Skipping invalid offer request {req.get('id', 'unknown')}: {str(e)}")
+            continue
+    
+    return valid_requests
 
 @api_router.get("/offers/requests/{request_id}", response_model=OfferRequest)
 async def get_offer_request(
