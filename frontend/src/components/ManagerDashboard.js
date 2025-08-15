@@ -693,16 +693,10 @@ const ManagerDashboard = () => {
       activeTab: activeTab
     });
     
-    // If we don't have assets yet and we're on the route tab, wait and try again (but only once)
+    // If we don't have assets yet and we're on the route tab, wait and try again (only once)
     if (monitoringAssets.length === 0 && activeTab === 'route') {
-      console.log('No monitoring assets available yet, retrying once in 1500ms...');
-      setTimeout(() => {
-        if (monitoringAssets.length === 0) {
-          // Force refresh assets if still empty after waiting
-          fetchMonitoringAssets();
-        }
-      }, 1500);
-      return;
+      console.log('No monitoring assets available yet, will retry when data loads...');
+      return; // Don't retry continuously, let useEffect handle data loading
     }
     
     // Clear existing markers
@@ -714,12 +708,13 @@ const ManagerDashboard = () => {
     // Prevent unnecessary re-renders by checking if we actually have assets to show
     if (filteredAssets.length === 0) {
       console.log('No assets to display after filtering');
+      mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
+      mapInstanceRef.current.setZoom(12);
       return;
     }
     
     filteredAssets.forEach((asset, index) => {
       if (!asset.location || !asset.location.lat || !asset.location.lng) {
-        console.log(`Asset ${asset.assetName} missing location data:`, asset.location);
         return; // Skip assets without coordinates
       }
 
@@ -727,7 +722,6 @@ const ManagerDashboard = () => {
       const lng = parseFloat(asset.location.lng);
       
       if (isNaN(lat) || isNaN(lng)) {
-        console.log(`Asset ${asset.assetName} has invalid coordinates:`, { lat: asset.location.lat, lng: asset.location.lng });
         return;
       }
 
@@ -759,13 +753,12 @@ const ManagerDashboard = () => {
         anchor: new window.google.maps.Point(15, 45)
       };
 
-      // Create marker WITHOUT dropping animation to prevent constant dropping
+      // Create marker WITHOUT animation to prevent flickering
       const marker = new window.google.maps.Marker({
         position: position,
         map: mapInstanceRef.current,
         icon: markerIcon,
         title: asset.assetName
-        // Removed animation to prevent constant dropping
       });
 
       // Store asset data with marker for easy access
@@ -797,19 +790,11 @@ const ManagerDashboard = () => {
         `
       });
 
-      // Add click listeners with proper event handling
+      // Add click listeners WITHOUT continuous updates
       marker.addListener('click', (event) => {
-        // Check if Ctrl key is pressed (for multi-select)
         const isCtrlKey = event.domEvent && (event.domEvent.ctrlKey || event.domEvent.metaKey);
-        
-        console.log('Marker clicked:', { assetName: asset.assetName, isCtrlKey, currentSelection: selectedMapAssets });
-        
-        // Toggle selection
         handleMapAssetSelection(asset, isCtrlKey);
-        
-        // Update markers but with debouncing to prevent rapid re-renders
-        clearTimeout(window.markerUpdateTimeout);
-        window.markerUpdateTimeout = setTimeout(() => updateMapMarkers(), 200);
+        // Remove the automatic marker update to prevent flickering
       });
 
       marker.addListener('mouseover', () => {
@@ -825,8 +810,8 @@ const ManagerDashboard = () => {
 
     console.log(`Added ${markersRef.current.length} markers to map`);
 
-    // Fit map to show all markers (only if we have markers and map isn't already fitted)
-    if (markersRef.current.length > 0 && !window.mapAlreadyFitted) {
+    // Fit map to show all markers (only once when markers are first loaded)
+    if (markersRef.current.length > 0 && !window.mapBoundsSet) {
       const bounds = new window.google.maps.LatLngBounds();
       markersRef.current.forEach(marker => {
         bounds.extend(marker.getPosition());
@@ -839,14 +824,10 @@ const ManagerDashboard = () => {
           mapInstanceRef.current.setZoom(16);
         }
         window.google.maps.event.removeListener(listener);
-        window.mapAlreadyFitted = true; // Prevent repeated fitting
+        window.mapBoundsSet = true; // Prevent repeated bounds setting
       });
-    } else if (markersRef.current.length === 0) {
-      console.log('No markers to display - using default center');
-      mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
-      mapInstanceRef.current.setZoom(12);
     }
-  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets, monitoringAssets, activeTab, fetchMonitoringAssets]);
+  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets, monitoringAssets, activeTab]);
 
   // Expose functions to global scope for info window callbacks
   useEffect(() => {
