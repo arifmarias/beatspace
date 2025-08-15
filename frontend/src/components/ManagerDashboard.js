@@ -1442,12 +1442,20 @@ const ManagerDashboard = () => {
                   <CardContent className="p-0">
                     {/* Google Maps Container */}
                     <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
+                      {/* Debug info */}
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs p-2 rounded z-10">
+                        API Key: {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? '✓' : '✗'}<br/>
+                        Map Ref: {mapRef.current ? '✓' : '✗'}<br/>
+                        Google: {typeof window !== 'undefined' && window.google ? '✓' : '✗'}<br/>
+                        Assets: {monitoringAssets.length}
+                      </div>
+                      
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                         <div 
                           ref={mapRef}
                           id="route-assignment-map"
                           className="w-full h-full"
-                          style={{ minHeight: '384px' }}
+                          style={{ minHeight: '384px', backgroundColor: '#f0f0f0' }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -1456,7 +1464,8 @@ const ManagerDashboard = () => {
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Google Maps Not Available</h3>
                             <p className="text-gray-500">Google Maps API key not configured</p>
                             <p className="text-xs text-gray-400 mt-2">
-                              Expected: REACT_APP_GOOGLE_MAPS_API_KEY
+                              Expected: REACT_APP_GOOGLE_MAPS_API_KEY<br/>
+                              Current: {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing'}
                             </p>
                           </div>
                         </div>
