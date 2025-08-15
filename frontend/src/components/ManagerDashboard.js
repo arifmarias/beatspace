@@ -753,8 +753,11 @@ const ManagerDashboard = () => {
               onclick="window.managerDashboard.handleMapAssetClick('${asset.id}')"
               style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;"
             >
-              ${isSelected ? 'Selected' : 'Select & Assign'}
+              ${isSelected ? 'Selected ✓' : 'Click to Select'}
             </button>
+            <p style="margin: 6px 0 0 0; color: #6b7280; font-size: 11px;">
+              💡 Hold Ctrl + Click for multi-select
+            </p>
           </div>
         `
       });
