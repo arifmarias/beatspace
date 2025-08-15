@@ -638,18 +638,9 @@ const ManagerDashboard = () => {
     }
   }, []);
 
-  // Load Google Maps script for route assignment
+  // Load Google Maps via Loader (single source of truth)
   const loadRouteMapsScript = useCallback(() => {
-    if (window.google) {
-      initializeRouteMap();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`;
-    script.async = true;
-    script.onload = initializeRouteMap;
-    document.head.appendChild(script);
+    initializeRouteMap();
   }, [initializeRouteMap]);
 
   // Create markers without flickering
