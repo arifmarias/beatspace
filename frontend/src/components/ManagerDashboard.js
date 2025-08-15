@@ -602,6 +602,7 @@ const ManagerDashboard = () => {
   // Route Assignment - Clean rewrite with no flickering
   const routeMapRef = useRef(null);
   const routeMapInstance = useRef(null);
+  // [{ marker: google.maps.Marker, assetId: string }]
   const routeMarkers = useRef([]);
   const [routeMapLoaded, setRouteMapLoaded] = useState(false);
 
