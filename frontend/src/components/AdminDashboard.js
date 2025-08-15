@@ -5133,7 +5133,17 @@ const AdminDashboard = () => {
               <Button 
                 onClick={handleUpdateAsset}
                 className="bg-blue-600 hover:bg-blue-700"
-                disabled={!assetForm.name || !assetForm.address || !assetForm.district || !assetForm.division || !assetForm.area || !assetForm.pricing.monthly_rate || !assetForm.seller_id}
+                disabled={
+                  !assetForm.name || 
+                  !assetForm.address || 
+                  !assetForm.district || 
+                  !assetForm.division || 
+                  !assetForm.area || 
+                  !assetForm.pricing.monthly_rate || 
+                  !assetForm.seller_id ||
+                  (assetForm.category === 'Existing Asset' && (!assetForm.asset_expiry_date || !assetForm.buyer_name)) ||
+                  (assetForm.category === 'Private Asset' && (!assetForm.one_off_investment || !assetForm.buyer_name))
+                }
               >
                 Update Asset
               </Button>
