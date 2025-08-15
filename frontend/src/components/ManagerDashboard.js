@@ -558,6 +558,191 @@ const ManagerDashboard = () => {
     `)}`;
   };
 
+  // Google Maps Integration
+  const initializeMap = useCallback(() => {
+    if (!window.google || !mapRef.current || !process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+      return;
+    }
+
+    // Default center (Dhaka, Bangladesh)
+    const defaultCenter = { lat: 23.8103, lng: 90.4125 };
+    
+    const map = new window.google.maps.Map(mapRef.current, {
+      zoom: 12,
+      center: defaultCenter,
+      mapTypeControl: true,
+      streetViewControl: true,
+      fullscreenControl: true,
+      zoomControl: true,
+    });
+
+    mapInstanceRef.current = map;
+    
+    // Initialize markers
+    updateMapMarkers();
+  }, []);
+
+  const loadGoogleMapsScript = useCallback(() => {
+    if (window.google) {
+      initializeMap();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeMap;
+    document.head.appendChild(script);
+  }, [initializeMap]);
+
+  const clearMarkers = () => {
+    markersRef.current.forEach(marker => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+  };
+
+  const updateMapMarkers = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+
+    // Clear existing markers
+    clearMarkers();
+
+    const filteredAssets = getFilteredMapAssets();
+    
+    filteredAssets.forEach(asset => {
+      if (!asset.location || !asset.location.lat || !asset.location.lng) {
+        return; // Skip assets without coordinates
+      }
+
+      const position = {
+        lat: parseFloat(asset.location.lat),
+        lng: parseFloat(asset.location.lng)
+      };
+
+      const assignedOperator = assetAssignments[asset.id];
+      const isSelected = selectedMapAssets.includes(asset.id);
+      const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
+      
+      // Determine marker color
+      let markerColor = '#10b981'; // Green for unassigned
+      if (isSelected) {
+        markerColor = '#ff6b35'; // Orange for selected
+      } else if (isAssigned) {
+        markerColor = '#3b82f6'; // Blue for assigned
+      }
+
+      // Create custom marker icon
+      const markerIcon = {
+        url: `data:image/svg+xml,${encodeURIComponent(`
+          <svg width="30" height="45" viewBox="0 0 30 45" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 30 15 30s15-18.75 15-30c0-8.284-6.716-15-15-15z" fill="${markerColor}"/>
+            <circle cx="15" cy="15" r="${asset.serviceLevel === 'premium' ? 8 : 6}" fill="white"/>
+            ${asset.serviceLevel === 'premium' ? '<circle cx="15" cy="15" r="4" fill="#ffd700"/>' : ''}
+            ${asset.serviceLevel === 'premium' ? '<text x="15" y="19" text-anchor="middle" font-size="8" fill="#000">P</text>' : ''}
+          </svg>
+        `)}`,
+        scaledSize: new window.google.maps.Size(30, 45),
+        anchor: new window.google.maps.Point(15, 45)
+      };
+
+      // Create marker
+      const marker = new window.google.maps.Marker({
+        position: position,
+        map: mapInstanceRef.current,
+        icon: markerIcon,
+        title: asset.assetName,
+        animation: window.google.maps.Animation.DROP
+      });
+
+      // Create info window
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `
+          <div style="font-family: Arial, sans-serif; max-width: 250px;">
+            <h3 style="margin: 0 0 8px 0; color: #1f2937;">${asset.assetName}</h3>
+            <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 14px;">${asset.address}</p>
+            <div style="display: flex; gap: 8px; margin: 8px 0;">
+              <span style="background: ${asset.serviceLevel === 'premium' ? '#3b82f6' : '#e5e7eb'}; color: ${asset.serviceLevel === 'premium' ? 'white' : '#374151'}; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${asset.serviceLevel}</span>
+              <span style="background: #f3f4f6; color: #374151; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${asset.area}</span>
+            </div>
+            <p style="margin: 4px 0 8px 0; color: #374151; font-size: 14px;">
+              <strong>Assignee:</strong> ${assignedOperator || 'Unassigned'}
+            </p>
+            <button 
+              onclick="window.managerDashboard.handleMapAssetClick('${asset.id}')"
+              style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;"
+            >
+              ${isSelected ? 'Selected' : 'Select & Assign'}
+            </button>
+          </div>
+        `
+      });
+
+      // Add click listeners
+      marker.addListener('click', () => {
+        // Toggle selection
+        handleMapAssetSelection(asset, !isSelected);
+        
+        // Update marker icon
+        setTimeout(() => updateMapMarkers(), 100);
+      });
+
+      marker.addListener('mouseover', () => {
+        infoWindow.open(mapInstanceRef.current, marker);
+      });
+
+      marker.addListener('mouseout', () => {
+        infoWindow.close();
+      });
+
+      markersRef.current.push(marker);
+    });
+
+    // Fit map to show all markers
+    if (markersRef.current.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      markersRef.current.forEach(marker => {
+        bounds.extend(marker.getPosition());
+      });
+      mapInstanceRef.current.fitBounds(bounds);
+      
+      // Ensure minimum zoom level
+      const listener = window.google.maps.event.addListener(mapInstanceRef.current, "idle", () => {
+        if (mapInstanceRef.current.getZoom() > 16) {
+          mapInstanceRef.current.setZoom(16);
+        }
+        window.google.maps.event.removeListener(listener);
+      });
+    }
+  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets]);
+
+  // Expose functions to global scope for info window callbacks
+  useEffect(() => {
+    window.managerDashboard = {
+      handleMapAssetClick: (assetId) => {
+        const asset = monitoringAssets.find(a => a.id === assetId);
+        if (asset) {
+          handleMapAssetClick(asset);
+        }
+      }
+    };
+  }, [monitoringAssets]);
+
+  // Load Google Maps when component mounts
+  useEffect(() => {
+    if (process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+      loadGoogleMapsScript();
+    }
+  }, [loadGoogleMapsScript]);
+
+  // Update markers when data changes
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      updateMapMarkers();
+    }
+  }, [updateMapMarkers, mapFilters, mapSearchTerm]);
+
   // Generate tasks
   const generateTasks = async () => {
     try {
