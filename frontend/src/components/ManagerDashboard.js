@@ -483,6 +483,76 @@ const ManagerDashboard = () => {
     setAssetDetailsDialog(true);
   };
 
+  // Route Assignment Functions
+  const getFilteredMapAssets = () => {
+    return monitoringAssets.filter(asset => {
+      const matchesSearch = !mapSearchTerm || 
+        asset.assetName.toLowerCase().includes(mapSearchTerm.toLowerCase()) ||
+        asset.address.toLowerCase().includes(mapSearchTerm.toLowerCase()) ||
+        asset.area.toLowerCase().includes(mapSearchTerm.toLowerCase());
+
+      const matchesServiceTier = mapFilters.serviceTier === 'all' || 
+        asset.serviceLevel === mapFilters.serviceTier;
+
+      const assignedOperator = assetAssignments[asset.id];
+      const matchesAssignmentStatus = 
+        mapFilters.assignmentStatus === 'all' ||
+        (mapFilters.assignmentStatus === 'assigned' && assignedOperator && assignedOperator !== 'Unassigned') ||
+        (mapFilters.assignmentStatus === 'unassigned' && (!assignedOperator || assignedOperator === 'Unassigned'));
+
+      const matchesOperator = mapFilters.operator === 'all' || 
+        assignedOperator === mapFilters.operator;
+
+      return matchesSearch && matchesServiceTier && matchesAssignmentStatus && matchesOperator;
+    });
+  };
+
+  const handleMapAssetClick = (asset) => {
+    setMapAssetDetails(asset);
+    setMapAssignmentModal(true);
+  };
+
+  const handleMapAssetSelection = (asset, selected) => {
+    if (selected) {
+      setSelectedMapAssets(prev => [...prev, asset.id]);
+    } else {
+      setSelectedMapAssets(prev => prev.filter(id => id !== asset.id));
+    }
+  };
+
+  const handleBulkMapAssignment = () => {
+    if (!bulkAssignmentOperator || selectedMapAssets.length === 0) {
+      return;
+    }
+    
+    selectedMapAssets.forEach(assetId => {
+      handleAssigneeChange(assetId, bulkAssignmentOperator);
+    });
+    
+    setSelectedMapAssets([]);
+    setBulkAssignmentOperator('');
+    setAssignmentPanelOpen(false);
+  };
+
+  const getMarkerColor = (asset) => {
+    const assignedOperator = assetAssignments[asset.id];
+    if (selectedMapAssets.includes(asset.id)) return '#ff6b35'; // Orange for selected
+    if (!assignedOperator || assignedOperator === 'Unassigned') return '#10b981'; // Green for unassigned
+    return '#3b82f6'; // Blue for assigned
+  };
+
+  const getMarkerIcon = (asset) => {
+    const color = getMarkerColor(asset);
+    const isPremium = asset.serviceLevel === 'premium';
+    return `data:image/svg+xml,${encodeURIComponent(`
+      <svg width="24" height="36" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24c0-6.627-5.373-12-12-12z" fill="${color}"/>
+        <circle cx="12" cy="12" r="${isPremium ? 6 : 4}" fill="white"/>
+        ${isPremium ? '<circle cx="12" cy="12" r="3" fill="#ffd700"/>' : ''}
+      </svg>
+    `)}`;
+  };
+
   // Generate tasks
   const generateTasks = async () => {
     try {
