@@ -1453,13 +1453,13 @@ const AdminDashboard = () => {
     }
   };
   
-  // Fetch offer requests for mediation (similar to fetchBookedAssets but for offers only)
+  // Fetch offer requests for mediation (using correct admin endpoint)
   const fetchOfferRequests = async () => {
     try {
       setOfferMediationLoading(true);
       const headers = getAuthHeaders();
       
-      // Fetch only offer requests data
+      // Fetch only offer requests data using correct admin endpoint
       const offerRequestsResponse = await axios.get(`${API}/admin/offer-requests`, { headers });
       const offerRequestsData = offerRequestsResponse.data || [];
       
