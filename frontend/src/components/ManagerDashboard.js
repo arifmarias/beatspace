@@ -719,7 +719,20 @@ const ManagerDashboard = () => {
 
       marker.addListener('mouseover', () => {
         const assignee = assetAssignments[asset.id] || 'Unassigned';
-        infoWindow.setContent(`<div style="min-width:220px"><strong>${asset.assetName}</strong><br/>Service: ${asset.serviceLevel}<br/>Assignee: ${assignee}<br/>Area: ${asset.area}</div>`);
+        infoWindow.setContent(`
+          <div style="min-width:240px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+            <div style="font-weight:600;font-size:14px;margin-bottom:6px;color:#111827;">${asset.assetName}</div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;margin-bottom:2px;">
+              <span style="opacity:.7;">Service</span><span style="font-weight:600;text-transform:capitalize">${asset.serviceLevel}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;margin-bottom:2px;">
+              <span style="opacity:.7;">Assignee</span><span style="font-weight:600;">${assignee}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;">
+              <span style="opacity:.7;">Area</span><span style="font-weight:600;">${asset.area}</span>
+            </div>
+          </div>
+        `);
         infoWindow.open({ map: routeMapInstance.current, anchor: marker, shouldFocus: false });
       });
       marker.addListener('mouseout', () => infoWindow.close());
