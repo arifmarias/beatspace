@@ -1515,6 +1515,43 @@ const ManagerDashboard = () => {
                             disabled={getFilteredMapAssets().length === 0}
                           >
                             <span className="flex items-center space-x-2">
+                      {/* Fullscreen toggle button and inline assignee for selected */}
+                      <div ref={routeMapControlRef} className="flex items-center gap-2 absolute right-4 top-4 z-10">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => {
+                            const elem = document.getElementById('route-assignment-map');
+                            if (!elem) return;
+                            if (!document.fullscreenElement) {
+                              elem.requestFullscreen?.();
+                            } else {
+                              document.exitFullscreen?.();
+                            }
+                          }}
+                        >
+                          Fullscreen
+                        </Button>
+                        {selectedMapAssets.length > 0 && (
+                          <Select value={bulkAssignmentOperator} onValueChange={setBulkAssignmentOperator}>
+                            <SelectTrigger className="w-44 bg-white">
+                              <SelectValue placeholder="Assign operator" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned">Unassigned</SelectItem>
+                              {operators.map(op => (
+                                <SelectItem key={op.id} value={op.id}>{op.contact_name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {selectedMapAssets.length > 0 && (
+                          <Button size="sm" onClick={handleBulkMapAssignment} disabled={!bulkAssignmentOperator}>
+                            Apply
+                          </Button>
+                        )}
+                      </div>
+
                               <span>📍 Select All</span>
                               <span className="bg-blue-400 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                                 {getFilteredMapAssets().length}
