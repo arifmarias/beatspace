@@ -596,23 +596,7 @@ const ManagerDashboard = () => {
 
 
 
-  // Expose functions to global scope for info window callbacks
-  useEffect(() => {
-    window.managerDashboard = {
-      handleMapAssetClick: (assetId) => {
-        const asset = monitoringAssets.find(a => a.id === assetId);
-        if (asset) {
-          console.log('Info window button clicked for:', asset.assetName);
-          handleMapAssetSelection(asset, false); // Single select when clicked from info window
-          // Don't call updateMapMarkers here to prevent flickering
-        }
-      }
-    };
-    
-    return () => {
-      delete window.managerDashboard;
-    };
-  }, [monitoringAssets, handleMapAssetSelection]);
+
 
   // Route Assignment - Clean rewrite with no flickering
   const routeMapRef = useRef(null);
