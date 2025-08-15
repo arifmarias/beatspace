@@ -217,13 +217,16 @@ frontend:
     implemented: true
     working: false
     file: "/app/frontend/src/components/ManagerDashboard.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "Implemented Loader-based map init, single InfoWindow, stable {marker, assetId} tracking, icon updates in-place, and Ctrl/Cmd multi-select + selection controls. Needs UI verification: ensure markers render for monitoring assets and selection behavior is smooth without flicker."
+        - working: false
+          agent: "testing"
+          comment: "🎯 COMPREHENSIVE ROUTE ASSIGNMENT TESTING COMPLETED - CRITICAL GOOGLE MAPS ISSUE IDENTIFIED. RESULTS: ✅ Manager authentication successful (manager@beatspace.com/manager123), ✅ Manager Dashboard loads correctly, ✅ Route Assignment tab accessible and functional, ✅ Selection controls working perfectly: Select All (4 assets), Clear (clears selection), Select Unassigned (matches Asset Statistics count of 4), ✅ Asset Statistics integration working correctly, ✅ Assignment workflow accessible with 'Assign Now' button appearing when assets selected, ✅ Bulk assignment dialog functional with operator dropdown. ❌ CRITICAL ISSUE: Google Maps not rendering - shows gray area instead of map tiles, preventing marker interactions and hover tooltip testing. ROOT CAUSE: Google Maps API not loading properly, likely API key, billing/quota, or network/CORS issue. All UI controls, state management, and assignment workflow are functioning correctly. The core map visualization functionality is broken but all other features work as expected."
 
 test_plan:
   current_focus:
