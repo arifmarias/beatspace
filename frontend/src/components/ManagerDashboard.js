@@ -839,11 +839,20 @@ const ManagerDashboard = () => {
 
   // Additional effect to initialize map when Route Assignment tab becomes active
   useEffect(() => {
-    if (activeTab === 'route' && window.google && mapRef.current && !mapInstanceRef.current) {
-      console.log('Route Assignment tab activated - initializing map...');
-      setTimeout(() => initializeMap(), 200);
+    if (activeTab === 'route') {
+      console.log('Route Assignment tab activated - refreshing data and initializing map...');
+      
+      // Refresh monitoring assets data when tab is activated
+      fetchMonitoringAssets();
+      
+      if (window.google && mapRef.current && !mapInstanceRef.current) {
+        setTimeout(() => initializeMap(), 200);
+      } else if (mapInstanceRef.current) {
+        // If map is already initialized, just update markers
+        setTimeout(() => updateMapMarkers(), 500);
+      }
     }
-  }, [activeTab, initializeMap]);
+  }, [activeTab, initializeMap, fetchMonitoringAssets]);
 
   // Update markers when data changes
   useEffect(() => {
