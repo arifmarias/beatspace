@@ -668,13 +668,18 @@ const ManagerDashboard = () => {
 
     console.log('Updating map markers...', {
       assetsCount: monitoringAssets.length,
-      hasAssets: monitoringAssets.length > 0
+      hasAssets: monitoringAssets.length > 0,
+      activeTab: activeTab
     });
     
-    // If we don't have assets yet, wait a bit and try again
-    if (monitoringAssets.length === 0) {
-      console.log('No monitoring assets available yet, retrying in 500ms...');
-      setTimeout(() => updateMapMarkers(), 500);
+    // If we don't have assets yet and we're on the route tab, wait and try again
+    if (monitoringAssets.length === 0 && activeTab === 'route') {
+      console.log('No monitoring assets available yet, retrying in 1000ms...');
+      setTimeout(() => {
+        // Force refresh assets if still empty after waiting
+        fetchMonitoringAssets();
+        setTimeout(() => updateMapMarkers(), 500);
+      }, 1000);
       return;
     }
     
@@ -736,6 +741,9 @@ const ManagerDashboard = () => {
         animation: window.google.maps.Animation.DROP
       });
 
+      // Store asset data with marker for easy access
+      marker.assetData = asset;
+
       // Create info window
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
@@ -762,15 +770,17 @@ const ManagerDashboard = () => {
         `
       });
 
-      // Add click listeners
+      // Add click listeners with proper event handling
       marker.addListener('click', (event) => {
         // Check if Ctrl key is pressed (for multi-select)
         const isCtrlKey = event.domEvent && (event.domEvent.ctrlKey || event.domEvent.metaKey);
         
+        console.log('Marker clicked:', { assetName: asset.assetName, isCtrlKey, currentSelection: selectedMapAssets });
+        
         // Toggle selection
         handleMapAssetSelection(asset, isCtrlKey);
         
-        // Update marker icon
+        // Update marker icon after a short delay
         setTimeout(() => updateMapMarkers(), 100);
       });
 
@@ -807,7 +817,7 @@ const ManagerDashboard = () => {
       mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
       mapInstanceRef.current.setZoom(12);
     }
-  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets, monitoringAssets]);
+  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets, monitoringAssets, activeTab, fetchMonitoringAssets]);
 
   // Expose functions to global scope for info window callbacks
   useEffect(() => {
