@@ -772,7 +772,11 @@ const ManagerDashboard = () => {
   // Load Google Maps when component mounts
   useEffect(() => {
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-    console.log('Manager Dashboard mounted - checking Google Maps...', { apiKey: !!apiKey });
+    console.log('Manager Dashboard mounted - checking Google Maps...', { 
+      apiKey: !!apiKey, 
+      fullApiKey: apiKey,
+      activeTab: activeTab 
+    });
     
     if (apiKey) {
       loadGoogleMapsScript();
