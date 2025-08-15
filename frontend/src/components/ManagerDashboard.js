@@ -664,11 +664,6 @@ const ManagerDashboard = () => {
     // Clear polylines and markers
     routePolylines.current.forEach(poly => poly.setMap(null));
     routePolylines.current = [];
-    // Cleanup fullscreen handler
-    return () => {
-      document.removeEventListener('fullscreenchange', fsHandler);
-    };
-
     clearAllRouteMarkers();
 
     const assetsToShow = getFilteredMapAssets();
