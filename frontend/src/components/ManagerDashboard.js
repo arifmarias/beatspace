@@ -2258,6 +2258,150 @@ const ManagerDashboard = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Map Asset Details Modal */}
+        <Dialog open={mapAssignmentModal} onOpenChange={setMapAssignmentModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <Building2 className="w-5 h-5 mr-2" />
+                Asset Assignment
+              </DialogTitle>
+            </DialogHeader>
+            {mapAssetDetails && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold">{mapAssetDetails.assetName}</h3>
+                  <p className="text-sm text-gray-600">{mapAssetDetails.address}</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Badge variant={mapAssetDetails.serviceLevel === 'premium' ? 'default' : 'outline'}>
+                      {mapAssetDetails.serviceLevel}
+                    </Badge>
+                    <Badge variant="secondary">{mapAssetDetails.area}</Badge>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Current Assignee</label>
+                  <div className="text-sm text-gray-600">
+                    {assetAssignments[mapAssetDetails.id] || 'Unassigned'}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Assign to Operator</label>
+                  <Select 
+                    value={bulkAssignmentOperator} 
+                    onValueChange={setBulkAssignmentOperator}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select operator" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {operators.map(operator => (
+                        <SelectItem key={operator.id} value={operator.id}>
+                          {operator.contact_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setMapAssignmentModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (bulkAssignmentOperator) {
+                        handleAssigneeChange(mapAssetDetails.id, bulkAssignmentOperator);
+                        setMapAssignmentModal(false);
+                        setBulkAssignmentOperator('');
+                      }
+                    }}
+                    disabled={!bulkAssignmentOperator}
+                  >
+                    Assign
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Assignment Panel */}
+        <Dialog open={assignmentPanelOpen} onOpenChange={setAssignmentPanelOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <UserCheck className="w-5 h-5 mr-2" />
+                Bulk Assignment
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Assign {selectedMapAssets.length} selected assets to an operator
+                </p>
+                <div className="max-h-32 overflow-y-auto bg-gray-50 rounded p-2 text-xs">
+                  {selectedMapAssets.map(assetId => {
+                    const asset = monitoringAssets.find(a => a.id === assetId);
+                    return asset ? (
+                      <div key={assetId} className="flex justify-between py-1">
+                        <span>{asset.assetName}</span>
+                        <span className="text-gray-500">{asset.area}</span>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Select Operator</label>
+                <Select 
+                  value={bulkAssignmentOperator} 
+                  onValueChange={setBulkAssignmentOperator}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose an operator" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {operators.map(operator => (
+                      <SelectItem key={operator.id} value={operator.id}>
+                        <div className="flex items-center space-x-2">
+                          <User className="w-4 h-4" />
+                          <span>{operator.contact_name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setAssignmentPanelOpen(false);
+                    setBulkAssignmentOperator('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleBulkMapAssignment}
+                  disabled={!bulkAssignmentOperator || selectedMapAssets.length === 0}
+                >
+                  Assign {selectedMapAssets.length} Assets
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
