@@ -736,130 +736,132 @@ const ManagerDashboard = () => {
         
         infoWindow.setContent(`
           <div style="
-            min-width: 320px; 
-            max-width: 380px; 
+            width: 520px; 
             font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-            border-radius: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 10px;
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15), 0 8px 15px -3px rgba(0, 0, 0, 0.1);
             border: 1px solid #e2e8f0;
             overflow: hidden;
           ">
             <!-- Header Section -->
             <div style="
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              padding: 16px;
+              padding: 12px 16px;
               color: white;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
             ">
-              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center;">
                 <div style="
                   background: rgba(255, 255, 255, 0.2);
-                  border-radius: 8px;
-                  padding: 6px;
-                  margin-right: 12px;
+                  border-radius: 6px;
+                  padding: 4px;
+                  margin-right: 10px;
                   display: flex;
                   align-items: center;
                   justify-content: center;
                 ">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                   </svg>
                 </div>
                 <div>
                   <h3 style="
-                    font-size: 16px; 
+                    font-size: 15px; 
                     font-weight: 700; 
                     margin: 0; 
-                    line-height: 1.2;
+                    line-height: 1.1;
                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
                   ">${asset.assetName}</h3>
                   <p style="
-                    font-size: 13px; 
-                    margin: 4px 0 0 0; 
+                    font-size: 12px; 
+                    margin: 2px 0 0 0; 
                     opacity: 0.9;
                     font-weight: 400;
+                    line-height: 1.2;
                   ">${asset.address || 'Address not available'}</p>
                 </div>
               </div>
-            </div>
-            
-            <!-- Content Section -->
-            <div style="padding: 20px;">
-              <!-- Service Level & Status -->
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+              
+              <!-- Status Badges in Header -->
+              <div style="display: flex; gap: 8px;">
                 <div style="
                   background: ${serviceLevelBg};
                   color: ${serviceLevelColor};
-                  padding: 8px 12px;
-                  border-radius: 20px;
-                  font-size: 12px;
+                  padding: 4px 8px;
+                  border-radius: 12px;
+                  font-size: 10px;
                   font-weight: 600;
                   text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  flex: 1;
-                  text-align: center;
-                  border: 1px solid ${serviceLevelColor}20;
+                  letter-spacing: 0.3px;
+                  border: 1px solid ${serviceLevelColor}40;
                 ">
-                  ${asset.serviceLevel} Service
+                  ${asset.serviceLevel}
                 </div>
                 <div style="
                   background: ${assigneeBg};
                   color: ${assigneeColor};
-                  padding: 8px 12px;
-                  border-radius: 20px;
-                  font-size: 12px;
+                  padding: 4px 8px;
+                  border-radius: 12px;
+                  font-size: 10px;
                   font-weight: 600;
-                  flex: 1;
-                  text-align: center;
-                  border: 1px solid ${assigneeColor}20;
+                  border: 1px solid ${assigneeColor}40;
                 ">
                   ${assignee}
                 </div>
               </div>
-              
-              <!-- Asset Details Grid -->
-              <div style="display: grid; gap: 12px;">
-                <!-- Location Info -->
-                <div style="display: flex; align-items: center; padding: 10px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="margin-right: 10px; flex-shrink: 0;">
+            </div>
+            
+            <!-- Content Section - Two Columns -->
+            <div style="padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <!-- Left Column -->
+              <div style="display: grid; gap: 8px;">
+                <!-- Area Info -->
+                <div style="display: flex; align-items: center; padding: 6px 8px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#3b82f6" style="margin-right: 8px; flex-shrink: 0;">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                   </svg>
                   <div style="flex: 1;">
-                    <div style="font-size: 11px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Area</div>
-                    <div style="font-size: 13px; color: #1e293b; font-weight: 600; margin-top: 2px;">${asset.area}</div>
+                    <div style="font-size: 9px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1;">AREA</div>
+                    <div style="font-size: 12px; color: #1e293b; font-weight: 600; margin-top: 1px; line-height: 1.2;">${asset.area}</div>
                   </div>
                 </div>
                 
                 <!-- Monitoring Schedule -->
-                <div style="display: flex; align-items: center; padding: 10px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" style="margin-right: 10px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; padding: 6px 8px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #22c55e;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#22c55e" style="margin-right: 8px; flex-shrink: 0;">
                     <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
                   </svg>
                   <div style="flex: 1;">
-                    <div style="font-size: 11px; color: #16a34a; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Monitoring</div>
-                    <div style="font-size: 13px; color: #15803d; font-weight: 600; margin-top: 2px;">${frequency} Inspections</div>
+                    <div style="font-size: 9px; color: #16a34a; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1;">FREQUENCY</div>
+                    <div style="font-size: 12px; color: #15803d; font-weight: 600; margin-top: 1px; line-height: 1.2;">${frequency}</div>
                   </div>
                 </div>
-                
+              </div>
+              
+              <!-- Right Column -->
+              <div style="display: grid; gap: 8px;">
                 <!-- Next Inspection -->
-                <div style="display: flex; align-items: center; padding: 10px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" style="margin-right: 10px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; padding: 6px 8px; background: #fef3c7; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" style="margin-right: 8px; flex-shrink: 0;">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                   <div style="flex: 1;">
-                    <div style="font-size: 11px; color: #d97706; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Next Inspection</div>
-                    <div style="font-size: 13px; color: #92400e; font-weight: 600; margin-top: 2px;">${formattedNextInspection}</div>
+                    <div style="font-size: 9px; color: #d97706; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1;">NEXT INSPECTION</div>
+                    <div style="font-size: 12px; color: #92400e; font-weight: 600; margin-top: 1px; line-height: 1.2;">${formattedNextInspection}</div>
                   </div>
                 </div>
                 
                 <!-- Subscription Expiry -->
-                <div style="display: flex; align-items: center; padding: 10px; background: #fce7f3; border-radius: 8px; border-left: 4px solid #ec4899;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ec4899" style="margin-right: 10px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; padding: 6px 8px; background: #fce7f3; border-radius: 6px; border-left: 3px solid #ec4899;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#ec4899" style="margin-right: 8px; flex-shrink: 0;">
                     <path d="M9 11H7v6h2v-6zm4 0h-2v6h2v-6zm4 0h-2v6h2v-6zm2-7h-3V2h-2v2H8V2H6v2H3v2h18V4zm0 4H3v12h18V8z"/>
                   </svg>
                   <div style="flex: 1;">
-                    <div style="font-size: 11px; color: #be185d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Expires</div>
-                    <div style="font-size: 13px; color: #9d174d; font-weight: 600; margin-top: 2px;">${expiryDate}</div>
+                    <div style="font-size: 9px; color: #be185d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1;">EXPIRES</div>
+                    <div style="font-size: 12px; color: #9d174d; font-weight: 600; margin-top: 1px; line-height: 1.2;">${expiryDate}</div>
                   </div>
                 </div>
               </div>
@@ -868,9 +870,9 @@ const ManagerDashboard = () => {
             <!-- Footer -->
             <div style="
               background: #f1f5f9;
-              padding: 12px 20px;
+              padding: 6px 16px;
               border-top: 1px solid #e2e8f0;
-              font-size: 11px;
+              font-size: 10px;
               color: #64748b;
               text-align: center;
               font-weight: 500;
