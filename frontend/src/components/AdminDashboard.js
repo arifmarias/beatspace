@@ -1258,6 +1258,10 @@ const AdminDashboard = () => {
       traffic_volume: asset.traffic_volume?.toString() || '',
       visibility_score: asset.visibility_score?.toString() || '',
       status: asset.status || 'Available', // Include current status
+      category: asset.category || 'Public', // Include category field
+      asset_expiry_date: asset.asset_expiry_date || '', // Include expiry date field
+      one_off_investment: asset.one_off_investment?.toString() || '', // Include investment field
+      buyer_name: asset.buyer_name || '', // Include buyer name field
       pricing: {
         weekly_rate: asset.pricing?.weekly_rate?.toString() || '',
         monthly_rate: asset.pricing?.monthly_rate?.toString() || '',
