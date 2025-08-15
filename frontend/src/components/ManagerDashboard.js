@@ -655,29 +655,22 @@ const ManagerDashboard = () => {
 
     const assetsToShow = getFilteredMapAssets();
     
+    const infoWindow = new window.google.maps.InfoWindow();
+
     assetsToShow.forEach(asset => {
-      if (!asset.location?.lat || !asset.location?.lng) {
-        return;
-      }
+      if (!asset.location?.lat || !asset.location?.lng) return;
 
       const lat = parseFloat(asset.location.lat);
       const lng = parseFloat(asset.location.lng);
-      
-      if (isNaN(lat) || isNaN(lng)) {
-        return;
-      }
+      if (isNaN(lat) || isNaN(lng)) return;
 
       const isSelected = selectedMapAssets.includes(asset.id);
       const assignedOperator = assetAssignments[asset.id];
       const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
 
-      // Determine marker color
-      let color = '#10b981'; // Green for unassigned
-      if (isSelected) {
-        color = '#ff6b35'; // Orange for selected  
-      } else if (isAssigned) {
-        color = '#3b82f6'; // Blue for assigned
-      }
+      let color = '#10b981';
+      if (isSelected) color = '#ff6b35';
+      else if (isAssigned) color = '#3b82f6';
 
       const marker = new window.google.maps.Marker({
         position: { lat, lng },
@@ -695,24 +688,29 @@ const ManagerDashboard = () => {
         }
       });
 
-      // Simple click handler for selection
       marker.addListener('click', (event) => {
         const isCtrlPressed = event.domEvent?.ctrlKey || event.domEvent?.metaKey;
-        
         setSelectedMapAssets(prev => {
           if (isCtrlPressed) {
-            // Multi-select
-            return prev.includes(asset.id) 
+            return prev.includes(asset.id)
               ? prev.filter(id => id !== asset.id)
               : [...prev, asset.id];
           } else {
-            // Single select
             return prev.includes(asset.id) ? [] : [asset.id];
           }
         });
       });
 
-      routeMarkers.current.push(marker);
+      marker.addListener('mouseover', () => {
+        infoWindow.setContent(`<div style="min-width:200px"><strong>${asset.assetName}</strong><br/>${asset.address}<br/>Area: ${asset.area}<br/>Tier: ${asset.serviceLevel}</div>`);
+        infoWindow.open({ map: routeMapInstance.current, anchor: marker, shouldFocus: false });
+      });
+
+      marker.addListener('mouseout', () => {
+        infoWindow.close();
+      });
+
+      routeMarkers.current.push({ marker, assetId: asset.id });
     });
 
     // Fit map to show all markers
