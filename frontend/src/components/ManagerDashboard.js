@@ -1543,78 +1543,106 @@ const ManagerDashboard = () => {
               {/* Map Container */}
               <div className="lg:col-span-3">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center">
-                        <MapPin className="w-5 h-5 mr-2" />
-                        Route Assignment Map
-                      </CardTitle>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
-                          Unassigned
-                        </Badge>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
-                          Assigned
-                        </Badge>
-                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full mr-1"></div>
-                          Selected
-                        </Badge>
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <MapPin className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Route Assignment Map</CardTitle>
+                          <p className="text-sm text-gray-500">Assign monitoring assets to operators visually</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span>Unassigned</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span>Assigned</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                          <span>Selected</span>
+                        </div>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
-                    {/* Selection Controls */}
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => {
-                            const filteredAssets = getFilteredMapAssets();
-                            const filteredIds = filteredAssets.map(asset => asset.id);
-                            console.log('Selecting all visible assets:', filteredIds);
-                            setSelectedMapAssets(filteredIds);
-                          }}
-                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
-                          disabled={getFilteredMapAssets().length === 0}
-                        >
-                          Select All ({getFilteredMapAssets().length})
-                        </button>
-                        <button
-                          onClick={() => {
-                            const unassignedAssets = getFilteredMapAssets().filter(asset => {
+                    {/* Enhanced Selection Controls */}
+                    <div className="px-6 pb-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              const filteredAssets = getFilteredMapAssets();
+                              const filteredIds = filteredAssets.map(asset => asset.id);
+                              console.log('Selecting all visible assets:', filteredIds);
+                              setSelectedMapAssets(filteredIds);
+                            }}
+                            className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            disabled={getFilteredMapAssets().length === 0}
+                          >
+                            <span className="flex items-center space-x-1">
+                              <span>Select All</span>
+                              <span className="bg-blue-400 text-white px-1.5 py-0.5 rounded text-xs">
+                                {getFilteredMapAssets().length}
+                              </span>
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const unassignedAssets = getFilteredMapAssets().filter(asset => {
+                                const assignedOperator = assetAssignments[asset.id];
+                                return !assignedOperator || assignedOperator === 'Unassigned';
+                              });
+                              const unassignedIds = unassignedAssets.map(asset => asset.id);
+                              console.log('Selecting unassigned assets:', unassignedIds);
+                              setSelectedMapAssets(unassignedIds);
+                            }}
+                            className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            disabled={getFilteredMapAssets().filter(asset => {
                               const assignedOperator = assetAssignments[asset.id];
                               return !assignedOperator || assignedOperator === 'Unassigned';
-                            });
-                            const unassignedIds = unassignedAssets.map(asset => asset.id);
-                            console.log('Selecting unassigned assets:', unassignedIds);
-                            setSelectedMapAssets(unassignedIds);
-                          }}
-                          className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-300"
-                          disabled={getFilteredMapAssets().filter(asset => {
-                            const assignedOperator = assetAssignments[asset.id];
-                            return !assignedOperator || assignedOperator === 'Unassigned';
-                          }).length === 0}
-                        >
-                          Select Unassigned ({getFilteredMapAssets().filter(asset => {
-                            const assignedOperator = assetAssignments[asset.id];
-                            return !assignedOperator || assignedOperator === 'Unassigned';
-                          }).length})
-                        </button>
-                        <button
-                          onClick={() => {
-                            console.log('Clearing selection');
-                            setSelectedMapAssets([]);
-                          }}
-                          className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-300"
-                          disabled={selectedMapAssets.length === 0}
-                        >
-                          Clear Selection
-                        </button>
-                      </div>
-                      <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded">
-                        {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                            }).length === 0}
+                          >
+                            <span className="flex items-center space-x-1">
+                              <span>Select Unassigned</span>
+                              <span className="bg-green-400 text-white px-1.5 py-0.5 rounded text-xs">
+                                {getFilteredMapAssets().filter(asset => {
+                                  const assignedOperator = assetAssignments[asset.id];
+                                  return !assignedOperator || assignedOperator === 'Unassigned';
+                                }).length}
+                              </span>
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              console.log('Clearing selection');
+                              setSelectedMapAssets([]);
+                            }}
+                            className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            disabled={selectedMapAssets.length === 0}
+                          >
+                            Clear Selection
+                          </button>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded-lg">
+                            {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                          </div>
+                          {selectedMapAssets.length > 0 && (
+                            <Button 
+                              size="sm" 
+                              className="bg-blue-500 hover:bg-blue-600"
+                              onClick={() => setAssignmentPanelOpen(true)}
+                            >
+                              🏃‍♂️ Assign to Operator
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
 
