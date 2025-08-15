@@ -1484,7 +1484,7 @@ const ManagerDashboard = () => {
                   </CardHeader>
                   <CardContent className="p-0">
                     {/* Google Maps Container */}
-                    <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
+                    <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden relative">
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                         <div 
                           ref={mapRef}
