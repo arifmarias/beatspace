@@ -819,15 +819,17 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (activeTab === 'route' && routeMapLoaded && monitoringAssets.length > 0) {
       createRouteMarkers();
+      updateOperatorPolylines();
     }
   }, [activeTab, routeMapLoaded, monitoringAssets.length, mapFilters.serviceTier, mapFilters.assignmentStatus, mapFilters.operator, mapSearchTerm]);
 
-  // Update marker colors when selection changes
+  // Update marker colors and polylines when selection or assignments change
   useEffect(() => {
     if (activeTab === 'route' && routeMapLoaded && routeMarkers.current.length > 0) {
       updateRouteMarkerColors();
+      updateOperatorPolylines();
     }
-  }, [selectedMapAssets, assetAssignments, updateRouteMarkerColors, activeTab, routeMapLoaded]);
+  }, [selectedMapAssets, assetAssignments, updateRouteMarkerColors, updateOperatorPolylines, activeTab, routeMapLoaded]);
 
 
 
