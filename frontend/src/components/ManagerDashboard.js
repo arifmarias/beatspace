@@ -1555,17 +1555,36 @@ const ManagerDashboard = () => {
                       
                       {/* Asset Selection Info Overlay */}
                       {selectedMapAssets.length > 0 && (
-                        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 border">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                            <span className="font-medium">{selectedMapAssets.length} assets selected</span>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => setAssignmentPanelOpen(true)}
-                            >
-                              Assign
-                            </Button>
+                        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 border max-w-sm">
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                              <span className="font-medium">
+                                {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-600 max-h-16 overflow-y-auto">
+                              {selectedMapAssets.map(id => {
+                                const asset = monitoringAssets.find(a => a.id === id);
+                                return asset ? asset.assetName : '';
+                              }).filter(name => name).join(', ')}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => setAssignmentPanelOpen(true)}
+                              >
+                                Assign to Operator
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={() => setSelectedMapAssets([])}
+                              >
+                                Clear
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       )}
