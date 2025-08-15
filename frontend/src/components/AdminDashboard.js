@@ -400,6 +400,10 @@ const AdminDashboard = () => {
     traffic_volume: '',
     visibility_score: '',
     status: 'Available', // Default status
+    category: 'Public', // NEW: Asset category field
+    asset_expiry_date: '', // NEW: For Existing Asset category
+    one_off_investment: '', // NEW: For Private Asset category
+    buyer_name: '', // NEW: For Existing Asset and Private Asset categories
     pricing: {
       weekly_rate: '',
       monthly_rate: '',
