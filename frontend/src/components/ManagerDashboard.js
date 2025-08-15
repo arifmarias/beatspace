@@ -560,10 +560,13 @@ const ManagerDashboard = () => {
 
   // Google Maps Integration
   const initializeMap = useCallback(() => {
-    if (!window.google || !mapRef.current || !process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+    if (!window.google || !mapRef.current) {
+      console.log('Google Maps or map ref not available');
       return;
     }
 
+    console.log('Initializing Google Maps...');
+    
     // Default center (Dhaka, Bangladesh)
     const defaultCenter = { lat: 23.8103, lng: 90.4125 };
     
@@ -577,22 +580,40 @@ const ManagerDashboard = () => {
     });
 
     mapInstanceRef.current = map;
+    console.log('Google Maps initialized successfully');
     
-    // Initialize markers
-    updateMapMarkers();
+    // Initialize markers after a short delay to ensure map is ready
+    setTimeout(() => {
+      updateMapMarkers();
+    }, 500);
   }, []);
 
   const loadGoogleMapsScript = useCallback(() => {
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+    console.log('Loading Google Maps script...', { apiKey: !!apiKey });
+    
     if (window.google) {
+      console.log('Google Maps already loaded');
       initializeMap();
       return;
     }
 
+    if (!apiKey) {
+      console.error('Google Maps API key not found');
+      return;
+    }
+
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
     script.async = true;
     script.defer = true;
-    script.onload = initializeMap;
+    script.onload = () => {
+      console.log('Google Maps script loaded');
+      initializeMap();
+    };
+    script.onerror = (error) => {
+      console.error('Error loading Google Maps script:', error);
+    };
     document.head.appendChild(script);
   }, [initializeMap]);
 
