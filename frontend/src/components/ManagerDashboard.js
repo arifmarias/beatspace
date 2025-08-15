@@ -490,13 +490,6 @@ const ManagerDashboard = () => {
 
   // Route Assignment Functions
   const getFilteredMapAssets = () => {
-    console.log('getFilteredMapAssets called', {
-      totalAssets: monitoringAssets.length,
-      searchTerm: mapSearchTerm,
-      filters: mapFilters,
-      sampleAsset: monitoringAssets[0]
-    });
-    
     return monitoringAssets.filter(asset => {
       const matchesSearch = !mapSearchTerm || 
         asset.assetName.toLowerCase().includes(mapSearchTerm.toLowerCase()) ||
@@ -514,14 +507,6 @@ const ManagerDashboard = () => {
 
       const matchesOperator = mapFilters.operator === 'all' || 
         assignedOperator === mapFilters.operator;
-
-      console.log(`Asset ${asset.assetName} filtering:`, {
-        matchesSearch,
-        matchesServiceTier,
-        matchesAssignmentStatus,
-        matchesOperator,
-        finalResult: matchesSearch && matchesServiceTier && matchesAssignmentStatus && matchesOperator
-      });
 
       return matchesSearch && matchesServiceTier && matchesAssignmentStatus && matchesOperator;
     });
