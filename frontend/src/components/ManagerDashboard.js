@@ -760,9 +760,12 @@ const ManagerDashboard = () => {
       });
 
       // Add click listeners
-      marker.addListener('click', () => {
+      marker.addListener('click', (event) => {
+        // Check if Ctrl key is pressed (for multi-select)
+        const isCtrlKey = event.domEvent && (event.domEvent.ctrlKey || event.domEvent.metaKey);
+        
         // Toggle selection
-        handleMapAssetSelection(asset, !isSelected);
+        handleMapAssetSelection(asset, isCtrlKey);
         
         // Update marker icon
         setTimeout(() => updateMapMarkers(), 100);
