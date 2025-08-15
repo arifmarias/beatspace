@@ -754,23 +754,16 @@ const ManagerDashboard = () => {
   // Update marker colors only (no recreating)
   const updateRouteMarkerColors = useCallback(() => {
     const assetsToShow = getFilteredMapAssets();
-    
-    // Map by assetId for stable updates
     const assetById = new Map(assetsToShow.map(a => [a.id, a]));
     routeMarkers.current.forEach(({ marker, assetId }) => {
       const asset = assetById.get(assetId);
-      if (!asset) {
-        marker.setMap(null);
-        return;
-      }
+      if (!asset) return;
       const isSelected = selectedMapAssets.includes(asset.id);
       const assignedOperator = assetAssignments[asset.id];
       const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
-
       let color = '#10b981';
       if (isSelected) color = '#ff6b35';
       else if (isAssigned) color = '#3b82f6';
-
       marker.setIcon({
         url: `data:image/svg+xml,${encodeURIComponent(`
           <svg width="24" height="36" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
@@ -783,6 +776,36 @@ const ManagerDashboard = () => {
       });
     });
   }, [selectedMapAssets, assetAssignments, getFilteredMapAssets]);
+
+  // Draw/refresh polylines per operator without recreating markers
+  const updateOperatorPolylines = useCallback(() => {
+    if (!routeMapInstance.current) return;
+    // Clear existing polylines
+    routePolylines.current.forEach(poly => poly.setMap(null));
+    routePolylines.current = [];
+
+    const operatorGroups = new Map();
+    routeMarkers.current.forEach(({ marker, assetId }) => {
+      const assignedOperator = assetAssignments[assetId];
+      if (!assignedOperator || assignedOperator === 'Unassigned') return;
+      const path = operatorGroups.get(assignedOperator) || [];
+      path.push(marker.getPosition());
+      operatorGroups.set(assignedOperator, path);
+    });
+
+    operatorGroups.forEach((path, opName) => {
+      if (!path || path.length < 2) return;
+      const polyline = new window.google.maps.Polyline({
+        path,
+        geodesic: true,
+        strokeColor: '#3b82f6',
+        strokeOpacity: 0.7,
+        strokeWeight: 3,
+        map: routeMapInstance.current,
+      });
+      routePolylines.current.push(polyline);
+    });
+  }, [assetAssignments]);
 
   // Initialize map when Route Assignment tab is active
   useEffect(() => {
