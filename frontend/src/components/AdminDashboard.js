@@ -5165,8 +5165,11 @@ const AdminDashboard = () => {
                   !assetForm.district || 
                   !assetForm.division || 
                   !assetForm.area || 
-                  !assetForm.pricing.monthly_rate || 
-                  !assetForm.seller_id ||
+                  // Pricing is only required for Public and Existing Assets
+                  (assetForm.category !== 'Private Asset' && !assetForm.pricing.monthly_rate) ||
+                  // Seller is only required for Public and Existing Assets
+                  (assetForm.category !== 'Private Asset' && !assetForm.seller_id) ||
+                  // Category-specific validations
                   (assetForm.category === 'Existing Asset' && (!assetForm.asset_expiry_date || !assetForm.buyer_name)) ||
                   (assetForm.category === 'Private Asset' && (!assetForm.one_off_investment || !assetForm.buyer_name))
                 }
