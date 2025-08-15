@@ -1093,7 +1093,42 @@ async def login_user(login_data: UserLogin):
 async def get_offer_requests(admin_user: User = Depends(require_admin)):
     """Get all offer requests for admin mediation"""
     requests = await db.offer_requests.find().to_list(1000)
-    return [OfferRequest(**req) for req in requests]
+    
+    # Clean and validate offer requests, handling missing fields gracefully
+    valid_requests = []
+    for req in requests:
+        try:
+            # Clean MongoDB document
+            cleaned_req = clean_mongodb_doc(req)
+            
+            # Ensure required fields exist with defaults
+            if 'buyer_name' not in cleaned_req:
+                cleaned_req['buyer_name'] = cleaned_req.get('buyer_id', 'Unknown Buyer')
+            if 'asset_name' not in cleaned_req:
+                cleaned_req['asset_name'] = cleaned_req.get('asset_id', 'Unknown Asset')
+            if 'campaign_name' not in cleaned_req:
+                cleaned_req['campaign_name'] = 'Legacy Campaign'
+            if 'campaign_type' not in cleaned_req:
+                cleaned_req['campaign_type'] = 'existing'
+            if 'contract_duration' not in cleaned_req:
+                cleaned_req['contract_duration'] = '1_month'
+            if 'service_bundles' not in cleaned_req:
+                cleaned_req['service_bundles'] = {
+                    'printing': False,
+                    'setup': False,
+                    'monitoring': False
+                }
+            
+            # Create OfferRequest object
+            offer_request = OfferRequest(**cleaned_req)
+            valid_requests.append(offer_request)
+            
+        except Exception as e:
+            # Log the error but continue processing other requests
+            print(f"⚠️  Skipping invalid offer request {req.get('id', 'unknown')}: {str(e)}")
+            continue
+    
+    return valid_requests
 
 @api_router.patch("/admin/offer-requests/{request_id}/status")
 async def update_offer_request_status_admin(
