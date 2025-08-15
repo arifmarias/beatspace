@@ -2235,6 +2235,8 @@ async def create_asset(
     elif asset_category == AssetCategory.PRIVATE_ASSET:
         if not asset_data.get("one_off_investment"):
             raise HTTPException(status_code=400, detail="One-off Investment is required for Private Assets")
+        if asset_data.get("one_off_investment") and float(asset_data["one_off_investment"]) < 0:
+            raise HTTPException(status_code=400, detail="One-off Investment must be a positive value")
         if not asset_data.get("buyer_name"):
             raise HTTPException(status_code=400, detail="Buyer Name is required for Private Assets")
         
@@ -2243,8 +2245,7 @@ async def create_asset(
         if not asset_data.get("pricing"):
             asset_data["pricing"] = {}
     
-    # For admin users, use the provided seller information from the form
-    # For seller users, use their own information
+    # Handle seller assignment based on role and category
     if current_user.role == UserRole.SELLER:
         asset_data["seller_id"] = current_user.id
         # For private assets, buyer is the seller, so seller_name can be optional
@@ -2252,16 +2253,17 @@ async def create_asset(
             asset_data["seller_name"] = current_user.company_name
         asset_data["status"] = AssetStatus.PENDING_APPROVAL
     else:  # Admin user
-        # Admin can specify seller_id and seller_name from the form
-        # For private assets, seller_id might be the buyer_id
+        # For admin created assets, handle seller_id assignment
         if asset_category == AssetCategory.PRIVATE_ASSET:
             # For private assets, if no seller_id provided, use current admin as placeholder
             if not asset_data.get("seller_id"):
                 asset_data["seller_id"] = current_user.id
         else:
-            # For public and existing assets, seller_id is required
+            # For public and existing assets, try to use provided seller_id or default to admin
             if not asset_data.get("seller_id"):
-                raise HTTPException(status_code=400, detail="Seller ID is required for public and existing assets")
+                # If no seller_id provided, use admin as the seller for now
+                asset_data["seller_id"] = current_user.id
+                asset_data["seller_name"] = current_user.company_name
         
         asset_data["status"] = AssetStatus.AVAILABLE  # Admin-created assets are pre-approved
     
