@@ -1715,7 +1715,7 @@ const BuyerDashboard = () => {
         });
         
         // Refresh data to show request status
-        await fetchOfferRequests();
+        await fetchBuyerData();
         await fetchLiveAssets(true, false);
 
         return;
