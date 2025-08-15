@@ -517,12 +517,27 @@ const ManagerDashboard = () => {
     setMapAssignmentModal(true);
   };
 
-  const handleMapAssetSelection = (asset, selected) => {
-    if (selected) {
-      setSelectedMapAssets(prev => [...prev, asset.id]);
-    } else {
-      setSelectedMapAssets(prev => prev.filter(id => id !== asset.id));
-    }
+  // Route Assignment Map Selection
+  const handleMapAssetSelection = (asset, isCtrlKey = false) => {
+    setSelectedMapAssets(prev => {
+      if (isCtrlKey) {
+        // Multi-select with Ctrl key
+        if (prev.includes(asset.id)) {
+          // Remove if already selected
+          return prev.filter(id => id !== asset.id);
+        } else {
+          // Add to selection
+          return [...prev, asset.id];
+        }
+      } else {
+        // Single select (toggle)
+        if (prev.includes(asset.id)) {
+          return prev.filter(id => id !== asset.id);
+        } else {
+          return [asset.id];
+        }
+      }
+    });
   };
 
   const handleBulkMapAssignment = () => {
