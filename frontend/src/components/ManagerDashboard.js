@@ -912,76 +912,36 @@ const ManagerDashboard = () => {
     }
   }, [loadGoogleMapsScript]);
 
-  // Tab refresh functionality - properly handle map visibility on tab switch
+  // Tab refresh functionality - simple and clean (no infinite loops)
   useEffect(() => {
     if (activeTab === 'route') {
-      console.log('Route Assignment tab activated - ensuring map visibility...');
+      console.log('Route Assignment tab activated - refreshing data...');
       
-      // Refresh monitoring assets data when tab is activated
+      // Only refresh data, not map
       fetchMonitoringAssets();
       
-      // Handle map initialization/restoration with proper timing
-      const ensureMapVisibility = () => {
-        if (window.google && mapRef.current) {
-          if (!mapInstanceRef.current) {
-            // Map needs initial setup
-            console.log('Initializing map for first time');
-            initializeMap();
-          } else {
-            // Map exists but might be hidden due to tab switching
-            console.log('Restoring map after tab switch');
-            
-            // Force map to be visible and properly sized
-            window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
-            
-            // Ensure map is centered and visible
-            setTimeout(() => {
-              if (mapInstanceRef.current) {
-                mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
-                
-                // If we have markers, fit bounds to show them
-                if (markersRef.current.length > 0) {
-                  const bounds = new window.google.maps.LatLngBounds();
-                  markersRef.current.forEach(marker => {
-                    bounds.extend(marker.getPosition());
-                  });
-                  mapInstanceRef.current.fitBounds(bounds);
-                  
-                  // Ensure minimum zoom
-                  setTimeout(() => {
-                    if (mapInstanceRef.current.getZoom() > 16) {
-                      mapInstanceRef.current.setZoom(16);
-                    }
-                  }, 100);
-                } else if (monitoringAssets.length > 0) {
-                  // We have assets but no markers, create them
-                  updateMapMarkers();
-                }
-              }
-            }, 500);
-          }
-        }
-      };
-
-      // Use longer timeout to ensure DOM is ready after tab switch
-      setTimeout(ensureMapVisibility, 100);
+      // Handle map initialization ONCE
+      if (window.google && mapRef.current && !mapInstanceRef.current) {
+        console.log('Initializing map for first time');
+        setTimeout(() => initializeMap(), 200);
+      }
     }
-  }, [activeTab, fetchMonitoringAssets, initializeMap, updateMapMarkers, monitoringAssets.length]);
+  }, [activeTab, fetchMonitoringAssets, initializeMap]);
 
-  // Controlled marker updates - only for filters and search (not selection)
+  // Simple marker update ONLY for filters/search - NOT for selection
   useEffect(() => {
-    console.log('Filters or search changed, updating markers...', {
+    console.log('Filters or search changed, checking if marker update needed...', {
       hasMapInstance: !!mapInstanceRef.current,
       assetsCount: monitoringAssets.length,
       activeTab: activeTab
     });
     
-    // Only update markers if we're on route tab, have map instance, and have assets
-    // This handles filtering and search changes, not selection changes
+    // Only update if we're on route tab, have map, and assets changed significantly
     if (activeTab === 'route' && mapInstanceRef.current && monitoringAssets.length > 0) {
+      // Only update markers if the asset count changed (real data change)
       updateMapMarkers();
     }
-  }, [updateMapMarkers, mapFilters, mapSearchTerm, monitoringAssets.length, activeTab]);
+  }, [updateMapMarkers, mapFilters, mapSearchTerm, monitoringAssets]);
 
   // Generate tasks
   const generateTasks = async () => {
