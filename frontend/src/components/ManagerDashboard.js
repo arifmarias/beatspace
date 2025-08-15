@@ -1736,40 +1736,33 @@ const ManagerDashboard = () => {
                         </div>
                       )}
                       
-                      {/* Improved Asset Selection Info Overlay - Minimal and Clean */}
+                      {/* Streamlined Selection Overlay - Bottom Toast Style */}
                       {selectedMapAssets.length > 0 && (
-                        <div className="absolute bottom-6 left-6 right-6 bg-white rounded-lg shadow-lg p-3 border border-orange-200 z-10">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">{selectedMapAssets.length}</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold text-gray-900">
-                                  {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
-                                </span>
-                                <div className="text-xs text-gray-500">
-                                  Ready for assignment
-                                </div>
-                              </div>
+                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white rounded-full px-6 py-3 shadow-lg z-10 flex items-center space-x-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center font-bold">
+                              {selectedMapAssets.length}
                             </div>
-                            
-                            <div className="flex items-center space-x-2">
-                              <Button 
-                                size="sm" 
-                                className="bg-orange-500 hover:bg-orange-600 text-white"
-                                onClick={() => setAssignmentPanelOpen(true)}
-                              >
-                                Assign Now
-                              </Button>
-                              <button
-                                onClick={() => setSelectedMapAssets([])}
-                                className="text-gray-400 hover:text-gray-600 p-1"
-                                title="Clear selection"
-                              >
-                                ✕
-                              </button>
-                            </div>
+                            <span className="font-semibold">
+                              {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} ready for assignment
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-white text-orange-500 hover:bg-gray-100 font-medium"
+                              onClick={() => setAssignmentPanelOpen(true)}
+                            >
+                              Assign Now
+                            </Button>
+                            <button
+                              onClick={() => setSelectedMapAssets([])}
+                              className="text-orange-200 hover:text-white p-1 text-lg"
+                              title="Clear selection"
+                            >
+                              ✕
+                            </button>
                           </div>
                         </div>
                       )}
