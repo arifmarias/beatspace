@@ -847,54 +847,193 @@ const ManagerDashboard = () => {
     };
   }, [monitoringAssets, handleMapAssetSelection]);
 
-  // Function to update only marker colors (prevent flickering)
-  const updateMarkerColors = useCallback(() => {
-    if (!mapInstanceRef.current || markersRef.current.length === 0) {
+  // Route Assignment - Clean rewrite with no flickering
+  const mapRef = useRef(null);
+  const mapInstance = useRef(null);
+  const markers = useRef([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Clean marker management
+  const clearAllMarkers = () => {
+    markers.current.forEach(marker => marker.setMap(null));
+    markers.current = [];
+  };
+
+  // Initialize Google Maps once
+  const initializeGoogleMap = useCallback(() => {
+    if (!window.google || !mapRef.current || mapInstance.current) {
       return;
     }
 
-    console.log('Updating marker colors only (no flickering)');
+    console.log('Initializing Google Map...');
     
-    markersRef.current.forEach(marker => {
-      const asset = marker.assetData;
-      if (!asset) return;
+    const map = new window.google.maps.Map(mapRef.current, {
+      zoom: 12,
+      center: { lat: 23.8103, lng: 90.4125 }, // Dhaka center
+      mapTypeControl: true,
+      streetViewControl: true,
+      fullscreenControl: true,
+      zoomControl: true,
+    });
 
-      const assignedOperator = assetAssignments[asset.id];
-      const isSelected = selectedMapAssets.includes(asset.id);
-      const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
-      
-      // Determine marker color
-      let markerColor = '#10b981'; // Green for unassigned
-      if (isSelected) {
-        markerColor = '#ff6b35'; // Orange for selected
-      } else if (isAssigned) {
-        markerColor = '#3b82f6'; // Blue for assigned
+    mapInstance.current = map;
+    setMapLoaded(true);
+    console.log('Google Map initialized successfully');
+  }, []);
+
+  // Load Google Maps script
+  const loadGoogleMapsScript = useCallback(() => {
+    if (window.google) {
+      initializeGoogleMap();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`;
+    script.async = true;
+    script.onload = initializeGoogleMap;
+    document.head.appendChild(script);
+  }, [initializeGoogleMap]);
+
+  // Create markers without flickering
+  const createMarkersFromAssets = useCallback(() => {
+    if (!mapInstance.current || !mapLoaded) {
+      return;
+    }
+
+    console.log('Creating markers from assets...');
+    clearAllMarkers();
+
+    const assetsToShow = getFilteredMapAssets();
+    
+    assetsToShow.forEach(asset => {
+      if (!asset.location?.lat || !asset.location?.lng) {
+        return;
       }
 
-      // Update marker icon with new color
-      const markerIcon = {
+      const lat = parseFloat(asset.location.lat);
+      const lng = parseFloat(asset.location.lng);
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        return;
+      }
+
+      const isSelected = selectedMapAssets.includes(asset.id);
+      const assignedOperator = assetAssignments[asset.id];
+      const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
+
+      // Determine marker color
+      let color = '#10b981'; // Green for unassigned
+      if (isSelected) {
+        color = '#ff6b35'; // Orange for selected  
+      } else if (isAssigned) {
+        color = '#3b82f6'; // Blue for assigned
+      }
+
+      const marker = new window.google.maps.Marker({
+        position: { lat, lng },
+        map: mapInstance.current,
+        title: asset.assetName,
+        icon: {
+          url: `data:image/svg+xml,${encodeURIComponent(`
+            <svg width="24" height="36" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24c0-6.627-5.373-12-12-12z" fill="${color}"/>
+              <circle cx="12" cy="12" r="4" fill="white"/>
+            </svg>
+          `)}`,
+          scaledSize: new window.google.maps.Size(24, 36),
+          anchor: new window.google.maps.Point(12, 36)
+        }
+      });
+
+      // Simple click handler for selection
+      marker.addListener('click', (event) => {
+        const isCtrlPressed = event.domEvent?.ctrlKey || event.domEvent?.metaKey;
+        
+        setSelectedMapAssets(prev => {
+          if (isCtrlPressed) {
+            // Multi-select
+            return prev.includes(asset.id) 
+              ? prev.filter(id => id !== asset.id)
+              : [...prev, asset.id];
+          } else {
+            // Single select
+            return prev.includes(asset.id) ? [] : [asset.id];
+          }
+        });
+      });
+
+      markers.current.push(marker);
+    });
+
+    // Fit map to show all markers
+    if (markers.current.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      markers.current.forEach(marker => bounds.extend(marker.getPosition()));
+      mapInstance.current.fitBounds(bounds);
+      
+      // Prevent over-zooming
+      setTimeout(() => {
+        if (mapInstance.current.getZoom() > 16) {
+          mapInstance.current.setZoom(16);
+        }
+      }, 100);
+    }
+
+    console.log(`Created ${markers.current.length} markers`);
+  }, [getFilteredMapAssets, selectedMapAssets, assetAssignments, mapLoaded]);
+
+  // Update marker colors only (no recreating)
+  const updateMarkerColors = useCallback(() => {
+    markers.current.forEach((marker, index) => {
+      const asset = getFilteredMapAssets()[index];
+      if (!asset) return;
+
+      const isSelected = selectedMapAssets.includes(asset.id);
+      const assignedOperator = assetAssignments[asset.id];
+      const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
+
+      let color = '#10b981'; // Green for unassigned
+      if (isSelected) {
+        color = '#ff6b35'; // Orange for selected  
+      } else if (isAssigned) {
+        color = '#3b82f6'; // Blue for assigned
+      }
+
+      marker.setIcon({
         url: `data:image/svg+xml,${encodeURIComponent(`
-          <svg width="30" height="45" viewBox="0 0 30 45" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 30 15 30s15-18.75 15-30c0-8.284-6.716-15-15-15z" fill="${markerColor}"/>
-            <circle cx="15" cy="15" r="${asset.serviceLevel === 'premium' ? 8 : 6}" fill="white"/>
-            ${asset.serviceLevel === 'premium' ? '<circle cx="15" cy="15" r="4" fill="#ffd700"/>' : ''}
-            ${asset.serviceLevel === 'premium' ? '<text x="15" y="19" text-anchor="middle" font-size="8" fill="#000">P</text>' : ''}
+          <svg width="24" height="36" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24c0-6.627-5.373-12-12-12z" fill="${color}"/>
+            <circle cx="12" cy="12" r="4" fill="white"/>
           </svg>
         `)}`,
-        scaledSize: new window.google.maps.Size(30, 45),
-        anchor: new window.google.maps.Point(15, 45)
-      };
-
-      marker.setIcon(markerIcon);
+        scaledSize: new window.google.maps.Size(24, 36),
+        anchor: new window.google.maps.Point(12, 36)
+      });
     });
-  }, [selectedMapAssets, assetAssignments]);
+  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets]);
 
-  // Update only marker colors when selection changes (prevent flickering)
+  // Initialize map when Route Assignment tab is active
   useEffect(() => {
-    if (mapInstanceRef.current && markersRef.current.length > 0) {
+    if (activeTab === 'route' && process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+      fetchMonitoringAssets(); // Refresh data
+      loadGoogleMapsScript();
+    }
+  }, [activeTab, fetchMonitoringAssets, loadGoogleMapsScript]);
+
+  // Create markers when data changes
+  useEffect(() => {
+    if (activeTab === 'route' && mapLoaded && monitoringAssets.length > 0) {
+      createMarkersFromAssets();
+    }
+  }, [activeTab, mapLoaded, monitoringAssets, mapFilters, mapSearchTerm, createMarkersFromAssets]);
+
+  // Update marker colors when selection changes
+  useEffect(() => {
+    if (activeTab === 'route' && mapLoaded && markers.current.length > 0) {
       updateMarkerColors();
     }
-  }, [selectedMapAssets, updateMarkerColors]);
+  }, [selectedMapAssets, updateMarkerColors, activeTab, mapLoaded]);
 
   // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
