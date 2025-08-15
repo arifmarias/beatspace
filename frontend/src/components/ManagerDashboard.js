@@ -1504,6 +1504,32 @@ const ManagerDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
+                    {/* Selection Controls */}
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            const filteredAssets = getFilteredMapAssets();
+                            setSelectedMapAssets(filteredAssets.map(asset => asset.id));
+                          }}
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                          disabled={getFilteredMapAssets().length === 0}
+                        >
+                          Select All Visible
+                        </button>
+                        <button
+                          onClick={() => setSelectedMapAssets([])}
+                          className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+                          disabled={selectedMapAssets.length === 0}
+                        >
+                          Clear Selection
+                        </button>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                      </div>
+                    </div>
+
                     {/* Google Maps Container */}
                     <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden relative">
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
