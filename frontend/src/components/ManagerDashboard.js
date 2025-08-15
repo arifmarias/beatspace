@@ -1169,6 +1169,245 @@ const ManagerDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Route Assignment Tab */}
+          <TabsContent value="route" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {/* Map Container */}
+              <div className="lg:col-span-3">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center">
+                        <MapPin className="w-5 h-5 mr-2" />
+                        Route Assignment Map
+                      </CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                          Unassigned
+                        </Badge>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                          Assigned
+                        </Badge>
+                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full mr-1"></div>
+                          Selected
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    {/* Google Maps Container */}
+                    <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
+                      {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
+                        <div className="w-full h-full">
+                          {/* Google Maps will be rendered here */}
+                          <div id="route-assignment-map" className="w-full h-full">
+                            {/* Map Placeholder */}
+                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                              <div className="text-center">
+                                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">Interactive Route Map</h3>
+                                <p className="text-gray-500">Google Maps integration will render here</p>
+                                <div className="mt-4 text-sm text-gray-400">
+                                  Assets: {getFilteredMapAssets().length} | Selected: {selectedMapAssets.length}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center">
+                            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">Google Maps Not Available</h3>
+                            <p className="text-gray-500">Google Maps API key not configured</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Asset Selection Info Overlay */}
+                      {selectedMapAssets.length > 0 && (
+                        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 border">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                            <span className="font-medium">{selectedMapAssets.length} assets selected</span>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setAssignmentPanelOpen(true)}
+                            >
+                              Assign
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Control Panel */}
+              <div className="lg:col-span-1">
+                <div className="space-y-4">
+                  {/* Search and Filters */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Map Controls</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Search */}
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Search Assets</label>
+                        <div className="relative">
+                          <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+                          <Input
+                            placeholder="Asset name or location..."
+                            value={mapSearchTerm}
+                            onChange={(e) => setMapSearchTerm(e.target.value)}
+                            className="pl-9 text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Service Tier Filter */}
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Service Tier</label>
+                        <Select 
+                          value={mapFilters.serviceTier} 
+                          onValueChange={(value) => setMapFilters(prev => ({...prev, serviceTier: value}))}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Tiers</SelectItem>
+                            <SelectItem value="standard">Standard</SelectItem>
+                            <SelectItem value="premium">Premium</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Assignment Status Filter */}
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Assignment Status</label>
+                        <Select 
+                          value={mapFilters.assignmentStatus} 
+                          onValueChange={(value) => setMapFilters(prev => ({...prev, assignmentStatus: value}))}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Assets</SelectItem>
+                            <SelectItem value="assigned">Assigned</SelectItem>
+                            <SelectItem value="unassigned">Unassigned</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Operator Filter */}
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Operator</label>
+                        <Select 
+                          value={mapFilters.operator} 
+                          onValueChange={(value) => setMapFilters(prev => ({...prev, operator: value}))}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Operators</SelectItem>
+                            {[...new Set(Object.values(assetAssignments).filter(name => name !== 'Unassigned'))].map(assignee => (
+                              <SelectItem key={assignee} value={assignee}>
+                                {assignee}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Asset Statistics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Asset Statistics</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Total Assets:</span>
+                          <span className="font-medium">{getFilteredMapAssets().length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Assigned:</span>
+                          <span className="font-medium text-blue-600">
+                            {getFilteredMapAssets().filter(asset => 
+                              assetAssignments[asset.id] && assetAssignments[asset.id] !== 'Unassigned'
+                            ).length}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Unassigned:</span>
+                          <span className="font-medium text-green-600">
+                            {getFilteredMapAssets().filter(asset => 
+                              !assetAssignments[asset.id] || assetAssignments[asset.id] === 'Unassigned'
+                            ).length}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Selected:</span>
+                          <span className="font-medium text-orange-600">{selectedMapAssets.length}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Actions */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-xs"
+                        onClick={() => setSelectedMapAssets([])}
+                        disabled={selectedMapAssets.length === 0}
+                      >
+                        Clear Selection
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-xs"
+                        onClick={() => {
+                          const unassignedAssets = getFilteredMapAssets().filter(asset => 
+                            !assetAssignments[asset.id] || assetAssignments[asset.id] === 'Unassigned'
+                          );
+                          setSelectedMapAssets(unassignedAssets.map(asset => asset.id));
+                        }}
+                      >
+                        Select All Unassigned
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full text-xs"
+                        onClick={() => setAssignmentPanelOpen(true)}
+                        disabled={selectedMapAssets.length === 0}
+                      >
+                        Bulk Assign
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="operators" className="space-y-4">
             <Card>
               <CardHeader>
