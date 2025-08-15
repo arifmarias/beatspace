@@ -57,6 +57,7 @@ import { useNotifications } from '../contexts/NotificationContext';
 import { getAuthHeaders, logout, getUser, isAuthenticated, getToken } from '../utils/auth';
 import { useWebSocket, getWebSocketUserId, WEBSOCKET_EVENTS } from '../utils/websocket';
 import { useNavigate, useLocation } from 'react-router-dom';
+import RequestsCategoryTabs from './RequestsCategoryTabs';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
