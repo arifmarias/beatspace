@@ -613,7 +613,18 @@ const ManagerDashboard = () => {
 
   // Initialize Google Maps once using official Loader to avoid double-loading conflicts
   const initializeRouteMap = useCallback(async () => {
-    if (routeMapInstance.current || !routeMapRef.current) return;
+    // Always check if map container is valid and reinitialize if needed
+    const mapContainer = routeMapRef.current;
+    if (!mapContainer) return;
+    
+    // Check if map instance exists and is properly attached to the container
+    const needsInit = !routeMapInstance.current || 
+      !routeMapInstance.current.getDiv() ||
+      routeMapInstance.current.getDiv() !== mapContainer ||
+      !mapContainer.querySelector('.gm-style');
+    
+    if (!needsInit) return;
+    
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
       console.error('Google Maps API key not configured');
@@ -622,7 +633,7 @@ const ManagerDashboard = () => {
     try {
       const loader = new Loader({ apiKey, version: 'weekly' });
       await loader.load();
-      const map = new window.google.maps.Map(routeMapRef.current, {
+      const map = new window.google.maps.Map(mapContainer, {
         zoom: 12,
         center: { lat: 23.8103, lng: 90.4125 }, // Dhaka center
         mapTypeControl: true,
