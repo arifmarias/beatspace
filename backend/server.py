@@ -119,6 +119,11 @@ api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
 
 # Enums (Previous enums plus new ones)
+class AssetCategory(str, Enum):
+    PUBLIC = "Public"
+    EXISTING_ASSET = "Existing Asset" 
+    PRIVATE_ASSET = "Private Asset"
+
 class AssetType(str, Enum):
     BILLBOARD = "Billboard"
     POLICE_BOX = "Police Box"
