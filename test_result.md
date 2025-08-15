@@ -180,15 +180,13 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Asset Creation with Public Category"
-    - "Asset Creation with Existing Asset Category"
-    - "Edge Cases for Asset Categories"
+    - "Asset Categories UI/UX Verification Complete"
   stuck_tasks:
     - "Asset Creation with Public Category"
     - "Asset Creation with Existing Asset Category"
     - "Edge Cases for Asset Categories"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "ui_verification_complete"
   
 ## agent_communication:
      - agent: "main"
