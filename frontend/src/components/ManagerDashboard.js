@@ -560,8 +560,21 @@ const ManagerDashboard = () => {
 
   // Google Maps Integration
   const initializeMap = useCallback(() => {
-    if (!window.google || !mapRef.current) {
-      console.log('Google Maps or map ref not available');
+    console.log('initializeMap called', {
+      hasWindow: typeof window !== 'undefined',
+      hasGoogle: !!window.google,
+      hasMapRef: !!mapRef.current,
+      mapRefElement: mapRef.current
+    });
+    
+    if (!window.google) {
+      console.log('Google Maps not loaded yet');
+      return;
+    }
+    
+    if (!mapRef.current) {
+      console.log('Map ref not available, retrying in 100ms...');
+      setTimeout(() => initializeMap(), 100);
       return;
     }
 
@@ -585,12 +598,12 @@ const ManagerDashboard = () => {
     // Initialize markers after a short delay to ensure map is ready
     setTimeout(() => {
       updateMapMarkers();
-    }, 500);
+    }, 1000);
   }, []);
 
   const loadGoogleMapsScript = useCallback(() => {
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-    console.log('Loading Google Maps script...', { apiKey: !!apiKey });
+    console.log('Loading Google Maps script...', { apiKey: !!apiKey, hasExisting: !!window.google });
     
     if (window.google) {
       console.log('Google Maps already loaded');
@@ -600,6 +613,14 @@ const ManagerDashboard = () => {
 
     if (!apiKey) {
       console.error('Google Maps API key not found');
+      return;
+    }
+
+    // Check if script is already being loaded
+    const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
+    if (existingScript) {
+      console.log('Google Maps script already loading, waiting...');
+      existingScript.onload = initializeMap;
       return;
     }
 
