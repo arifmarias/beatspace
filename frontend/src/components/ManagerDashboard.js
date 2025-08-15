@@ -1600,7 +1600,7 @@ const ManagerDashboard = () => {
                           {/* Floating controls: only show inline assignment when in fullscreen */}
                           <div className="absolute right-4 top-4 flex gap-2 z-10">
                             {/* Keep fullscreen handled by the built-in Google control (icon only) - no text button here */}
-                            {document.fullscreenElement && selectedMapAssets.length > 0 && (
+                            {isMapFullscreen && selectedMapAssets.length > 0 && (
                               <>
                                 <Select value={bulkAssignmentOperator} onValueChange={setBulkAssignmentOperator}>
                                   <SelectTrigger className="w-44 bg-white">
