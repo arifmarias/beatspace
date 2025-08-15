@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
 class MonitoringServiceTester:
-    def __init__(self, base_url="https://beatspace-monitor-1.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://fieldview-monitor.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
