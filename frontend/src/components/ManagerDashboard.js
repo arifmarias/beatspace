@@ -644,6 +644,10 @@ const ManagerDashboard = () => {
       console.error('Failed to load Google Maps via Loader', err);
     }
   }, []);
+    // Track fullscreen changes so we only show inline assignment in fullscreen
+    const fsHandler = () => setIsMapFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', fsHandler);
+
 
   // Load Google Maps via Loader (single source of truth)
   const loadRouteMapsScript = useCallback(() => {
