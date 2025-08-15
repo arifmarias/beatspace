@@ -639,7 +639,10 @@ const ManagerDashboard = () => {
 
   // Load Google Maps via Loader (single source of truth)
   const loadRouteMapsScript = useCallback(() => {
-    initializeRouteMap();
+    // Defer map init slightly to ensure tab content is visible and sized
+    setTimeout(() => {
+      initializeRouteMap();
+    }, 300);
   }, [initializeRouteMap]);
 
   // Create markers without flickering
