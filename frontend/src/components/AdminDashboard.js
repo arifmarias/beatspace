@@ -4181,6 +4181,95 @@ const AdminDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Category *
+                  </label>
+                  <Select 
+                    value={assetForm.category || 'Public'} 
+                    onValueChange={(value) => setAssetForm({
+                      ...assetForm, 
+                      category: value,
+                      // Reset category-specific fields when category changes
+                      asset_expiry_date: value === 'Existing Asset' ? assetForm.asset_expiry_date : '',
+                      one_off_investment: value === 'Private Asset' ? assetForm.one_off_investment : '',
+                      buyer_name: ['Existing Asset', 'Private Asset'].includes(value) ? assetForm.buyer_name : ''
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select asset category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Public">🌐 Public (Show in Marketplace)</SelectItem>
+                      <SelectItem value="Existing Asset">📋 Existing Asset (Not in Marketplace)</SelectItem>
+                      <SelectItem value="Private Asset">🔒 Private Asset (Not in Marketplace)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {assetForm.category === 'Public' && 'This asset will be visible in the marketplace for buyers'}
+                    {assetForm.category === 'Existing Asset' && 'This asset will not appear in marketplace. Requires expiry date and buyer name.'}
+                    {assetForm.category === 'Private Asset' && 'This asset will not appear in marketplace. Requires one-off investment and buyer name.'}
+                  </p>
+                </div>
+
+                {/* Conditional Fields for Existing Asset */}
+                {assetForm.category === 'Existing Asset' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Asset Expiry Date *
+                      </label>
+                      <Input
+                        type="date"
+                        value={assetForm.asset_expiry_date}
+                        onChange={(e) => setAssetForm({...assetForm, asset_expiry_date: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Buyer Name *
+                      </label>
+                      <Input
+                        value={assetForm.buyer_name}
+                        onChange={(e) => setAssetForm({...assetForm, buyer_name: e.target.value})}
+                        placeholder="Enter buyer name"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Conditional Fields for Private Asset */}
+                {assetForm.category === 'Private Asset' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        One-off Investment *
+                      </label>
+                      <Input
+                        type="number"
+                        value={assetForm.one_off_investment}
+                        onChange={(e) => setAssetForm({...assetForm, one_off_investment: e.target.value})}
+                        placeholder="Enter investment amount"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Buyer Name *
+                      </label>
+                      <Input
+                        value={assetForm.buyer_name}
+                        onChange={(e) => setAssetForm({...assetForm, buyer_name: e.target.value})}
+                        placeholder="Enter buyer name (buyer is the seller for private assets)"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Description
                   </label>
                   <Textarea
