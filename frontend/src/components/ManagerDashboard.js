@@ -693,14 +693,15 @@ const ManagerDashboard = () => {
       activeTab: activeTab
     });
     
-    // If we don't have assets yet and we're on the route tab, wait and try again
+    // If we don't have assets yet and we're on the route tab, wait and try again (but only once)
     if (monitoringAssets.length === 0 && activeTab === 'route') {
-      console.log('No monitoring assets available yet, retrying in 1000ms...');
+      console.log('No monitoring assets available yet, retrying once in 1500ms...');
       setTimeout(() => {
-        // Force refresh assets if still empty after waiting
-        fetchMonitoringAssets();
-        setTimeout(() => updateMapMarkers(), 500);
-      }, 1000);
+        if (monitoringAssets.length === 0) {
+          // Force refresh assets if still empty after waiting
+          fetchMonitoringAssets();
+        }
+      }, 1500);
       return;
     }
     
@@ -709,6 +710,12 @@ const ManagerDashboard = () => {
 
     const filteredAssets = getFilteredMapAssets();
     console.log('Filtered assets for map:', filteredAssets.length);
+    
+    // Prevent unnecessary re-renders by checking if we actually have assets to show
+    if (filteredAssets.length === 0) {
+      console.log('No assets to display after filtering');
+      return;
+    }
     
     filteredAssets.forEach((asset, index) => {
       if (!asset.location || !asset.location.lat || !asset.location.lng) {
@@ -725,7 +732,6 @@ const ManagerDashboard = () => {
       }
 
       const position = { lat, lng };
-      console.log(`Adding marker for ${asset.assetName} at:`, position);
 
       const assignedOperator = assetAssignments[asset.id];
       const isSelected = selectedMapAssets.includes(asset.id);
@@ -753,13 +759,13 @@ const ManagerDashboard = () => {
         anchor: new window.google.maps.Point(15, 45)
       };
 
-      // Create marker
+      // Create marker WITHOUT dropping animation to prevent constant dropping
       const marker = new window.google.maps.Marker({
         position: position,
         map: mapInstanceRef.current,
         icon: markerIcon,
-        title: asset.assetName,
-        animation: window.google.maps.Animation.DROP
+        title: asset.assetName
+        // Removed animation to prevent constant dropping
       });
 
       // Store asset data with marker for easy access
@@ -801,8 +807,9 @@ const ManagerDashboard = () => {
         // Toggle selection
         handleMapAssetSelection(asset, isCtrlKey);
         
-        // Update marker icon after a short delay
-        setTimeout(() => updateMapMarkers(), 100);
+        // Update markers but with debouncing to prevent rapid re-renders
+        clearTimeout(window.markerUpdateTimeout);
+        window.markerUpdateTimeout = setTimeout(() => updateMapMarkers(), 200);
       });
 
       marker.addListener('mouseover', () => {
@@ -818,8 +825,8 @@ const ManagerDashboard = () => {
 
     console.log(`Added ${markersRef.current.length} markers to map`);
 
-    // Fit map to show all markers
-    if (markersRef.current.length > 0) {
+    // Fit map to show all markers (only if we have markers and map isn't already fitted)
+    if (markersRef.current.length > 0 && !window.mapAlreadyFitted) {
       const bounds = new window.google.maps.LatLngBounds();
       markersRef.current.forEach(marker => {
         bounds.extend(marker.getPosition());
@@ -832,8 +839,9 @@ const ManagerDashboard = () => {
           mapInstanceRef.current.setZoom(16);
         }
         window.google.maps.event.removeListener(listener);
+        window.mapAlreadyFitted = true; // Prevent repeated fitting
       });
-    } else {
+    } else if (markersRef.current.length === 0) {
       console.log('No markers to display - using default center');
       mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
       mapInstanceRef.current.setZoom(12);
