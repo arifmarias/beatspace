@@ -927,7 +927,7 @@ class BeatSpaceAPITester:
             "assets",
             200,
             data=public_asset_data,
-            token=self.seller_token
+            token=token_to_use
         )
         
         if success:
