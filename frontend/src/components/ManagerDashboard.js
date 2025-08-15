@@ -968,21 +968,18 @@ const ManagerDashboard = () => {
     }
   }, [activeTab, fetchMonitoringAssets, initializeMap, updateMapMarkers, monitoringAssets.length]);
 
-  // Update markers when data changes (controlled to prevent flickering)
+  // Controlled marker updates - only for filters and search (not selection)
   useEffect(() => {
-    console.log('Dependencies changed, checking if markers need update...', {
+    console.log('Filters or search changed, updating markers...', {
       hasMapInstance: !!mapInstanceRef.current,
       assetsCount: monitoringAssets.length,
       activeTab: activeTab
     });
     
     // Only update markers if we're on route tab, have map instance, and have assets
+    // This handles filtering and search changes, not selection changes
     if (activeTab === 'route' && mapInstanceRef.current && monitoringAssets.length > 0) {
-      // Debounce marker updates to prevent flickering
-      clearTimeout(window.markerUpdateDebounce);
-      window.markerUpdateDebounce = setTimeout(() => {
-        updateMapMarkers();
-      }, 100);
+      updateMapMarkers();
     }
   }, [updateMapMarkers, mapFilters, mapSearchTerm, monitoringAssets.length, activeTab]);
 
