@@ -223,11 +223,10 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Monitoring Service Workflow Testing Complete"
-    - "API Data Loading Issues Identified"
+    - "AdminDashboard Error Resolution Verification Complete"
   stuck_tasks: []
   test_all: false
-  test_priority: "data_loading_fixes"
+  test_priority: "error_resolution_verified"
 
 backend:
   - task: "Operator Dashboard Backend Support & User Management"
