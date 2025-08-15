@@ -113,6 +113,7 @@ class MonitoringWorkflowTester:
         
         # Buyer authentication - try multiple known buyers
         buyer_credentials = [
+            ("monitoring.buyer@beatspace.com", "buyer123"),
             ("buy@demo.com", "buyer123"),
             ("marketing@grameenphone.com", "buyer123"),
             ("testbuyer@beatspace.com", "buyer123"),
