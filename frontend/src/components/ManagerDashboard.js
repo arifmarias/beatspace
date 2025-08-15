@@ -900,19 +900,23 @@ const ManagerDashboard = () => {
     }
   }, [activeTab, fetchMonitoringAssets, initializeMap, updateMapMarkers, monitoringAssets.length]);
 
-  // Update markers when data changes
+  // Update markers when data changes (controlled to prevent flickering)
   useEffect(() => {
-    console.log('Dependencies changed, updating markers...', {
+    console.log('Dependencies changed, checking if markers need update...', {
       hasMapInstance: !!mapInstanceRef.current,
-      filtersChanged: mapFilters,
-      searchTerm: mapSearchTerm,
-      assetsCount: monitoringAssets.length
+      assetsCount: monitoringAssets.length,
+      activeTab: activeTab
     });
     
-    if (mapInstanceRef.current) {
-      updateMapMarkers();
+    // Only update markers if we're on route tab, have map instance, and have assets
+    if (activeTab === 'route' && mapInstanceRef.current && monitoringAssets.length > 0) {
+      // Debounce marker updates to prevent flickering
+      clearTimeout(window.markerUpdateDebounce);
+      window.markerUpdateDebounce = setTimeout(() => {
+        updateMapMarkers();
+      }, 100);
     }
-  }, [updateMapMarkers, mapFilters, mapSearchTerm]);
+  }, [updateMapMarkers, mapFilters, mapSearchTerm, monitoringAssets.length, activeTab]);
 
   // Generate tasks
   const generateTasks = async () => {
