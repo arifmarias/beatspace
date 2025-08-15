@@ -4,7 +4,7 @@ Test Manager and Operator Dashboard Access
 """
 import requests
 
-API = "https://mapview-dash.preview.emergentagent.com/api"
+API = "https://route-map-hover.preview.emergentagent.com/api"
 
 print("🔍 Testing Manager and Operator Dashboard Access")
 print("="*50)
@@ -89,15 +89,15 @@ print("="*50)
 print("After the frontend fix is deployed:")
 print()
 print("📋 MANAGER DASHBOARD ACCESS:")
-print("   1. Go to: https://mapview-dash.preview.emergentagent.com/login")
+print("   1. Go to: https://route-map-hover.preview.emergentagent.com/login")
 print("   2. Login with: manager@beatspace.com / manager123")
 print("   3. You should be automatically redirected to: /manager/dashboard")
 print()
 print("📱 OPERATOR DASHBOARD ACCESS:")
-print("   1. Go to: https://mapview-dash.preview.emergentagent.com/login")
+print("   1. Go to: https://route-map-hover.preview.emergentagent.com/login")
 print("   2. Login with: operator3@beatspace.com / operator123")
 print("   3. You should be automatically redirected to: /operator/dashboard")
 print()
 print("🛠️ DIRECT ACCESS (If already logged in):")
-print("   Manager: https://mapview-dash.preview.emergentagent.com/manager/dashboard")
-print("   Operator: https://mapview-dash.preview.emergentagent.com/operator/dashboard")
+print("   Manager: https://route-map-hover.preview.emergentagent.com/manager/dashboard")
+print("   Operator: https://route-map-hover.preview.emergentagent.com/operator/dashboard")

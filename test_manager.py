@@ -5,7 +5,7 @@ Test script for Manager Dashboard backend endpoints
 import requests
 import json
 
-API_BASE = "https://mapview-dash.preview.emergentagent.com/api"
+API_BASE = "https://route-map-hover.preview.emergentagent.com/api"
 
 def test_manager_endpoints():
     print("🚀 Manager Dashboard Backend Endpoints Test")
