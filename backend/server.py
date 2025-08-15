@@ -2977,6 +2977,43 @@ async def deactivate_monitoring_service(
         logger.error(f"Error deactivating monitoring service: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deactivating monitoring service: {str(e)}")
 
+@api_router.post("/monitoring/services/activate/{request_id}")
+async def activate_monitoring_service(
+    request_id: str,
+    current_user: User = Depends(require_admin_or_manager)
+):
+    """Activate monitoring service after PO upload and admin approval"""
+    try:
+        # Find the offer request
+        offer_request = await db.offer_requests.find_one({"id": request_id, "request_type": "monitoring_service"})
+        if not offer_request:
+            raise HTTPException(status_code=404, detail="Monitoring service request not found")
+        
+        if offer_request["status"] != "PO Uploaded":
+            raise HTTPException(status_code=400, detail="Request must be in 'PO Uploaded' status to activate")
+        
+        # Get service details from the request
+        service_details = offer_request["service_details"]
+        
+        # Create the actual monitoring subscription
+        subscription = MonitoringServiceSubscription(**service_details, buyer_id=offer_request["buyer_id"])
+        await db.monitoring_subscriptions.insert_one(subscription.dict())
+        
+        # Update offer request status
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": "Approved", "activated_at": datetime.utcnow(), "updated_at": datetime.utcnow()}}
+        )
+        
+        # Generate initial monitoring tasks
+        await generate_monitoring_tasks(subscription.id, subscription)
+        
+        return {"message": "Monitoring service activated successfully", "subscription_id": subscription.id}
+        
+    except Exception as e:
+        logger.error(f"Error activating monitoring service: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error activating monitoring service: {str(e)}")
+
 @api_router.get("/monitoring/services/{subscription_id}")
 async def get_monitoring_service(
     subscription_id: str,
