@@ -57,6 +57,90 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 backend:
+  - task: "Asset Creation with Public Category"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE: Backend validation error 'Seller ID is required for public and existing assets' prevents creation of PUBLIC category assets. Admin token authentication works but seller_id field is missing from asset creation payload. This blocks public asset marketplace functionality."
+
+  - task: "Asset Creation with Existing Asset Category"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE: Same seller ID validation error as public assets. Backend requires seller_id field for existing asset category creation. This prevents proper existing asset workflow functionality."
+
+  - task: "Asset Creation with Private Asset Category"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ WORKING CORRECTLY: Private asset creation successful with all required fields (one_off_investment: 250000, buyer_name: 'Private Investor Ltd'). Asset ID generated, category properly set to 'Private Asset', seller_name correctly optional. Private asset workflow fully functional."
+
+  - task: "Backend Validation for Asset Category Required Fields"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ VALIDATION WORKING PERFECTLY: All category-specific field validations working correctly. Existing Asset: properly rejects missing asset_expiry_date and buyer_name (400 errors). Private Asset: properly rejects missing one_off_investment and buyer_name (400 errors). Backend validation logic is robust and comprehensive."
+
+  - task: "Marketplace Filtering - Public Assets Only"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ MARKETPLACE FILTERING WORKING: GET /api/assets/public endpoint returns 7 public assets correctly without authentication. Admin authenticated endpoint returns 0 assets (expected for admin role). Marketplace filtering logic properly implemented and functional."
+
+  - task: "Asset Model Fields for Categories"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Minor: Asset model fields working correctly. All new fields (category, one_off_investment, buyer_name) properly stored and retrieved. Minor date format difference: backend returns '2025-12-31T00:00:00' vs expected '2025-12-31T00:00:00Z' but functionally equivalent. Core functionality working."
+
+  - task: "Edge Cases for Asset Categories"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "ISSUES FOUND: 1) Invalid date format properly rejected (✅), 2) Negative investment (-50000) incorrectly accepted - should return 400 error (❌), 3) Missing category defaults require seller_id causing 400 error instead of defaulting to PUBLIC (❌), 4) Large investment values accepted (✅), 5) Empty buyer name properly rejected (✅). Need validation fixes for negative values and default category handling."
+
   - task: "Buyer approve/reject offer functionality"
     implemented: false
     working: false
