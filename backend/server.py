@@ -304,6 +304,7 @@ class Asset(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     type: AssetType
+    category: AssetCategory = AssetCategory.PUBLIC  # New: Asset category
     address: str
     location: Dict[str, float]
     dimensions: str
@@ -313,7 +314,7 @@ class Asset(BaseModel):
     description: str = ""
     specifications: Dict[str, Any] = {}
     seller_id: str
-    seller_name: str
+    seller_name: Optional[str] = None  # Made optional for private assets
     buyer_id: Optional[str] = None  # Track which buyer booked this asset
     buyer_name: Optional[str] = None  # Track buyer name for easy reference
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -321,6 +322,9 @@ class Asset(BaseModel):
     next_available_date: Optional[datetime] = None
     visibility_score: int = Field(default=5)
     traffic_volume: str = "Medium"
+    # New fields for different asset categories
+    asset_expiry_date: Optional[datetime] = None  # For Existing Assets
+    one_off_investment: Optional[float] = None  # For Private Assets
     district: str = ""
     division: str = ""
     area: str = ""  # Add area field to match frontend expectations
