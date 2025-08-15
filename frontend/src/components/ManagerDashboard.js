@@ -780,7 +780,7 @@ const ManagerDashboard = () => {
     if (activeTab === 'route' && routeMapLoaded && routeMarkers.current.length > 0) {
       updateRouteMarkerColors();
     }
-  }, [selectedMapAssets, updateRouteMarkerColors, activeTab, routeMapLoaded]);
+  }, [selectedMapAssets, assetAssignments, updateRouteMarkerColors, activeTab, routeMapLoaded]);
 
 
 
