@@ -232,11 +232,11 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Complete BeatSpace Monitoring Service Integration Testing"
-    - "End-to-End Monitoring Workflow Testing"
+    - "Monitoring Service Workflow Testing Complete"
+    - "API Data Loading Issues Identified"
   stuck_tasks: []
-  test_all: true
-  test_priority: "comprehensive_integration_testing"
+  test_all: false
+  test_priority: "data_loading_fixes"
 
 backend:
   - task: "Operator Dashboard Backend Support & User Management"
