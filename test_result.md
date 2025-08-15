@@ -213,6 +213,17 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ DASHBOARD ACCESS BUG COMPLETELY RESOLVED: Fixed missing role redirects in LoginPage.js switch statement that was causing manager and monitoring_operator users to be redirected to marketplace instead of their dashboards. ROUTING FIXES APPLIED: 1) ✅ Added 'manager' case to redirect to '/manager/dashboard', 2) ✅ Added 'monitoring_operator' case to redirect to '/operator/dashboard', 3) ✅ Verified App.js routing configuration is correct with proper ProtectedRoute components, 4) ✅ Confirmed ProtectedRoute and getUserRole() functions working properly. DASHBOARD ACCESS NOW WORKING: Manager users redirect to /manager/dashboard, Operator users redirect to /operator/dashboard, Complete 827-line ManagerDashboard and 827-line OperatorDashboard implementations accessible. Frontend fix deployed and tested."
+  - task: "Manager Dashboard Route Assignment map stabilization (no flicker, multi-select, loader)"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/ManagerDashboard.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Implemented Loader-based map init, single InfoWindow, stable {marker, assetId} tracking, icon updates in-place, and Ctrl/Cmd multi-select + selection controls. Needs UI verification: ensure markers render for monitoring assets and selection behavior is smooth without flicker."
 
 test_plan:
   current_focus:
