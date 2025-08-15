@@ -846,11 +846,17 @@ const ManagerDashboard = () => {
       handleMapAssetClick: (assetId) => {
         const asset = monitoringAssets.find(a => a.id === assetId);
         if (asset) {
-          handleMapAssetClick(asset);
+          console.log('Info window button clicked for:', asset.assetName);
+          handleMapAssetSelection(asset, false); // Single select when clicked from info window
+          setTimeout(() => updateMapMarkers(), 100);
         }
       }
     };
-  }, [monitoringAssets]);
+    
+    return () => {
+      delete window.managerDashboard;
+    };
+  }, [monitoringAssets, handleMapAssetSelection, updateMapMarkers]);
 
   // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
