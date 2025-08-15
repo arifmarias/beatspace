@@ -1169,7 +1169,6 @@ const ManagerDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Operators Tab */}
           <TabsContent value="operators" className="space-y-4">
             <Card>
               <CardHeader>
