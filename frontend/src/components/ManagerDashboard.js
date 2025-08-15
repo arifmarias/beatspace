@@ -611,26 +611,31 @@ const ManagerDashboard = () => {
     routeMarkers.current = [];
   };
 
-  // Initialize Google Maps once
-  const initializeRouteMap = useCallback(() => {
-    if (!window.google || !routeMapRef.current || routeMapInstance.current) {
+  // Initialize Google Maps once using official Loader to avoid double-loading conflicts
+  const initializeRouteMap = useCallback(async () => {
+    if (routeMapInstance.current || !routeMapRef.current) return;
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      console.error('Google Maps API key not configured');
       return;
     }
-
-    console.log('Initializing Route Assignment Map...');
-    
-    const map = new window.google.maps.Map(routeMapRef.current, {
-      zoom: 12,
-      center: { lat: 23.8103, lng: 90.4125 }, // Dhaka center
-      mapTypeControl: true,
-      streetViewControl: true,
-      fullscreenControl: true,
-      zoomControl: true,
-    });
-
-    routeMapInstance.current = map;
-    setRouteMapLoaded(true);
-    console.log('Route Assignment Map initialized successfully');
+    try {
+      const loader = new Loader({ apiKey, version: 'weekly' });
+      await loader.load();
+      const map = new window.google.maps.Map(routeMapRef.current, {
+        zoom: 12,
+        center: { lat: 23.8103, lng: 90.4125 }, // Dhaka center
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        zoomControl: true,
+      });
+      routeMapInstance.current = map;
+      setRouteMapLoaded(true);
+      console.log('Route Assignment Map initialized successfully');
+    } catch (err) {
+      console.error('Failed to load Google Maps via Loader', err);
+    }
   }, []);
 
   // Load Google Maps script for route assignment
