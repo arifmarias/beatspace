@@ -10623,103 +10623,20 @@ def run_booked_assets_test():
         return 1
 
 if __name__ == "__main__":
-    print("🚀 BeatSpace API Testing Suite - Monitoring Service API Focus")
+    print("🚀 BeatSpace API Testing Suite - Asset Category Functionality Focus")
     print("="*80)
-    print("Testing monitoring service API endpoints as requested:")
-    print("- POST /api/monitoring/services (create subscriptions)")
-    print("- GET /api/monitoring/services (fetch subscriptions)")
-    print("- Authentication with buyer credentials (marketing@grameenphone.com)")
-    print("- Validation with missing/invalid data")
-    print("- All MonitoringFrequency enum values (daily/weekly/bi_weekly/monthly)")
+    print("Testing Asset Category functionality implementation as requested:")
+    print("- Asset Creation with Public Category")
+    print("- Asset Creation with Existing Asset Category")
+    print("- Asset Creation with Private Asset Category")
+    print("- Backend Validation for category-specific fields")
+    print("- Marketplace Filtering (only PUBLIC assets)")
+    print("- Asset Model Fields verification")
+    print("- Edge Cases testing")
     print("="*80)
     
     # Initialize tester
     tester = BeatSpaceAPITester()
     
-    # Step 1: Authentication (required for monitoring service tests)
-    print("\n📋 STEP 1: AUTHENTICATION SETUP")
-    print("-" * 40)
-    
-    # First get admin token for fallback
-    admin_success, _ = tester.test_admin_login()
-    if not admin_success:
-        print("❌ CRITICAL: Admin login failed")
-        sys.exit(1)
-    
-    # Try buyer login with existing buyer accounts
-    buyer_success, buyer_response = tester.test_buyer_login()
-    
-    if not buyer_success:
-        print("⚠️  WARNING: Buyer login failed - will use admin token for testing")
-        print("   This may limit some test scenarios but core API testing will proceed")
-        # Use admin token as fallback for API testing
-        tester.buyer_token = tester.admin_token
-        tester.buyer_user_id = "admin_user_id"
-        buyer_response = {"user": {"email": "admin@beatspace.com"}}
-    else:
-        print(f"✅ Buyer authenticated successfully")
-    
-    print(f"✅ Authentication setup complete")
-    print(f"   Buyer authenticated: {buyer_response.get('user', {}).get('email')}")
-    print(f"   Buyer token: {'✅ Available' if tester.buyer_token else '❌ Missing'}")
-    
-    # Step 2: Monitoring Service API Tests (MAIN FOCUS)
-    print("\n🎯 STEP 2: MONITORING SERVICE API TESTS")
-    print("-" * 60)
-    
-    monitoring_passed, monitoring_total, monitoring_results = tester.run_monitoring_service_comprehensive_test_suite()
-    
-    # Step 3: Quick Backend API Health Check
-    print("\n🔍 STEP 3: BACKEND API HEALTH CHECK")
-    print("-" * 40)
-    
-    health_tests = [
-        ("Public Stats", tester.test_public_stats),
-        ("Public Assets", tester.test_public_assets),
-    ]
-    
-    health_passed = 0
-    for test_name, test_method in health_tests:
-        try:
-            success, _ = test_method()
-            if success:
-                health_passed += 1
-                print(f"✅ {test_name}: OK")
-            else:
-                print(f"❌ {test_name}: FAILED")
-        except Exception as e:
-            print(f"❌ {test_name}: ERROR - {str(e)}")
-    
-    # Final Summary
-    print("\n" + "="*80)
-    print("🎯 MONITORING SERVICE API TESTING SUMMARY")
-    print("="*80)
-    
-    print(f"📊 Monitoring Service Tests: {monitoring_passed}/{monitoring_total} passed ({(monitoring_passed/monitoring_total*100):.1f}%)")
-    print(f"🏥 Health Check: {health_passed}/{len(health_tests)} passed")
-    
-    # Key findings for the review request
-    print(f"\n📋 KEY FINDINGS FOR REVIEW REQUEST:")
-    print(f"   1. Authentication: {'✅ PASSED' if monitoring_results.get('Monitoring Service Authentication', {}).get('success') else '❌ FAILED'}")
-    print(f"   2. Campaign Access: {'✅ PASSED' if monitoring_results.get('Get Buyer Campaigns', {}).get('success') else '❌ FAILED'}")
-    print(f"   3. Validation Tests: {'✅ PASSED' if monitoring_results.get('Create Monitoring Service - Validation', {}).get('success') else '❌ FAILED'}")
-    print(f"   4. Service Creation: {'✅ PASSED' if monitoring_results.get('Create Monitoring Service - Success', {}).get('success') else '❌ FAILED'}")
-    print(f"   5. Service Retrieval: {'✅ PASSED' if monitoring_results.get('Get Monitoring Services - Buyer', {}).get('success') else '❌ FAILED'}")
-    print(f"   6. Edge Cases: {'✅ PASSED' if monitoring_results.get('Monitoring Service Edge Cases', {}).get('success') else '❌ FAILED'}")
-    
-    if monitoring_passed >= 4:
-        print(f"\n🎉 CONCLUSION: Monitoring service API endpoints are WORKING CORRECTLY!")
-        print(f"   ✅ POST /api/monitoring/services accepts valid payloads")
-        print(f"   ✅ GET /api/monitoring/services returns buyer's subscriptions")
-        print(f"   ✅ Authentication with buyer credentials working")
-        print(f"   ✅ Validation properly rejects invalid data")
-        print(f"   ✅ All MonitoringFrequency enum values supported")
-        print(f"   ✅ Error handling for edge cases implemented")
-        print(f"\n   The monitoring service subscription workflow is ready for frontend integration.")
-    else:
-        print(f"\n❌ CONCLUSION: Monitoring service API endpoints need attention")
-        print(f"   Some critical monitoring functionality is not working as expected")
-        print(f"   Frontend integration may encounter issues until problems are resolved")
-    
-    print(f"\n📊 Overall Test Results: {tester.tests_passed}/{tester.tests_run} passed ({(tester.tests_passed/max(tester.tests_run,1)*100):.1f}%)")
-    print("="*80)
+    # Run comprehensive Asset Category test suite
+    tester.run_asset_category_comprehensive_test_suite()
