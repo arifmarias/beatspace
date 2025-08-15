@@ -4470,37 +4470,40 @@ const AdminDashboard = () => {
                   />
                 </div>
 
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Pricing (৳) *
-                  </label>
-                  
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Monthly Rate</label>
-                    <Input
-                      type="number"
-                      value={assetForm.pricing.monthly_rate}
-                      onChange={(e) => setAssetForm({
-                        ...assetForm, 
-                        pricing: {...assetForm.pricing, monthly_rate: e.target.value}
-                      })}
-                      placeholder="Monthly rate"
-                    />
+                {/* Pricing Section - Optional for Private Assets */}
+                {assetForm.category !== 'Private Asset' && (
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Pricing (৳) *
+                    </label>
+                    
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Monthly Rate</label>
+                      <Input
+                        type="number"
+                        value={assetForm.pricing.monthly_rate}
+                        onChange={(e) => setAssetForm({
+                          ...assetForm, 
+                          pricing: {...assetForm.pricing, monthly_rate: e.target.value}
+                        })}
+                        placeholder="Monthly rate"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Yearly Rate</label>
+                      <Input
+                        type="number"
+                        value={assetForm.pricing.yearly_rate}
+                        onChange={(e) => setAssetForm({
+                          ...assetForm, 
+                          pricing: {...assetForm.pricing, yearly_rate: e.target.value}
+                        })}
+                        placeholder="Yearly rate"
+                      />
+                    </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Yearly Rate</label>
-                    <Input
-                      type="number"
-                      value={assetForm.pricing.yearly_rate}
-                      onChange={(e) => setAssetForm({
-                        ...assetForm, 
-                        pricing: {...assetForm.pricing, yearly_rate: e.target.value}
-                      })}
-                      placeholder="Yearly rate"
-                    />
-                  </div>
-                </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
