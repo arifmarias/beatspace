@@ -1550,22 +1550,48 @@ const ManagerDashboard = () => {
                         <button
                           onClick={() => {
                             const filteredAssets = getFilteredMapAssets();
-                            setSelectedMapAssets(filteredAssets.map(asset => asset.id));
+                            const filteredIds = filteredAssets.map(asset => asset.id);
+                            console.log('Selecting all visible assets:', filteredIds);
+                            setSelectedMapAssets(filteredIds);
                           }}
-                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
                           disabled={getFilteredMapAssets().length === 0}
                         >
-                          Select All Visible
+                          Select All ({getFilteredMapAssets().length})
                         </button>
                         <button
-                          onClick={() => setSelectedMapAssets([])}
-                          className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+                          onClick={() => {
+                            const unassignedAssets = getFilteredMapAssets().filter(asset => {
+                              const assignedOperator = assetAssignments[asset.id];
+                              return !assignedOperator || assignedOperator === 'Unassigned';
+                            });
+                            const unassignedIds = unassignedAssets.map(asset => asset.id);
+                            console.log('Selecting unassigned assets:', unassignedIds);
+                            setSelectedMapAssets(unassignedIds);
+                          }}
+                          className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-300"
+                          disabled={getFilteredMapAssets().filter(asset => {
+                            const assignedOperator = assetAssignments[asset.id];
+                            return !assignedOperator || assignedOperator === 'Unassigned';
+                          }).length === 0}
+                        >
+                          Select Unassigned ({getFilteredMapAssets().filter(asset => {
+                            const assignedOperator = assetAssignments[asset.id];
+                            return !assignedOperator || assignedOperator === 'Unassigned';
+                          }).length})
+                        </button>
+                        <button
+                          onClick={() => {
+                            console.log('Clearing selection');
+                            setSelectedMapAssets([]);
+                          }}
+                          className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-300"
                           disabled={selectedMapAssets.length === 0}
                         >
                           Clear Selection
                         </button>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded">
                         {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
                       </div>
                     </div>
