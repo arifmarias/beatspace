@@ -3129,63 +3129,12 @@ const BuyerDashboard = () => {
 
           {/* Enhanced Requested Offers Tab with Categorization */}
           <TabsContent value="requested-offers" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="w-5 h-5" />
-                    <span>Requested Offers</span>
-                  </CardTitle>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={fetchRequestedOffers}
-                    disabled={requestedOffersLoading}
-                    className="flex items-center space-x-1"
-                  >
-                    <Activity className="w-4 h-4" />
-                    <span>{requestedOffersLoading ? 'Loading...' : 'Refresh'}</span>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {((requestedOffers || []).filter(offer => 
-                  offer.status !== 'Approved' && offer.status !== 'Accepted'
-                )).length === 0 ? (
-                  <div className="text-center py-8">
-                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Offer Requests Yet</h3>
-                    <p className="text-gray-500 mb-4">
-                      You haven't submitted any requests yet.
-                    </p>
-                    <Button onClick={() => navigate('/marketplace')} className="bg-orange-600 hover:bg-orange-700">
-                      Explore Marketplace
-                    </Button>
-                  </div>
-                ) : (
-                  <RequestsCategoryTabs 
-                    requestedOffers={requestedOffers}
-                    offerSearch={offerSearch}
-                    setOfferSearch={setOfferSearch}
-                    selectedOfferDetails={selectedOfferDetails}
-                    setSelectedOfferDetails={setSelectedOfferDetails}
-                    collapsedCampaigns={collapsedCampaigns}
-                    toggleCampaignCollapse={toggleCampaignCollapse}
-                    getFilteredOffers={getFilteredOffers}
-                    getGroupedAndFilteredOffers={getGroupedAndFilteredOffers}
-                    offerCurrentPage={offerCurrentPage}
-                    setOfferCurrentPage={setOfferCurrentPage}
-                    handleApproveOffer={handleApproveOffer}
-                    handleRejectOffer={handleRejectOffer}
-                    handleRequestRevision={handleRequestRevision}
-                    handleCancelRequest={handleCancelRequest}
-                    setOfferToCancel={setOfferToCancel}
-                    setShowCancelDialog={setShowCancelDialog}
-                    navigate={navigate}
-                  />
-                )}
-              </CardContent>
-            </Card>
+            <RequestsCategoryTabs 
+              requestedOffers={requestedOffers}
+              requestedOffersLoading={requestedOffersLoading}
+              fetchRequestedOffers={fetchRequestedOffers}
+              navigate={navigate}
+            />
           </TabsContent>
                         
                         return (
