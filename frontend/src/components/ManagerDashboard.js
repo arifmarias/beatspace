@@ -766,10 +766,10 @@ const ManagerDashboard = () => {
   // Initialize map when Route Assignment tab is active
   useEffect(() => {
     if (activeTab === 'route' && process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
-      fetchMonitoringAssets(); // Refresh data
+      fetchMonitoringAssets();
       loadRouteMapsScript();
     }
-  }, [activeTab, fetchMonitoringAssets, loadRouteMapsScript]);
+  }, [activeTab]);
 
   // Create markers when data changes (FIXED - no loops)
   useEffect(() => {
