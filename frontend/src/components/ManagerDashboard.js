@@ -630,6 +630,13 @@ const ManagerDashboard = () => {
         zoomControl: true,
       });
       routeMapInstance.current = map;
+    // Trigger resize after mount to resolve gray tiles when container was hidden
+    window.setTimeout(() => {
+      if (routeMapInstance.current) {
+        window.google.maps.event.trigger(routeMapInstance.current, 'resize');
+      }
+    }, 400);
+
       setRouteMapLoaded(true);
       console.log('Route Assignment Map initialized successfully');
     } catch (err) {
