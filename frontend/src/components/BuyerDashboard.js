@@ -1690,14 +1690,14 @@ const BuyerDashboard = () => {
           // Note: campaign_id is intentionally omitted for individual asset monitoring
         };
 
-        console.log('📝 Creating individual asset monitoring subscription:', subscriptionData);
+        console.log('📝 Creating monitoring service request:', subscriptionData);
         
         const response = await axios.post(`${API}/monitoring/services`, subscriptionData, {
           headers: getAuthHeaders()
         });
 
-        console.log('✅ Monitoring service created successfully:', response.data);
-        notify.success('Monitoring service subscription created successfully!');
+        console.log('✅ Monitoring service request created successfully:', response.data);
+        notify.success('Monitoring service request submitted! Admin will review and provide quote.');
         setShowMonitoringSubscription(false);
         
         // Reset form data
@@ -1714,18 +1714,16 @@ const BuyerDashboard = () => {
           }
         });
         
-        // Refresh monitoring services to update button states
-        await fetchMonitoringServices();
-        
-        // Also refresh live assets to ensure button state changes are reflected
+        // Refresh data to show request status
+        await fetchOfferRequests();
         await fetchLiveAssets(true, false);
 
         return;
       } catch (error) {
-        console.error('Error creating individual asset monitoring subscription:', error);
+        console.error('Error creating monitoring service request:', error);
         
         // Handle validation errors properly
-        let errorMessage = 'Failed to create monitoring subscription';
+        let errorMessage = 'Failed to submit monitoring service request';
         if (error.response?.data?.detail) {
           if (typeof error.response.data.detail === 'string') {
             errorMessage = error.response.data.detail;
