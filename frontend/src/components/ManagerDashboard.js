@@ -854,20 +854,20 @@ const ManagerDashboard = () => {
   const [routeMapLoaded, setRouteMapLoaded] = useState(false);
 
   // Clean marker management
-  const clearAllMarkers = () => {
-    markers.current.forEach(marker => marker.setMap(null));
-    markers.current = [];
+  const clearAllRouteMarkers = () => {
+    routeMarkers.current.forEach(marker => marker.setMap(null));
+    routeMarkers.current = [];
   };
 
   // Initialize Google Maps once
-  const initializeGoogleMap = useCallback(() => {
-    if (!window.google || !mapRef.current || mapInstance.current) {
+  const initializeRouteMap = useCallback(() => {
+    if (!window.google || !routeMapRef.current || routeMapInstance.current) {
       return;
     }
 
-    console.log('Initializing Google Map...');
+    console.log('Initializing Route Assignment Map...');
     
-    const map = new window.google.maps.Map(mapRef.current, {
+    const map = new window.google.maps.Map(routeMapRef.current, {
       zoom: 12,
       center: { lat: 23.8103, lng: 90.4125 }, // Dhaka center
       mapTypeControl: true,
@@ -876,33 +876,33 @@ const ManagerDashboard = () => {
       zoomControl: true,
     });
 
-    mapInstance.current = map;
-    setMapLoaded(true);
-    console.log('Google Map initialized successfully');
+    routeMapInstance.current = map;
+    setRouteMapLoaded(true);
+    console.log('Route Assignment Map initialized successfully');
   }, []);
 
-  // Load Google Maps script
-  const loadGoogleMapsScript = useCallback(() => {
+  // Load Google Maps script for route assignment
+  const loadRouteMapsScript = useCallback(() => {
     if (window.google) {
-      initializeGoogleMap();
+      initializeRouteMap();
       return;
     }
 
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`;
     script.async = true;
-    script.onload = initializeGoogleMap;
+    script.onload = initializeRouteMap;
     document.head.appendChild(script);
-  }, [initializeGoogleMap]);
+  }, [initializeRouteMap]);
 
   // Create markers without flickering
-  const createMarkersFromAssets = useCallback(() => {
-    if (!mapInstance.current || !mapLoaded) {
+  const createRouteMarkers = useCallback(() => {
+    if (!routeMapInstance.current || !routeMapLoaded) {
       return;
     }
 
-    console.log('Creating markers from assets...');
-    clearAllMarkers();
+    console.log('Creating route markers from assets...');
+    clearAllRouteMarkers();
 
     const assetsToShow = getFilteredMapAssets();
     
@@ -932,7 +932,7 @@ const ManagerDashboard = () => {
 
       const marker = new window.google.maps.Marker({
         position: { lat, lng },
-        map: mapInstance.current,
+        map: routeMapInstance.current,
         title: asset.assetName,
         icon: {
           url: `data:image/svg+xml,${encodeURIComponent(`
@@ -963,30 +963,32 @@ const ManagerDashboard = () => {
         });
       });
 
-      markers.current.push(marker);
+      routeMarkers.current.push(marker);
     });
 
     // Fit map to show all markers
-    if (markers.current.length > 0) {
+    if (routeMarkers.current.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
-      markers.current.forEach(marker => bounds.extend(marker.getPosition()));
-      mapInstance.current.fitBounds(bounds);
+      routeMarkers.current.forEach(marker => bounds.extend(marker.getPosition()));
+      routeMapInstance.current.fitBounds(bounds);
       
       // Prevent over-zooming
       setTimeout(() => {
-        if (mapInstance.current.getZoom() > 16) {
-          mapInstance.current.setZoom(16);
+        if (routeMapInstance.current.getZoom() > 16) {
+          routeMapInstance.current.setZoom(16);
         }
       }, 100);
     }
 
-    console.log(`Created ${markers.current.length} markers`);
-  }, [getFilteredMapAssets, selectedMapAssets, assetAssignments, mapLoaded]);
+    console.log(`Created ${routeMarkers.current.length} route markers`);
+  }, [getFilteredMapAssets, selectedMapAssets, assetAssignments, routeMapLoaded]);
 
   // Update marker colors only (no recreating)
-  const updateMarkerColors = useCallback(() => {
-    markers.current.forEach((marker, index) => {
-      const asset = getFilteredMapAssets()[index];
+  const updateRouteMarkerColors = useCallback(() => {
+    const assetsToShow = getFilteredMapAssets();
+    
+    routeMarkers.current.forEach((marker, index) => {
+      const asset = assetsToShow[index];
       if (!asset) return;
 
       const isSelected = selectedMapAssets.includes(asset.id);
@@ -1017,23 +1019,23 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (activeTab === 'route' && process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
       fetchMonitoringAssets(); // Refresh data
-      loadGoogleMapsScript();
+      loadRouteMapsScript();
     }
-  }, [activeTab, fetchMonitoringAssets, loadGoogleMapsScript]);
+  }, [activeTab, fetchMonitoringAssets, loadRouteMapsScript]);
 
   // Create markers when data changes
   useEffect(() => {
-    if (activeTab === 'route' && mapLoaded && monitoringAssets.length > 0) {
-      createMarkersFromAssets();
+    if (activeTab === 'route' && routeMapLoaded && monitoringAssets.length > 0) {
+      createRouteMarkers();
     }
-  }, [activeTab, mapLoaded, monitoringAssets, mapFilters, mapSearchTerm, createMarkersFromAssets]);
+  }, [activeTab, routeMapLoaded, monitoringAssets, mapFilters, mapSearchTerm, createRouteMarkers]);
 
   // Update marker colors when selection changes
   useEffect(() => {
-    if (activeTab === 'route' && mapLoaded && markers.current.length > 0) {
-      updateMarkerColors();
+    if (activeTab === 'route' && routeMapLoaded && routeMarkers.current.length > 0) {
+      updateRouteMarkerColors();
     }
-  }, [selectedMapAssets, updateMarkerColors, activeTab, mapLoaded]);
+  }, [selectedMapAssets, updateRouteMarkerColors, activeTab, routeMapLoaded]);
 
   // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
