@@ -1391,22 +1391,11 @@ const ManagerDashboard = () => {
                     {/* Google Maps Container */}
                     <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
-                        <div className="w-full h-full">
-                          {/* Google Maps will be rendered here */}
-                          <div id="route-assignment-map" className="w-full h-full">
-                            {/* Map Placeholder */}
-                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                              <div className="text-center">
-                                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">Interactive Route Map</h3>
-                                <p className="text-gray-500">Google Maps integration will render here</p>
-                                <div className="mt-4 text-sm text-gray-400">
-                                  Assets: {getFilteredMapAssets().length} | Selected: {selectedMapAssets.length}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <div 
+                          ref={mapRef}
+                          className="w-full h-full"
+                          style={{ minHeight: '384px' }}
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <div className="text-center">
