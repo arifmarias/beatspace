@@ -847,12 +847,47 @@ const ManagerDashboard = () => {
     };
   }, [monitoringAssets, handleMapAssetSelection]);
 
-  // Separate useEffect to handle marker updates only when selection changes
-  useEffect(() => {
-    if (mapInstanceRef.current && monitoringAssets.length > 0) {
-      updateMapMarkers();
+  // Function to update only marker colors (prevent flickering)
+  const updateMarkerColors = useCallback(() => {
+    if (!mapInstanceRef.current || markersRef.current.length === 0) {
+      return;
     }
-  }, [selectedMapAssets, updateMapMarkers]);
+
+    console.log('Updating marker colors only (no flickering)');
+    
+    markersRef.current.forEach(marker => {
+      const asset = marker.assetData;
+      if (!asset) return;
+
+      const assignedOperator = assetAssignments[asset.id];
+      const isSelected = selectedMapAssets.includes(asset.id);
+      const isAssigned = assignedOperator && assignedOperator !== 'Unassigned';
+      
+      // Determine marker color
+      let markerColor = '#10b981'; // Green for unassigned
+      if (isSelected) {
+        markerColor = '#ff6b35'; // Orange for selected
+      } else if (isAssigned) {
+        markerColor = '#3b82f6'; // Blue for assigned
+      }
+
+      // Update marker icon with new color
+      const markerIcon = {
+        url: `data:image/svg+xml,${encodeURIComponent(`
+          <svg width="30" height="45" viewBox="0 0 30 45" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 30 15 30s15-18.75 15-30c0-8.284-6.716-15-15-15z" fill="${markerColor}"/>
+            <circle cx="15" cy="15" r="${asset.serviceLevel === 'premium' ? 8 : 6}" fill="white"/>
+            ${asset.serviceLevel === 'premium' ? '<circle cx="15" cy="15" r="4" fill="#ffd700"/>' : ''}
+            ${asset.serviceLevel === 'premium' ? '<text x="15" y="19" text-anchor="middle" font-size="8" fill="#000">P</text>' : ''}
+          </svg>
+        `)}`,
+        scaledSize: new window.google.maps.Size(30, 45),
+        anchor: new window.google.maps.Point(15, 45)
+      };
+
+      marker.setIcon(markerIcon);
+    });
+  }, [selectedMapAssets, assetAssignments]);
 
   // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
