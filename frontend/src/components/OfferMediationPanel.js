@@ -240,9 +240,21 @@ const OfferMediationPanel = () => {
                   <TableRow key={request.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{request.campaign?.name || 'Campaign'}</div>
+                        {request.request_type === 'monitoring_service' ? (
+                          <div className="flex items-center space-x-2">
+                            <Badge className="bg-purple-100 text-purple-800 text-xs">
+                              MONITORING
+                            </Badge>
+                            <div className="font-medium">Monitoring Service</div>
+                          </div>
+                        ) : (
+                          <div className="font-medium">{request.campaign?.name || 'Campaign'}</div>
+                        )}
                         <div className="text-sm text-gray-500">
-                          Budget: ৳{request.campaign?.budget?.toLocaleString() || 'N/A'}
+                          {request.request_type === 'monitoring_service' ? 
+                            `${request.service_details?.frequency || 'Monthly'} ${request.service_details?.service_level || 'Standard'}` :
+                            `Budget: ৳${request.campaign?.budget?.toLocaleString() || 'N/A'}`
+                          }
                         </div>
                       </div>
                     </TableCell>
@@ -250,26 +262,45 @@ const OfferMediationPanel = () => {
                       <div>
                         <div className="font-medium">{request.campaign?.buyer_name || 'Buyer'}</div>
                         <div className="text-sm text-gray-500">
-                          {Object.keys(request.asset_requirements || {}).length} assets selected
+                          {request.request_type === 'monitoring_service' ?
+                            `${request.service_details?.asset_ids?.length || 0} assets to monitor` :
+                            `${Object.keys(request.asset_requirements || {}).length} assets selected`
+                          }
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {request.assets?.slice(0, 2).map(asset => (
-                          <Badge key={asset.id} variant="outline" className="text-xs">
-                            {asset.type}
-                          </Badge>
-                        ))}
-                        {request.assets?.length > 2 && (
+                      {request.request_type === 'monitoring_service' ? (
+                        <div className="flex flex-col space-y-1">
                           <Badge variant="outline" className="text-xs">
-                            +{request.assets.length - 2} more
+                            {request.service_details?.service_level || 'Standard'} Service
                           </Badge>
-                        )}
-                      </div>
+                          <Badge variant="outline" className="text-xs">
+                            {request.service_details?.frequency || 'Monthly'} Frequency
+                          </Badge>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {request.assets?.slice(0, 2).map(asset => (
+                            <Badge key={asset.id} variant="outline" className="text-xs">
+                              {asset.type}
+                            </Badge>
+                          ))}
+                          {request.assets?.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{request.assets.length - 2} more
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">৳{calculateEstimatedTotal(request).toLocaleString()}</div>
+                      <div className="font-medium">
+                        {request.request_type === 'monitoring_service' ? 
+                          (request.quoted_price ? `৳${request.quoted_price.toLocaleString()}` : 'Pending Quote') :
+                          `৳${calculateEstimatedTotal(request).toLocaleString()}`
+                        }
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(request.status)}>
@@ -291,11 +322,35 @@ const OfferMediationPanel = () => {
                             <DialogHeader>
                               <DialogTitle>Request Details</DialogTitle>
                             </DialogHeader>
-                            <RequestDetailsModal request={request} />
+                            {request.request_type === 'monitoring_service' ? (
+                              <MonitoringServiceRequestModal request={request} onRefresh={fetchOfferRequests} />
+                            ) : (
+                              <RequestDetailsModal request={request} />
+                            )}
                           </DialogContent>
                         </Dialog>
                         
-                        {request.status === 'Pending' && (
+                        {request.status === 'Pending' && request.request_type === 'monitoring_service' && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleQuoteMonitoringService(request)}
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                          >
+                            Quote Service
+                          </Button>
+                        )}
+                        
+                        {request.status === 'PO Uploaded' && request.request_type === 'monitoring_service' && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleActivateMonitoringService(request)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Activate Service
+                          </Button>
+                        )}
+                        
+                        {request.status === 'Pending' && request.request_type !== 'monitoring_service' && (
                           <Button
                             size="sm"
                             onClick={() => handleStartNegotiation(request)}
