@@ -666,7 +666,17 @@ const ManagerDashboard = () => {
       return;
     }
 
-    console.log('Updating map markers...');
+    console.log('Updating map markers...', {
+      assetsCount: monitoringAssets.length,
+      hasAssets: monitoringAssets.length > 0
+    });
+    
+    // If we don't have assets yet, wait a bit and try again
+    if (monitoringAssets.length === 0) {
+      console.log('No monitoring assets available yet, retrying in 500ms...');
+      setTimeout(() => updateMapMarkers(), 500);
+      return;
+    }
     
     // Clear existing markers
     clearMarkers();
@@ -791,7 +801,7 @@ const ManagerDashboard = () => {
       mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
       mapInstanceRef.current.setZoom(12);
     }
-  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets]);
+  }, [selectedMapAssets, assetAssignments, getFilteredMapAssets, monitoringAssets]);
 
   // Expose functions to global scope for info window callbacks
   useEffect(() => {
