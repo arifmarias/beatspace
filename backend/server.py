@@ -2206,22 +2206,60 @@ async def create_asset(
     asset_data: dict,
     current_user: User = Depends(get_current_user)
 ):
-    """Create new asset (seller or admin)"""
+    """Create new asset (seller or admin) with support for different asset categories"""
     if current_user.role not in [UserRole.SELLER, UserRole.ADMIN]:
         raise HTTPException(status_code=403, detail="Only sellers and admins can create assets")
+    
+    # Get asset category (default to PUBLIC if not specified)
+    asset_category = asset_data.get("category", AssetCategory.PUBLIC)
+    
+    # Validate category-specific requirements
+    if asset_category == AssetCategory.EXISTING_ASSET:
+        if not asset_data.get("asset_expiry_date"):
+            raise HTTPException(status_code=400, detail="Asset Expiry Date is required for Existing Assets")
+        if not asset_data.get("buyer_name"):
+            raise HTTPException(status_code=400, detail="Buyer Name is required for Existing Assets")
+    
+    elif asset_category == AssetCategory.PRIVATE_ASSET:
+        if not asset_data.get("one_off_investment"):
+            raise HTTPException(status_code=400, detail="One-off Investment is required for Private Assets")
+        if not asset_data.get("buyer_name"):
+            raise HTTPException(status_code=400, detail="Buyer Name is required for Private Assets")
+        
+        # For private assets, seller name is optional and pricing is not mandatory
+        # Make pricing optional by providing default empty dict if not present
+        if not asset_data.get("pricing"):
+            asset_data["pricing"] = {}
     
     # For admin users, use the provided seller information from the form
     # For seller users, use their own information
     if current_user.role == UserRole.SELLER:
         asset_data["seller_id"] = current_user.id
-        asset_data["seller_name"] = current_user.company_name
+        # For private assets, buyer is the seller, so seller_name can be optional
+        if asset_category != AssetCategory.PRIVATE_ASSET:
+            asset_data["seller_name"] = current_user.company_name
         asset_data["status"] = AssetStatus.PENDING_APPROVAL
     else:  # Admin user
         # Admin can specify seller_id and seller_name from the form
-        # Status can be set to Available directly (admin approval)
-        if not asset_data.get("seller_id"):
-            raise HTTPException(status_code=400, detail="Seller ID is required for admin asset creation")
+        # For private assets, seller_id might be the buyer_id
+        if asset_category == AssetCategory.PRIVATE_ASSET:
+            # For private assets, if no seller_id provided, use current admin as placeholder
+            if not asset_data.get("seller_id"):
+                asset_data["seller_id"] = current_user.id
+        else:
+            # For public and existing assets, seller_id is required
+            if not asset_data.get("seller_id"):
+                raise HTTPException(status_code=400, detail="Seller ID is required for public and existing assets")
+        
         asset_data["status"] = AssetStatus.AVAILABLE  # Admin-created assets are pre-approved
+    
+    # Convert string dates to datetime objects if provided
+    if asset_data.get("asset_expiry_date"):
+        try:
+            if isinstance(asset_data["asset_expiry_date"], str):
+                asset_data["asset_expiry_date"] = datetime.fromisoformat(asset_data["asset_expiry_date"].replace("Z", "+00:00"))
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid asset expiry date format")
     
     asset = Asset(**asset_data)
     await db.assets.insert_one(asset.dict())
