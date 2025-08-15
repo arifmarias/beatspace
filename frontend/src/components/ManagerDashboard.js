@@ -1485,16 +1485,6 @@ const ManagerDashboard = () => {
                   <CardContent className="p-0">
                     {/* Google Maps Container */}
                     <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
-                      {/* Debug info */}
-                      <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs p-2 rounded z-10">
-                        API Key: {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? '✓' : '✗'}<br/>
-                        Map Ref: {mapRef.current ? '✓' : '✗'}<br/>
-                        Google: {typeof window !== 'undefined' && window.google ? '✓' : '✗'}<br/>
-                        Map Instance: {mapInstanceRef.current ? '✓' : '✗'}<br/>
-                        Assets: {monitoringAssets.length}<br/>
-                        Active Tab: {activeTab}
-                      </div>
-                      
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                         <div 
                           ref={mapRef}
