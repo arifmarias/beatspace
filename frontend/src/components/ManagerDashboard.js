@@ -625,6 +625,10 @@ const ManagerDashboard = () => {
     
     if (!needsInit) return;
     
+    // Clear old markers when reinitializing
+    routeMarkers.current = [];
+    routePolylines.current = [];
+    
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
       console.error('Google Maps API key not configured');
