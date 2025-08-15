@@ -790,7 +790,7 @@ const ManagerDashboard = () => {
     };
   }, [monitoringAssets]);
 
-  // Load Google Maps when component mounts
+  // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
     console.log('Manager Dashboard mounted - checking Google Maps...', { 
@@ -805,6 +805,14 @@ const ManagerDashboard = () => {
       console.error('Google Maps API key is missing');
     }
   }, [loadGoogleMapsScript]);
+
+  // Additional effect to initialize map when Route Assignment tab becomes active
+  useEffect(() => {
+    if (activeTab === 'route' && window.google && mapRef.current && !mapInstanceRef.current) {
+      console.log('Route Assignment tab activated - initializing map...');
+      setTimeout(() => initializeMap(), 200);
+    }
+  }, [activeTab, initializeMap]);
 
   // Update markers when data changes
   useEffect(() => {
