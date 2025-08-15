@@ -654,23 +654,23 @@ const ManagerDashboard = () => {
 
   // Create markers without flickering
   const createRouteMarkers = useCallback(() => {
-    if (!routeMapInstance.current || !routeMapLoaded) {
-      return;
-    }
+    if (!routeMapInstance.current || !routeMapLoaded) return;
 
-    console.log('Creating route markers from assets...');
+    // Clear polylines and markers
+    routePolylines.current.forEach(poly => poly.setMap(null));
+    routePolylines.current = [];
     clearAllRouteMarkers();
 
     const assetsToShow = getFilteredMapAssets();
-    
     const infoWindow = new window.google.maps.InfoWindow();
 
-    assetsToShow.forEach(asset => {
-      if (!asset.location?.lat || !asset.location?.lng) return;
+    const operatorGroups = new Map(); // operatorName -> array of LatLng
 
-      const lat = parseFloat(asset.location.lat);
-      const lng = parseFloat(asset.location.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
+    assetsToShow.forEach(asset => {
+      const { location } = asset;
+      const lat = parseFloat(location?.lat);
+      const lng = parseFloat(location?.lng);
+      if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
 
       const isSelected = selectedMapAssets.includes(asset.id);
       const assignedOperator = assetAssignments[asset.id];
@@ -700,9 +700,7 @@ const ManagerDashboard = () => {
         const isCtrlPressed = event.domEvent?.ctrlKey || event.domEvent?.metaKey;
         setSelectedMapAssets(prev => {
           if (isCtrlPressed) {
-            return prev.includes(asset.id)
-              ? prev.filter(id => id !== asset.id)
-              : [...prev, asset.id];
+            return prev.includes(asset.id) ? prev.filter(id => id !== asset.id) : [...prev, asset.id];
           } else {
             return prev.includes(asset.id) ? [] : [asset.id];
           }
@@ -710,32 +708,47 @@ const ManagerDashboard = () => {
       });
 
       marker.addListener('mouseover', () => {
-        infoWindow.setContent(`<div style="min-width:200px"><strong>${asset.assetName}</strong><br/>${asset.address}<br/>Area: ${asset.area}<br/>Tier: ${asset.serviceLevel}</div>`);
+        const assignee = assetAssignments[asset.id] || 'Unassigned';
+        infoWindow.setContent(`<div style="min-width:220px"><strong>${asset.assetName}</strong><br/>Service: ${asset.serviceLevel}<br/>Assignee: ${assignee}<br/>Area: ${asset.area}</div>`);
         infoWindow.open({ map: routeMapInstance.current, anchor: marker, shouldFocus: false });
       });
-
-      marker.addListener('mouseout', () => {
-        infoWindow.close();
-      });
+      marker.addListener('mouseout', () => infoWindow.close());
 
       routeMarkers.current.push({ marker, assetId: asset.id });
+
+      // Group by operator for route lines
+      const opKey = isAssigned ? assignedOperator : null;
+      if (opKey) {
+        const path = operatorGroups.get(opKey) || [];
+        path.push(new window.google.maps.LatLng(lat, lng));
+        operatorGroups.set(opKey, path);
+      }
     });
 
-    // Fit map to show all markers
+    // Draw simple polylines per operator to visualize routes
+    operatorGroups.forEach((path, opName) => {
+      if (path.length < 2) return;
+      const polyline = new window.google.maps.Polyline({
+        path,
+        geodesic: true,
+        strokeColor: '#3b82f6',
+        strokeOpacity: 0.7,
+        strokeWeight: 3,
+        map: routeMapInstance.current,
+      });
+      routePolylines.current.push(polyline);
+    });
+
     if (routeMarkers.current.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
-      routeMarkers.current.forEach(marker => bounds.extend(marker.getPosition()));
+      routeMarkers.current.forEach(({ marker }) => bounds.extend(marker.getPosition()));
       routeMapInstance.current.fitBounds(bounds);
-      
-      // Prevent over-zooming
       setTimeout(() => {
-        if (routeMapInstance.current.getZoom() > 16) {
+        if (routeMapInstance.current && routeMapInstance.current.getZoom() > 16) {
           routeMapInstance.current.setZoom(16);
         }
-      }, 100);
+      }, 150);
     }
-
-    console.log(`Created ${routeMarkers.current.length} route markers`);
   }, [getFilteredMapAssets, selectedMapAssets, assetAssignments, routeMapLoaded]);
 
   // Update marker colors only (no recreating)
