@@ -620,4 +620,144 @@ const RequestDetailsModal = ({ request }) => {
   );
 };
 
+// Monitoring Service Request Modal Component
+const MonitoringServiceRequestModal = ({ request, onRefresh }) => {
+  const [quotePrice, setQuotePrice] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleQuoteSubmit = async () => {
+    if (!quotePrice || isNaN(quotePrice)) {
+      alert('Please enter a valid price');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const headers = getAuthHeaders();
+      await axios.put(`${API}/offers/requests/${request.id}`, {
+        status: 'Quoted',
+        quoted_price: parseFloat(quotePrice)
+      }, { headers });
+      
+      alert('Quote submitted successfully!');
+      onRefresh();
+    } catch (error) {
+      console.error('Error submitting quote:', error);
+      alert('Failed to submit quote. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const handleActivate = async () => {
+    setLoading(true);
+    try {
+      const headers = getAuthHeaders();
+      await axios.post(`${API}/monitoring/services/activate/${request.id}`, {}, { headers });
+      
+      alert('Monitoring service activated successfully!');
+      onRefresh();
+    } catch (error) {
+      console.error('Error activating service:', error);
+      alert('Failed to activate monitoring service. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <h4 className="font-semibold text-purple-800 mb-2 flex items-center">
+          <MessageSquare className="w-5 h-5 mr-2" />
+          Monitoring Service Request
+        </h4>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h4 className="font-semibold mb-2">Service Details</h4>
+          <div className="space-y-1 text-sm">
+            <p><strong>Service Level:</strong> {request.service_details?.service_level || 'Standard'}</p>
+            <p><strong>Frequency:</strong> {request.service_details?.frequency || 'Monthly'}</p>
+            <p><strong>Assets Count:</strong> {request.service_details?.asset_ids?.length || 0}</p>
+            <p><strong>Start Date:</strong> {request.service_details?.start_date ? 
+              format(new Date(request.service_details.start_date), 'MMM dd, yyyy') : 'TBD'}</p>
+            <p><strong>End Date:</strong> {request.service_details?.end_date ? 
+              format(new Date(request.service_details.end_date), 'MMM dd, yyyy') : 'TBD'}</p>
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="font-semibold mb-2">Request Status</h4>
+          <div className="space-y-1 text-sm">
+            <p><strong>Status:</strong> <Badge className="ml-1">{request.status}</Badge></p>
+            <p><strong>Submitted:</strong> {format(new Date(request.created_at), 'MMM dd, yyyy HH:mm')}</p>
+            {request.quoted_price && (
+              <p><strong>Quoted Price:</strong> ৳{request.quoted_price.toLocaleString()}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {request.service_details?.notification_preferences && (
+        <div>
+          <h4 className="font-semibold mb-2">Notification Preferences</h4>
+          <div className="flex space-x-4 text-sm">
+            {Object.entries(request.service_details.notification_preferences).map(([key, value]) => (
+              <div key={key} className="flex items-center space-x-1">
+                <span className={`w-2 h-2 rounded-full ${value ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                <span className="capitalize">{key.replace('_', ' ')}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        {request.status === 'Pending' && (
+          <div className="flex items-end space-x-3">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2">Quote Price (৳)</label>
+              <Input
+                type="number"
+                value={quotePrice}
+                onChange={(e) => setQuotePrice(e.target.value)}
+                placeholder="Enter monitoring service price"
+              />
+            </div>
+            <Button 
+              onClick={handleQuoteSubmit}
+              disabled={loading || !quotePrice}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {loading ? 'Submitting...' : 'Submit Quote'}
+            </Button>
+          </div>
+        )}
+
+        {request.status === 'PO Uploaded' && (
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleActivate}
+              disabled={loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {loading ? 'Activating...' : 'Activate Monitoring Service'}
+            </Button>
+          </div>
+        )}
+
+        {request.status === 'Quoted' && (
+          <Alert>
+            <AlertCircle className="w-4 h-4" />
+            <AlertDescription>
+              Quote of ৳{request.quoted_price?.toLocaleString()} has been sent to buyer. 
+              Waiting for PO upload to proceed with activation.
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default OfferMediationPanel;
