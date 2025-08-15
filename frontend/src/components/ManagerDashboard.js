@@ -1620,7 +1620,7 @@ const ManagerDashboard = () => {
                         <div 
                           ref={routeMapRef}
                           id="route-assignment-map"
-                          className="w-full h-full"
+                          className="w-full h-full relative"
                           style={{ minHeight: '600px', backgroundColor: '#f0f0f0' }}
                         />
                       ) : (
