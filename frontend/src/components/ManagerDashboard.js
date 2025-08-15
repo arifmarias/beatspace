@@ -68,7 +68,7 @@ const ManagerDashboard = () => {
   const [itemsPerPage] = useState(10); // Items per page for both tables
   
   // Route Assignment state
-  const [selectedAssets, setSelectedAssets] = useState([]);
+  const [selectedMapAssets, setSelectedMapAssets] = useState([]);
   const [mapFilters, setMapFilters] = useState({
     serviceTier: 'all',
     assignmentStatus: 'all',
@@ -77,8 +77,8 @@ const ManagerDashboard = () => {
   const [mapSearchTerm, setMapSearchTerm] = useState('');
   const [assignmentPanelOpen, setAssignmentPanelOpen] = useState(false);
   const [bulkAssignmentOperator, setBulkAssignmentOperator] = useState('');
-  const [selectedAssetDetails, setSelectedAssetDetailsModal] = useState(null);
-  const [assetAssignmentModal, setAssetAssignmentModal] = useState(false);
+  const [mapAssetDetails, setMapAssetDetails] = useState(null);
+  const [mapAssignmentModal, setMapAssignmentModal] = useState(false);
   
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
