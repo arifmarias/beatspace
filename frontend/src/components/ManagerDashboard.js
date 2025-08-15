@@ -878,20 +878,8 @@ const ManagerDashboard = () => {
       // Reset map bounds flag to allow proper fitting
       window.mapBoundsSet = false;
       
-      // Refresh all data similar to buyer portal
-      const refreshData = async () => {
-        try {
-          await Promise.all([
-            fetchMonitoringAssets(),
-            fetchOperators()
-          ]);
-          console.log('Route assignment data refreshed successfully');
-        } catch (error) {
-          console.error('Error refreshing route assignment data:', error);
-        }
-      };
-      
-      refreshData();
+      // Refresh monitoring assets data when tab is activated (like buyer portal)
+      fetchMonitoringAssets();
       
       // Handle map initialization/refresh
       if (window.google && mapRef.current) {
@@ -910,7 +898,7 @@ const ManagerDashboard = () => {
         }
       }
     }
-  }, [activeTab, fetchMonitoringAssets, fetchOperators, initializeMap, updateMapMarkers, monitoringAssets.length]);
+  }, [activeTab, fetchMonitoringAssets, initializeMap, updateMapMarkers, monitoringAssets.length]);
 
   // Update markers when data changes
   useEffect(() => {
