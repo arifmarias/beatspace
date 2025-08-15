@@ -2173,14 +2173,26 @@ async def get_assets(
     current_user: User = Depends(get_current_user),
     type: Optional[str] = None,
     status: Optional[str] = None,
-    division: Optional[str] = None
+    division: Optional[str] = None,
+    marketplace: Optional[bool] = None  # New parameter for marketplace filtering
 ):
-    """Get assets with optional filtering"""
+    """Get assets with optional filtering and marketplace visibility control"""
     query = {}
     
-    # Filter by seller for seller users
+    # Marketplace filtering - buyers should only see PUBLIC assets
+    if marketplace or current_user.role == UserRole.BUYER:
+        query["category"] = AssetCategory.PUBLIC
+    
+    # Filter by seller for seller users (they can see all their assets regardless of category)
     if current_user.role == UserRole.SELLER:
         query["seller_id"] = current_user.id
+        # Remove category filter for sellers to see all their assets
+        query.pop("category", None)
+    
+    # Admin can see all assets by default (no category filter unless marketplace=True)
+    if current_user.role in [UserRole.ADMIN, UserRole.MANAGER] and not marketplace:
+        # Admin sees all assets unless specifically requesting marketplace view
+        pass
     
     # Apply filters
     if type and type != "all":
