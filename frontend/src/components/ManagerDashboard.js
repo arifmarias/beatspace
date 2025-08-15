@@ -1445,6 +1445,7 @@ const ManagerDashboard = () => {
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
                         <div 
                           ref={mapRef}
+                          id="route-assignment-map"
                           className="w-full h-full"
                           style={{ minHeight: '384px' }}
                         />
@@ -1454,6 +1455,9 @@ const ManagerDashboard = () => {
                             <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Google Maps Not Available</h3>
                             <p className="text-gray-500">Google Maps API key not configured</p>
+                            <p className="text-xs text-gray-400 mt-2">
+                              Expected: REACT_APP_GOOGLE_MAPS_API_KEY
+                            </p>
                           </div>
                         </div>
                       )}
