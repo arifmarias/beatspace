@@ -608,7 +608,7 @@ const ManagerDashboard = () => {
 
   // Clean marker management
   const clearAllRouteMarkers = () => {
-    routeMarkers.current.forEach(marker => marker.setMap(null));
+    routeMarkers.current.forEach(({ marker }) => marker.setMap(null));
     routeMarkers.current = [];
   };
 
