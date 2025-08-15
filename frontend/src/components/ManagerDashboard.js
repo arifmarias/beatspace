@@ -625,22 +625,35 @@ const ManagerDashboard = () => {
   };
 
   const updateMapMarkers = useCallback(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapInstanceRef.current) {
+      console.log('Map instance not available for markers');
+      return;
+    }
 
+    console.log('Updating map markers...');
+    
     // Clear existing markers
     clearMarkers();
 
     const filteredAssets = getFilteredMapAssets();
+    console.log('Filtered assets for map:', filteredAssets.length);
     
-    filteredAssets.forEach(asset => {
+    filteredAssets.forEach((asset, index) => {
       if (!asset.location || !asset.location.lat || !asset.location.lng) {
+        console.log(`Asset ${asset.assetName} missing location data:`, asset.location);
         return; // Skip assets without coordinates
       }
 
-      const position = {
-        lat: parseFloat(asset.location.lat),
-        lng: parseFloat(asset.location.lng)
-      };
+      const lat = parseFloat(asset.location.lat);
+      const lng = parseFloat(asset.location.lng);
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        console.log(`Asset ${asset.assetName} has invalid coordinates:`, { lat: asset.location.lat, lng: asset.location.lng });
+        return;
+      }
+
+      const position = { lat, lng };
+      console.log(`Adding marker for ${asset.assetName} at:`, position);
 
       const assignedOperator = assetAssignments[asset.id];
       const isSelected = selectedMapAssets.includes(asset.id);
@@ -720,6 +733,8 @@ const ManagerDashboard = () => {
       markersRef.current.push(marker);
     });
 
+    console.log(`Added ${markersRef.current.length} markers to map`);
+
     // Fit map to show all markers
     if (markersRef.current.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -735,6 +750,10 @@ const ManagerDashboard = () => {
         }
         window.google.maps.event.removeListener(listener);
       });
+    } else {
+      console.log('No markers to display - using default center');
+      mapInstanceRef.current.setCenter({ lat: 23.8103, lng: 90.4125 });
+      mapInstanceRef.current.setZoom(12);
     }
   }, [selectedMapAssets, assetAssignments, getFilteredMapAssets]);
 
