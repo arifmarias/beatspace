@@ -848,10 +848,10 @@ const ManagerDashboard = () => {
   }, [monitoringAssets, handleMapAssetSelection]);
 
   // Route Assignment - Clean rewrite with no flickering
-  const mapRef = useRef(null);
-  const mapInstance = useRef(null);
-  const markers = useRef([]);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const routeMapRef = useRef(null);
+  const routeMapInstance = useRef(null);
+  const routeMarkers = useRef([]);
+  const [routeMapLoaded, setRouteMapLoaded] = useState(false);
 
   // Clean marker management
   const clearAllMarkers = () => {
