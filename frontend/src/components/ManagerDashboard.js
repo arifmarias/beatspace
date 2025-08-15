@@ -847,6 +847,13 @@ const ManagerDashboard = () => {
     };
   }, [monitoringAssets, handleMapAssetSelection]);
 
+  // Update only marker colors when selection changes (prevent flickering)
+  useEffect(() => {
+    if (mapInstanceRef.current && markersRef.current.length > 0) {
+      updateMarkerColors();
+    }
+  }, [selectedMapAssets, updateMarkerColors]);
+
   // Function to update only marker colors (prevent flickering)
   const updateMarkerColors = useCallback(() => {
     if (!mapInstanceRef.current || markersRef.current.length === 0) {
