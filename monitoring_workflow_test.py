@@ -159,7 +159,9 @@ class MonitoringWorkflowTester:
                 "district": "Dhaka",
                 "division": "Dhaka",
                 "status": "Live",
-                "buyer_id": self.buyer_user_id
+                "buyer_id": self.buyer_user_id,
+                "seller_id": "admin_seller_id",
+                "seller_name": "Admin Test Seller"
             }
             
             success, asset_response, status = self.make_request(
