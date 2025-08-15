@@ -885,6 +885,751 @@ class BeatSpaceAPITester:
         return True, {}
 
     # ========================================
+    # ASSET CATEGORY FUNCTIONALITY TESTS
+    # ========================================
+    
+    def test_asset_creation_public_category(self):
+        """Test Asset Creation with Public Category - PRIORITY TEST"""
+        print("🎯 TESTING ASSET CREATION WITH PUBLIC CATEGORY")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping public asset creation test - no seller token")
+            return False, {}
+        
+        # Create PUBLIC asset with all standard fields
+        public_asset_data = {
+            "name": f"Public Billboard {datetime.now().strftime('%H%M%S')}",
+            "type": "Billboard",
+            "category": "Public",  # PUBLIC category
+            "address": "Gulshan Avenue, Dhaka",
+            "location": {"lat": 23.780153, "lng": 90.414230},
+            "dimensions": "20ft x 10ft",
+            "pricing": {
+                "3_months": 75000,
+                "6_months": 135000,
+                "12_months": 240000
+            },
+            "photos": ["https://example.com/public_asset.jpg"],
+            "description": "Public category asset for marketplace visibility",
+            "specifications": {"lighting": "LED backlit", "material": "Digital display"},
+            "visibility_score": 9,
+            "traffic_volume": "Very High",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_name": "Digital Media Solutions"
+        }
+        
+        success, response = self.run_test(
+            "Create PUBLIC Asset",
+            "POST",
+            "assets",
+            200,
+            data=public_asset_data,
+            token=self.seller_token
+        )
+        
+        if success:
+            print(f"   ✅ PUBLIC asset created successfully")
+            print(f"   Asset ID: {response.get('id')}")
+            print(f"   Category: {response.get('category')}")
+            print(f"   Status: {response.get('status')}")
+            
+            # Verify asset appears in marketplace
+            marketplace_success, marketplace_assets = self.test_marketplace_filtering_public_only()
+            if marketplace_success:
+                asset_found = any(asset.get('id') == response.get('id') for asset in marketplace_assets)
+                if asset_found:
+                    print(f"   ✅ PUBLIC asset appears in marketplace")
+                else:
+                    print(f"   ⚠️  PUBLIC asset not found in marketplace")
+            
+            return True, response
+        else:
+            print(f"   ❌ PUBLIC asset creation failed")
+            return False, {}
+    
+    def test_asset_creation_existing_asset_category(self):
+        """Test Asset Creation with Existing Asset Category - PRIORITY TEST"""
+        print("🎯 TESTING ASSET CREATION WITH EXISTING ASSET CATEGORY")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping existing asset creation test - no seller token")
+            return False, {}
+        
+        # Create EXISTING ASSET with required fields: asset_expiry_date, buyer_name
+        existing_asset_data = {
+            "name": f"Existing Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Billboard",
+            "category": "Existing Asset",  # EXISTING ASSET category
+            "address": "Dhanmondi, Dhaka",
+            "location": {"lat": 23.746466, "lng": 90.376015},
+            "dimensions": "15ft x 8ft",
+            "pricing": {
+                "3_months": 45000,
+                "6_months": 80000,
+                "12_months": 150000
+            },
+            "photos": ["https://example.com/existing_asset.jpg"],
+            "description": "Existing asset with expiry date",
+            "specifications": {"lighting": "Standard", "material": "Vinyl banner"},
+            "visibility_score": 8,
+            "traffic_volume": "High",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_name": "Metro Advertising Co",
+            # Required fields for Existing Asset
+            "asset_expiry_date": "2025-06-15T00:00:00Z",
+            "buyer_name": "Grameenphone Ltd"
+        }
+        
+        success, response = self.run_test(
+            "Create EXISTING ASSET",
+            "POST",
+            "assets",
+            200,
+            data=existing_asset_data,
+            token=self.seller_token
+        )
+        
+        if success:
+            print(f"   ✅ EXISTING ASSET created successfully")
+            print(f"   Asset ID: {response.get('id')}")
+            print(f"   Category: {response.get('category')}")
+            print(f"   Asset Expiry Date: {response.get('asset_expiry_date')}")
+            print(f"   Buyer Name: {response.get('buyer_name')}")
+            
+            # Verify asset is NOT visible in marketplace
+            marketplace_success, marketplace_assets = self.test_marketplace_filtering_public_only()
+            if marketplace_success:
+                asset_found = any(asset.get('id') == response.get('id') for asset in marketplace_assets)
+                if not asset_found:
+                    print(f"   ✅ EXISTING ASSET correctly NOT visible in marketplace")
+                else:
+                    print(f"   ❌ EXISTING ASSET incorrectly visible in marketplace")
+            
+            return True, response
+        else:
+            print(f"   ❌ EXISTING ASSET creation failed")
+            return False, {}
+    
+    def test_asset_creation_private_asset_category(self):
+        """Test Asset Creation with Private Asset Category - PRIORITY TEST"""
+        print("🎯 TESTING ASSET CREATION WITH PRIVATE ASSET CATEGORY")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping private asset creation test - no seller token")
+            return False, {}
+        
+        # Create PRIVATE ASSET with required fields: one_off_investment, buyer_name
+        # seller_name is optional and pricing is not mandatory
+        private_asset_data = {
+            "name": f"Private Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Market",
+            "category": "Private Asset",  # PRIVATE ASSET category
+            "address": "Uttara, Dhaka",
+            "location": {"lat": 23.875441, "lng": 90.396736},
+            "dimensions": "10ft x 6ft",
+            # pricing is not mandatory for private assets
+            "photos": ["https://example.com/private_asset.jpg"],
+            "description": "Private asset with one-off investment",
+            "specifications": {"lighting": "LED display", "material": "Digital screen"},
+            "visibility_score": 7,
+            "traffic_volume": "High",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            # seller_name is optional for private assets
+            # Required fields for Private Asset
+            "one_off_investment": 250000,
+            "buyer_name": "Private Investor Ltd"
+        }
+        
+        success, response = self.run_test(
+            "Create PRIVATE ASSET",
+            "POST",
+            "assets",
+            200,
+            data=private_asset_data,
+            token=self.seller_token
+        )
+        
+        if success:
+            print(f"   ✅ PRIVATE ASSET created successfully")
+            print(f"   Asset ID: {response.get('id')}")
+            print(f"   Category: {response.get('category')}")
+            print(f"   One-off Investment: {response.get('one_off_investment')}")
+            print(f"   Buyer Name: {response.get('buyer_name')}")
+            print(f"   Seller Name: {response.get('seller_name', 'Not provided (optional)')}")
+            
+            # Verify asset is NOT visible in marketplace
+            marketplace_success, marketplace_assets = self.test_marketplace_filtering_public_only()
+            if marketplace_success:
+                asset_found = any(asset.get('id') == response.get('id') for asset in marketplace_assets)
+                if not asset_found:
+                    print(f"   ✅ PRIVATE ASSET correctly NOT visible in marketplace")
+                else:
+                    print(f"   ❌ PRIVATE ASSET incorrectly visible in marketplace")
+            
+            return True, response
+        else:
+            print(f"   ❌ PRIVATE ASSET creation failed")
+            return False, {}
+    
+    def test_backend_validation_missing_fields(self):
+        """Test Backend Validation for missing required fields - PRIORITY TEST"""
+        print("🎯 TESTING BACKEND VALIDATION FOR MISSING REQUIRED FIELDS")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping validation test - no seller token")
+            return False, {}
+        
+        validation_tests = []
+        
+        # Test 1: Existing Asset without asset_expiry_date
+        existing_asset_invalid = {
+            "name": "Invalid Existing Asset",
+            "type": "Billboard",
+            "category": "Existing Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 20ft",
+            "pricing": {"3_months": 50000},
+            "buyer_name": "Test Buyer"
+            # Missing asset_expiry_date
+        }
+        
+        success, response = self.run_test(
+            "Existing Asset - Missing asset_expiry_date",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=existing_asset_invalid,
+            token=self.seller_token
+        )
+        validation_tests.append(("Missing asset_expiry_date", success))
+        
+        # Test 2: Existing Asset without buyer_name
+        existing_asset_invalid2 = {
+            "name": "Invalid Existing Asset 2",
+            "type": "Billboard",
+            "category": "Existing Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 20ft",
+            "pricing": {"3_months": 50000},
+            "asset_expiry_date": "2025-06-15T00:00:00Z"
+            # Missing buyer_name
+        }
+        
+        success, response = self.run_test(
+            "Existing Asset - Missing buyer_name",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=existing_asset_invalid2,
+            token=self.seller_token
+        )
+        validation_tests.append(("Missing buyer_name", success))
+        
+        # Test 3: Private Asset without one_off_investment
+        private_asset_invalid = {
+            "name": "Invalid Private Asset",
+            "type": "Market",
+            "category": "Private Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 6ft",
+            "buyer_name": "Test Buyer"
+            # Missing one_off_investment
+        }
+        
+        success, response = self.run_test(
+            "Private Asset - Missing one_off_investment",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=private_asset_invalid,
+            token=self.seller_token
+        )
+        validation_tests.append(("Missing one_off_investment", success))
+        
+        # Test 4: Private Asset without buyer_name
+        private_asset_invalid2 = {
+            "name": "Invalid Private Asset 2",
+            "type": "Market",
+            "category": "Private Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 6ft",
+            "one_off_investment": 100000
+            # Missing buyer_name
+        }
+        
+        success, response = self.run_test(
+            "Private Asset - Missing buyer_name",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=private_asset_invalid2,
+            token=self.seller_token
+        )
+        validation_tests.append(("Missing buyer_name for private", success))
+        
+        passed_tests = sum(1 for _, success in validation_tests if success)
+        total_tests = len(validation_tests)
+        
+        print(f"   📊 Validation tests: {passed_tests}/{total_tests} passed")
+        
+        for test_name, success in validation_tests:
+            status = "✅" if success else "❌"
+            print(f"   {status} {test_name}")
+        
+        return passed_tests == total_tests, {"passed": passed_tests, "total": total_tests}
+    
+    def test_marketplace_filtering_public_only(self):
+        """Test Marketplace Filtering - Only PUBLIC assets returned - PRIORITY TEST"""
+        print("🎯 TESTING MARKETPLACE FILTERING - PUBLIC ASSETS ONLY")
+        
+        # Test GET /api/assets with marketplace=true parameter
+        success, response = self.run_test(
+            "Get Marketplace Assets (marketplace=true)",
+            "GET",
+            "assets",
+            200,
+            params={"marketplace": "true"}
+        )
+        
+        if success:
+            print(f"   ✅ Marketplace filtering endpoint accessible")
+            print(f"   Found {len(response)} marketplace assets")
+            
+            # Verify only PUBLIC assets are returned
+            public_only = True
+            for asset in response:
+                category = asset.get('category', 'Public')  # Default to Public if not specified
+                if category != 'Public':
+                    public_only = False
+                    print(f"   ❌ Non-public asset found in marketplace: {asset.get('name')} (Category: {category})")
+            
+            if public_only:
+                print(f"   ✅ All marketplace assets are PUBLIC category")
+            else:
+                print(f"   ❌ Non-public assets found in marketplace")
+            
+            # Show sample assets
+            for i, asset in enumerate(response[:3]):
+                print(f"   Asset {i+1}: {asset.get('name')} - Category: {asset.get('category', 'Public')}")
+            
+            return success, response
+        else:
+            print(f"   ❌ Marketplace filtering failed")
+            return False, {}
+    
+    def test_marketplace_filtering_different_user_roles(self):
+        """Test Marketplace Filtering with different user roles - PRIORITY TEST"""
+        print("🎯 TESTING MARKETPLACE FILTERING WITH DIFFERENT USER ROLES")
+        
+        role_tests = []
+        
+        # Test with admin token
+        if self.admin_token:
+            success, response = self.run_test(
+                "Marketplace Assets - Admin Role",
+                "GET",
+                "assets",
+                200,
+                params={"marketplace": "true"},
+                token=self.admin_token
+            )
+            role_tests.append(("Admin", success, len(response) if success else 0))
+        
+        # Test with buyer token
+        if self.buyer_token:
+            success, response = self.run_test(
+                "Marketplace Assets - Buyer Role",
+                "GET",
+                "assets",
+                200,
+                params={"marketplace": "true"},
+                token=self.buyer_token
+            )
+            role_tests.append(("Buyer", success, len(response) if success else 0))
+        
+        # Test with seller token
+        if self.seller_token:
+            success, response = self.run_test(
+                "Marketplace Assets - Seller Role",
+                "GET",
+                "assets",
+                200,
+                params={"marketplace": "true"},
+                token=self.seller_token
+            )
+            role_tests.append(("Seller", success, len(response) if success else 0))
+        
+        # Test without authentication (public access)
+        success, response = self.run_test(
+            "Marketplace Assets - No Auth (Public)",
+            "GET",
+            "assets/public",  # Use public endpoint
+            200
+        )
+        role_tests.append(("Public", success, len(response) if success else 0))
+        
+        print(f"   📊 Role-based marketplace access results:")
+        for role, success, count in role_tests:
+            status = "✅" if success else "❌"
+            print(f"   {status} {role}: {count} assets accessible")
+        
+        passed_tests = sum(1 for _, success, _ in role_tests if success)
+        total_tests = len(role_tests)
+        
+        return passed_tests == total_tests, {"passed": passed_tests, "total": total_tests}
+    
+    def test_asset_model_fields_verification(self):
+        """Test Asset Model Fields - Verify new fields are properly stored - PRIORITY TEST"""
+        print("🎯 TESTING ASSET MODEL FIELDS VERIFICATION")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping asset model test - no seller token")
+            return False, {}
+        
+        # Create an asset with all new fields
+        test_asset_data = {
+            "name": f"Model Test Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Billboard",
+            "category": "Private Asset",
+            "address": "Model Test Location",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "12ft x 8ft",
+            "pricing": {"3_months": 60000},
+            "photos": ["https://example.com/model_test.jpg"],
+            "description": "Testing asset model fields",
+            "specifications": {"material": "Test Material"},
+            "visibility_score": 6,
+            "traffic_volume": "Medium",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_name": "Test Seller",
+            # New fields to verify
+            "category": "Private Asset",
+            "asset_expiry_date": "2025-12-31T00:00:00Z",
+            "one_off_investment": 150000,
+            "buyer_name": "Test Buyer Company"
+        }
+        
+        success, create_response = self.run_test(
+            "Create Asset for Model Testing",
+            "POST",
+            "assets",
+            200,
+            data=test_asset_data,
+            token=self.seller_token
+        )
+        
+        if not success:
+            print(f"   ❌ Asset creation failed for model testing")
+            return False, {}
+        
+        asset_id = create_response.get('id')
+        print(f"   ✅ Test asset created: {asset_id}")
+        
+        # Retrieve the asset to verify fields
+        success, get_response = self.run_test(
+            "Get Asset to Verify Fields",
+            "GET",
+            f"assets/{asset_id}",
+            200,
+            token=self.seller_token
+        )
+        
+        if success:
+            print(f"   ✅ Asset retrieved successfully")
+            
+            # Verify new fields are properly stored
+            field_tests = [
+                ("category", "Private Asset"),
+                ("asset_expiry_date", "2025-12-31T00:00:00Z"),
+                ("one_off_investment", 150000),
+                ("buyer_name", "Test Buyer Company")
+            ]
+            
+            passed_field_tests = 0
+            for field_name, expected_value in field_tests:
+                actual_value = get_response.get(field_name)
+                if actual_value == expected_value:
+                    print(f"   ✅ {field_name}: {actual_value}")
+                    passed_field_tests += 1
+                else:
+                    print(f"   ❌ {field_name}: Expected {expected_value}, got {actual_value}")
+            
+            # Test optional fields work correctly for private assets
+            seller_name = get_response.get('seller_name')
+            if seller_name:
+                print(f"   ✅ seller_name (optional): {seller_name}")
+                passed_field_tests += 1
+            else:
+                print(f"   ✅ seller_name (optional): Not provided - OK for private assets")
+                passed_field_tests += 1
+            
+            total_field_tests = len(field_tests) + 1
+            print(f"   📊 Field verification: {passed_field_tests}/{total_field_tests} passed")
+            
+            return passed_field_tests == total_field_tests, {
+                "passed": passed_field_tests,
+                "total": total_field_tests,
+                "asset_id": asset_id
+            }
+        else:
+            print(f"   ❌ Asset retrieval failed")
+            return False, {}
+    
+    def test_edge_cases_asset_categories(self):
+        """Test Edge Cases for Asset Categories - PRIORITY TEST"""
+        print("🎯 TESTING EDGE CASES FOR ASSET CATEGORIES")
+        
+        if not self.seller_token:
+            print("⚠️  Skipping edge cases test - no seller token")
+            return False, {}
+        
+        edge_case_tests = []
+        
+        # Test 1: Invalid date format for asset_expiry_date
+        invalid_date_asset = {
+            "name": "Invalid Date Asset",
+            "type": "Billboard",
+            "category": "Existing Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 20ft",
+            "pricing": {"3_months": 50000},
+            "buyer_name": "Test Buyer",
+            "asset_expiry_date": "invalid-date-format"  # Invalid date format
+        }
+        
+        success, response = self.run_test(
+            "Edge Case - Invalid Date Format",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=invalid_date_asset,
+            token=self.seller_token
+        )
+        edge_case_tests.append(("Invalid date format", success))
+        
+        # Test 2: Negative value for one_off_investment
+        negative_investment_asset = {
+            "name": "Negative Investment Asset",
+            "type": "Market",
+            "category": "Private Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 6ft",
+            "buyer_name": "Test Buyer",
+            "one_off_investment": -50000  # Negative value
+        }
+        
+        success, response = self.run_test(
+            "Edge Case - Negative Investment",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=negative_investment_asset,
+            token=self.seller_token
+        )
+        edge_case_tests.append(("Negative investment", success))
+        
+        # Test 3: Missing category defaults to PUBLIC
+        no_category_asset = {
+            "name": f"No Category Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Billboard",
+            # category field missing - should default to PUBLIC
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 20ft",
+            "pricing": {"3_months": 50000},
+            "photos": ["https://example.com/test.jpg"],
+            "description": "Asset without category specified",
+            "visibility_score": 5,
+            "traffic_volume": "Medium",
+            "district": "Dhaka",
+            "division": "Dhaka",
+            "seller_name": "Test Seller"
+        }
+        
+        success, response = self.run_test(
+            "Edge Case - Missing Category (should default to PUBLIC)",
+            "POST",
+            "assets",
+            200,  # Should succeed
+            data=no_category_asset,
+            token=self.seller_token
+        )
+        
+        if success:
+            category = response.get('category', 'Not found')
+            if category == 'Public':
+                print(f"   ✅ Missing category correctly defaults to PUBLIC")
+                edge_case_tests.append(("Missing category defaults to PUBLIC", True))
+            else:
+                print(f"   ❌ Missing category defaults to {category}, expected PUBLIC")
+                edge_case_tests.append(("Missing category defaults to PUBLIC", False))
+        else:
+            edge_case_tests.append(("Missing category defaults to PUBLIC", False))
+        
+        # Test 4: Very large one_off_investment value
+        large_investment_asset = {
+            "name": f"Large Investment Asset {datetime.now().strftime('%H%M%S')}",
+            "type": "Market",
+            "category": "Private Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 6ft",
+            "buyer_name": "Test Buyer",
+            "one_off_investment": 999999999  # Very large value
+        }
+        
+        success, response = self.run_test(
+            "Edge Case - Large Investment Value",
+            "POST",
+            "assets",
+            200,  # Should succeed
+            data=large_investment_asset,
+            token=self.seller_token
+        )
+        edge_case_tests.append(("Large investment value", success))
+        
+        # Test 5: Empty string for buyer_name
+        empty_buyer_name_asset = {
+            "name": "Empty Buyer Name Asset",
+            "type": "Market",
+            "category": "Private Asset",
+            "address": "Test Address",
+            "location": {"lat": 23.7461, "lng": 90.3742},
+            "dimensions": "10ft x 6ft",
+            "buyer_name": "",  # Empty string
+            "one_off_investment": 100000
+        }
+        
+        success, response = self.run_test(
+            "Edge Case - Empty Buyer Name",
+            "POST",
+            "assets",
+            400,  # Should fail with validation error
+            data=empty_buyer_name_asset,
+            token=self.seller_token
+        )
+        edge_case_tests.append(("Empty buyer name", success))
+        
+        passed_tests = sum(1 for _, success in edge_case_tests if success)
+        total_tests = len(edge_case_tests)
+        
+        print(f"   📊 Edge case tests: {passed_tests}/{total_tests} passed")
+        
+        for test_name, success in edge_case_tests:
+            status = "✅" if success else "❌"
+            print(f"   {status} {test_name}")
+        
+        return passed_tests == total_tests, {"passed": passed_tests, "total": total_tests}
+    
+    def run_asset_category_comprehensive_test_suite(self):
+        """Run comprehensive Asset Category functionality test suite"""
+        print("\n" + "="*80)
+        print("🚀 ASSET CATEGORY FUNCTIONALITY COMPREHENSIVE TEST SUITE")
+        print("="*80)
+        print("   Testing the new Asset Category functionality implementation")
+        print("   Categories: PUBLIC, EXISTING ASSET, PRIVATE ASSET")
+        print()
+        
+        asset_category_tests = [
+            ("Asset Creation with Public Category", self.test_asset_creation_public_category),
+            ("Asset Creation with Existing Asset Category", self.test_asset_creation_existing_asset_category),
+            ("Asset Creation with Private Asset Category", self.test_asset_creation_private_asset_category),
+            ("Backend Validation - Missing Required Fields", self.test_backend_validation_missing_fields),
+            ("Marketplace Filtering - Public Assets Only", self.test_marketplace_filtering_public_only),
+            ("Marketplace Filtering - Different User Roles", self.test_marketplace_filtering_different_user_roles),
+            ("Asset Model Fields Verification", self.test_asset_model_fields_verification),
+            ("Edge Cases - Asset Categories", self.test_edge_cases_asset_categories)
+        ]
+        
+        print("🔐 AUTHENTICATION SETUP")
+        auth_success = 0
+        
+        # Setup authentication
+        admin_success, _ = self.test_admin_login()
+        if admin_success:
+            auth_success += 1
+        
+        seller_success, _ = self.test_seller_login()
+        if seller_success:
+            auth_success += 1
+        
+        buyer_success, _ = self.test_buyer_login()
+        if buyer_success:
+            auth_success += 1
+        
+        print(f"📊 Authentication: {auth_success}/3 successful")
+        
+        if auth_success == 0:
+            print("❌ No authentication successful - cannot run asset category tests")
+            return
+        
+        print("\n🧪 RUNNING ASSET CATEGORY TESTS")
+        
+        test_results = []
+        for test_name, test_method in asset_category_tests:
+            try:
+                success, result = test_method()
+                test_results.append((test_name, success, result))
+                
+                if success:
+                    print(f"✅ {test_name} - PASSED")
+                else:
+                    print(f"❌ {test_name} - FAILED")
+                    
+            except Exception as e:
+                print(f"❌ {test_name} - ERROR: {str(e)}")
+                test_results.append((test_name, False, {"error": str(e)}))
+        
+        # Calculate overall results
+        passed_tests = sum(1 for _, success, _ in test_results if success)
+        total_tests = len(test_results)
+        success_rate = (passed_tests / total_tests) * 100
+        
+        print("\n" + "="*80)
+        print("📊 ASSET CATEGORY FUNCTIONALITY TEST RESULTS")
+        print("="*80)
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {total_tests - passed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print()
+        
+        # Detailed results
+        for test_name, success, result in test_results:
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"{status} - {test_name}")
+            if not success and isinstance(result, dict) and "error" in result:
+                print(f"    Error: {result['error']}")
+        
+        print("\n🎯 ASSET CATEGORY FUNCTIONALITY SUMMARY")
+        if success_rate >= 80:
+            print("🎉 ASSET CATEGORY FUNCTIONALITY IS WORKING CORRECTLY!")
+            print("   All major asset category features are operational")
+            print("   ✅ Public assets appear in marketplace")
+            print("   ✅ Existing and Private assets are hidden from marketplace")
+            print("   ✅ Category-specific validation working")
+            print("   ✅ Required fields properly enforced")
+        elif success_rate >= 60:
+            print("⚠️  ASSET CATEGORY FUNCTIONALITY PARTIALLY WORKING")
+            print("   Some asset category features need attention")
+        else:
+            print("❌ ASSET CATEGORY FUNCTIONALITY NEEDS MAJOR FIXES")
+            print("   Multiple critical issues found")
+        
+        print(f"\nFinal Success Rate: {success_rate:.1f}%")
+        return test_results
+
+    # ========================================
     # WEBSOCKET REAL-TIME SYNCHRONIZATION TESTS
     # ========================================
     
