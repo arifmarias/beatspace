@@ -4505,9 +4505,10 @@ const AdminDashboard = () => {
                   </div>
                 )}
 
+                {/* Seller Selection - Optional for Private Assets */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Seller *
+                    Seller {assetForm.category !== 'Private Asset' ? '*' : '(Optional)'}
                   </label>
                   <Select 
                     value={assetForm.seller_id} 
@@ -4521,7 +4522,11 @@ const AdminDashboard = () => {
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select seller" />
+                      <SelectValue placeholder={
+                        assetForm.category === 'Private Asset' 
+                          ? "Select seller (optional - buyer is the seller)"
+                          : "Select seller"
+                      } />
                     </SelectTrigger>
                     <SelectContent className="max-h-48 overflow-y-auto">
                       {sellers.map((seller) => (
@@ -4534,6 +4539,11 @@ const AdminDashboard = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {assetForm.category === 'Private Asset' && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      For private assets, the buyer acts as the seller. Seller selection is optional.
+                    </p>
+                  )}
                   {sellers.length === 0 && (
                     <p className="text-xs text-amber-600 mt-1">
                       No sellers found. Please ensure there are users with 'seller' role.
