@@ -1480,7 +1480,9 @@ const ManagerDashboard = () => {
                         API Key: {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? '✓' : '✗'}<br/>
                         Map Ref: {mapRef.current ? '✓' : '✗'}<br/>
                         Google: {typeof window !== 'undefined' && window.google ? '✓' : '✗'}<br/>
-                        Assets: {monitoringAssets.length}
+                        Map Instance: {mapInstanceRef.current ? '✓' : '✗'}<br/>
+                        Assets: {monitoringAssets.length}<br/>
+                        Active Tab: {activeTab}
                       </div>
                       
                       {process.env.REACT_APP_GOOGLE_MAPS_API_KEY ? (
