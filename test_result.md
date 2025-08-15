@@ -180,9 +180,13 @@ frontend:
 
 test_plan:
   current_focus:
-    - "WebSocket Real-time Synchronization Implementation"
-    - "WebSocket Real-time Connection and Event Handling"
-  stuck_tasks: []
+    - "Asset Creation with Public Category"
+    - "Asset Creation with Existing Asset Category"
+    - "Edge Cases for Asset Categories"
+  stuck_tasks:
+    - "Asset Creation with Public Category"
+    - "Asset Creation with Existing Asset Category"
+    - "Edge Cases for Asset Categories"
   test_all: false
   test_priority: "high_first"
   
