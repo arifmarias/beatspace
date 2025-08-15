@@ -837,7 +837,7 @@ const ManagerDashboard = () => {
         if (asset) {
           console.log('Info window button clicked for:', asset.assetName);
           handleMapAssetSelection(asset, false); // Single select when clicked from info window
-          setTimeout(() => updateMapMarkers(), 100);
+          // Don't call updateMapMarkers here to prevent flickering
         }
       }
     };
@@ -845,7 +845,14 @@ const ManagerDashboard = () => {
     return () => {
       delete window.managerDashboard;
     };
-  }, [monitoringAssets, handleMapAssetSelection, updateMapMarkers]);
+  }, [monitoringAssets, handleMapAssetSelection]);
+
+  // Separate useEffect to handle marker updates only when selection changes
+  useEffect(() => {
+    if (mapInstanceRef.current && monitoringAssets.length > 0) {
+      updateMapMarkers();
+    }
+  }, [selectedMapAssets, updateMapMarkers]);
 
   // Load Google Maps when component mounts or when Route Assignment tab is activated
   useEffect(() => {
