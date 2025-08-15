@@ -835,14 +835,10 @@ const ManagerDashboard = () => {
         if (routeMapInstance.current) {
           window.google.maps.event.trigger(routeMapInstance.current, 'resize');
           // Refit bounds to kick tile refresh
-          try {
-            if (routeMarkers.current.length > 0) {
-              const bounds = new window.google.maps.LatLngBounds();
-              routeMarkers.current.forEach(({ marker }) => bounds.extend(marker.getPosition()));
-              routeMapInstance.current.fitBounds(bounds);
-            }
-          } catch (e) {
-            // no-op
+          if (routeMarkers.current.length > 0) {
+            const bounds = new window.google.maps.LatLngBounds();
+            routeMarkers.current.forEach(({ marker }) => bounds.extend(marker.getPosition()));
+            routeMapInstance.current.fitBounds(bounds);
           }
         }
       }, 350);
