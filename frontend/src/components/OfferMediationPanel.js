@@ -122,6 +122,38 @@ const OfferMediationPanel = () => {
     });
   };
 
+  const handleQuoteMonitoringService = async (request) => {
+    const price = prompt('Enter quote price for monitoring service:');
+    if (!price || isNaN(price)) return;
+    
+    try {
+      const headers = getAuthHeaders();
+      await axios.put(`${API}/offers/requests/${request.id}`, {
+        status: 'Quoted',
+        quoted_price: parseFloat(price)
+      }, { headers });
+      
+      alert('Quote submitted successfully!');
+      fetchOfferRequests();
+    } catch (error) {
+      console.error('Error quoting monitoring service:', error);
+      alert('Failed to submit quote. Please try again.');
+    }
+  };
+
+  const handleActivateMonitoringService = async (request) => {
+    try {
+      const headers = getAuthHeaders();
+      await axios.post(`${API}/monitoring/services/activate/${request.id}`, {}, { headers });
+      
+      alert('Monitoring service activated successfully!');
+      fetchOfferRequests();
+    } catch (error) {
+      console.error('Error activating monitoring service:', error);
+      alert('Failed to activate monitoring service. Please try again.');
+    }
+  };
+
   const updateAssetPricing = (assetId, newPrice) => {
     const updatedPricing = {
       ...mediationForm.finalPricing,
