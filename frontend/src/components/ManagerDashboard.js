@@ -1588,21 +1588,10 @@ const ManagerDashboard = () => {
                             className="w-full h-full"
                             style={{ minHeight: '600px', backgroundColor: '#f0f0f0' }}
                           />
-                          {/* Floating controls (fullscreen + inline assign) */}
+                          {/* Floating controls: only show inline assignment when in fullscreen */}
                           <div className="absolute right-4 top-4 flex gap-2 z-10">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => {
-                                const elem = document.getElementById('route-assignment-map');
-                                if (!elem) return;
-                                if (!document.fullscreenElement) elem.requestFullscreen?.();
-                                else document.exitFullscreen?.();
-                              }}
-                            >
-                              Fullscreen
-                            </Button>
-                            {selectedMapAssets.length > 0 && (
+                            {/* Keep fullscreen handled by the built-in Google control (icon only) - no text button here */}
+                            {document.fullscreenElement && selectedMapAssets.length > 0 && (
                               <>
                                 <Select value={bulkAssignmentOperator} onValueChange={setBulkAssignmentOperator}>
                                   <SelectTrigger className="w-44 bg-white">
