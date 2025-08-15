@@ -870,15 +870,30 @@ const ManagerDashboard = () => {
     }
   }, [loadGoogleMapsScript]);
 
-  // Additional effect to initialize map when Route Assignment tab becomes active
+  // Tab refresh functionality - similar to buyer portal
   useEffect(() => {
     if (activeTab === 'route') {
-      console.log('Route Assignment tab activated - refreshing data and initializing map...');
+      console.log('Route Assignment tab activated - refreshing all data...');
       
-      // Refresh monitoring assets data when tab is activated
-      fetchMonitoringAssets();
+      // Reset map bounds flag to allow proper fitting
+      window.mapBoundsSet = false;
       
-      // Check if map needs initialization or re-initialization
+      // Refresh all data similar to buyer portal
+      const refreshData = async () => {
+        try {
+          await Promise.all([
+            fetchMonitoringAssets(),
+            fetchOperators()
+          ]);
+          console.log('Route assignment data refreshed successfully');
+        } catch (error) {
+          console.error('Error refreshing route assignment data:', error);
+        }
+      };
+      
+      refreshData();
+      
+      // Handle map initialization/refresh
       if (window.google && mapRef.current) {
         if (!mapInstanceRef.current) {
           // Map needs initial setup
@@ -888,12 +903,14 @@ const ManagerDashboard = () => {
           setTimeout(() => {
             // Re-trigger map resize and marker update after tab switch
             window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
-            updateMapMarkers();
+            if (monitoringAssets.length > 0) {
+              updateMapMarkers();
+            }
           }, 300);
         }
       }
     }
-  }, [activeTab, initializeMap, fetchMonitoringAssets]);
+  }, [activeTab, fetchMonitoringAssets, fetchOperators, initializeMap, updateMapMarkers, monitoringAssets.length]);
 
   // Update markers when data changes
   useEffect(() => {
