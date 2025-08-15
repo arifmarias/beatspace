@@ -989,6 +989,7 @@ const BuyerDashboard = () => {
       };
     }
 
+    // Check for active monitoring subscription first
     const subscription = getAssetMonitoringSubscription(assetId);
     if (subscription) {
       const frequency = subscription.frequency || 'monthly';
@@ -1000,6 +1001,42 @@ const BuyerDashboard = () => {
         className: 'text-green-600 border-green-300 bg-green-50 cursor-not-allowed opacity-75'
       };
     }
+
+    // Check for pending monitoring service request
+    const monitoringRequest = requestedOffers.find(offer => 
+      offer.request_type === 'monitoring_service' && 
+      offer.service_details?.asset_ids?.includes(assetId) &&
+      ['Pending', 'Quoted', 'PO Required', 'PO Uploaded'].includes(offer.status)
+    );
+
+    if (monitoringRequest) {
+      let statusText = '';
+      switch (monitoringRequest.status) {
+        case 'Pending':
+          statusText = 'Pending Admin Review';
+          break;
+        case 'Quoted':
+          statusText = 'Quoted - Awaiting PO';
+          break;
+        case 'PO Required':
+          statusText = 'PO Required';
+          break;
+        case 'PO Uploaded':
+          statusText = 'Awaiting Activation';
+          break;
+        default:
+          statusText = 'Under Review';
+      }
+      
+      return {
+        text: statusText,
+        subscribed: false,
+        disabled: true,
+        variant: 'outline',
+        className: 'text-orange-600 border-orange-300 bg-orange-50 cursor-not-allowed opacity-75'
+      };
+    }
+
     return {
       text: 'Subscribe to Monitoring',
       subscribed: false,
