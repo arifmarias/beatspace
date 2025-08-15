@@ -264,7 +264,9 @@ class BeatSpaceAPITester:
     # Asset CRUD Operations Tests
     def test_get_assets_authenticated(self):
         """Test getting assets with authentication"""
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping authenticated assets test - no seller token")
             return False, {}
         
@@ -283,7 +285,9 @@ class BeatSpaceAPITester:
 
     def test_create_asset(self):
         """Test creating a new asset (seller functionality)"""
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping asset creation test - no seller token")
             return False, {}
         
@@ -430,7 +434,9 @@ class BeatSpaceAPITester:
         else:
             asset_id = self.created_asset_id
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping single asset test - no seller token")
             return False, {}
         
@@ -954,7 +960,9 @@ class BeatSpaceAPITester:
         """Test Asset Creation with Existing Asset Category - PRIORITY TEST"""
         print("🎯 TESTING ASSET CREATION WITH EXISTING ASSET CATEGORY")
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping existing asset creation test - no seller token")
             return False, {}
         
@@ -1018,7 +1026,9 @@ class BeatSpaceAPITester:
         """Test Asset Creation with Private Asset Category - PRIORITY TEST"""
         print("🎯 TESTING ASSET CREATION WITH PRIVATE ASSET CATEGORY")
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping private asset creation test - no seller token")
             return False, {}
         
@@ -1080,7 +1090,9 @@ class BeatSpaceAPITester:
         """Test Backend Validation for missing required fields - PRIORITY TEST"""
         print("🎯 TESTING BACKEND VALIDATION FOR MISSING REQUIRED FIELDS")
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping validation test - no seller token")
             return False, {}
         
@@ -1291,7 +1303,9 @@ class BeatSpaceAPITester:
         """Test Asset Model Fields - Verify new fields are properly stored - PRIORITY TEST"""
         print("🎯 TESTING ASSET MODEL FIELDS VERIFICATION")
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping asset model test - no seller token")
             return False, {}
         
@@ -1389,7 +1403,9 @@ class BeatSpaceAPITester:
         """Test Edge Cases for Asset Categories - PRIORITY TEST"""
         print("🎯 TESTING EDGE CASES FOR ASSET CATEGORIES")
         
-        if not self.seller_token:
+        # Use admin token if seller token not available
+        token_to_use = self.seller_token or self.admin_token
+        if not token_to_use:
             print("⚠️  Skipping edge cases test - no seller token")
             return False, {}
         
