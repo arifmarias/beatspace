@@ -1636,10 +1636,10 @@ const ManagerDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
-                    {/* Enhanced Selection Controls */}
+                    {/* Streamlined Selection Controls - Single Row for Better UX */}
                     <div className="px-6 pb-4">
                       <div className="flex justify-between items-center">
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <button
                             onClick={() => {
                               const filteredAssets = getFilteredMapAssets();
@@ -1647,12 +1647,12 @@ const ManagerDashboard = () => {
                               console.log('Selecting all visible assets:', filteredIds);
                               setSelectedMapAssets(filteredIds);
                             }}
-                            className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
                             disabled={getFilteredMapAssets().length === 0}
                           >
-                            <span className="flex items-center space-x-1">
-                              <span>Select All</span>
-                              <span className="bg-blue-400 text-white px-1.5 py-0.5 rounded text-xs">
+                            <span className="flex items-center space-x-2">
+                              <span>📍 Select All</span>
+                              <span className="bg-blue-400 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                                 {getFilteredMapAssets().length}
                               </span>
                             </span>
@@ -1667,15 +1667,15 @@ const ManagerDashboard = () => {
                               console.log('Selecting unassigned assets:', unassignedIds);
                               setSelectedMapAssets(unassignedIds);
                             }}
-                            className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
                             disabled={getFilteredMapAssets().filter(asset => {
                               const assignedOperator = assetAssignments[asset.id];
                               return !assignedOperator || assignedOperator === 'Unassigned';
                             }).length === 0}
                           >
-                            <span className="flex items-center space-x-1">
-                              <span>Select Unassigned</span>
-                              <span className="bg-green-400 text-white px-1.5 py-0.5 rounded text-xs">
+                            <span className="flex items-center space-x-2">
+                              <span>🆕 Select Unassigned</span>
+                              <span className="bg-green-400 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                                 {getFilteredMapAssets().filter(asset => {
                                   const assignedOperator = assetAssignments[asset.id];
                                   return !assignedOperator || assignedOperator === 'Unassigned';
@@ -1688,23 +1688,25 @@ const ManagerDashboard = () => {
                               console.log('Clearing selection');
                               setSelectedMapAssets([]);
                             }}
-                            className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
                             disabled={selectedMapAssets.length === 0}
                           >
-                            Clear Selection
+                            🚫 Clear
                           </button>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded-lg">
-                            {selectedMapAssets.length} asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
+                        
+                        {/* Streamlined Selection Status and Action */}
+                        <div className="flex items-center space-x-3">
+                          <div className="text-sm font-semibold text-gray-700 bg-gray-100 px-4 py-2 rounded-lg border">
+                            <span className="text-orange-600">{selectedMapAssets.length}</span> asset{selectedMapAssets.length !== 1 ? 's' : ''} selected
                           </div>
                           {selectedMapAssets.length > 0 && (
                             <Button 
                               size="sm" 
-                              className="bg-blue-500 hover:bg-blue-600"
+                              className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6"
                               onClick={() => setAssignmentPanelOpen(true)}
                             >
-                              🏃‍♂️ Assign to Operator
+                              🏃‍♂️ Assign Now
                             </Button>
                           )}
                         </div>
