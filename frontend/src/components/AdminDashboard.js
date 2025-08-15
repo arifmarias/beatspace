@@ -1329,14 +1329,17 @@ const AdminDashboard = () => {
     }
   };
   
-  // Fetch live assets grouped by campaigns
+  // Fetch live assets grouped by campaigns (using correct admin endpoints)
   const fetchBookedAssets = async () => {
     try {
       setMonitoringLoading(true);
+      const headers = getAuthHeaders();
+      
+      // Use admin endpoints for better access to all data
       const [assetsResponse, offersResponse, monitoringResponse] = await Promise.all([
-        axios.get(`${API}/assets`, { headers: getAuthHeaders() }),
-        axios.get(`${API}/offers/requests`, { headers: getAuthHeaders() }),
-        axios.get(`${API}/monitoring/services`, { headers: getAuthHeaders() })
+        axios.get(`${API}/admin/assets`, { headers }),
+        axios.get(`${API}/offers/requests`, { headers }),
+        axios.get(`${API}/monitoring/services`, { headers })
       ]);
       
       const allAssets = assetsResponse.data;
