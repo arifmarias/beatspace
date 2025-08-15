@@ -882,11 +882,19 @@ const ManagerDashboard = () => {
       // Refresh monitoring assets data when tab is activated
       fetchMonitoringAssets();
       
-      if (window.google && mapRef.current && !mapInstanceRef.current) {
-        setTimeout(() => initializeMap(), 200);
-      } else if (mapInstanceRef.current) {
-        // If map is already initialized, just update markers
-        setTimeout(() => updateMapMarkers(), 500);
+      // Check if map needs initialization or re-initialization
+      if (window.google && mapRef.current) {
+        if (!mapInstanceRef.current) {
+          // Map needs initial setup
+          setTimeout(() => initializeMap(), 300);
+        } else {
+          // Map exists but might need refresh due to tab switching
+          setTimeout(() => {
+            // Re-trigger map resize and marker update after tab switch
+            window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
+            updateMapMarkers();
+          }, 300);
+        }
       }
     }
   }, [activeTab, initializeMap, fetchMonitoringAssets]);
