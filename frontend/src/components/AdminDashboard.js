@@ -1919,6 +1919,10 @@ const AdminDashboard = () => {
       traffic_volume: '',
       visibility_score: '',
       status: 'Available', // Default status
+      category: 'Public', // Reset category field
+      asset_expiry_date: '', // Reset expiry date field
+      one_off_investment: '', // Reset investment field
+      buyer_name: '', // Reset buyer name field
       pricing: {
         weekly_rate: '',
         monthly_rate: '',
