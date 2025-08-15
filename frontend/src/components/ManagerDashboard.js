@@ -1844,45 +1844,6 @@ const ManagerDashboard = () => {
                       </div>
                     </CardContent>
                   </Card>
-
-                  {/* Quick Actions */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Quick Actions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-xs"
-                        onClick={() => setSelectedMapAssets([])}
-                        disabled={selectedMapAssets.length === 0}
-                      >
-                        Clear Selection
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-xs"
-                        onClick={() => {
-                          const unassignedAssets = getFilteredMapAssets().filter(asset => 
-                            !assetAssignments[asset.id] || assetAssignments[asset.id] === 'Unassigned'
-                          );
-                          setSelectedMapAssets(unassignedAssets.map(asset => asset.id));
-                        }}
-                      >
-                        Select All Unassigned
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="w-full text-xs"
-                        onClick={() => setAssignmentPanelOpen(true)}
-                        disabled={selectedMapAssets.length === 0}
-                      >
-                        Bulk Assign
-                      </Button>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
             </div>
