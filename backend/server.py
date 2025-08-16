@@ -2180,15 +2180,28 @@ async def get_assets(
     """Get assets with optional filtering and marketplace visibility control"""
     query = {}
     
-    # Marketplace filtering - buyers should only see PUBLIC assets
+    # Marketplace filtering - buyers should only see assets with marketplace visibility
     if marketplace or current_user.role == UserRole.BUYER:
-        query["category"] = AssetCategory.PUBLIC
+        # Show assets that are either:
+        # 1. PUBLIC category, OR
+        # 2. EXISTING ASSET category with show_in_marketplace=True
+        # 3. NEVER show PRIVATE ASSET in marketplace
+        query["$and"] = [
+            {"category": {"$ne": AssetCategory.PRIVATE_ASSET}},
+            {"$or": [
+                {"category": AssetCategory.PUBLIC},
+                {"$and": [
+                    {"category": AssetCategory.EXISTING_ASSET},
+                    {"show_in_marketplace": True}
+                ]}
+            ]}
+        ]
     
     # Filter by seller for seller users (they can see all their assets regardless of category)
     if current_user.role == UserRole.SELLER:
         query["seller_id"] = current_user.id
         # Remove category filter for sellers to see all their assets
-        query.pop("category", None)
+        query.pop("$and", None)
     
     # Admin can see all assets by default (no category filter unless marketplace=True)
     if current_user.role in [UserRole.ADMIN, UserRole.MANAGER] and not marketplace:
