@@ -1259,6 +1259,36 @@ const AdminDashboard = () => {
         }
       };
 
+      // Handle category-specific fields properly
+      if (assetForm.category === 'Existing Asset') {
+        if (assetForm.asset_expiry_date) {
+          assetData.asset_expiry_date = assetForm.asset_expiry_date;
+        }
+        if (assetForm.buyer_id) {
+          assetData.buyer_id = assetForm.buyer_id;
+          assetData.buyer_name = assetForm.buyer_name;
+        }
+        // Include marketplace visibility toggle
+        assetData.show_in_marketplace = assetForm.show_in_marketplace !== false;
+      } else if (assetForm.category === 'Private Asset') {
+        if (assetForm.one_off_investment && assetForm.one_off_investment !== '') {
+          assetData.one_off_investment = parseFloat(assetForm.one_off_investment);
+        }
+        if (assetForm.buyer_id) {
+          assetData.buyer_id = assetForm.buyer_id;
+          assetData.buyer_name = assetForm.buyer_name;
+        }
+        // Private assets don't show in marketplace
+        assetData.show_in_marketplace = false;
+      } else {
+        // Public assets always show in marketplace
+        assetData.show_in_marketplace = true;
+      }
+
+      // Remove empty category-specific fields to avoid validation errors
+      if (!assetData.asset_expiry_date) delete assetData.asset_expiry_date;
+      if (!assetData.one_off_investment) delete assetData.one_off_investment;
+
       const response = await axios.post(`${API}/assets`, assetData, { headers });
       alert('Asset created successfully!');
       
