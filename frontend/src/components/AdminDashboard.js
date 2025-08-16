@@ -4741,7 +4741,7 @@ const AdminDashboard = () => {
                   </Select>
                   <p className="text-xs text-gray-500 mt-1">
                     {assetForm.category === 'Public' && 'This asset will be visible in the marketplace for buyers'}
-                    {assetForm.category === 'Existing Asset' && 'This asset will not appear in marketplace. Requires expiry date and buyer name.'}
+                    {assetForm.category === 'Existing Asset' && 'Toggle marketplace visibility below. Requires expiry date and buyer name.'}
                     {assetForm.category === 'Private Asset' && 'This asset will not appear in marketplace. Requires one-off investment and buyer name.'}
                   </p>
                 </div>
