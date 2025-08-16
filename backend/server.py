@@ -2168,6 +2168,25 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching live assets: {str(e)}")
 
+# Get users by role endpoint
+@api_router.get("/admin/users/by-role/{role}")
+async def get_users_by_role(
+    role: str,
+    current_user: User = Depends(require_admin_or_manager)
+):
+    """Get users by role (admin only)"""
+    try:
+        # Validate role
+        valid_roles = ["buyer", "seller", "admin", "manager"]
+        if role not in valid_roles:
+            raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+        
+        users = await db.users.find({"role": role}).to_list(1000)
+        return [{"id": user["id"], "name": user["name"], "email": user["email"], "company_name": user.get("company_name", "")} for user in users]
+    except Exception as e:
+        logger.error(f"Error fetching users by role: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching users: {str(e)}")
+
 # Enhanced Asset CRUD Routes
 @api_router.get("/assets", response_model=List[Asset])
 async def get_assets(
