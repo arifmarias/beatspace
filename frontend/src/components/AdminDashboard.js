@@ -4344,7 +4344,7 @@ const AdminDashboard = () => {
                           const selectedBuyer = buyers.find(buyer => buyer.id === value);
                           setAssetForm({
                             ...assetForm, 
-                            buyer_name: selectedBuyer ? selectedBuyer.name : '',
+                            buyer_name: selectedBuyer ? selectedBuyer.company_name : '',
                             buyer_id: value
                           });
                         }}
@@ -4356,7 +4356,7 @@ const AdminDashboard = () => {
                           {buyers.map((buyer) => (
                             <SelectItem key={buyer.id} value={buyer.id}>
                               <div className="flex flex-col">
-                                <span className="font-medium">{buyer.name}</span>
+                                <span className="font-medium">{buyer.company_name}</span>
                                 <span className="text-xs text-gray-500">{buyer.email}</span>
                               </div>
                             </SelectItem>
