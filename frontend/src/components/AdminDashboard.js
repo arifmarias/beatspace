@@ -1360,6 +1360,36 @@ const AdminDashboard = () => {
         }
       };
 
+      // Handle category-specific fields properly
+      if (assetForm.category === 'Existing Asset') {
+        if (assetForm.asset_expiry_date) {
+          updateData.asset_expiry_date = assetForm.asset_expiry_date;
+        }
+        if (assetForm.buyer_id) {
+          updateData.buyer_id = assetForm.buyer_id;
+          updateData.buyer_name = assetForm.buyer_name;
+        }
+        // Include marketplace visibility toggle
+        updateData.show_in_marketplace = assetForm.show_in_marketplace !== false;
+      } else if (assetForm.category === 'Private Asset') {
+        if (assetForm.one_off_investment && assetForm.one_off_investment !== '') {
+          updateData.one_off_investment = parseFloat(assetForm.one_off_investment);
+        }
+        if (assetForm.buyer_id) {
+          updateData.buyer_id = assetForm.buyer_id;
+          updateData.buyer_name = assetForm.buyer_name;
+        }
+        // Private assets don't show in marketplace
+        updateData.show_in_marketplace = false;
+      } else {
+        // Public assets always show in marketplace
+        updateData.show_in_marketplace = true;
+      }
+
+      // Remove empty category-specific fields to avoid validation errors
+      if (!updateData.asset_expiry_date) delete updateData.asset_expiry_date;
+      if (!updateData.one_off_investment) delete updateData.one_off_investment;
+
       await axios.put(`${API}/assets/${editingAsset.id}`, updateData, { headers });
       alert('Asset updated successfully!');
       
