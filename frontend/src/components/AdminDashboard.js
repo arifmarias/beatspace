@@ -4918,7 +4918,7 @@ const AdminDashboard = () => {
                           {buyers.map((buyer) => (
                             <SelectItem key={buyer.id} value={buyer.id}>
                               <div className="flex flex-col">
-                                <span className="font-medium">{buyer.name}</span>
+                                <span className="font-medium">{buyer.company_name}</span>
                                 <span className="text-xs text-gray-500">{buyer.email}</span>
                               </div>
                             </SelectItem>
