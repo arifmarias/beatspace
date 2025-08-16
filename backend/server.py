@@ -2099,9 +2099,41 @@ async def get_public_stats():
 # Public Assets Route
 @api_router.get("/assets/public", response_model=List[Asset])
 async def get_public_assets():
-    """Get all public assets for marketplace display"""
+    """Get all public assets for marketplace display with proper filtering"""
     try:
-        assets = await db.assets.find({}).to_list(1000)
+        # Apply same marketplace filtering logic as the main assets endpoint
+        query = {}
+        
+        # Marketplace visibility filtering:
+        # 1. NEVER show Private Assets (category = "Private Asset")
+        # 2. ONLY show Existing Assets if show_in_marketplace=True AND status=Live  
+        # 3. Show Public Assets (category = "Public" or no category - legacy assets)
+        # 4. Show legacy assets (no category field) as they are treated as Public
+        
+        query["$and"] = [
+            # Exclude Private Assets explicitly
+            {"category": {"$ne": "Private Asset"}},
+            
+            # Apply marketplace visibility rules
+            {"$or": [
+                # Show Public Assets (explicit category or no category for legacy)
+                {"$or": [
+                    {"category": "Public"},
+                    {"category": {"$exists": False}},  # Legacy assets without category
+                    {"category": None},                # Assets with null category
+                    {"category": ""}                   # Assets with empty string category
+                ]},
+                
+                # Show Existing Assets ONLY if conditions are met
+                {"$and": [
+                    {"category": "Existing Asset"},
+                    {"show_in_marketplace": True},
+                    {"status": "Live"}
+                ]}
+            ]}
+        ]
+        
+        assets = await db.assets.find(query).to_list(1000)
         return [Asset(**asset) for asset in assets]
     except Exception as e:
         logger.error(f"Error fetching public assets: {e}")
