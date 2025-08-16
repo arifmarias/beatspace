@@ -2202,16 +2202,17 @@ async def get_assets(
     # Marketplace filtering - buyers should only see assets with marketplace visibility
     if marketplace or current_user.role == UserRole.BUYER:
         # Show assets that are either:
-        # 1. PUBLIC category, OR
-        # 2. EXISTING ASSET category with show_in_marketplace=True
-        # 3. NEVER show PRIVATE ASSET in marketplace
+        # 1. PUBLIC category (always visible), OR  
+        # 2. EXISTING ASSET category with show_in_marketplace=True AND status=Live
+        # 3. NEVER show PRIVATE ASSET in marketplace (regardless of any settings)
         query["$and"] = [
-            {"category": {"$ne": AssetCategory.PRIVATE_ASSET}},
+            {"category": {"$ne": AssetCategory.PRIVATE_ASSET}},  # Never show private assets
             {"$or": [
-                {"category": AssetCategory.PUBLIC},
+                {"category": AssetCategory.PUBLIC},  # Always show public assets
                 {"$and": [
                     {"category": AssetCategory.EXISTING_ASSET},
-                    {"show_in_marketplace": True}
+                    {"show_in_marketplace": True},  # Only if toggle is ON
+                    {"status": AssetStatus.LIVE}     # Only if status is Live
                 ]}
             ]}
         ]
