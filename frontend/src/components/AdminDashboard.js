@@ -2020,7 +2020,7 @@ const AdminDashboard = () => {
       dimensions: '',
       traffic_volume: '',
       visibility_score: '',
-      status: 'Available', // Default status
+      status: 'Available', // Default status for Public assets
       category: 'Public', // Reset category field
       show_in_marketplace: true, // Default to show in marketplace
       asset_expiry_date: '', // Reset expiry date field
