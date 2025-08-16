@@ -2285,7 +2285,7 @@ async def create_asset(
         if not asset_data.get("pricing"):
             asset_data["pricing"] = {}
     
-    # Handle seller assignment based on role and category
+    # Handle seller assignment and status based on role and category
     if current_user.role == UserRole.SELLER:
         asset_data["seller_id"] = current_user.id
         # For private assets, buyer is the seller, so seller_name can be optional
@@ -2305,7 +2305,13 @@ async def create_asset(
                 asset_data["seller_id"] = current_user.id
                 asset_data["seller_name"] = current_user.company_name
         
-        asset_data["status"] = AssetStatus.AVAILABLE  # Admin-created assets are pre-approved
+        # Set status based on asset category for admin-created assets
+        if asset_category == AssetCategory.PRIVATE_ASSET:
+            asset_data["status"] = AssetStatus.LIVE  # Private assets are always Live
+        elif asset_category == AssetCategory.EXISTING_ASSET:
+            asset_data["status"] = AssetStatus.LIVE  # Existing assets are Live when created by admin
+        else:
+            asset_data["status"] = AssetStatus.AVAILABLE  # Public assets are Available (can be booked)
     
     # Convert string dates to datetime objects if provided
     if asset_data.get("asset_expiry_date"):
