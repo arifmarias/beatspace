@@ -1377,6 +1377,8 @@ const AdminDashboard = () => {
         }
         // Include marketplace visibility toggle
         updateData.show_in_marketplace = assetForm.show_in_marketplace !== false;
+        // Existing assets should be Live when updated by admin
+        updateData.status = 'Live';
       } else if (assetForm.category === 'Private Asset') {
         if (assetForm.one_off_investment && assetForm.one_off_investment !== '') {
           updateData.one_off_investment = parseFloat(assetForm.one_off_investment);
@@ -1385,11 +1387,13 @@ const AdminDashboard = () => {
           updateData.buyer_id = assetForm.buyer_id;
           updateData.buyer_name = assetForm.buyer_name;
         }
-        // Private assets don't show in marketplace
+        // Private assets don't show in marketplace and are always Live
         updateData.show_in_marketplace = false;
+        updateData.status = 'Live';
       } else {
-        // Public assets always show in marketplace
+        // Public assets always show in marketplace and are Available for booking
         updateData.show_in_marketplace = true;
+        updateData.status = 'Available';
       }
 
       // Remove empty category-specific fields to avoid validation errors
