@@ -417,6 +417,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    fetchSellers();
+    fetchBuyers(); // Fetch buyers for dropdown
     fetchBookedAssets(); // Add this to fetch live assets for monitoring
   }, []);
 
