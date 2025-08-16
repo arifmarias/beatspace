@@ -481,6 +481,10 @@ const AdminDashboard = () => {
       const sellerUsers = allUsers.filter(user => user.role === 'seller');
       setSellers(sellerUsers);
 
+      // Filter buyers for the campaign form dropdown
+      const buyerUsers = allUsers.filter(user => user.role === 'buyer');
+      setBuyers(buyerUsers);
+
       // Fetch available assets for campaign management
       const availableAssetsResponse = await axios.get(`${API}/assets/public`);
       const availableAssetsData = availableAssetsResponse.data.filter(asset => asset.status === 'Available');
