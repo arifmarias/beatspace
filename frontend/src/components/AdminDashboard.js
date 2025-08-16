@@ -2604,6 +2604,7 @@ const AdminDashboard = () => {
                           <TableHead>Asset</TableHead>
                           <TableHead>Location</TableHead>
                           <TableHead>Type</TableHead>
+                          <TableHead>Category</TableHead>
                           <TableHead>Seller</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
