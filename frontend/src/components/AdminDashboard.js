@@ -4848,7 +4848,7 @@ const AdminDashboard = () => {
                         Buyer Name *
                       </label>
                       <Select
-                        value={assetForm.buyer_name}
+                        value={assetForm.buyer_id}
                         onValueChange={(value) => {
                           const selectedBuyer = buyers.find(buyer => buyer.id === value);
                           setAssetForm({
