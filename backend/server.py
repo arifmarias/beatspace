@@ -305,6 +305,7 @@ class Asset(BaseModel):
     name: str
     type: AssetType
     category: AssetCategory = AssetCategory.PUBLIC  # New: Asset category
+    show_in_marketplace: bool = True  # New: Toggle for marketplace visibility (mainly for Existing Assets)
     address: str
     location: Dict[str, float]
     dimensions: str
