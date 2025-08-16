@@ -1317,9 +1317,11 @@ const AdminDashboard = () => {
       visibility_score: asset.visibility_score?.toString() || '',
       status: asset.status || 'Available', // Include current status
       category: asset.category || 'Public', // Include category field
+      show_in_marketplace: asset.show_in_marketplace !== false, // Include marketplace toggle
       asset_expiry_date: asset.asset_expiry_date || '', // Include expiry date field
       one_off_investment: asset.one_off_investment?.toString() || '', // Include investment field
       buyer_name: asset.buyer_name || '', // Include buyer name field
+      buyer_id: asset.buyer_id || '', // Include buyer ID field
       pricing: {
         weekly_rate: asset.pricing?.weekly_rate?.toString() || '',
         monthly_rate: asset.pricing?.monthly_rate?.toString() || '',
