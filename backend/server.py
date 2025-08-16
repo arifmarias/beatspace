@@ -2201,18 +2201,31 @@ async def get_assets(
     
     # Marketplace filtering - buyers should only see assets with marketplace visibility
     if marketplace or current_user.role == UserRole.BUYER:
-        # Show assets that are either:
-        # 1. PUBLIC category (always visible), OR  
-        # 2. EXISTING ASSET category with show_in_marketplace=True AND status=Live
-        # 3. NEVER show PRIVATE ASSET in marketplace (regardless of any settings)
+        # Complex filtering for marketplace visibility:
+        # 1. NEVER show Private Assets (category = "Private Asset")
+        # 2. ONLY show Existing Assets if show_in_marketplace=True AND status=Live  
+        # 3. Show Public Assets (category = "Public" or no category - legacy assets)
+        # 4. Show legacy assets (no category field) as they are treated as Public
+        
         query["$and"] = [
-            {"category": {"$ne": AssetCategory.PRIVATE_ASSET}},  # Never show private assets
+            # Exclude Private Assets explicitly
+            {"category": {"$ne": "Private Asset"}},
+            
+            # Apply marketplace visibility rules
             {"$or": [
-                {"category": AssetCategory.PUBLIC},  # Always show public assets
+                # Show Public Assets (explicit category or no category for legacy)
+                {"$or": [
+                    {"category": "Public"},
+                    {"category": {"$exists": False}},  # Legacy assets without category
+                    {"category": None},                # Assets with null category
+                    {"category": ""}                   # Assets with empty string category
+                ]},
+                
+                # Show Existing Assets ONLY if conditions are met
                 {"$and": [
-                    {"category": AssetCategory.EXISTING_ASSET},
-                    {"show_in_marketplace": True},  # Only if toggle is ON
-                    {"status": AssetStatus.LIVE}     # Only if status is Live
+                    {"category": "Existing Asset"},
+                    {"show_in_marketplace": True},
+                    {"status": "Live"}
                 ]}
             ]}
         ]
