@@ -602,6 +602,26 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchSellers = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const response = await axios.get(`${API}/admin/users/by-role/seller`, { headers });
+      setSellers(response.data);
+    } catch (error) {
+      console.error('Error fetching sellers:', error);
+    }
+  };
+
+  const fetchBuyers = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const response = await axios.get(`${API}/admin/users/by-role/buyer`, { headers });
+      setBuyers(response.data);
+    } catch (error) {
+      console.error('Error fetching buyers:', error);
+    }
+  };
+
   // Filtering and pagination logic
   const getFilteredOfferRequests = () => {
     if (!offerRequests) return [];
