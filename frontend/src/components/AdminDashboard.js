@@ -2012,9 +2012,11 @@ const AdminDashboard = () => {
       visibility_score: '',
       status: 'Available', // Default status
       category: 'Public', // Reset category field
+      show_in_marketplace: true, // Default to show in marketplace
       asset_expiry_date: '', // Reset expiry date field
       one_off_investment: '', // Reset investment field
       buyer_name: '', // Reset buyer name field
+      buyer_id: '', // Reset buyer ID field
       pricing: {
         weekly_rate: '',
         monthly_rate: '',
