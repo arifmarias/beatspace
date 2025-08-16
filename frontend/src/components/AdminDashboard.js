@@ -356,6 +356,7 @@ const AdminDashboard = () => {
   const getAreas = (division, district) => (division && district) ? (locationData[division]?.[district] || []) : [];
 
   const [sellers, setSellers] = useState([]);
+  const [buyers, setBuyers] = useState([]);
 
   // User form state
   const [userForm, setUserForm] = useState({
