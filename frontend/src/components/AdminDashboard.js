@@ -4338,12 +4338,36 @@ const AdminDashboard = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Buyer Name *
                       </label>
-                      <Input
+                      <Select
                         value={assetForm.buyer_name}
-                        onChange={(e) => setAssetForm({...assetForm, buyer_name: e.target.value})}
-                        placeholder="Enter buyer name (buyer is the seller for private assets)"
-                        required
-                      />
+                        onValueChange={(value) => {
+                          const selectedBuyer = buyers.find(buyer => buyer.id === value);
+                          setAssetForm({
+                            ...assetForm, 
+                            buyer_name: selectedBuyer ? selectedBuyer.name : '',
+                            buyer_id: value
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select buyer (buyer is the seller for private assets)" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-48 overflow-y-auto">
+                          {buyers.map((buyer) => (
+                            <SelectItem key={buyer.id} value={buyer.id}>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{buyer.name}</span>
+                                <span className="text-xs text-gray-500">{buyer.email}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {buyers.length === 0 && (
+                        <p className="text-xs text-amber-600 mt-1">
+                          No buyers found. Please ensure there are users with 'buyer' role.
+                        </p>
+                      )}
                     </div>
                   </>
                 )}
