@@ -2239,6 +2239,13 @@ async def create_asset(
     # Get asset category (default to PUBLIC if not specified)
     asset_category = asset_data.get("category", AssetCategory.PUBLIC)
     
+    # Set default marketplace visibility based on category
+    if "show_in_marketplace" not in asset_data:
+        if asset_category == AssetCategory.PRIVATE_ASSET:
+            asset_data["show_in_marketplace"] = False  # Private assets never show in marketplace
+        else:
+            asset_data["show_in_marketplace"] = True  # Default to visible for Public and Existing Assets
+    
     # Validate category-specific requirements
     if asset_category == AssetCategory.EXISTING_ASSET:
         if not asset_data.get("asset_expiry_date"):
