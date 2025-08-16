@@ -4906,7 +4906,7 @@ const AdminDashboard = () => {
                           const selectedBuyer = buyers.find(buyer => buyer.id === value);
                           setAssetForm({
                             ...assetForm, 
-                            buyer_name: selectedBuyer ? selectedBuyer.name : '',
+                            buyer_name: selectedBuyer ? selectedBuyer.company_name : '',
                             buyer_id: value
                           });
                         }}
