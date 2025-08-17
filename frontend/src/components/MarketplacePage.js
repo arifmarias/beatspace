@@ -1948,10 +1948,12 @@ const MarketplacePage = () => {
                     </Badge>
                   </div>
                   
-                  {selectedAsset.next_available_date && (
+                  {(selectedAsset.next_available_date || (selectedAsset.category === 'Existing Asset' && selectedAsset.asset_expiry_date)) && (
                     <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded">
                       <Clock className="w-4 h-4 inline mr-1" />
-                      Next available: {new Date(selectedAsset.next_available_date).toLocaleDateString()}
+                      Next available: {new Date(
+                        selectedAsset.next_available_date || selectedAsset.asset_expiry_date
+                      ).toLocaleDateString()}
                     </div>
                   )}
                 </div>
