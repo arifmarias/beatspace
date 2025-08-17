@@ -292,8 +292,8 @@ const BuyerDashboard = () => {
         fetchLiveAssets();
         setAssetsFetched(true);
       } else {
-        // Always refresh when switching to My Assets to ensure latest data
-        fetchLiveAssets(true);
+        // Always refresh when switching to My Assets to ensure latest data (no spinner)
+        fetchLiveAssets(false, false);  // Background refresh without spinner
       }
     }
   }, [activeTab, assetsFetched]);
