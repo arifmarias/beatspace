@@ -2173,6 +2173,53 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
             # Get campaign details from the corresponding offer
             offer = offers_by_asset.get(asset["id"])
             
+            # Calculate cost and expiry based on asset category
+            cost = 0
+            expiry_date = None
+            duration = "N/A"
+            
+            asset_category = asset.get("category", "Public")
+            
+            if asset_category == "Private Asset":
+                # For Private Assets: Use one_off_investment, duration and expiry are N/A
+                cost = asset.get("one_off_investment", 0)
+                duration = "N/A"
+                expiry_date = None
+                
+            elif asset_category == "Existing Asset":
+                # For Existing Assets: Calculate cost from monthly price and duration, use asset_expiry_date
+                expiry_date = asset.get("asset_expiry_date")
+                
+                if expiry_date and asset.get("pricing", {}).get("monthly_rate"):
+                    # Calculate duration from created_at to asset_expiry_date
+                    created_at = asset.get("created_at")
+                    if created_at:
+                        if isinstance(created_at, str):
+                            created_at = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                        if isinstance(expiry_date, str):
+                            expiry_date = datetime.fromisoformat(expiry_date.replace("Z", "+00:00"))
+                        
+                        # Calculate duration in months
+                        duration_months = max(1, round((expiry_date - created_at).days / 30.44))  # Average days per month
+                        duration = f"{duration_months} month{'s' if duration_months > 1 else ''}"
+                        
+                        # Calculate cost: monthly_rate * duration_months
+                        monthly_rate = asset.get("pricing", {}).get("monthly_rate", 0)
+                        cost = monthly_rate * duration_months
+                    else:
+                        # Fallback if no created_at
+                        cost = asset.get("pricing", {}).get("monthly_rate", 0)
+                        duration = "1 month"
+                else:
+                    # Fallback to pricing if available
+                    cost = asset.get("pricing", {}).get("monthly_rate", 0)
+                    
+            else:
+                # For Public Assets: Use offer data (existing logic)
+                cost = offer.get("final_offer") or offer.get("admin_quoted_price") if offer else 0
+                duration = offer.get("contract_duration", "1 month") if offer else "N/A"
+                expiry_date = offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else asset.get("next_available_date")
+            
             live_asset = {
                 "id": asset["id"],
                 "name": asset["name"],
@@ -2181,12 +2228,13 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
                 "district": asset.get("district", ""), # Include district field
                 "division": asset.get("division", ""), # Include division field
                 "type": asset.get("type", "Billboard"),
+                "category": asset_category,  # Include category for frontend reference
                 "campaignName": offer.get("campaign_name", "Unknown Campaign") if offer else "Unknown Campaign",
                 "assetStartDate": offer.get("confirmed_start_date") or offer.get("tentative_start_date") if offer else None,
                 "assetEndDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else None,
-                "duration": offer.get("contract_duration", "1 month") if offer else "N/A",
-                "expiryDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else asset.get("next_available_date"),
-                "cost": offer.get("final_offer") or offer.get("admin_quoted_price") if offer else 0,  # Final offered price
+                "duration": duration,
+                "expiryDate": expiry_date,
+                "cost": cost,
                 "lastStatus": "Live",
                 "location": asset.get("location", {}),
                 "images": asset.get("images", []),
