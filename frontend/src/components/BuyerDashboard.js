@@ -1272,7 +1272,7 @@ const BuyerDashboard = () => {
       console.log('🚨 ABOUT TO REFRESH DATA...');
       await fetchBuyerData();
       setAssetsFetched(false); // Reset flag to allow refresh
-      fetchLiveAssets(true); // Refresh live assets as well
+      fetchLiveAssets(false, false); // Background refresh without spinner
       console.log('🚨 DATA REFRESH COMPLETED');
       
     } catch (error) {
