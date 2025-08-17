@@ -2010,7 +2010,7 @@ const BuyerDashboard = () => {
   };
 
   if (loading) {
-    return <DashboardLoading type="buyer" />;
+    return <DashboardLoading type="buyer" userName={currentUser?.company_name} />;
   }
 
   return (
