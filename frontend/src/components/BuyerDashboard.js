@@ -337,36 +337,21 @@ const BuyerDashboard = () => {
       setLoading(true);
       const headers = getAuthHeaders();
       
-      // Fetch buyer's campaigns
-      const campaignsRes = await axios.get(`${API}/campaigns`, { headers });
+      // Fetch essential data in parallel
+      const [campaignsRes, offersRes] = await Promise.all([
+        axios.get(`${API}/campaigns`, { headers }),
+        axios.get(`${API}/offers/requests`, { headers })
+      ]);
+      
       setCampaigns(campaignsRes.data || []);
-
-      // Fetch requested offers
-      const offersRes = await axios.get(`${API}/offers/requests`, { headers });
       console.log('🚨 FETCHED OFFERS RAW:', offersRes.data);
       
-      // Enrich offers with asset pricing data
-      const enrichedOffers = await Promise.all((offersRes.data || []).map(async (offer) => {
-        try {
-          // Fetch asset details to get pricing
-          const assetRes = await axios.get(`${API}/assets/public`);
-          const allAssets = assetRes.data || [];
-          const assetDetails = allAssets.find(asset => asset.id === offer.asset_id);
-          
-          return {
-            ...offer,
-            asset_pricing: assetDetails?.pricing || null
-          };
-        } catch (error) {
-          console.error('Error fetching asset pricing for offer:', offer.id, error);
-          return offer; // Return offer without pricing if fetch fails
-        }
-      }));
-      
-      setRequestedOffers(enrichedOffers);
-      console.log('🚨 OFFERS SET TO STATE WITH PRICING:', enrichedOffers);
+      // Set basic offers data immediately without enrichment for faster loading
+      const basicOffers = offersRes.data || [];
+      setRequestedOffers(basicOffers);
+      console.log('🚨 OFFERS SET TO STATE INITIALLY:', basicOffers);
 
-      // Calculate stats with null safety
+      // Calculate stats immediately with basic data
       const campaignData = campaignsRes.data || [];  
       const offerData = offersRes.data || [];
       const totalCampaigns = campaignData.length;
@@ -393,18 +378,13 @@ const BuyerDashboard = () => {
         totalOfferRequests
       });
 
-      // Fetch monitoring services
-      fetchMonitoringServices();
-      
-      // Also refresh live assets to ensure "My Assets" tab is synchronized
-      if (activeTab === 'my-assets' || assetsFetched) {
-        fetchLiveAssets(true, false); // No spinner for automatic refresh
-      }
-      
-      // Refresh requested offers if on that tab
-      if (activeTab === 'requested-offers') {
-        fetchRequestedOffers();
-      }
+      // Load secondary data asynchronously after initial load
+      setTimeout(() => {
+        fetchMonitoringServices();
+        
+        // Enrich offers with pricing data in background (non-blocking)
+        enrichOffersWithPricing(basicOffers);
+      }, 100);
       
     } catch (error) {
       console.error('Error fetching buyer data:', error);
