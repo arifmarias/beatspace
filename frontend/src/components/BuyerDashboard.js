@@ -475,18 +475,18 @@ const BuyerDashboard = () => {
   const fetchLiveAssets = async (isManualRefresh = false, showSpinner = true) => {
     console.log('🔄 fetchLiveAssets called', isManualRefresh ? '(manual refresh)' : '');
     
-    // Only show spinner if explicitly requested (for initial loads and manual refresh)
-    if (showSpinner) {
+    // Only show spinner for initial loads, not for background refreshes
+    if (showSpinner && (liveAssets.length === 0 || isManualRefresh)) {
       setAssetsLoading(true);
     }
     
-    // Set a timeout to prevent infinite loading
+    // Set a shorter timeout for better UX
     const timeoutId = setTimeout(() => {
       console.log('⏰ API call timeout - stopping loading');
       if (showSpinner) {
         setAssetsLoading(false);
       }
-    }, 10000); // 10 seconds timeout
+    }, 5000); // Reduced to 5 seconds
     
     try {
       const token = getToken();
@@ -501,53 +501,29 @@ const BuyerDashboard = () => {
       
       console.log('📡 Calling API:', `${API}/assets/live`);
       
-      // Use the dedicated live assets API
+      // Use the dedicated live assets API - this now includes all necessary data
       const response = await axios.get(`${API}/assets/live`, { headers });
       console.log('✅ API response:', response);
       
       const liveAssetsData = response.data || [];
       console.log('📊 Live assets data:', liveAssetsData);
       
-      // Fetch monitoring data for each asset to get inspection dates
-      const assetsWithInspectionData = await Promise.all(
-        liveAssetsData.map(async (asset) => {
-          try {
-            const monitoringResponse = await axios.get(`${API}/assets/${asset.id}/monitoring`, { headers });
-            const monitoringData = monitoringResponse.data;
-            
-            // Extract last inspection date from monitoring data
-            let lastInspectionDate = null;
-            if (monitoringData && monitoringData.last_inspection_date) {
-              lastInspectionDate = monitoringData.last_inspection_date;
-            }
-            
-            return {
-              ...asset,
-              lastInspectionDate
-            };
-          } catch (monitoringError) {
-            console.warn(`❌ Failed to fetch monitoring data for asset ${asset.id}:`, monitoringError);
-            // Return asset without inspection date if monitoring fetch fails
-            return {
-              ...asset,
-              lastInspectionDate: null
-            };
-          }
-        })
-      );
+      // Set assets immediately without waiting for monitoring data
+      setLiveAssets(liveAssetsData);
       
-      console.log('✅ Live assets fetched successfully:', assetsWithInspectionData.length, 'assets');
-      console.log('📊 Live assets details:', assetsWithInspectionData.map(a => ({
+      console.log('✅ Live assets fetched successfully:', liveAssetsData.length, 'assets');
+      console.log('📊 Live assets details:', liveAssetsData.map(a => ({
         id: a.id,
         name: a.name,
         status: a.status,
         campaignName: a.campaignName
       })));
       
-      setLiveAssets(assetsWithInspectionData);
-      
-      // Fetch monitoring services to ensure monitoring column shows latest data
-      await fetchMonitoringServices();
+      // Fetch monitoring data and services in background (non-blocking)
+      setTimeout(() => {
+        fetchMonitoringDataInBackground(liveAssetsData, headers);
+        fetchMonitoringServices();
+      }, 100);
       
       // Clear timeout on success
       clearTimeout(timeoutId);
@@ -561,7 +537,7 @@ const BuyerDashboard = () => {
       // Clear timeout on error
       clearTimeout(timeoutId);
     } finally {
-      if (showSpinner) {
+      if (showSpinner && (liveAssets.length === 0 || isManualRefresh)) {
         setAssetsLoading(false);
       }
     }
