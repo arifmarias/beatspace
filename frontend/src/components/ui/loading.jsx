@@ -57,10 +57,10 @@ export const FullScreenLoading = ({ message = "Loading BeatSpace..." }) => {
 };
 
 // Dashboard loading
-export const DashboardLoading = ({ type = "dashboard" }) => {
+export const DashboardLoading = ({ type = "dashboard", userName = null }) => {
   const messages = {
     dashboard: "Loading Dashboard...",
-    buyer: "Loading Buyer Dashboard...", 
+    buyer: userName ? `Loading ${userName} Dashboard...` : "Loading Buyer Dashboard...", 
     admin: "Loading Admin Dashboard...",
     seller: "Loading Seller Dashboard...",
     marketplace: "Loading Marketplace...",
