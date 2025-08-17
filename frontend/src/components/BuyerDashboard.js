@@ -1938,7 +1938,7 @@ const BuyerDashboard = () => {
       
       notify.success('Creative data updated successfully!');
       setEditingCreative(null);
-      fetchLiveAssets(true); // Refresh assets
+      fetchLiveAssets(false, false); // Background refresh without spinner
     } catch (error) {
       console.error('Error updating creative data:', error);
       notify.error('Failed to update creative data');
