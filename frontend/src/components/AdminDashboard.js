@@ -479,86 +479,11 @@ const AdminDashboard = () => {
       const availableAssetsData = allAssets.filter(asset => asset.status === 'Available');
       setAvailableAssets(availableAssetsData);
 
-      // Fetch offer requests separately and more efficiently
-      fetchOfferRequests();
+      // Fetch offer requests separately and more efficiently (non-blocking)
+      setTimeout(() => {
+        fetchOfferRequests();
+      }, 100);
       
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      if (error.response?.status === 401) {
-        logout();
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-              console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
-              return {
-                ...offer,
-                asset_price: 0,
-                asset_seller_name: 'N/A',
-                asset_pricing_full: {},
-                quote_count: 0
-              };
-            }
-          })
-        );
-        
-        setOfferRequests(enrichedOfferRequests);
-      } catch (error) {
-        console.error('Error fetching offer requests:', error);
-        // If admin endpoint doesn't exist, try the general offers endpoint
-        try {
-          const fallbackResponse = await axios.get(`${API}/offers/requests`, { headers });
-          const fallbackData = fallbackResponse.data || [];
-          
-          // Fetch asset prices for fallback data too
-          const enrichedFallbackRequests = await Promise.all(
-            fallbackData.map(async (offer) => {
-              try {
-                const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
-                const assetData = assetResponse.data;
-                
-                // Always try to get monthly rate first for display consistency
-                let assetPrice = 0;
-                const duration = offer.contract_duration;
-                if (assetData.pricing) {
-                  // Always try to get monthly rate first for display consistency
-                  if (assetData.pricing.monthly_rate) {
-                    assetPrice = assetData.pricing.monthly_rate;
-                  } else if (assetData.pricing.weekly_rate) {
-                    assetPrice = assetData.pricing.weekly_rate * 4; // Convert weekly to monthly
-                  } else if (assetData.pricing.yearly_rate) {
-                    assetPrice = assetData.pricing.yearly_rate / 12; // Convert yearly to monthly
-                  }
-                }
-
-                return {
-                  ...offer,
-                  asset_price: assetPrice,
-                  asset_seller_name: assetData.seller_name || 'N/A',
-                  asset_pricing_full: assetData.pricing || {},
-                  quote_count: offer.quote_count || 0
-                };
-              } catch (error) {
-                console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
-                return {
-                  ...offer,
-                  asset_price: 0,
-                  asset_seller_name: 'N/A',
-                  asset_pricing_full: {},
-                  quote_count: 0
-                };
-              }
-            })
-          );
-          
-          setOfferRequests(enrichedFallbackRequests);
-        } catch (fallbackError) {
-          console.error('Error fetching offer requests (fallback):', fallbackError);
-          setOfferRequests([]);
-        }
-      }
-
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       if (error.response?.status === 401) {
