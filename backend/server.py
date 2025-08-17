@@ -2252,7 +2252,8 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
                 "location": asset.get("location", {}),
                 "images": asset.get("images", []),
                 "creative_tags": asset.get("creative_tags", []),  # Include creative tags
-                "creative_timeline": asset.get("creative_timeline")  # Include creative timeline
+                "creative_timeline": asset.get("creative_timeline"),  # Include creative timeline
+                "lastInspectionDate": last_inspection_date  # Include monitoring data
             }
             live_assets_data.append(live_asset)
         
