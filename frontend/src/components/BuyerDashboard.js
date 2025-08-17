@@ -2228,7 +2228,7 @@ const BuyerDashboard = () => {
                         onClick={() => {
                           console.log('🔄 Manual refresh clicked');
                           setAssetsFetched(false); // Reset the fetched flag
-                          fetchLiveAssets(true); // Manual refresh
+                          fetchLiveAssets(true, true); // Manual refresh with spinner for user feedback
                         }}
                         className="mt-2 text-sm text-orange-600 hover:text-orange-700 underline"
                       >
