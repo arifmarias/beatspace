@@ -2642,17 +2642,29 @@ const AdminDashboard = () => {
                           <Badge variant="outline">{asset.type}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge 
-                            variant="outline" 
-                            className={
-                              asset.category === 'Public' ? 'bg-green-50 text-green-700 border-green-200' :
-                              asset.category === 'Existing Asset' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                              asset.category === 'Private Asset' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                              'bg-gray-50 text-gray-700 border-gray-200'
-                            }
-                          >
-                            {asset.category || 'Public'}
-                          </Badge>
+                          <div>
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                asset.category === 'Public' ? 'bg-green-50 text-green-700 border-green-200' :
+                                asset.category === 'Existing Asset' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                asset.category === 'Private Asset' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                'bg-gray-50 text-gray-700 border-gray-200'
+                              }
+                            >
+                              {asset.category || 'Public'}
+                            </Badge>
+                            {/* Show next available date for existing assets */}
+                            {asset.category === 'Existing Asset' && asset.asset_expiry_date && (
+                              <div className="text-xs text-blue-600 mt-1 font-medium">
+                                Next Available: {new Date(asset.asset_expiry_date).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric' 
+                                })}
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>{asset.seller_name}</TableCell>
                         <TableCell>
