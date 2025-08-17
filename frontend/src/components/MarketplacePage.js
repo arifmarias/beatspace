@@ -1157,7 +1157,24 @@ const MarketplacePage = () => {
                                 
                                 setOfferDetails(updatedDetails);
                               }}
-                              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                              disabled={(date) => {
+                                // For live assets with expiry date, disable dates before expiry date + 1 day
+                                if (selectedAssetForOffer && selectedAssetForOffer.status === 'Live' && 
+                                    (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date)) {
+                                  const nextAvailableDate = new Date(
+                                    selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date
+                                  );
+                                  // Add 1 day to get the first available date
+                                  const firstAvailableDate = new Date(nextAvailableDate);
+                                  firstAvailableDate.setDate(nextAvailableDate.getDate() + 1);
+                                  firstAvailableDate.setHours(0, 0, 0, 0);
+                                  
+                                  return date < firstAvailableDate;
+                                }
+                                
+                                // For other assets, disable dates before today
+                                return date < new Date(new Date().setHours(0, 0, 0, 0));
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
