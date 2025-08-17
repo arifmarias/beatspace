@@ -2173,6 +2173,19 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
             # Get campaign details from the corresponding offer
             offer = offers_by_asset.get(asset["id"])
             
+            # Get monitoring data for inspection dates (optional, non-blocking)
+            last_inspection_date = None
+            try:
+                monitoring_records = await db.monitoring_records.find({
+                    "asset_id": asset["id"]
+                }).sort("inspection_date", -1).limit(1).to_list(1)
+                
+                if monitoring_records:
+                    last_inspection_date = monitoring_records[0].get("inspection_date")
+            except Exception as monitoring_error:
+                # Don't fail the whole request if monitoring data is unavailable
+                print(f"Warning: Could not fetch monitoring data for asset {asset['id']}: {monitoring_error}")
+            
             # Calculate cost and expiry based on asset category
             cost = 0
             expiry_date = None
