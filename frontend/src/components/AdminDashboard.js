@@ -451,83 +451,46 @@ const AdminDashboard = () => {
       setLoading(true);
       const headers = getAuthHeaders();
       
-      // Fetch all data in parallel
-      const [usersRes, assetsRes, campaignsRes, offersRes, statsRes] = await Promise.all([
+      // Fetch core data in parallel - only essential calls
+      const [usersRes, assetsRes, campaignsRes, statsRes] = await Promise.all([
         axios.get(`${API}/admin/users`, { headers }),
         axios.get(`${API}/admin/assets`, { headers }),
         axios.get(`${API}/campaigns`, { headers }),
-        axios.get(`${API}/offers/requests`, { headers }),
         axios.get(`${API}/stats/public`)
       ]);
 
       const allUsers = usersRes.data || [];
+      const allAssets = assetsRes.data || [];
       const allCampaigns = campaignsRes.data || [];
-      const allOffers = offersRes.data || [];
       
-      // Enrich campaigns with asset counts from offer requests
-      const enrichedCampaigns = allCampaigns.map(campaign => {
-        const campaignOffers = allOffers.filter(offer => 
-          offer.campaign_name === campaign.name && offer.buyer_id === campaign.buyer_id
-        );
-        return {
-          ...campaign,
-          campaign_assets: campaignOffers,
-          asset_count: campaignOffers.length
-        };
-      });
-
+      // Set basic data immediately
       setUsers(allUsers);
-      setAssets(assetsRes.data);
-      setCampaigns(enrichedCampaigns);
+      setAssets(allAssets);
+      setCampaigns(allCampaigns);
       setStats(statsRes.data);
 
-      // Filter sellers for the asset form dropdown
+      // Filter sellers and buyers from the users we already have
       const sellerUsers = allUsers.filter(user => user.role === 'seller');
-      setSellers(sellerUsers);
-
-      // Filter buyers for the campaign form dropdown
       const buyerUsers = allUsers.filter(user => user.role === 'buyer');
+      setSellers(sellerUsers);
       setBuyers(buyerUsers);
 
-      // Fetch available assets for campaign management
-      const availableAssetsResponse = await axios.get(`${API}/assets/public`);
-      const availableAssetsData = availableAssetsResponse.data.filter(asset => asset.status === 'Available');
+      // Set available assets from the assets we already have
+      const availableAssetsData = allAssets.filter(asset => asset.status === 'Available');
       setAvailableAssets(availableAssetsData);
 
-      // Fetch offer requests for admin mediation
-      try {
-        const offerRequestsResponse = await axios.get(`${API}/admin/offer-requests`, { headers });
-        const offerRequestsData = offerRequestsResponse.data || [];
-        
-        // Fetch asset prices for each offer request
-        const enrichedOfferRequests = await Promise.all(
-          offerRequestsData.map(async (offer) => {
-            try {
-              const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
-              const assetData = assetResponse.data;
-              
-              // Always try to get monthly rate first for display consistency
-              let assetPrice = 0;
-              const duration = offer.contract_duration;
-              if (assetData.pricing) {
-                // Always try to get monthly rate first for display consistency
-                if (assetData.pricing.monthly_rate) {
-                  assetPrice = assetData.pricing.monthly_rate;
-                } else if (assetData.pricing.weekly_rate) {
-                  assetPrice = assetData.pricing.weekly_rate * 4; // Convert weekly to monthly
-                } else if (assetData.pricing.yearly_rate) {
-                  assetPrice = assetData.pricing.yearly_rate / 12; // Convert yearly to monthly
-                }
-              }
-
-              return {
-                ...offer,
-                asset_price: assetPrice,
-                asset_seller_name: assetData.seller_name || 'N/A',
-                asset_pricing_full: assetData.pricing || {},
-                quote_count: offer.quote_count || 0 // Track how many times admin has quoted
-              };
-            } catch (error) {
+      // Fetch offer requests separately and more efficiently
+      fetchOfferRequests();
+      
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      if (error.response?.status === 401) {
+        logout();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
               console.error(`Error fetching asset price for ${offer.asset_id}:`, error);
               return {
                 ...offer,
