@@ -5,7 +5,7 @@ Test Manager Dashboard Access after Critical Fixes
 import requests
 import time
 
-API = "https://route-map-hover.preview.emergentagent.com/api"
+API = "https://asset-flow-1.preview.emergentagent.com/api"
 
 print("🔧 Testing Manager Dashboard Fixes")
 print("="*50)
@@ -81,7 +81,7 @@ print(f"\n🎯 MANUAL TESTING INSTRUCTIONS:")
 print("="*50)
 print("To test the Manager Dashboard fix manually:")
 print()
-print("1. Open: https://route-map-hover.preview.emergentagent.com/login")
+print("1. Open: https://asset-flow-1.preview.emergentagent.com/login")
 print("2. Login with:")
 print("   Email: manager@beatspace.com")
 print("   Password: manager123")

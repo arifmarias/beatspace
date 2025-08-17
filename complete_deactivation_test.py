@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta
 
 class ComprehensiveMonitoringDeactivationTester:
-    def __init__(self, base_url="https://route-map-hover.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://asset-flow-1.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.admin_token = None
         self.buyer_token = None

@@ -6,7 +6,7 @@ import requests
 import json
 from datetime import datetime
 
-API_BASE = "https://route-map-hover.preview.emergentagent.com/api"
+API_BASE = "https://asset-flow-1.preview.emergentagent.com/api"
 
 def test_monitoring_api():
     print("🚀 BeatSpace Monitoring Service API Test")
