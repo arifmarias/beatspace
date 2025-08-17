@@ -406,6 +406,33 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Helper function to enrich offers with pricing data asynchronously
+  const enrichOffersWithPricing = async (offers) => {
+    try {
+      const enrichedOffers = await Promise.all(offers.map(async (offer) => {
+        try {
+          // Fetch asset details to get pricing
+          const assetRes = await axios.get(`${API}/assets/public`);
+          const allAssets = assetRes.data || [];
+          const assetDetails = allAssets.find(asset => asset.id === offer.asset_id);
+          
+          return {
+            ...offer,
+            asset_pricing: assetDetails?.pricing || null
+          };
+        } catch (error) {
+          console.error('Error fetching asset pricing for offer:', offer.id, error);
+          return offer; // Return offer without pricing if fetch fails
+        }
+      }));
+      
+      setRequestedOffers(enrichedOffers);
+      console.log('🚨 OFFERS ENRICHED WITH PRICING:', enrichedOffers);
+    } catch (error) {
+      console.error('Error enriching offers with pricing:', error);
+    }
+  };
+
   // Fetch requested offers only (sectional refresh)
   const fetchRequestedOffers = async () => {
     try {
