@@ -508,7 +508,7 @@ const BuyerDashboard = () => {
       const liveAssetsData = response.data || [];
       console.log('📊 Live assets data:', liveAssetsData);
       
-      // Set assets immediately without waiting for monitoring data
+      // Set assets immediately - monitoring data now included in main response
       setLiveAssets(liveAssetsData);
       
       console.log('✅ Live assets fetched successfully:', liveAssetsData.length, 'assets');
@@ -519,9 +519,8 @@ const BuyerDashboard = () => {
         campaignName: a.campaignName
       })));
       
-      // Fetch monitoring data and services in background (non-blocking)
+      // Fetch monitoring services in background (non-blocking)
       setTimeout(() => {
-        fetchMonitoringDataInBackground(liveAssetsData, headers);
         fetchMonitoringServices();
       }, 100);
       
