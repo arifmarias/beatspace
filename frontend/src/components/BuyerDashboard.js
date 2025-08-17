@@ -543,6 +543,48 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Background function to fetch monitoring data without blocking UI
+  const fetchMonitoringDataInBackground = async (assets, headers) => {
+    try {
+      console.log('🔄 Fetching monitoring data in background...');
+      
+      // Batch process monitoring data for better performance
+      const assetsWithInspectionData = await Promise.all(
+        assets.map(async (asset) => {
+          try {
+            const monitoringResponse = await axios.get(`${API}/assets/${asset.id}/monitoring`, { headers });
+            const monitoringData = monitoringResponse.data;
+            
+            // Extract last inspection date from monitoring data
+            let lastInspectionDate = null;
+            if (monitoringData && monitoringData.last_inspection_date) {
+              lastInspectionDate = monitoringData.last_inspection_date;
+            }
+            
+            return {
+              ...asset,
+              lastInspectionDate
+            };
+          } catch (monitoringError) {
+            console.warn(`❌ Failed to fetch monitoring data for asset ${asset.id}:`, monitoringError);
+            // Return asset without inspection date if monitoring fetch fails
+            return {
+              ...asset,
+              lastInspectionDate: null
+            };
+          }
+        })
+      );
+      
+      // Update assets with monitoring data
+      setLiveAssets(assetsWithInspectionData);
+      console.log('✅ Background monitoring data updated');
+      
+    } catch (error) {
+      console.error('❌ Error fetching monitoring data in background:', error);
+    }
+  };
+
   const calculateDuration = (startDate, endDate) => {
     if (!startDate || !endDate) return 'N/A';
     
