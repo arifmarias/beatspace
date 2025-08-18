@@ -95,7 +95,7 @@ const BuyerDashboard = () => {
     startDate: null,
     endDate: null,
     selectedAssets: [],
-    serviceLevel: 'standard',
+    serviceLevel: 'basic',
     notificationPreferences: {
       email: true,
       in_app: true,
