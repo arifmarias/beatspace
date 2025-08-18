@@ -141,8 +141,29 @@ const RequestsCategoryTabs = ({
           </div>
           <div className="flex items-center space-x-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm">{request.duration || '3 months'}</span>
+            <span className="text-sm">{request.contract_duration?.replace('_', ' ') || request.duration || '3 months'}</span>
           </div>
+          
+          {/* Additional Services Display */}
+          {request.service_bundles && (
+            <div className="mt-2 space-y-1">
+              {Object.entries(request.service_bundles).some(([_, selected]) => selected) && (
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Services: </span>
+                  {Object.entries(request.service_bundles)
+                    .filter(([_, selected]) => selected)
+                    .map(([service, _]) => {
+                      if (service === 'monitoring' && request.monitoring_service_level) {
+                        return `Monitoring (${request.monitoring_service_level.charAt(0).toUpperCase() + request.monitoring_service_level.slice(1)})`;
+                      }
+                      return service.charAt(0).toUpperCase() + service.slice(1);
+                    })
+                    .join(', ')
+                  }
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         <div className="flex items-center justify-between">
