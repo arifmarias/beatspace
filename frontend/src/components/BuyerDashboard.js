@@ -1172,7 +1172,6 @@ const BuyerDashboard = () => {
   // Move button handlers outside JSX to prevent recreation on each render
   const handleEditOffer = (offer) => {
     console.log('🚨 HANDLE EDIT CALLED - offer:', offer?.id);
-    alert('🚨 HANDLE EDIT FUNCTION WORKING!');
     
     try {
       editOfferRequest(offer);
