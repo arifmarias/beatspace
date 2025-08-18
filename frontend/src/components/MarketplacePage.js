@@ -724,6 +724,7 @@ const MarketplacePage = () => {
         custom_end_date: offerDetails.contractDuration === 'custom' ? (offerDetails.customEndDate ? offerDetails.customEndDate.toISOString() : null) : null,
         custom_duration_days: offerDetails.contractDuration === 'custom' ? offerDetails.customDurationDays : null,
         service_bundles: offerDetails.serviceBundles,
+        monitoring_service_level: offerDetails.serviceBundles.monitoring ? offerDetails.monitoringServiceLevel : null, // Include monitoring service level if monitoring is selected
         timeline: offerDetails.timeline,
         asset_start_date: offerDetails.tentativeStartDate ? offerDetails.tentativeStartDate.toISOString() : null,
         asset_expiration_date: offerDetails.assetExpirationDate ? offerDetails.assetExpirationDate.toISOString() : null,
