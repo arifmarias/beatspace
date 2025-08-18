@@ -3102,7 +3102,14 @@ const AdminDashboard = () => {
                                                             enabled && (
                                                               <span key={service} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                                 <CheckCircle className="w-3 h-3 mr-1" />
-                                                                {service.replace('_', ' ').charAt(0).toUpperCase() + service.replace('_', ' ').slice(1)}
+                                                                {service === 'monitoring' && offer.monitoring_service_level ? (
+                                                                  `Monitoring (${offer.monitoring_service_level === 'basic' ? 'Basic - Monthly' : 
+                                                                   offer.monitoring_service_level === 'standard' ? 'Standard - Weekly' : 
+                                                                   offer.monitoring_service_level === 'premium' ? 'Premium - Daily' : 
+                                                                   offer.monitoring_service_level.charAt(0).toUpperCase() + offer.monitoring_service_level.slice(1)})`
+                                                                ) : (
+                                                                  service.replace('_', ' ').charAt(0).toUpperCase() + service.replace('_', ' ').slice(1)
+                                                                )}
                                                               </span>
                                                             )
                                                           ))}
