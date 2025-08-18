@@ -153,7 +153,12 @@ const RequestsCategoryTabs = ({
             {/* Actions based on status */}
             {request.status === 'Pending' && (
               <>
-                <Button size="sm" variant="outline" className="text-blue-600 border-blue-300">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-blue-600 border-blue-300"
+                  onClick={() => onEditOffer && onEditOffer(request)}
+                >
                   Edit
                 </Button>
                 <Button 
