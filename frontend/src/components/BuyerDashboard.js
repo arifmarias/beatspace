@@ -1667,7 +1667,7 @@ const BuyerDashboard = () => {
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days from now
       selectedAssets: [],
-      serviceLevel: 'standard',
+      serviceLevel: 'basic',
       notificationPreferences: {
         email: true,
         in_app: true,
