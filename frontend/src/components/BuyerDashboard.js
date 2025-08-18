@@ -3726,7 +3726,13 @@ const BuyerDashboard = () => {
                   <label className="block text-sm font-semibold mb-2">Contract Duration *</label>
                   <Select 
                     value={editOfferDetails.contractDuration} 
-                    onValueChange={(value) => setEditOfferDetails({...editOfferDetails, contractDuration: value})}
+                    onValueChange={(value) => {
+                      setEditOfferDetails({...editOfferDetails, contractDuration: value});
+                      // Trigger asset expiration calculation immediately
+                      setTimeout(() => {
+                        updateEditAssetExpirationDate();
+                      }, 10);
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select contract duration" />
