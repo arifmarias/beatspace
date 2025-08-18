@@ -1948,11 +1948,11 @@ async def respond_to_offer(
         
     
     elif response_action == "modify" or response_action == "request_revision":
-        # Buyer requests price revision
+        # Buyer requests price revision - Status should be "Revise Request"
         await db.offer_requests.update_one(
             {"id": request_id},
             {"$set": {
-                "status": "Revision Requested",
+                "status": "Revise Request",  # Changed from "Revision Requested" to "Revise Request"
                 "revision_requested": True,
                 "revision_requested_at": datetime.utcnow(),
                 "revision_reason": response_data.get("reason", "Buyer requested price revision")
