@@ -232,9 +232,6 @@ const RequestsCategoryTabs = ({
                 Revision Requested
               </Button>
             )}
-            <Button size="sm" variant="ghost">
-              <Eye className="w-4 h-4" />
-            </Button>
           </div>
         </div>
       </CardContent>
