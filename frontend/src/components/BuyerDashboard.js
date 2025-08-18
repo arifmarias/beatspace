@@ -1486,7 +1486,7 @@ const BuyerDashboard = () => {
     
     try {
       // For quoted offers or revision requested offers, reject them using respond endpoint
-      if (offerToCancel.status === 'Quoted' || offerToCancel.status === 'Revision Requested') {
+      if (offerToCancel.status === 'Quoted' || offerToCancel.status === 'Revise Request') {
         await axios.put(`${API}/offers/${offerToCancel.id}/respond`, {
           action: 'reject',
           reason: 'Buyer cancelled the request'
