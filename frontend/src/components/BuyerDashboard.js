@@ -1169,6 +1169,85 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Asset expiration calculation functions for edit form
+  const calculateAssetExpirationDate = (startDate, contractDuration, customEndDate = null) => {
+    if (!startDate) return null;
+    
+    // If custom duration is selected, use the custom end date
+    if (contractDuration === 'custom' && customEndDate) {
+      return customEndDate;
+    }
+    
+    const start = new Date(startDate);
+    let expirationDate = new Date(start);
+    
+    switch (contractDuration) {
+      case '1_month':
+        expirationDate.setMonth(start.getMonth() + 1);
+        break;
+      case '3_months':
+        expirationDate.setMonth(start.getMonth() + 3);
+        break;
+      case '6_months':
+        expirationDate.setMonth(start.getMonth() + 6);
+        break;
+      case '12_months':
+        expirationDate.setFullYear(start.getFullYear() + 1);
+        break;
+      default:
+        expirationDate.setMonth(start.getMonth() + 3);
+        break;
+    }
+    
+    return expirationDate;
+  };
+
+  const updateEditAssetExpirationDate = () => {
+    let startDate = null;
+    let campaignEndDate = null;
+    
+    // Always use tentativeStartDate as the asset start date
+    if (editOfferDetails.tentativeStartDate) {
+      startDate = editOfferDetails.tentativeStartDate;
+    }
+    
+    // Check campaign end date for existing campaigns
+    if (editOfferDetails.existingCampaignId && editOfferDetails.selectedCampaignEndDate) {
+      campaignEndDate = new Date(editOfferDetails.selectedCampaignEndDate);
+    }
+    
+    if (startDate) {
+      const assetExpiration = calculateAssetExpirationDate(startDate, editOfferDetails.contractDuration, editOfferDetails.customEndDate);
+      
+      // Check if asset expiration exceeds campaign end date
+      if (campaignEndDate && assetExpiration > campaignEndDate) {
+        // Asset expiration cannot exceed campaign end date
+        setEditOfferDetails(prev => ({
+          ...prev,
+          assetExpirationDate: campaignEndDate,
+          expirationWarning: `Asset expiration adjusted to campaign end date (${campaignEndDate.toLocaleDateString()})`
+        }));
+      } else {
+        setEditOfferDetails(prev => ({
+          ...prev,
+          assetExpirationDate: assetExpiration,
+          expirationWarning: null
+        }));
+      }
+    } else {
+      setEditOfferDetails(prev => ({
+        ...prev,
+        assetExpirationDate: null,
+        expirationWarning: null
+      }));
+    }
+  };
+
+  // Update asset expiration whenever relevant fields change in edit form
+  useEffect(() => {
+    updateEditAssetExpirationDate();
+  }, [editOfferDetails.tentativeStartDate, editOfferDetails.contractDuration, editOfferDetails.existingCampaignId, editOfferDetails.selectedCampaignEndDate]);
+
   // Move button handlers outside JSX to prevent recreation on each render
   const handleEditOffer = (offer) => {
     console.log('🚨 HANDLE EDIT CALLED - offer:', offer?.id);
