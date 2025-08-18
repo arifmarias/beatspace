@@ -1454,6 +1454,8 @@ const BuyerDashboard = () => {
         service_bundles: editOfferDetails.serviceBundles, // This matches ServiceBundles model
         monitoring_service_level: editOfferDetails.serviceBundles.monitoring ? editOfferDetails.monitoringServiceLevel : null, // Include monitoring service level if monitoring is selected
         timeline: editOfferDetails.timeline || '',
+        asset_start_date: editOfferDetails.tentativeStartDate ? editOfferDetails.tentativeStartDate.toISOString() : null,
+        asset_expiration_date: editOfferDetails.assetExpirationDate ? editOfferDetails.assetExpirationDate.toISOString() : null,
         special_requirements: editOfferDetails.specialRequirements || '',
         notes: editOfferDetails.notes || ''
         // Removed estimated_budget field to match Request Best Offer dialog
