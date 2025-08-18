@@ -77,6 +77,7 @@ const BuyerDashboard = () => {
   const [campaignAssets, setCampaignAssets] = useState([]);
   const [editingOffer, setEditingOffer] = useState(null);
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
+  const [selectedAssetForEdit, setSelectedAssetForEdit] = useState(null); // Add state for asset data
   
   // Monitoring Service State
   const [monitoringServices, setMonitoringServices] = useState([]);
