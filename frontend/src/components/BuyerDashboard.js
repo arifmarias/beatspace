@@ -1469,6 +1469,10 @@ const BuyerDashboard = () => {
       await fetchBuyerData();
       // Also refresh requested offers since we're switching to that tab
       fetchRequestedOffers();
+      
+      // Refresh buyer data to ensure all stats and counts are updated
+      fetchBuyerData();
+      
       console.log('🚨 Data refresh completed');
       
     } catch (error) {
