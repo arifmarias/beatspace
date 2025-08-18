@@ -100,6 +100,7 @@ const MarketplacePage = () => {
       setup: false,
       monitoring: false
     },
+    monitoringServiceLevel: 'basic', // New field for monitoring service level
     timeline: '',
     tentativeStartDate: null,
     selectedCampaignEndDate: null,
