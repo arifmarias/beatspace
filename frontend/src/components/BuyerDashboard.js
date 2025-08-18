@@ -4765,22 +4765,55 @@ const BuyerDashboard = () => {
                   </h4>
                   <Select
                     value={monitoringFormData.serviceLevel}
-                    onValueChange={(value) => setMonitoringFormData(prev => ({...prev, serviceLevel: value}))}
+                    onValueChange={(value) => {
+                      let newFrequency = 'weekly'; // default
+                      let autoSelectWhatsApp = false;
+                      
+                      // Set frequency based on service level and auto-select WhatsApp for premium
+                      if (value === 'basic') {
+                        newFrequency = 'monthly';
+                      } else if (value === 'standard') {
+                        newFrequency = 'weekly';
+                      } else if (value === 'premium') {
+                        newFrequency = 'daily';
+                        autoSelectWhatsApp = true;
+                      }
+                      
+                      setMonitoringFormData(prev => ({
+                        ...prev, 
+                        serviceLevel: value,
+                        frequency: newFrequency,
+                        notificationPreferences: {
+                          ...prev.notificationPreferences,
+                          whatsapp: autoSelectWhatsApp || prev.notificationPreferences.whatsapp
+                        }
+                      }));
+                    }}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select service level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="standard">Standard Monitoring</SelectItem>
-                      <SelectItem value="premium">Premium Monitoring</SelectItem>
+                      <SelectItem value="basic">Basic (Monthly)</SelectItem>
+                      <SelectItem value="standard">Standard (Weekly)</SelectItem>
+                      <SelectItem value="premium">Premium (Daily)</SelectItem>
                     </SelectContent>
                   </Select>
                   
                   <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <div className="font-medium mb-1">Basic Level:</div>
+                        <ul className="text-xs space-y-1">
+                          <li>• Monthly monitoring</li>
+                          <li>• Basic photo documentation</li>
+                          <li>• Email notifications only</li>
+                        </ul>
+                      </div>
                       <div>
                         <div className="font-medium mb-1">Standard Level:</div>
                         <ul className="text-xs space-y-1">
+                          <li>• Weekly monitoring</li>
                           <li>• Photo documentation</li>
                           <li>• Condition reporting</li>
                           <li>• Basic maintenance alerts</li>
@@ -4788,6 +4821,16 @@ const BuyerDashboard = () => {
                       </div>
                       <div>
                         <div className="font-medium mb-1">Premium Level:</div>
+                        <ul className="text-xs space-y-1">
+                          <li>• Daily monitoring</li>
+                          <li>• Comprehensive reporting</li>
+                          <li>• Real-time alerts</li>
+                          <li>• WhatsApp notifications</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                         <ul className="text-xs space-y-1">
                           <li>• All standard features</li>
                           <li>• Detailed analytics</li>
