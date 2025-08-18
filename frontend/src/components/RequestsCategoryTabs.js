@@ -30,7 +30,8 @@ const RequestsCategoryTabs = ({
   onApproveOffer,
   onRejectOffer,
   onReviseOffer,
-  onCancelRequest
+  onCancelRequest,
+  onEditOffer
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
