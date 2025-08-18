@@ -153,31 +153,22 @@ const RequestsCategoryTabs = ({
                   {Object.entries(request.service_bundles)
                     .filter(([_, selected]) => selected)
                     .map(([service, _]) => {
-                      console.log(`🚨 SERVICE DEBUG - ${service}:`, service === 'monitoring' ? `monitoring_service_level: ${request.monitoring_service_level}` : 'not monitoring');
-                      
                       if (service === 'monitoring') {
-                        const level = request.monitoring_service_level;
-                        console.log('🚨 MONITORING LEVEL:', level);
+                        // Try different possible field names for monitoring service level
+                        const level = request.monitoring_service_level || request.monitoringServiceLevel || 'basic';
                         
-                        if (level) {
-                          let frequency = '';
-                          
-                          // Map service level to frequency
-                          if (level === 'basic') {
-                            frequency = 'Basic - Monthly';
-                          } else if (level === 'standard') {
-                            frequency = 'Standard - Weekly';
-                          } else if (level === 'premium') {
-                            frequency = 'Premium - Daily';
-                          } else {
-                            frequency = level.charAt(0).toUpperCase() + level.slice(1);
-                          }
-                          
-                          return `Monitoring (${frequency})`;
+                        let frequency = '';
+                        if (level === 'basic') {
+                          frequency = 'Basic - Monthly';
+                        } else if (level === 'standard') {
+                          frequency = 'Standard - Weekly';
+                        } else if (level === 'premium') {
+                          frequency = 'Premium - Daily';
                         } else {
-                          // Fallback when no monitoring_service_level is available
-                          return 'Monitoring (Service Level Not Available)';
+                          frequency = level.charAt(0).toUpperCase() + level.slice(1);
                         }
+                        
+                        return `Monitoring (${frequency})`;
                       }
                       return service.charAt(0).toUpperCase() + service.slice(1);
                     })
