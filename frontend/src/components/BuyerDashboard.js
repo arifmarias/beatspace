@@ -227,6 +227,7 @@ const BuyerDashboard = () => {
       setup: false,
       monitoring: false
     },
+    monitoringServiceLevel: 'basic', // Add monitoring service level
     specialRequirements: '',
     notes: '',
     customStartDate: null,
