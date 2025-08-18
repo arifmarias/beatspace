@@ -145,15 +145,61 @@ const RequestsCategoryTabs = ({
             Submitted: {format(new Date(request.created_at), 'MMM dd, yyyy')}
           </span>
           <div className="flex items-center space-x-2">
-            {request.status === 'Quoted' && (
+            {/* Actions based on status */}
+            {request.status === 'Pending' && (
               <>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                  Approve
+                <Button size="sm" variant="outline" className="text-blue-600 border-blue-300">
+                  Edit
                 </Button>
-                <Button size="sm" variant="outline" className="text-red-600 border-red-300">
-                  Reject
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-red-600 border-red-300"
+                  onClick={() => onCancelRequest && onCancelRequest(request)}
+                >
+                  Delete
                 </Button>
               </>
+            )}
+            {request.status === 'Quoted' && request.admin_quoted_price && (
+              <>
+                <Button 
+                  size="sm" 
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => onApproveOffer && onApproveOffer(request)}
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  Approve
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-orange-600 border-orange-300"
+                  onClick={() => onReviseOffer && onReviseOffer(request)}
+                >
+                  Revise Offer
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-red-600 border-red-300"
+                  onClick={() => onCancelRequest && onCancelRequest(request)}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+            {request.status === 'PO Required' && (
+              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Upload className="w-4 h-4 mr-1" />
+                Upload PO
+              </Button>
+            )}
+            {request.status === 'Revise Request' && (
+              <Button size="sm" variant="outline" className="text-orange-600 border-orange-300" disabled>
+                <Clock className="w-4 h-4 mr-1" />
+                Revision Requested
+              </Button>
             )}
             <Button size="sm" variant="ghost">
               <Eye className="w-4 h-4" />
