@@ -1351,14 +1351,20 @@ const BuyerDashboard = () => {
         },
         monitoringServiceLevel: offer.monitoring_service_level || 'basic', // Add monitoring service level
         timeline: offer.timeline || '',
-        tentativeStartDate: offer.asset_start_date ? new Date(offer.asset_start_date) : null, // Use asset_start_date from backend
+        tentativeStartDate: offer.asset_start_date ? new Date(offer.asset_start_date) : 
+                          (offer.tentative_start_date ? new Date(offer.tentative_start_date) : null), // Try both field names
         selectedCampaignEndDate: offer.selected_campaign_end_date ? new Date(offer.selected_campaign_end_date) : null,
-        assetExpirationDate: offer.asset_expiration_date ? new Date(offer.asset_expiration_date) : null,
+        assetExpirationDate: offer.asset_expiration_date ? new Date(offer.asset_expiration_date) : 
+                           (offer.tentative_end_date ? new Date(offer.tentative_end_date) : null), // Try both field names
         specialRequirements: offer.special_requirements || '',
         notes: offer.notes || ''
       });
       
       console.log('🚨 CONTRACT DURATION SET TO:', offer.contract_duration);
+      console.log('🚨 DATES FOUND - asset_start_date:', offer.asset_start_date);
+      console.log('🚨 DATES FOUND - asset_expiration_date:', offer.asset_expiration_date);
+      console.log('🚨 DATES FOUND - tentative_start_date:', offer.tentative_start_date);
+      console.log('🚨 DATES FOUND - tentative_end_date:', offer.tentative_end_date);
       console.log('🚨 FULL OFFER DATA:', offer);
       
       // Set the offer being edited
