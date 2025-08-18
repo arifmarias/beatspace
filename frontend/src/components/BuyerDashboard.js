@@ -1393,8 +1393,15 @@ const BuyerDashboard = () => {
       // Show the dialog
       setShowEditOfferDialog(true);
       
+      // Trigger asset expiration calculation after state is set
+      setTimeout(() => {
+        updateEditAssetExpirationDate();
+      }, 100);
+      
       console.log('🚨 Edit dialog should now be visible');
       console.log('🚨 Asset data set:', assetData);
+      console.log('🚨 Offer dates - asset_start_date:', offer.asset_start_date);
+      console.log('🚨 Offer dates - asset_expiration_date:', offer.asset_expiration_date);
       
     } catch (error) {
       console.error('🚨 ERROR in editOfferRequest:', error);
