@@ -1358,6 +1358,9 @@ const BuyerDashboard = () => {
         notes: offer.notes || ''
       });
       
+      console.log('🚨 CONTRACT DURATION SET TO:', offer.contract_duration);
+      console.log('🚨 FULL OFFER DATA:', offer);
+      
       // Set the offer being edited
       setEditingOffer(offer);
       
