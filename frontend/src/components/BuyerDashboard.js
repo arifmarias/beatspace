@@ -1257,6 +1257,7 @@ const BuyerDashboard = () => {
           setup: offer.service_bundles?.setup || false,
           monitoring: offer.service_bundles?.monitoring || false
         },
+        monitoringServiceLevel: offer.monitoring_service_level || 'basic', // Add monitoring service level
         timeline: offer.timeline || '',
         tentativeStartDate: offer.tentative_start_date ? new Date(offer.tentative_start_date) : null,
         selectedCampaignEndDate: offer.selected_campaign_end_date ? new Date(offer.selected_campaign_end_date) : null,
