@@ -1466,15 +1466,20 @@ const AdminDashboard = () => {
         offerRequestsData.map(async (offer) => {
           try {
             const assetResponse = await axios.get(`${API}/assets/${offer.asset_id}`, { headers });
+            const assetData = assetResponse.data;
             return {
               ...offer,
-              asset_pricing: assetResponse.data.pricing || {}
+              asset_pricing: assetData.pricing || {},
+              asset_pricing_full: assetData.pricing || {}, // Full pricing object for detailed view
+              asset_seller_name: assetData.seller_name || 'N/A' // Seller name for detailed view
             };
           } catch (error) {
             console.warn(`Could not fetch pricing for asset ${offer.asset_id}`);
             return {
               ...offer,
-              asset_pricing: {}
+              asset_pricing: {},
+              asset_pricing_full: {},
+              asset_seller_name: 'N/A'
             };
           }
         })
