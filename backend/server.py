@@ -1834,11 +1834,11 @@ async def respond_to_offer(
             else:
                 tentative_end = tentative_start + timedelta(days=30)  # Default to 1 month
         
-        # Update request status with confirmed dates
+        # Update request status with confirmed dates - Status should be "PO Required" for buyer approval
         await db.offer_requests.update_one(
             {"id": request_id},
             {"$set": {
-                "status": "Accepted",
+                "status": "PO Required",  # Changed from "Accepted" to "PO Required"
                 "confirmed_start_date": tentative_start,
                 "confirmed_end_date": tentative_end
             }}
