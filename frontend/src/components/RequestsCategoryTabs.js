@@ -121,7 +121,7 @@ const RequestsCategoryTabs = ({
               <Building2 className="w-5 h-5 text-blue-600" />
               <span>{request.asset_name}</span>
             </h3>
-            <p className="text-sm text-gray-500">Campaign: {request.campaign?.name}</p>
+            <p className="text-sm text-gray-500">Campaign: {request.campaign_name || request.campaign?.name || 'N/A'}</p>
           </div>
           <Badge {...getStatusBadgeProps(request.status)}>
             {request.status}
