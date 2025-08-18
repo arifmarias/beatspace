@@ -3690,9 +3690,10 @@ const BuyerDashboard = () => {
                     onValueChange={(value) => setEditOfferDetails({...editOfferDetails, contractDuration: value})}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select contract duration" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="1_month">1 Month</SelectItem>
                       <SelectItem value="3_months">3 Months</SelectItem>
                       <SelectItem value="6_months">6 Months</SelectItem>
                       <SelectItem value="12_months">12 Months</SelectItem>
