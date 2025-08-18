@@ -3714,6 +3714,44 @@ const BuyerDashboard = () => {
                       📊 Monitoring & Reports
                     </label>
                   </div>
+                  
+                  {/* Service Level Selection - appears when monitoring is checked */}
+                  {editOfferDetails.serviceBundles.monitoring && (
+                    <div className="mt-3 ml-6 space-y-2">
+                      <label className="block text-xs font-medium text-gray-700">
+                        Service Level
+                      </label>
+                      <select
+                        value={editOfferDetails.monitoringServiceLevel}
+                        onChange={(e) => setEditOfferDetails({
+                          ...editOfferDetails, 
+                          monitoringServiceLevel: e.target.value
+                        })}
+                        className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="basic">Basic (Monthly)</option>
+                        <option value="standard">Standard (Weekly)</option>
+                        <option value="premium">Premium (Daily)</option>
+                      </select>
+                      <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                        {editOfferDetails.monitoringServiceLevel === 'basic' && (
+                          <>
+                            <span className="font-medium">Basic:</span> Monthly monitoring with basic photo documentation and email notifications
+                          </>
+                        )}
+                        {editOfferDetails.monitoringServiceLevel === 'standard' && (
+                          <>
+                            <span className="font-medium">Standard:</span> Weekly monitoring with detailed reporting and condition analysis
+                          </>
+                        )}
+                        {editOfferDetails.monitoringServiceLevel === 'premium' && (
+                          <>
+                            <span className="font-medium">Premium:</span> Daily monitoring with comprehensive reports, real-time alerts, and WhatsApp notifications
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
