@@ -91,7 +91,7 @@ const BuyerDashboard = () => {
   
   // Monitoring Subscription Form State
   const [monitoringFormData, setMonitoringFormData] = useState({
-    frequency: 'weekly',
+    frequency: 'monthly',
     startDate: null,
     endDate: null,
     selectedAssets: [],
