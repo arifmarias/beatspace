@@ -1259,7 +1259,7 @@ const BuyerDashboard = () => {
         },
         monitoringServiceLevel: offer.monitoring_service_level || 'basic', // Add monitoring service level
         timeline: offer.timeline || '',
-        tentativeStartDate: offer.tentative_start_date ? new Date(offer.tentative_start_date) : null,
+        tentativeStartDate: offer.asset_start_date ? new Date(offer.asset_start_date) : null, // Use asset_start_date from backend
         selectedCampaignEndDate: offer.selected_campaign_end_date ? new Date(offer.selected_campaign_end_date) : null,
         assetExpirationDate: offer.asset_expiration_date ? new Date(offer.asset_expiration_date) : null,
         specialRequirements: offer.special_requirements || '',
