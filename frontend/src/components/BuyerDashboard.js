@@ -4954,42 +4954,79 @@ const BuyerDashboard = () => {
                       value={monitoringFormData.serviceLevel}
                       onChange={(e) => {
                         const newServiceLevel = e.target.value;
+                        let newFrequency = 'weekly'; // default
+                        let autoSelectWhatsApp = false;
+                        
+                        // Set frequency based on service level and auto-select WhatsApp for premium
+                        if (newServiceLevel === 'basic') {
+                          newFrequency = 'monthly';
+                        } else if (newServiceLevel === 'standard') {
+                          newFrequency = 'weekly';
+                        } else if (newServiceLevel === 'premium') {
+                          newFrequency = 'daily';
+                          autoSelectWhatsApp = true;
+                        }
+                        
                         setMonitoringFormData(prev => ({
                           ...prev, 
                           serviceLevel: newServiceLevel,
-                          // Auto-uncheck WhatsApp if switching to Standard
+                          frequency: newFrequency,
                           notificationPreferences: {
                             ...prev.notificationPreferences,
-                            whatsapp: newServiceLevel === 'premium' ? prev.notificationPreferences.whatsapp : false
+                            whatsapp: autoSelectWhatsApp || prev.notificationPreferences.whatsapp
                           }
                         }));
                       }}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="standard">Standard - Photo + condition report</option>
-                      <option value="premium">Premium - Comprehensive monitoring + alerts</option>
+                      <option value="basic">Basic (Monthly)</option>
+                      <option value="standard">Standard (Weekly)</option>
+                      <option value="premium">Premium (Daily)</option>
                     </select>
                   </div>
 
-                  {/* Frequency */}
+                  {/* Frequency - Now controlled by Service Level */}
                   <div className="space-y-3">
                     <label className="block text-sm font-semibold text-gray-900">
                       Monitoring Frequency
                     </label>
                     <div className="grid grid-cols-3 gap-3">
-                      {['daily', 'weekly', 'monthly'].map((freq) => (
-                        <label key={freq} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="frequency"
-                            value={freq}
-                            checked={monitoringFormData.frequency === freq}
-                            onChange={(e) => setMonitoringFormData(prev => ({...prev, frequency: e.target.value}))}
-                            className="text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-sm font-medium text-gray-700 capitalize">{freq}</span>
-                        </label>
-                      ))}
+                      {['daily', 'weekly', 'monthly'].map((freq) => {
+                        const isDisabled = (
+                          (monitoringFormData.serviceLevel === 'basic' && freq !== 'monthly') ||
+                          (monitoringFormData.serviceLevel === 'standard' && freq !== 'weekly') ||
+                          (monitoringFormData.serviceLevel === 'premium' && freq !== 'daily')
+                        );
+                        
+                        return (
+                          <label 
+                            key={freq} 
+                            className={`flex items-center space-x-2 ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                          >
+                            <input
+                              type="radio"
+                              name="frequency"
+                              value={freq}
+                              checked={monitoringFormData.frequency === freq}
+                              disabled={isDisabled}
+                              onChange={(e) => setMonitoringFormData(prev => ({...prev, frequency: e.target.value}))}
+                              className="text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <span className={`text-sm font-medium ${isDisabled ? 'text-gray-400' : 'text-gray-700'} capitalize`}>
+                              {freq}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                      <span className="font-medium">Selected service level determines frequency:</span>
+                      <br />
+                      • Basic: Monthly monitoring only
+                      <br />
+                      • Standard: Weekly monitoring only  
+                      <br />
+                      • Premium: Daily monitoring only
                     </div>
                   </div>
 
