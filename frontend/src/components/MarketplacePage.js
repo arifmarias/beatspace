@@ -1291,9 +1291,9 @@ const MarketplacePage = () => {
                                 })}
                                 className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               >
-                                <option value="basic">Basic (Monthly) - ৳5,000/month</option>
-                                <option value="standard">Standard (Weekly) - ৳12,000/month</option>
-                                <option value="premium">Premium (Daily) - ৳25,000/month</option>
+                                <option value="basic">Basic (Monthly)</option>
+                                <option value="standard">Standard (Weekly)</option>
+                                <option value="premium">Premium (Daily)</option>
                               </select>
                               <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
                                 {offerDetails.monitoringServiceLevel === 'basic' && (
