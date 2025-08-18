@@ -1320,18 +1320,31 @@ const BuyerDashboard = () => {
     }
   };
 
-  const editOfferRequest = (offer) => {
+  const editOfferRequest = async (offer) => {
     console.log('🚨 EDIT FUNCTION START - offer received:', offer);
     
     try {
-      // Populate the edit form with existing offer data
+      // Fetch asset data for the selected asset
+      const headers = getAuthHeaders();
+      const assetResponse = await axios.get(`${API}/assets/public`);
+      const allAssets = assetResponse.data || [];
+      const assetData = allAssets.find(asset => asset.id === offer.asset_id);
+      
+      if (!assetData) {
+        alert('Error: Could not find asset information');
+        return;
+      }
+      
+      // Set the selected asset for display
+      setSelectedAssetForEdit(assetData);
+      
+      // Populate the edit form with existing offer data (removed estimatedBudget)
       setEditOfferDetails({
         campaignType: offer.campaign_type || 'existing',
         campaignName: offer.campaign_name || '',
         existingCampaignId: offer.existing_campaign_id || '',
         assetId: offer.asset_id || '',
         contractDuration: offer.contract_duration || '3_months',
-        estimatedBudget: offer.estimated_budget?.toString() || '',
         serviceBundles: {
           printing: offer.service_bundles?.printing || false,
           setup: offer.service_bundles?.setup || false,
@@ -1353,6 +1366,7 @@ const BuyerDashboard = () => {
       setShowEditOfferDialog(true);
       
       console.log('🚨 Edit dialog should now be visible');
+      console.log('🚨 Asset data set:', assetData);
       
     } catch (error) {
       console.error('🚨 ERROR in editOfferRequest:', error);
