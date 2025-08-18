@@ -3785,7 +3785,19 @@ const BuyerDashboard = () => {
                   <p><strong>Campaign:</strong> {editOfferDetails.campaignName || 'Not selected'}</p>
                   <p><strong>Duration:</strong> {editOfferDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
                   <p><strong>Budget:</strong> {editOfferDetails.estimatedBudget ? `৳${parseInt(editOfferDetails.estimatedBudget).toLocaleString()}` : '⚠️ Required'}</p>
-                  <p><strong>Services:</strong> {Object.entries(editOfferDetails.serviceBundles).filter(([_, selected]) => selected).map(([service, _]) => service).join(', ') || 'None selected'}</p>
+                  <p><strong>Services:</strong> {
+                    (() => {
+                      const selectedServices = Object.entries(editOfferDetails.serviceBundles)
+                        .filter(([_, selected]) => selected)
+                        .map(([service, _]) => {
+                          if (service === 'monitoring') {
+                            return `Monitoring (${editOfferDetails.monitoringServiceLevel.charAt(0).toUpperCase() + editOfferDetails.monitoringServiceLevel.slice(1)})`;
+                          }
+                          return service.charAt(0).toUpperCase() + service.slice(1);
+                        });
+                      return selectedServices.length > 0 ? selectedServices.join(', ') : 'None selected';
+                    })()
+                  }</p>
                 </div>
               </div>
 
