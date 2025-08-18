@@ -1351,7 +1351,19 @@ const MarketplacePage = () => {
                           }</p>
                           <p><strong>Duration:</strong> {offerDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
                           <p><strong>Budget:</strong> {offerDetails.estimatedBudget ? `৳${parseInt(offerDetails.estimatedBudget).toLocaleString()}` : '⚠️ Required'}</p>
-                          <p><strong>Services:</strong> {Object.entries(offerDetails.serviceBundles).filter(([_, selected]) => selected).map(([service, _]) => service).join(', ') || 'None selected'}</p>
+                          <p><strong>Services:</strong> {
+                            (() => {
+                              const selectedServices = Object.entries(offerDetails.serviceBundles)
+                                .filter(([_, selected]) => selected)
+                                .map(([service, _]) => {
+                                  if (service === 'monitoring') {
+                                    return `Monitoring (${offerDetails.monitoringServiceLevel.charAt(0).toUpperCase() + offerDetails.monitoringServiceLevel.slice(1)})`;
+                                  }
+                                  return service.charAt(0).toUpperCase() + service.slice(1);
+                                });
+                              return selectedServices.length > 0 ? selectedServices.join(', ') : 'None selected';
+                            })()
+                          }</p>
                         </div>
                       </div>
 
