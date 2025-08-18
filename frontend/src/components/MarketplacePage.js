@@ -762,6 +762,7 @@ const MarketplacePage = () => {
           setup: false,
           monitoring: false
         },
+        monitoringServiceLevel: 'basic', // Reset to default service level
         timeline: '',
         tentativeStartDate: null,
         selectedCampaignEndDate: null,
