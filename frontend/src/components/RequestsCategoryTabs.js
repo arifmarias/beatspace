@@ -154,7 +154,21 @@ const RequestsCategoryTabs = ({
                     .filter(([_, selected]) => selected)
                     .map(([service, _]) => {
                       if (service === 'monitoring' && request.monitoring_service_level) {
-                        return `Monitoring (${request.monitoring_service_level.charAt(0).toUpperCase() + request.monitoring_service_level.slice(1)})`;
+                        const level = request.monitoring_service_level;
+                        let frequency = '';
+                        
+                        // Map service level to frequency
+                        if (level === 'basic') {
+                          frequency = 'Basic - Monthly';
+                        } else if (level === 'standard') {
+                          frequency = 'Standard - Weekly';
+                        } else if (level === 'premium') {
+                          frequency = 'Premium - Daily';
+                        } else {
+                          frequency = level.charAt(0).toUpperCase() + level.slice(1);
+                        }
+                        
+                        return `Monitoring (${frequency})`;
                       }
                       return service.charAt(0).toUpperCase() + service.slice(1);
                     })
