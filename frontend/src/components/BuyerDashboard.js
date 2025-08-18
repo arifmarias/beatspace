@@ -1663,7 +1663,7 @@ const BuyerDashboard = () => {
     
     // Reset form data
     setMonitoringFormData({
-      frequency: 'weekly',
+      frequency: 'monthly',
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days from now
       selectedAssets: [],
