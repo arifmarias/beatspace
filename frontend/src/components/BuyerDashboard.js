@@ -3897,7 +3897,6 @@ const BuyerDashboard = () => {
                   onClick={updateOfferRequest}
                   className="bg-blue-600 hover:bg-blue-700"
                   disabled={
-                    !editOfferDetails.estimatedBudget.trim() || 
                     !editOfferDetails.existingCampaignId
                   }
                 >
