@@ -4674,7 +4674,7 @@ const BuyerDashboard = () => {
                   )}
                 </div>
 
-                {/* Monitoring Frequency */}
+                {/* Monitoring Frequency - Controlled by Service Level */}
                 <div className="space-y-3">
                   <h4 className="font-semibold text-gray-900 flex items-center">
                     <Clock className="w-4 h-4 mr-2 text-blue-600" />
@@ -4683,24 +4683,23 @@ const BuyerDashboard = () => {
                   <Select
                     value={monitoringFormData.frequency}
                     onValueChange={(value) => setMonitoringFormData(prev => ({...prev, frequency: value}))}
+                    disabled={true}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full opacity-75 cursor-not-allowed">
                       <SelectValue placeholder="Select monitoring frequency" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="daily">Daily Monitoring</SelectItem>
                       <SelectItem value="weekly">Weekly Monitoring</SelectItem>
-                      <SelectItem value="bi_weekly">Bi-weekly Monitoring</SelectItem>
                       <SelectItem value="monthly">Monthly Monitoring</SelectItem>
                     </SelectContent>
                   </Select>
                   
                   <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
-                    <div className="font-medium mb-1">Frequency Details:</div>
-                    {monitoringFormData.frequency === 'daily' && <p>• Daily photos and condition reports</p>}
-                    {monitoringFormData.frequency === 'weekly' && <p>• Weekly detailed inspections with photo documentation</p>}
-                    {monitoringFormData.frequency === 'bi_weekly' && <p>• Bi-weekly comprehensive monitoring reports</p>}
-                    {monitoringFormData.frequency === 'monthly' && <p>• Monthly thorough asset health assessments</p>}
+                    <div className="font-medium mb-1">Frequency automatically set by Service Level:</div>
+                    {monitoringFormData.frequency === 'daily' && <p>• Daily photos and condition reports (Premium Level)</p>}
+                    {monitoringFormData.frequency === 'weekly' && <p>• Weekly detailed inspections with photo documentation (Standard Level)</p>}
+                    {monitoringFormData.frequency === 'monthly' && <p>• Monthly thorough asset health assessments (Basic Level)</p>}
                   </div>
                 </div>
 
