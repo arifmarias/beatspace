@@ -4593,7 +4593,7 @@ const BuyerDashboard = () => {
             setSelectedCampaign(null);
             setCampaignAssetsForMonitoring([]);
             setMonitoringFormData({
-              frequency: 'weekly',
+              frequency: 'monthly',
               startDate: null,
               endDate: null,
               selectedAssets: [],
