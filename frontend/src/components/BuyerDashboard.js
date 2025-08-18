@@ -220,7 +220,6 @@ const BuyerDashboard = () => {
     campaignName: '',
     existingCampaignId: '',
     contractDuration: '1_month',
-    estimatedBudget: '',
     tentativeStartDate: null,
     assetExpirationDate: null,
     serviceBundles: {
