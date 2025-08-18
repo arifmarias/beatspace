@@ -1203,6 +1203,10 @@ const BuyerDashboard = () => {
   };
 
   const updateEditAssetExpirationDate = () => {
+    console.log('🚨 updateEditAssetExpirationDate called');
+    console.log('🚨 tentativeStartDate:', editOfferDetails.tentativeStartDate);
+    console.log('🚨 contractDuration:', editOfferDetails.contractDuration);
+    
     let startDate = null;
     let campaignEndDate = null;
     
@@ -1218,6 +1222,7 @@ const BuyerDashboard = () => {
     
     if (startDate) {
       const assetExpiration = calculateAssetExpirationDate(startDate, editOfferDetails.contractDuration, editOfferDetails.customEndDate);
+      console.log('🚨 Calculated assetExpiration:', assetExpiration);
       
       // Check if asset expiration exceeds campaign end date
       if (campaignEndDate && assetExpiration > campaignEndDate) {
@@ -1227,12 +1232,14 @@ const BuyerDashboard = () => {
           assetExpirationDate: campaignEndDate,
           expirationWarning: `Asset expiration adjusted to campaign end date (${campaignEndDate.toLocaleDateString()})`
         }));
+        console.log('🚨 Set to campaign end date:', campaignEndDate);
       } else {
         setEditOfferDetails(prev => ({
           ...prev,
           assetExpirationDate: assetExpiration,
           expirationWarning: null
         }));
+        console.log('🚨 Set to calculated expiration:', assetExpiration);
       }
     } else {
       setEditOfferDetails(prev => ({
@@ -1240,6 +1247,7 @@ const BuyerDashboard = () => {
         assetExpirationDate: null,
         expirationWarning: null
       }));
+      console.log('🚨 Cleared expiration date');
     }
   };
 
