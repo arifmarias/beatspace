@@ -153,9 +153,8 @@ const RequestsCategoryTabs = ({
                   {Object.entries(request.service_bundles)
                     .filter(([_, selected]) => selected)
                     .map(([service, _]) => {
-                      if (service === 'monitoring') {
-                        // Try different possible field names for monitoring service level
-                        const level = request.monitoring_service_level || request.monitoringServiceLevel || 'basic';
+                      if (service === 'monitoring' && request.monitoring_service_level) {
+                        const level = request.monitoring_service_level;
                         
                         let frequency = '';
                         if (level === 'basic') {
