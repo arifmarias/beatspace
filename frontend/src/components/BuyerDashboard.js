@@ -1437,15 +1437,12 @@ const BuyerDashboard = () => {
         campaign_type: editOfferDetails.campaignType,
         existing_campaign_id: editOfferDetails.existingCampaignId || null,
         contract_duration: editOfferDetails.contractDuration,
-        estimated_budget: parseFloat(editOfferDetails.estimatedBudget) || 0,
         service_bundles: editOfferDetails.serviceBundles, // This matches ServiceBundles model
         monitoring_service_level: editOfferDetails.serviceBundles.monitoring ? editOfferDetails.monitoringServiceLevel : null, // Include monitoring service level if monitoring is selected
         timeline: editOfferDetails.timeline || '',
         special_requirements: editOfferDetails.specialRequirements || '',
         notes: editOfferDetails.notes || ''
-        // Removed fields that backend doesn't expect:
-        // - tentative_start_date (not in OfferRequestCreate)
-        // - asset_expiration_date (not in OfferRequestCreate)
+        // Removed estimated_budget field to match Request Best Offer dialog
       };
       
       console.log('🚨 Update payload prepared:', updatePayload);
