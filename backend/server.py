@@ -252,6 +252,7 @@ class OfferRequestCreate(BaseModel):
     contract_duration: str
     estimated_budget: Optional[float] = None
     service_bundles: ServiceBundles
+    monitoring_service_level: Optional[str] = None  # Add monitoring service level field
     timeline: Optional[str] = None
     special_requirements: Optional[str] = None
     notes: Optional[str] = None
