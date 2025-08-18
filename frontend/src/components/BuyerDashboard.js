@@ -1349,23 +1349,28 @@ const BuyerDashboard = () => {
           setup: offer.service_bundles?.setup || false,
           monitoring: offer.service_bundles?.monitoring || false
         },
-        monitoringServiceLevel: offer.monitoring_service_level || 'basic', // Add monitoring service level
+        monitoringServiceLevel: offer.monitoring_service_level || 'basic', 
         timeline: offer.timeline || '',
+        // Try all possible field names for dates
         tentativeStartDate: offer.asset_start_date ? new Date(offer.asset_start_date) : 
-                          (offer.tentative_start_date ? new Date(offer.tentative_start_date) : null), // Try both field names
+                          (offer.tentative_start_date ? new Date(offer.tentative_start_date) : 
+                           (offer.created_at ? new Date(offer.created_at) : null)), 
         selectedCampaignEndDate: offer.selected_campaign_end_date ? new Date(offer.selected_campaign_end_date) : null,
         assetExpirationDate: offer.asset_expiration_date ? new Date(offer.asset_expiration_date) : 
-                           (offer.tentative_end_date ? new Date(offer.tentative_end_date) : null), // Try both field names
+                           (offer.tentative_end_date ? new Date(offer.tentative_end_date) : null),
         specialRequirements: offer.special_requirements || '',
         notes: offer.notes || ''
       });
       
-      console.log('🚨 CONTRACT DURATION SET TO:', offer.contract_duration);
-      console.log('🚨 DATES FOUND - asset_start_date:', offer.asset_start_date);
-      console.log('🚨 DATES FOUND - asset_expiration_date:', offer.asset_expiration_date);
-      console.log('🚨 DATES FOUND - tentative_start_date:', offer.tentative_start_date);
-      console.log('🚨 DATES FOUND - tentative_end_date:', offer.tentative_end_date);
-      console.log('🚨 FULL OFFER DATA:', offer);
+      console.log('🚨 ALL OFFER KEYS:', Object.keys(offer));
+      console.log('🚨 DATE FIELDS CHECK:');
+      console.log('  - asset_start_date:', offer.asset_start_date);
+      console.log('  - asset_expiration_date:', offer.asset_expiration_date);
+      console.log('  - tentative_start_date:', offer.tentative_start_date);
+      console.log('  - tentative_end_date:', offer.tentative_end_date);
+      console.log('  - created_at:', offer.created_at);
+      console.log('🚨 SERVICE BUNDLES:', offer.service_bundles);
+      console.log('🚨 MONITORING LEVEL:', offer.monitoring_service_level);
       
       // Set the offer being edited
       setEditingOffer(offer);
