@@ -1204,24 +1204,27 @@ const BuyerDashboard = () => {
 
   const updateEditAssetExpirationDate = () => {
     console.log('🚨 updateEditAssetExpirationDate called');
-    console.log('🚨 tentativeStartDate:', editOfferDetails.tentativeStartDate);
-    console.log('🚨 contractDuration:', editOfferDetails.contractDuration);
+    
+    // Get current state values
+    const currentDetails = editOfferDetails;
+    console.log('🚨 Current tentativeStartDate:', currentDetails.tentativeStartDate);
+    console.log('🚨 Current contractDuration:', currentDetails.contractDuration);
     
     let startDate = null;
     let campaignEndDate = null;
     
     // Always use tentativeStartDate as the asset start date
-    if (editOfferDetails.tentativeStartDate) {
-      startDate = editOfferDetails.tentativeStartDate;
+    if (currentDetails.tentativeStartDate) {
+      startDate = currentDetails.tentativeStartDate;
     }
     
     // Check campaign end date for existing campaigns
-    if (editOfferDetails.existingCampaignId && editOfferDetails.selectedCampaignEndDate) {
-      campaignEndDate = new Date(editOfferDetails.selectedCampaignEndDate);
+    if (currentDetails.existingCampaignId && currentDetails.selectedCampaignEndDate) {
+      campaignEndDate = new Date(currentDetails.selectedCampaignEndDate);
     }
     
-    if (startDate) {
-      const assetExpiration = calculateAssetExpirationDate(startDate, editOfferDetails.contractDuration, editOfferDetails.customEndDate);
+    if (startDate && currentDetails.contractDuration) {
+      const assetExpiration = calculateAssetExpirationDate(startDate, currentDetails.contractDuration, currentDetails.customEndDate);
       console.log('🚨 Calculated assetExpiration:', assetExpiration);
       
       // Check if asset expiration exceeds campaign end date
@@ -1242,12 +1245,12 @@ const BuyerDashboard = () => {
         console.log('🚨 Set to calculated expiration:', assetExpiration);
       }
     } else {
+      console.log('🚨 Missing startDate or contractDuration, clearing expiration');
       setEditOfferDetails(prev => ({
         ...prev,
         assetExpirationDate: null,
         expirationWarning: null
       }));
-      console.log('🚨 Cleared expiration date');
     }
   };
 
