@@ -4831,16 +4831,6 @@ const BuyerDashboard = () => {
                     </div>
                   </div>
                 </div>
-                        <ul className="text-xs space-y-1">
-                          <li>• All standard features</li>
-                          <li>• Detailed analytics</li>
-                          <li>• Priority support</li>
-                          <li>• Real-time notifications</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Notification Preferences */}
                 <div className="space-y-3">
