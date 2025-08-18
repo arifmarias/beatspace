@@ -1245,8 +1245,10 @@ const BuyerDashboard = () => {
 
   // Update asset expiration whenever relevant fields change in edit form
   useEffect(() => {
-    updateEditAssetExpirationDate();
-  }, [editOfferDetails.tentativeStartDate, editOfferDetails.contractDuration, editOfferDetails.existingCampaignId, editOfferDetails.selectedCampaignEndDate]);
+    if (editOfferDetails.tentativeStartDate && editOfferDetails.contractDuration && showEditOfferDialog) {
+      updateEditAssetExpirationDate();
+    }
+  }, [editOfferDetails.tentativeStartDate, editOfferDetails.contractDuration, editOfferDetails.customEndDate, showEditOfferDialog]);
 
   // Move button handlers outside JSX to prevent recreation on each render
   const handleEditOffer = (offer) => {
