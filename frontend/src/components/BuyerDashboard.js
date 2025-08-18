@@ -1347,6 +1347,7 @@ const BuyerDashboard = () => {
         contract_duration: editOfferDetails.contractDuration,
         estimated_budget: parseFloat(editOfferDetails.estimatedBudget) || 0,
         service_bundles: editOfferDetails.serviceBundles, // This matches ServiceBundles model
+        monitoring_service_level: editOfferDetails.serviceBundles.monitoring ? editOfferDetails.monitoringServiceLevel : null, // Include monitoring service level if monitoring is selected
         timeline: editOfferDetails.timeline || '',
         special_requirements: editOfferDetails.specialRequirements || '',
         notes: editOfferDetails.notes || ''
