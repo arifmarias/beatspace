@@ -3118,6 +3118,10 @@ const BuyerDashboard = () => {
               requestedOffersLoading={requestedOffersLoading}
               fetchRequestedOffers={fetchRequestedOffers}
               navigate={navigate}
+              onApproveOffer={handleApproveOffer}
+              onRejectOffer={handleRejectOffer}
+              onReviseOffer={handleRevisedOffer}
+              onCancelRequest={handleCancelRequest}
             />
           </TabsContent>
 
