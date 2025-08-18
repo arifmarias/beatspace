@@ -3122,6 +3122,7 @@ const BuyerDashboard = () => {
               onRejectOffer={handleRejectOffer}
               onReviseOffer={handleRevisedOffer}
               onCancelRequest={handleCancelRequest}
+              onEditOffer={handleEditOffer}
             />
           </TabsContent>
 
