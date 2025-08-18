@@ -3865,10 +3865,9 @@ const BuyerDashboard = () => {
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h4 className="font-medium text-blue-900 mb-2">📋 Updated Request Summary</h4>
                 <div className="text-sm text-blue-700 space-y-1">
-                  <p><strong>Asset:</strong> {editingOffer?.asset_name || 'Selected asset'}</p>
+                  <p><strong>Asset:</strong> {selectedAssetForEdit?.name || 'Selected asset'}</p>
                   <p><strong>Campaign:</strong> {editOfferDetails.campaignName || 'Not selected'}</p>
                   <p><strong>Duration:</strong> {editOfferDetails.contractDuration.replace('_', ' ').replace('months', 'Months')}</p>
-                  <p><strong>Budget:</strong> {editOfferDetails.estimatedBudget ? `৳${parseInt(editOfferDetails.estimatedBudget).toLocaleString()}` : '⚠️ Required'}</p>
                   <p><strong>Services:</strong> {
                     (() => {
                       const selectedServices = Object.entries(editOfferDetails.serviceBundles)
