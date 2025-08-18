@@ -3616,14 +3616,22 @@ const BuyerDashboard = () => {
             </DialogHeader>
             
             <div className="space-y-6">
-              {/* Asset Summary */}
-              {editingOffer && (
+              {/* Asset Summary - Same as Request Best Offer Dialog */}
+              {selectedAssetForEdit && (
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-medium mb-2">Selected Asset</h4>
                   <div className="flex items-start space-x-3">
+                    {selectedAssetForEdit.photos && selectedAssetForEdit.photos[0] && (
+                      <img 
+                        src={selectedAssetForEdit.photos[0]} 
+                        alt={selectedAssetForEdit.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
                     <div>
-                      <h5 className="font-medium">{editingOffer.asset_name}</h5>
-                      <p className="text-sm text-gray-600">Asset ID: {editingOffer.asset_id}</p>
+                      <h5 className="font-medium">{selectedAssetForEdit.name}</h5>
+                      <p className="text-sm text-gray-600">{selectedAssetForEdit.address}</p>
+                      <p className="text-sm text-gray-500">{selectedAssetForEdit.type} • {selectedAssetForEdit.area}, {selectedAssetForEdit.district}</p>
                     </div>
                   </div>
                 </div>
