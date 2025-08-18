@@ -3888,7 +3888,21 @@ const BuyerDashboard = () => {
                         .filter(([_, selected]) => selected)
                         .map(([service, _]) => {
                           if (service === 'monitoring') {
-                            return `Monitoring (${editOfferDetails.monitoringServiceLevel.charAt(0).toUpperCase() + editOfferDetails.monitoringServiceLevel.slice(1)})`;
+                            const level = editOfferDetails.monitoringServiceLevel;
+                            let frequency = '';
+                            
+                            // Map service level to frequency
+                            if (level === 'basic') {
+                              frequency = 'Basic - Monthly';
+                            } else if (level === 'standard') {
+                              frequency = 'Standard - Weekly';
+                            } else if (level === 'premium') {
+                              frequency = 'Premium - Daily';
+                            } else {
+                              frequency = level.charAt(0).toUpperCase() + level.slice(1);
+                            }
+                            
+                            return `Monitoring (${frequency})`;
                           }
                           return service.charAt(0).toUpperCase() + service.slice(1);
                         });
