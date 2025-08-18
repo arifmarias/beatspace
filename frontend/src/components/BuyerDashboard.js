@@ -3768,7 +3768,13 @@ const BuyerDashboard = () => {
                     <CalendarComponent
                       mode="single"
                       selected={editOfferDetails.tentativeStartDate}
-                      onSelect={(date) => setEditOfferDetails({...editOfferDetails, tentativeStartDate: date})}
+                      onSelect={(date) => {
+                        setEditOfferDetails({...editOfferDetails, tentativeStartDate: date});
+                        // Trigger asset expiration calculation immediately
+                        setTimeout(() => {
+                          updateEditAssetExpirationDate();
+                        }, 10);
+                      }}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
                     />
