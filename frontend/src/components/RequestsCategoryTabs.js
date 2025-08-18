@@ -96,9 +96,13 @@ const RequestsCategoryTabs = ({
     // Default for asset booking
     switch (status) {
       case 'Pending':
-        return { variant: 'secondary', className: '' };
+        return { variant: 'secondary', className: 'bg-yellow-100 text-yellow-800 border-yellow-300' };
       case 'Quoted':
         return { variant: 'default', className: 'bg-blue-100 text-blue-800 border-blue-300' };
+      case 'PO Required':
+        return { variant: 'default', className: 'bg-purple-100 text-purple-800 border-purple-300' };
+      case 'Revise Request':
+        return { variant: 'default', className: 'bg-orange-100 text-orange-800 border-orange-300' };
       case 'Accepted':
         return { variant: 'default', className: 'bg-green-100 text-green-800 border-green-300' };
       case 'Rejected':
