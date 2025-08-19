@@ -2559,7 +2559,9 @@ async def get_assets(
     if marketplace or current_user.role == UserRole.BUYER:
         asset_list = []
         for asset in assets:
-            asset_dict = dict(asset)
+            # Create Asset model first
+            asset_obj = Asset(**asset)
+            asset_dict = asset_obj.dict()
             
             # Find the latest offer request for this asset
             latest_offer = await db.offer_requests.find_one(
@@ -2575,7 +2577,7 @@ async def get_assets(
                 asset_dict["current_offer_status"] = None
                 asset_dict["offer_buyer_id"] = None
                 
-            asset_list.append(Asset(**asset_dict))
+            asset_list.append(asset_dict)
         
         return asset_list
     
