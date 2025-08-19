@@ -2292,12 +2292,19 @@ async def upload_po(
         
         # Upload to Cloudinary in 'purchase_orders' folder
         import cloudinary.uploader
+        import base64
+        
+        # Convert to base64 for Cloudinary upload
+        file_base64 = base64.b64encode(file_content).decode('utf-8')
+        data_uri = f"data:application/pdf;base64,{file_base64}"
+        
         upload_result = cloudinary.uploader.upload(
-            file_content,
+            data_uri,
             resource_type="raw",
             folder="purchase_orders",
             public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",
-            format="pdf"
+            use_filename=True,
+            unique_filename=True
         )
         
         # Determine new status based on uploader
