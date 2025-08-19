@@ -938,7 +938,11 @@ const AdminDashboard = () => {
   // Update the campaign selection handler
   const handleCampaignSelect = (campaign) => {
     setSelectedCampaign(campaign);
-    fetchCampaignAssetDetails(campaign);
+    if (campaign) {
+      fetchCampaignAssetDetails(campaign);
+    } else {
+      setCampaignAssetDetails([]);
+    }
   };
 
   const toggleAssetAssignment = (assetId) => {
