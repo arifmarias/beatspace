@@ -824,6 +824,11 @@ const AdminDashboard = () => {
       return 'Offer Rejected';
     }
     
+    // Check if PO has been uploaded
+    if (offer.status === 'PO Uploaded') {
+      return 'PO Uploaded';
+    }
+    
     // Check if offer needs PO upload
     if (offer.status === 'PO Required') {
       return 'Waiting for PO';
