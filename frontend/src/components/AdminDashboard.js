@@ -4336,74 +4336,106 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {selectedCampaign.campaign_assets && selectedCampaign.campaign_assets.length > 0 && (
+                {(selectedCampaign.campaign_assets && selectedCampaign.campaign_assets.length > 0) || (campaignAssetDetails && campaignAssetDetails.length > 0) ? (
                   <div>
-                    <h4 className="font-semibold mb-3">Campaign Assets ({selectedCampaign.campaign_assets.length})</h4>
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {selectedCampaign.campaign_assets.map((offer, index) => (
-                        <div key={index} className="border rounded-lg p-3 space-y-2">
-                          <div className="flex justify-between items-start">
-                            <span className="font-medium text-sm">{offer.asset_name || `Asset ${index + 1}`}</span>
-                            <div className="flex items-center space-x-2">
-                              <Badge 
-                                className={`text-xs ${
-                                  offer.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                                  offer.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
-                                  offer.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-gray-100 text-gray-800'
-                                }`}
-                              >
-                                {offer.status}
-                              </Badge>
+                    <h4 className="font-semibold mb-3">Campaign Assets ({campaignAssetDetails.length || selectedCampaign.campaign_assets.length})</h4>
+                    {loadingCampaignAssets ? (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        Loading asset details...
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {campaignAssetDetails.map((assetDetail, index) => (
+                          <div key={index} className="border rounded-lg p-3 space-y-2">
+                            <div className="flex justify-between items-start">
+                              <span className="font-medium text-sm">{assetDetail.assetDetails?.name || assetDetail.asset_name || `Asset ${index + 1}`}</span>
+                              <div className="flex items-center space-x-2">
+                                <Badge 
+                                  className={`text-xs ${
+                                    assetDetail.offerDetails?.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                                    assetDetail.offerDetails?.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
+                                    assetDetail.offerDetails?.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    assetDetail.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                                    assetDetail.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
+                                    assetDetail.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-gray-100 text-gray-800'
+                                  }`}
+                                >
+                                  {assetDetail.offerDetails?.status || assetDetail.status || 'Unknown'}
+                                </Badge>
+                              </div>
                             </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
-                            <div>
-                              <strong>Asset Start Date:</strong> {offer.asset_start_date ? new Date(offer.asset_start_date).toLocaleDateString() : 'Not set'}
-                            </div>
-                            <div>
-                              <strong>Asset Expiry Date:</strong> {offer.asset_expiration_date ? new Date(offer.asset_expiration_date).toLocaleDateString() : 'Not set'}
-                            </div>
-                          </div>
-                          {offer.asset_start_date && offer.asset_expiration_date && (
-                            <div className="text-xs text-gray-600">
-                              <strong>Duration:</strong> {(() => {
-                                const start = new Date(offer.asset_start_date);
-                                const end = new Date(offer.asset_expiration_date);
-                                const diffTime = Math.abs(end - start);
-                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                                
-                                if (diffDays < 30) {
-                                  return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-                                } else if (diffDays < 365) {
-                                  const months = Math.floor(diffDays / 30);
-                                  const remainingDays = diffDays % 30;
-                                  return `${months} month${months > 1 ? 's' : ''}${remainingDays > 0 ? ` ${remainingDays} day${remainingDays > 1 ? 's' : ''}` : ''}`;
-                                } else {
-                                  const years = Math.floor(diffDays / 365);
-                                  const remainingMonths = Math.floor((diffDays % 365) / 30);
-                                  return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
+                            
+                            {/* Asset Address */}
+                            {assetDetail.assetDetails?.address && (
+                              <div className="text-xs text-gray-600">
+                                <strong>Asset Address:</strong> {assetDetail.assetDetails.address}
+                              </div>
+                            )}
+                            
+                            {/* Asset dates from offer request */}
+                            <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
+                              <div>
+                                <strong>Asset Start Date:</strong> {
+                                  assetDetail.offerDetails?.asset_start_date ? 
+                                  new Date(assetDetail.offerDetails.asset_start_date).toLocaleDateString() : 
+                                  (assetDetail.asset_start_date ? new Date(assetDetail.asset_start_date).toLocaleDateString() : 'Not set')
                                 }
-                              })()}
+                              </div>
+                              <div>
+                                <strong>Asset Expiry Date:</strong> {
+                                  assetDetail.offerDetails?.asset_expiration_date ? 
+                                  new Date(assetDetail.offerDetails.asset_expiration_date).toLocaleDateString() : 
+                                  (assetDetail.asset_expiration_date ? new Date(assetDetail.asset_expiration_date).toLocaleDateString() : 'Not set')
+                                }
+                              </div>
                             </div>
-                          )}
-                          {offer.admin_quoted_price && (
-                            <div className="text-xs">
-                              <strong>Quoted Price:</strong> <span className="text-green-600 font-medium">৳{offer.admin_quoted_price.toLocaleString()}</span>
-                            </div>
-                          )}
-                          {offer.buyer_budget && (
-                            <div className="text-xs">
-                              <strong>Buyer Budget:</strong> ৳{offer.buyer_budget.toLocaleString()}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                            
+                            {/* Duration calculation from offer request dates */}
+                            {(assetDetail.offerDetails?.asset_start_date && assetDetail.offerDetails?.asset_expiration_date) || 
+                             (assetDetail.asset_start_date && assetDetail.asset_expiration_date) ? (
+                              <div className="text-xs text-gray-600">
+                                <strong>Duration:</strong> {(() => {
+                                  const startDate = assetDetail.offerDetails?.asset_start_date || assetDetail.asset_start_date;
+                                  const endDate = assetDetail.offerDetails?.asset_expiration_date || assetDetail.asset_expiration_date;
+                                  
+                                  const start = new Date(startDate);
+                                  const end = new Date(endDate);
+                                  const diffTime = Math.abs(end - start);
+                                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                  
+                                  if (diffDays < 30) {
+                                    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+                                  } else if (diffDays < 365) {
+                                    const months = Math.floor(diffDays / 30);
+                                    const remainingDays = diffDays % 30;
+                                    return `${months} month${months > 1 ? 's' : ''}${remainingDays > 0 ? ` ${remainingDays} day${remainingDays > 1 ? 's' : ''}` : ''}`;
+                                  } else {
+                                    const years = Math.floor(diffDays / 365);
+                                    const remainingMonths = Math.floor((diffDays % 365) / 30);
+                                    return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
+                                  }
+                                })()}
+                              </div>
+                            ) : null}
+                            
+                            {/* Pricing information */}
+                            {(assetDetail.offerDetails?.admin_quoted_price || assetDetail.admin_quoted_price) && (
+                              <div className="text-xs">
+                                <strong>Quoted Price:</strong> <span className="text-green-600 font-medium">৳{(assetDetail.offerDetails?.admin_quoted_price || assetDetail.admin_quoted_price).toLocaleString()}</span>
+                              </div>
+                            )}
+                            {(assetDetail.offerDetails?.buyer_budget || assetDetail.buyer_budget) && (
+                              <div className="text-xs">
+                                <strong>Buyer Budget:</strong> ৳{(assetDetail.offerDetails?.buyer_budget || assetDetail.buyer_budget).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-
-                {(!selectedCampaign.campaign_assets || selectedCampaign.campaign_assets.length === 0) && (
+                ) : (
                   <div>
                     <h4 className="font-semibold mb-3">Campaign Assets</h4>
                     <div className="text-center py-4 text-gray-500 text-sm border-2 border-dashed rounded-lg">
