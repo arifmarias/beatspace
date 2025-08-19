@@ -346,12 +346,37 @@ const MarketplacePage = () => {
     `;
   };
 
-  const fetchAssets = async () => {
+  // Cache for assets data
+  const [assetsCache, setAssetsCache] = useState(null);
+  const [assetsCacheTime, setAssetsCacheTime] = useState(null);
+  const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes cache
+
+  const fetchAssets = async (force = false) => {
     try {
+      // Check cache first unless forced refresh
+      if (!force && assetsCache && assetsCacheTime && (Date.now() - assetsCacheTime < CACHE_DURATION)) {
+        console.log('✅ Using cached assets data');
+        setAssets(assetsCache);
+        return;
+      }
+
+      console.log('🔄 Fetching fresh assets data...');
       const response = await axios.get(`${API}/assets/public`);
-      setAssets(response.data);
+      const freshAssets = response.data;
+      
+      // Update cache
+      setAssetsCache(freshAssets);
+      setAssetsCacheTime(Date.now());
+      setAssets(freshAssets);
+      
+      console.log(`✅ Fetched ${freshAssets.length} assets from API`);
     } catch (error) {
-      console.error('Error fetching assets:', error);
+      console.error('❌ Error fetching assets:', error);
+      // If cache exists, use it as fallback
+      if (assetsCache) {
+        console.log('⚠️ Using cached data as fallback');
+        setAssets(assetsCache);
+      }
     }
   };
 
