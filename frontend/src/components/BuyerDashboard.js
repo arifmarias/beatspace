@@ -81,6 +81,7 @@ const BuyerDashboard = () => {
   const [showPOUploadModal, setShowPOUploadModal] = useState(false);
   const [selectedOfferForPO, setSelectedOfferForPO] = useState(null);
   const [uploadingPO, setUploadingPO] = useState(false);
+  const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
   
   // Monitoring Service State
   const [monitoringServices, setMonitoringServices] = useState([]);
