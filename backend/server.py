@@ -2123,7 +2123,7 @@ async def get_public_stats():
         }
 
 # Public Assets Route
-@api_router.get("/assets/public", response_model=List[Asset])
+@api_router.get("/assets/public")
 async def get_public_assets():
     """Get all public assets for marketplace display with proper filtering"""
     try:
