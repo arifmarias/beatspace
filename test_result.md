@@ -318,17 +318,29 @@ backend:
           comment: "✅ NEW ENDPOINT: Created GET /campaigns/{campaign_id}/assets endpoint using MongoDB aggregation pipeline. Eliminates need for frontend to fetch ALL assets and ALL offers for single campaign. Pipeline efficiently joins campaign data with assets and offer requests, applies filtering for campaign-specific assets, and returns only relevant data. Includes proper authentication and access control."
 
 frontend:
-  - task: "Manager & Operator Dashboard Access and Role-Based Routing"
+  - task: "Optimize BuyerDashboard campaign asset loading"
     implemented: true
-    working: true
-    file: "/app/frontend/src/components/LoginPage.js, /app/frontend/src/App.js"
+    working: false
+    file: "/app/frontend/src/components/BuyerDashboard.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: false
           agent: "main"
-          comment: "✅ DASHBOARD ACCESS BUG COMPLETELY RESOLVED: Fixed missing role redirects in LoginPage.js switch statement that was causing manager and monitoring_operator users to be redirected to marketplace instead of their dashboards. ROUTING FIXES APPLIED: 1) ✅ Added 'manager' case to redirect to '/manager/dashboard', 2) ✅ Added 'monitoring_operator' case to redirect to '/operator/dashboard', 3) ✅ Verified App.js routing configuration is correct with proper ProtectedRoute components, 4) ✅ Confirmed ProtectedRoute and getUserRole() functions working properly. DASHBOARD ACCESS NOW WORKING: Manager users redirect to /manager/dashboard, Operator users redirect to /operator/dashboard, Complete 827-line ManagerDashboard and 827-line OperatorDashboard implementations accessible. Frontend fix deployed and tested."
+          comment: "✅ OPTIMIZED fetchCampaignAssets FUNCTION: Updated to use new /campaigns/{id}/assets endpoint instead of fetching ALL public assets + ALL offers. Implemented fallback mechanism to old method if new endpoint fails. Should eliminate lag when clicking campaign rows to open details dialog. Added comprehensive logging for performance monitoring."
+
+  - task: "Optimize MarketplacePage asset loading with caching"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/MarketplacePage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "✅ IMPLEMENTED ASSET CACHING: Added 2-minute cache for assets data to reduce API calls. Changed automatic refresh from 30 seconds to 5 minutes. Added force refresh parameter for user actions (submit offers, basket operations). Should significantly improve marketplace loading performance and reduce server load."
   - task: "Manager Dashboard Route Assignment map stabilization (no flicker, multi-select, loader)"
     implemented: true
     working: false
