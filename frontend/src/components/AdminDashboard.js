@@ -888,7 +888,63 @@ const AdminDashboard = () => {
     setExpandedOffers(newExpanded);
   };
 
+  // Fetch campaign asset details when campaign is selected
+  const fetchCampaignAssetDetails = async (campaign) => {
+    if (!campaign || !campaign.campaign_assets || campaign.campaign_assets.length === 0) {
+      setCampaignAssetDetails([]);
+      return;
+    }
 
+    setLoadingCampaignAssets(true);
+    try {
+      const headers = getAuthHeaders();
+      
+      // Fetch all assets and offer requests in parallel
+      const [assetsResponse, offersResponse] = await Promise.all([
+        axios.get(`${API}/assets`, { headers }),
+        axios.get(`${API}/admin/offer-requests`, { headers })
+      ]);
+      
+      const allAssets = assetsResponse.data || [];
+      const allOffers = offersResponse.data || [];
+      
+      // Create detailed asset information
+      const detailedAssets = campaign.campaign_assets.map(campaignAsset => {
+        // Find the actual asset
+        const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+        
+        // Find the related offer request
+        const offerRequest = allOffers.find(offer => 
+          offer.asset_id === campaignAsset.asset_id && 
+          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name)
+        );
+        
+        return {
+          ...campaignAsset,
+          assetDetails: asset || {},
+          offerDetails: offerRequest || {}
+        };
+      });
+      
+      setCampaignAssetDetails(detailedAssets);
+    } catch (error) {
+      console.error('Error fetching campaign asset details:', error);
+      setCampaignAssetDetails([]);
+    } finally {
+      setLoadingCampaignAssets(false);
+    }
+  };
+
+  // Update the campaign selection handler
+  const handleCampaignSelect = (campaign) => {
+    setSelectedCampaign(campaign);
+    fetchCampaignAssetDetails(campaign);
+  };
+
+  const toggleAssetAssignment = (assetId) => {
+    // This function can be implemented later for asset assignment functionality
+    console.log('Toggle asset assignment for:', assetId);
+  };
 
   // User CRUD Functions
   const handleCreateUser = async () => {
