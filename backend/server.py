@@ -3178,7 +3178,34 @@ async def get_campaigns(current_user: User = Depends(get_current_user)):
         query["assets"] = {"$in": asset_ids}
     
     campaigns = await db.campaigns.find(query).to_list(1000)
-    return [Campaign(**campaign) for campaign in campaigns]
+    
+    # Enhance campaigns with asset count information
+    enhanced_campaigns = []
+    for campaign in campaigns:
+        campaign_dict = Campaign(**campaign).dict()
+        
+        # Get offer requests for this campaign
+        campaign_offers = await db.offer_requests.find({
+            "$or": [
+                {"existing_campaign_id": campaign["id"]},
+                {"campaign_name": campaign.get("name", "")}
+            ]
+        }).to_list(1000)
+        
+        # Add campaign assets information
+        campaign_dict["campaign_assets"] = []
+        for offer in campaign_offers:
+            campaign_dict["campaign_assets"].append({
+                "asset_id": offer.get("asset_id"),
+                "asset_name": offer.get("asset_name"),
+                "status": offer.get("status"),
+                "buyer_id": offer.get("buyer_id"),
+                "created_at": offer.get("created_at")
+            })
+        
+        enhanced_campaigns.append(campaign_dict)
+    
+    return enhanced_campaigns
 
 @api_router.post("/campaigns", response_model=Campaign)
 async def create_campaign(
