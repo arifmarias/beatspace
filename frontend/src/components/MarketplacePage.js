@@ -1220,11 +1220,9 @@ const MarketplacePage = () => {
                               <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                               <div className="text-sm text-amber-800">
                                 <p className="font-medium">Asset Availability Notice</p>
-                                <p>This asset is currently occupied until {new Date(
-                                  selectedAssetForOffer.asset_expiry_date
-                                ).toLocaleDateString()}. You can only select dates from {new Date(
+                                <p>This asset is currently occupied until {formatDateForDhaka(new Date(selectedAssetForOffer.asset_expiry_date))}. You can only select dates from {formatDateForDhaka(new Date(
                                   new Date(selectedAssetForOffer.asset_expiry_date).getTime() + 24 * 60 * 60 * 1000
-                                ).toLocaleDateString()} onwards.</p>
+                                ))} onwards.</p>
                               </div>
                             </div>
                           </div>
