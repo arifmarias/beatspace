@@ -2269,7 +2269,99 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Error fetching live assets: {str(e)}")
 
 # Get users by role endpoint
-@api_router.get("/admin/users/by-role/{role}")
+@api_router.post("/offers/{request_id}/upload-po")
+async def upload_po(
+    request_id: str,
+    file: UploadFile = File(...),
+    uploaded_by: str = Form(...),  # 'buyer' or 'admin'
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload PO document for an offer request"""
+    try:
+        # Verify the offer request exists
+        offer_request = await db.offer_requests.find_one({"id": request_id})
+        if not offer_request:
+            raise HTTPException(status_code=404, detail="Offer request not found")
+        
+        # Verify file is PDF
+        if not file.content_type == "application/pdf":
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+        
+        # Read file content
+        file_content = await file.read()
+        
+        # Upload to Cloudinary in 'purchase_orders' folder
+        import cloudinary.uploader
+        upload_result = cloudinary.uploader.upload(
+            file_content,
+            resource_type="raw",
+            folder="purchase_orders",
+            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",
+            format="pdf"
+        )
+        
+        # Determine new status based on uploader
+        new_status = "PO Uploaded"
+        
+        # Update offer request with PO info
+        update_data = {
+            "po_document_url": upload_result["secure_url"],
+            "po_uploaded_by": uploaded_by,
+            "po_uploaded_at": datetime.utcnow(),
+            "status": new_status,
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": update_data}
+        )
+        
+        return {
+            "message": "PO uploaded successfully", 
+            "po_url": upload_result["secure_url"],
+            "status": new_status
+        }
+        
+    except Exception as e:
+        logger.error(f"Error uploading PO: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error uploading PO: {str(e)}")
+
+
+@api_router.post("/offers/{request_id}/make-live")
+async def make_offer_live(
+    request_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Make an offer live (admin only)"""
+    try:
+        if current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Only admins can make offers live")
+        
+        # Update offer status to Live
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {
+                "status": "Live",
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        
+        # Update asset status to Live
+        offer_request = await db.offer_requests.find_one({"id": request_id})
+        if offer_request:
+            await db.assets.update_one(
+                {"id": offer_request["asset_id"]},
+                {"$set": {"status": AssetStatus.LIVE}}
+            )
+        
+        return {"message": "Offer is now live"}
+        
+    except Exception as e:
+        logger.error(f"Error making offer live: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error making offer live: {str(e)}")
+
+
 async def get_users_by_role(
     role: str,
     current_user: User = Depends(require_admin_or_manager)
