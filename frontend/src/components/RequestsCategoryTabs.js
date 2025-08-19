@@ -38,6 +38,14 @@ const RequestsCategoryTabs = ({
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeCategory, setActiveCategory] = useState('all');
 
+  // Handle PO file upload
+  const handlePOFileUpload = (offerId, event) => {
+    const file = event.target.files[0];
+    if (file && onPOUpload) {
+      onPOUpload(offerId, file);
+    }
+  };
+
   // Categorize requests
   const categorizedRequests = useMemo(() => {
     const filtered = (requestedOffers || []).filter(offer => 
