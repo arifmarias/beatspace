@@ -2055,6 +2055,72 @@ const AdminDashboard = () => {
   const adminAssetOperations = {
   };
 
+  // PO Upload handler
+  const handlePOUpload = (offerId, uploaderType) => {
+    setPOUploadForm({
+      offerId: offerId,
+      uploaderType: uploaderType
+    });
+    setShowPOUploadDialog(true);
+  };
+
+  // Handle actual PO file upload
+  const handlePOFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      notify.error('Please select a PDF file');
+      return;
+    }
+
+    setPOUploading(true);
+    try {
+      const headers = getAuthHeaders();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploaded_by', poUploadForm.uploaderType);
+
+      const response = await axios.post(
+        `${API}/offers/${poUploadForm.offerId}/upload-po`,
+        formData,
+        {
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      notify.success('PO uploaded successfully!');
+      setShowPOUploadDialog(false);
+      fetchOfferRequests(); // Refresh the offer requests
+
+    } catch (error) {
+      console.error('Error uploading PO:', error);
+      notify.error('Error uploading PO: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setPOUploading(false);
+    }
+  };
+
+  // Make offer live handler
+  const handleMakeLive = async (offerId) => {
+    try {
+      const headers = getAuthHeaders();
+      
+      await axios.post(`${API}/offers/${offerId}/make-live`, {}, { headers });
+      
+      notify.success('Offer made live successfully!');
+      fetchOfferRequests(); // Refresh the offer requests
+      
+    } catch (error) {
+      console.error('Error making offer live:', error);
+      notify.error('Error making offer live: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const filteredUsers = getFilteredUsers(); // Use the new pagination function
   const filteredAssets = getFilteredAssets(); // Use the new pagination function
 
