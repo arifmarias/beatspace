@@ -3186,7 +3186,7 @@ async def get_campaign(campaign_id: str, current_user: User = Depends(get_curren
     
     return Campaign(**campaign)
 
-@api_router.get("/campaigns", response_model=List[Campaign])
+@api_router.get("/campaigns")
 async def get_campaigns(current_user: User = Depends(get_current_user)):
     """Get campaigns for current user"""
     query = {}
