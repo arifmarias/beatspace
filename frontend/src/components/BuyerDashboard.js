@@ -3542,14 +3542,12 @@ const BuyerDashboard = () => {
                                   )}
                                 </div>
                                 
-                                {/* Show Asset Expiry Date for Live Campaign assets (non-requested) */}
-                                {selectedCampaign.status === 'Live' && !asset.isRequested && (
+                                {/* Show Asset Expiry Date for Live Campaign assets (non-requested) only when PO Uploaded */}
+                                {selectedCampaign.status === 'Live' && !asset.isRequested && asset.waiting_for_go_live && asset.asset_expiry_date && (
                                   <div className="mt-2 space-y-1">
-                                    {asset.next_available_date && (
-                                      <p className="text-xs text-blue-600 font-medium">
-                                        🗓️ Asset Expiry: {new Date(asset.next_available_date).toLocaleDateString()}
-                                      </p>
-                                    )}
+                                    <p className="text-xs text-blue-600 font-medium">
+                                      🗓️ Asset Expiry: {new Date(asset.asset_expiry_date).toLocaleDateString()}
+                                    </p>
                                     {selectedCampaign.end_date && (
                                       <p className="text-xs text-gray-500">
                                         Campaign End: {new Date(selectedCampaign.end_date).toLocaleDateString()}
@@ -3563,20 +3561,24 @@ const BuyerDashboard = () => {
                                   <div className="mt-2">
                                     {asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? (
                                       <p className="text-xs text-green-600">
-                                        ✅ Asset successfully booked for your campaign
+                                        ✅ {asset.offerStatus}
+                                      </p>
+                                    ) : asset.offerStatus === 'Quoted' ? (
+                                      <p className="text-xs text-blue-600">
+                                        💰 Price quoted - Check Requested Offers tab
                                       </p>
                                     ) : (
-                                      <p className="text-xs text-orange-600">
-                                        📋 Offer request submitted - waiting for admin response
+                                      <p className="text-xs text-amber-600">
+                                        ⏳ {asset.offerStatus}
                                       </p>
                                     )}
                                   </div>
                                 )}
                                 
-                                {/* For Draft campaigns, show availability info */}
-                                {selectedCampaign.status === 'Draft' && !asset.isRequested && asset.next_available_date && (
+                                {/* For Draft campaigns, show availability info only when PO Uploaded */}
+                                {selectedCampaign.status === 'Draft' && !asset.isRequested && asset.waiting_for_go_live && asset.asset_expiry_date && (
                                   <p className="text-xs text-gray-500 mt-1">
-                                    Available until: {new Date(asset.next_available_date).toLocaleDateString()}
+                                    Available after: {new Date(asset.asset_expiry_date).toLocaleDateString()}
                                   </p>
                                 )}
                               </div>
