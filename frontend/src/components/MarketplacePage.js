@@ -171,23 +171,27 @@ const MarketplacePage = () => {
   ];
 
   useEffect(() => {
+    console.log('🏁 MarketplacePage mounted');
+    
     // Check authentication status
     const user = getUser();
     setCurrentUser(user);
     
     initializeMap();
-    fetchAssets();
+    fetchAssets(); // Initial load
     fetchStats();
     
     if (user) {
       fetchExistingCampaigns();
     }
     
-    // Set up automatic refresh every 30 seconds to keep asset status up-to-date
+    // Reduce automatic refresh frequency to reduce server load
+    // Set up automatic refresh every 5 minutes instead of 30 seconds
     const refreshInterval = setInterval(() => {
-      fetchAssets();
+      console.log('⏰ Scheduled asset refresh (5 min interval)');
+      fetchAssets(); // Will use cache if within 2 minutes
       fetchStats();
-    }, 30000);
+    }, 5 * 60 * 1000); // 5 minutes instead of 30 seconds
     
     return () => clearInterval(refreshInterval);
   }, []);
