@@ -3169,14 +3169,15 @@ const BuyerDashboard = () => {
                           <TableRow 
                             key={campaign.id}
                             className="cursor-pointer hover:bg-gray-50 transition-colors"
-                            onClick={async (e) => {
+                            onClick={(e) => {
                               // Prevent row click when clicking on action buttons
                               if (e.target.closest('button') || e.target.closest('[role="button"]')) {
                                 return;
                               }
                               
                               setSelectedCampaign(campaign);
-                              await fetchCampaignAssets(campaign);
+                              // Load assets in background without blocking UI
+                              fetchCampaignAssets(campaign);
                             }}
                           >
                             <TableCell>
