@@ -78,8 +78,9 @@ const BuyerDashboard = () => {
   const [editingOffer, setEditingOffer] = useState(null);
   const [showEditOfferDialog, setShowEditOfferDialog] = useState(false);
   const [selectedAssetForEdit, setSelectedAssetForEdit] = useState(null); // Add state for asset data
-  const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
-  const [congratulationsData, setCongratulationsData] = useState({});
+  const [showPOUploadModal, setShowPOUploadModal] = useState(false);
+  const [selectedOfferForPO, setSelectedOfferForPO] = useState(null);
+  const [uploadingPO, setUploadingPO] = useState(false);
   
   // Monitoring Service State
   const [monitoringServices, setMonitoringServices] = useState([]);
