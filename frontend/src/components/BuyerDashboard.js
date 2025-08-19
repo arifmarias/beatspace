@@ -3403,6 +3403,46 @@ const BuyerDashboard = () => {
                   </div>
                 </div>
 
+                {/* Campaign Dates */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Start Date</label>
+                    <p className="text-gray-900">
+                      {selectedCampaign.start_date 
+                        ? new Date(selectedCampaign.start_date).toLocaleDateString() 
+                        : 'Not set'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">End Date</label>
+                    <p className="text-gray-900">
+                      {selectedCampaign.end_date 
+                        ? new Date(selectedCampaign.end_date).toLocaleDateString() 
+                        : 'Not set'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Campaign Duration */}
+                {selectedCampaign.start_date && selectedCampaign.end_date && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Duration</label>
+                    <p className="text-gray-900">
+                      {calculateDuration(selectedCampaign.start_date, selectedCampaign.end_date)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Campaign Created Date */}
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Request Date</label>
+                  <p className="text-gray-900">
+                    {selectedCampaign.created_at 
+                      ? new Date(selectedCampaign.created_at).toLocaleDateString() 
+                      : 'Not available'}
+                  </p>
+                </div>
+
                 <div>
                   <label className="text-sm font-medium text-gray-500">Description</label>
                   <p className="text-gray-900">{selectedCampaign.description}</p>
