@@ -2310,7 +2310,7 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
                 "division": asset.get("division", ""), # Include division field
                 "type": asset.get("type", "Billboard"),
                 "category": asset_category,  # Include category for frontend reference
-                "campaignName": offer.get("campaign_name", "Unknown Campaign") if offer else "Unknown Campaign",
+                "campaignName": campaign_name,  # Use the correct campaign name
                 "assetStartDate": offer.get("confirmed_start_date") or offer.get("tentative_start_date") if offer else None,
                 "assetEndDate": offer.get("confirmed_end_date") or offer.get("tentative_end_date") if offer else None,
                 "duration": duration,
