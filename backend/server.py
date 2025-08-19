@@ -1570,12 +1570,25 @@ async def create_offer_request(
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
     
-    # Create offer request
+    # Create offer request with Dhaka timezone date handling
+    offer_dict = offer_data.dict()
+    
+    # Parse date fields to Dhaka timezone
+    if offer_dict.get('asset_start_date'):
+        offer_dict['asset_start_date'] = parse_date_string(str(offer_dict['asset_start_date']))
+        offer_dict['tentative_start_date'] = offer_dict['asset_start_date']
+    
+    if offer_dict.get('asset_expiration_date'):
+        offer_dict['asset_expiration_date'] = parse_date_string(str(offer_dict['asset_expiration_date']))  
+        offer_dict['tentative_end_date'] = offer_dict['asset_expiration_date']
+    
     offer_request = OfferRequest(
-        **offer_data.dict(),
+        **offer_dict,
         buyer_id=current_user.id,
         buyer_name=current_user.company_name,
-        asset_name=asset["name"]
+        asset_name=asset["name"],
+        created_at=get_dhaka_now(),
+        updated_at=get_dhaka_now()
     )
     
     # Insert into database
