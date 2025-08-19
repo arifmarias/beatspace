@@ -2848,6 +2848,8 @@ const AdminDashboard = () => {
                         <SelectItem value="New Request">New Request</SelectItem>
                         <SelectItem value="Price Quoted">Price Quoted</SelectItem>
                         <SelectItem value="Request for Revised">Request for Revised</SelectItem>
+                        <SelectItem value="Waiting for PO">PO Required</SelectItem>
+                        <SelectItem value="PO Uploaded">PO Uploaded</SelectItem>
                       </SelectContent>
                     </Select>
                     <Input
