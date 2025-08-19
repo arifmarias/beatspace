@@ -1581,14 +1581,21 @@ async def create_offer_request(
     # Create offer request with Dhaka timezone date handling
     offer_dict = offer_data.dict()
     
+    # Debug logging
+    logger.info(f"Original offer_data: asset_start_date={offer_dict.get('asset_start_date')}, asset_expiration_date={offer_dict.get('asset_expiration_date')}")
+    
     # Parse date fields to Dhaka timezone
     if offer_dict.get('asset_start_date'):
-        offer_dict['asset_start_date'] = parse_date_string(str(offer_dict['asset_start_date']))
-        offer_dict['tentative_start_date'] = offer_dict['asset_start_date']
+        parsed_start = parse_date_string(str(offer_dict['asset_start_date']))
+        offer_dict['asset_start_date'] = parsed_start
+        offer_dict['tentative_start_date'] = parsed_start
+        logger.info(f"Parsed start date: {parsed_start}")
     
     if offer_dict.get('asset_expiration_date'):
-        offer_dict['asset_expiration_date'] = parse_date_string(str(offer_dict['asset_expiration_date']))  
-        offer_dict['tentative_end_date'] = offer_dict['asset_expiration_date']
+        parsed_end = parse_date_string(str(offer_dict['asset_expiration_date']))
+        offer_dict['asset_expiration_date'] = parsed_end
+        offer_dict['tentative_end_date'] = parsed_end
+        logger.info(f"Parsed end date: {parsed_end}")
     
     offer_request = OfferRequest(
         **offer_dict,
