@@ -1183,15 +1183,15 @@ const MarketplacePage = () => {
                           </PopoverContent>
                         </Popover>
                         
-                        {/* Show notice for live assets with restricted dates */}
-                        {selectedAssetForOffer && selectedAssetForOffer.status === 'Live' && 
+                        {/* Show notice for live assets with restricted dates OR assets with PO uploaded waiting for live */}
+                        {selectedAssetForOffer && (selectedAssetForOffer.status === 'Live' || selectedAssetForOffer.status === 'PO Uploaded') && 
                          (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date) && (
                           <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                             <div className="flex items-start space-x-2">
                               <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                               <div className="text-sm text-amber-800">
                                 <p className="font-medium">Asset Availability Notice</p>
-                                <p>This live asset is currently occupied until {new Date(
+                                <p>This asset is {selectedAssetForOffer.status === 'PO Uploaded' ? 'waiting for live activation and will be' : 'currently'} occupied until {new Date(
                                   selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date
                                 ).toLocaleDateString()}. You can only select dates from {new Date(
                                   new Date(selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date).getTime() + 24 * 60 * 60 * 1000
