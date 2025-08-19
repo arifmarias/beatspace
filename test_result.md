@@ -290,7 +290,7 @@ test_plan:
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Phase 4: Integration & Testing - DASHBOARD ACCESS ISSUES COMPLETELY RESOLVED: Manager and Operator Dashboard authentication redirect bugs have been successfully fixed. Both dashboards now load correctly without infinite loading or login redirects. Manager Dashboard shows full monitoring operations management interface. Operator Dashboard displays mobile-first field operations interface. Ready for comprehensive end-to-end monitoring service testing."
+user_problem_statement: "Performance optimization required: 1) Buyer Dashboard campaign asset loading lag when clicking campaign rows to open details dialog, 2) Marketplace slow asset loading when clicking 'explore marketplace' (both map and list views). These performance issues appeared after recent campaign asset count fixes and need immediate optimization."
 
 backend:
   - task: "Manager & Operator Authentication and Dashboard Backend Support"
