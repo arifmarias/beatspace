@@ -2164,7 +2164,29 @@ async def get_public_assets():
         ]
         
         assets = await db.assets.find(query).to_list(1000)
-        return [Asset(**asset) for asset in assets]
+        
+        # Enhance assets with offer request status information for marketplace
+        logger.info(f"🔍 Enhancing {len(assets)} public assets for marketplace")
+        enhanced_assets = []
+        for asset in assets:
+            asset_dict = dict(asset)
+            
+            # Find any offer request for this asset with PO Uploaded status
+            po_uploaded_offer = await db.offer_requests.find_one(
+                {"asset_id": asset["id"], "status": "PO Uploaded"}
+            )
+            
+            logger.info(f"🔍 Public Asset '{asset.get('name')}' (ID: {asset['id']}): PO offer = {po_uploaded_offer is not None}")
+            
+            # Add flag to indicate if asset is waiting for go live
+            asset_dict["waiting_for_go_live"] = po_uploaded_offer is not None
+            if po_uploaded_offer:
+                asset_dict["po_end_date"] = po_uploaded_offer.get("tentative_end_date") or asset.get("next_available_date")
+                logger.info(f"✅ Public Asset '{asset.get('name')}' marked as waiting_for_go_live=True")
+            
+            enhanced_assets.append(asset_dict)
+        
+        return enhanced_assets
     except Exception as e:
         logger.error(f"Error fetching public assets: {e}")
         return []
