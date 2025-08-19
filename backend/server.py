@@ -2156,7 +2156,6 @@ async def get_public_assets():
                     {"show_in_marketplace": True},
                     {"$or": [
                         {"status": "Live"},
-                        {"status": "PO Uploaded"},
                         {"status": "Available"},
                         {"status": "Pending Offer"}
                     ]}
