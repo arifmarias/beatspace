@@ -5386,6 +5386,60 @@ const BuyerDashboard = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Congratulations Modal */}
+        <Dialog open={showCongratulationsModal} onOpenChange={setShowCongratulationsModal}>
+          <DialogContent className="max-w-md mx-auto bg-gradient-to-br from-green-50 to-blue-50">
+            <div className="text-center p-6">
+              {/* Success Icon */}
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">🎉 Congratulations!</h2>
+              
+              {/* Asset Info */}
+              <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
+                <p className="text-lg font-semibold text-gray-800 mb-1">
+                  "{congratulationsData.assetName}"
+                </p>
+                <p className="text-green-600 font-medium">is now locked for you!</p>
+                {congratulationsData.quotedPrice && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Quoted Price: ৳{congratulationsData.quotedPrice.toLocaleString()}
+                  </p>
+                )}
+              </div>
+              
+              {/* Next Steps */}
+              <div className="bg-blue-50 rounded-lg p-4 mb-4 text-left">
+                <h3 className="font-semibold text-blue-900 mb-2 flex items-center">
+                  <FileText className="w-4 h-4 mr-2" />
+                  📋 Next Steps:
+                </h3>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Please send the Purchase Order (PO) within <strong>7 days</strong></li>
+                  <li>• Our admin team will review and finalize your booking</li>
+                  <li>• You'll receive confirmation once PO is processed</li>
+                </ul>
+              </div>
+              
+              {/* Thank You */}
+              <p className="text-gray-600 mb-6">
+                Thank you for choosing our platform! 🚀
+              </p>
+              
+              {/* Close Button */}
+              <Button 
+                onClick={() => setShowCongratulationsModal(false)}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-2"
+              >
+                Great! Got it
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
