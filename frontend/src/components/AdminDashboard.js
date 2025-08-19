@@ -3049,7 +3049,15 @@ const AdminDashboard = () => {
                                                     Approve Asset
                                                   </Button>
                                                 </>
-                                              ) : (
+                                              ) : offer.status === 'PO Required' ? (
+                                                <Button
+                                                  size="default"
+                                                  onClick={() => alert('PO Upload functionality will be implemented soon')}
+                                                  className="bg-purple-600 hover:bg-purple-700 text-white w-full py-2"
+                                                >
+                                                  <Upload className="w-4 h-4 mr-2" />
+                                                  Upload PO
+                                                </Button> : (
                                                 <Badge className="bg-gray-100 text-gray-800 py-2 text-center">
                                                   {offer.status}
                                                 </Badge>
