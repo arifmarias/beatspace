@@ -3141,14 +3141,26 @@ const AdminDashboard = () => {
                                                   Upload PO
                                                 </Button>
                                               ) : offer.status === 'PO Uploaded' && offer.po_uploaded_by === 'admin' ? (
-                                                <Button
-                                                  size="default"
-                                                  onClick={() => handleMakeLive(offer.id)}
-                                                  className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
-                                                >
-                                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                                  Make it Live
-                                                </Button>
+                                                <div className="space-y-2">
+                                                  {offer.po_document_url && (
+                                                    <Button
+                                                      size="default"
+                                                      onClick={() => window.open(offer.po_document_url, '_blank')}
+                                                      className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2"
+                                                    >
+                                                      <FileText className="w-4 h-4 mr-2" />
+                                                      View PO
+                                                    </Button>
+                                                  )}
+                                                  <Button
+                                                    size="default"
+                                                    onClick={() => handleMakeLive(offer.id)}
+                                                    className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
+                                                  >
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Make it Live
+                                                  </Button>
+                                                </div>
                                               ) : offer.status === 'PO Uploaded' ? (
                                                 <div className="space-y-2">
                                                   <Button
