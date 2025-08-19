@@ -293,17 +293,29 @@ test_plan:
 user_problem_statement: "Performance optimization required: 1) Buyer Dashboard campaign asset loading lag when clicking campaign rows to open details dialog, 2) Marketplace slow asset loading when clicking 'explore marketplace' (both map and list views). These performance issues appeared after recent campaign asset count fixes and need immediate optimization."
 
 backend:
-  - task: "Manager & Operator Authentication and Dashboard Backend Support"
+  - task: "Optimize assets/public endpoint performance"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: false
           agent: "main"
-          comment: "✅ AUTHENTICATION & DASHBOARD ACCESS ISSUE RESOLVED: Fixed critical login redirect bug where manager and monitoring_operator roles were incorrectly redirected to marketplace. AUTHENTICATION VALIDATION: 1) ✅ Manager login working (manager@beatspace.com/manager123), 2) ✅ Operator login working (operator3@beatspace.com/operator123), 3) ✅ Both users properly authenticated with correct roles and approved status. BACKEND SUPPORT: All monitoring service APIs functional and accessible by appropriate roles. Role-based access control working correctly across all endpoints."
+          comment: "✅ OPTIMIZED /assets/public ENDPOINT: Replaced N+1 query problem with MongoDB aggregation pipeline. Instead of fetching all assets then making individual queries for PO Uploaded offers, now uses $lookup to join assets with offer_requests in single query. Added proper error handling and Pydantic validation. Expected to significantly reduce response times for marketplace asset loading."
+
+  - task: "Create optimized campaign assets endpoint"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "✅ NEW ENDPOINT: Created GET /campaigns/{campaign_id}/assets endpoint using MongoDB aggregation pipeline. Eliminates need for frontend to fetch ALL assets and ALL offers for single campaign. Pipeline efficiently joins campaign data with assets and offer requests, applies filtering for campaign-specific assets, and returns only relevant data. Includes proper authentication and access control."
 
 frontend:
   - task: "Manager & Operator Dashboard Access and Role-Based Routing"
