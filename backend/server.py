@@ -2984,16 +2984,17 @@ async def get_all_campaigns_admin(admin_user: User = Depends(require_admin)):
             ]
         }).to_list(1000)
         
-        # Add campaign assets information
+        # Add simple campaign assets information for counting
         campaign_dict["campaign_assets"] = []
         for offer in campaign_offers:
-            campaign_dict["campaign_assets"].append({
+            # Add minimal asset info for counting purposes
+            asset_info = {
                 "asset_id": offer.get("asset_id"),
                 "asset_name": offer.get("asset_name"),
                 "status": offer.get("status"),
-                "buyer_id": offer.get("buyer_id"),
-                "created_at": offer.get("created_at")
-            })
+                "buyer_id": offer.get("buyer_id")
+            }
+            campaign_dict["campaign_assets"].append(asset_info)
         
         enhanced_campaigns.append(campaign_dict)
     
