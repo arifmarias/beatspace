@@ -53,7 +53,7 @@ async def create_sample_assets():
                 "image_url": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800",
                 "show_in_marketplace": True,
                 "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnov()
+                "updated_at": datetime.utcnow()
             },
             {
                 "id": str(uuid.uuid4()),
