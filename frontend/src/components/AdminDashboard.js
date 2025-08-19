@@ -3057,7 +3057,8 @@ const AdminDashboard = () => {
                                                 >
                                                   <Upload className="w-4 h-4 mr-2" />
                                                   Upload PO
-                                                </Button> : (
+                                                </Button>
+                                              ) : (
                                                 <Badge className="bg-gray-100 text-gray-800 py-2 text-center">
                                                   {offer.status}
                                                 </Badge>
