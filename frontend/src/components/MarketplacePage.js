@@ -883,8 +883,8 @@ const MarketplacePage = () => {
       // Remove from basket
       setAssetBasket(prev => prev.filter((_, i) => i !== index));
       
-      // Refresh assets to show updated status
-      fetchAssets();
+      // Refresh assets to show updated status (force refresh to clear cache)
+      fetchAssets(true);
       
       notify.success(`Removed "${asset.name}" from your requests`);
       
