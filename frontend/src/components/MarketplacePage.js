@@ -2034,7 +2034,7 @@ const MarketplacePage = () => {
                       }
                     >
                       {selectedAsset.status === 'Pending Offer' ? 'Available' : 
-                       selectedAsset.waiting_for_go_live ? 'Waiting for Go Live' : 
+                       selectedAsset.waiting_for_go_live ? 'Awaiting Go Live' : 
                        selectedAsset.status}
                     </Badge>
                   </div>
