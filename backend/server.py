@@ -2554,6 +2554,31 @@ async def get_assets(
         query["division"] = division
     
     assets = await db.assets.find(query).to_list(1000)
+    
+    # For marketplace requests, enhance assets with offer request status
+    if marketplace or current_user.role == UserRole.BUYER:
+        asset_list = []
+        for asset in assets:
+            asset_dict = dict(asset)
+            
+            # Find the latest offer request for this asset
+            latest_offer = await db.offer_requests.find_one(
+                {"asset_id": asset["id"]},
+                sort=[("created_at", -1)]  # Get most recent offer
+            )
+            
+            # Add offer request status to asset if it exists
+            if latest_offer:
+                asset_dict["current_offer_status"] = latest_offer.get("status")
+                asset_dict["offer_buyer_id"] = latest_offer.get("buyer_id")
+            else:
+                asset_dict["current_offer_status"] = None
+                asset_dict["offer_buyer_id"] = None
+                
+            asset_list.append(Asset(**asset_dict))
+        
+        return asset_list
+    
     return [Asset(**asset) for asset in assets]
 
 @api_router.get("/assets/{asset_id}", response_model=Asset)
