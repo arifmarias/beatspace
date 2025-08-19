@@ -3306,6 +3306,7 @@ const BuyerDashboard = () => {
               onReviseOffer={handleRevisedOffer}
               onCancelRequest={handleCancelRequest}
               onEditOffer={handleEditOffer}
+              onPOUpload={handlePOUpload}
             />
           </TabsContent>
 
