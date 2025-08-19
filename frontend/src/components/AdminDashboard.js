@@ -2025,13 +2025,13 @@ const AdminDashboard = () => {
     try {
       const headers = getAuthHeaders();
       
-      // Approve the offer by updating its status to 'Approved'
+      // Approve the offer by updating its status to 'PO Required'
       await axios.patch(`${API}/admin/offer-requests/${offer.id}/status`, 
-        { status: 'Approved' },
+        { status: 'PO Required' },
         { headers }
       );
       
-      notify.success(`Asset "${offer.asset_name}" approved successfully!`);
+      notify.success(`Asset "${offer.asset_name}" approved! PO Required for activation.`);
       
       // Refresh only the offer requests list to maintain tab state
       fetchOfferRequests();
