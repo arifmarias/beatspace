@@ -1578,24 +1578,18 @@ async def create_offer_request(
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
     
-    # Create offer request with Dhaka timezone date handling
+    # Create offer request - just store the dates as received
     offer_dict = offer_data.dict()
     
     # Debug logging
-    logger.info(f"Original offer_data: asset_start_date={offer_dict.get('asset_start_date')}, asset_expiration_date={offer_dict.get('asset_expiration_date')}")
+    logger.info(f"Received offer data: asset_start_date={offer_dict.get('asset_start_date')}, asset_expiration_date={offer_dict.get('asset_expiration_date')}")
     
-    # Parse date fields to Dhaka timezone
+    # Simply set tentative dates to the same values for compatibility
     if offer_dict.get('asset_start_date'):
-        parsed_start = parse_date_string(str(offer_dict['asset_start_date']))
-        offer_dict['asset_start_date'] = parsed_start
-        offer_dict['tentative_start_date'] = parsed_start
-        logger.info(f"Parsed start date: {parsed_start}")
+        offer_dict['tentative_start_date'] = offer_dict['asset_start_date']
     
     if offer_dict.get('asset_expiration_date'):
-        parsed_end = parse_date_string(str(offer_dict['asset_expiration_date']))
-        offer_dict['asset_expiration_date'] = parsed_end
-        offer_dict['tentative_end_date'] = parsed_end
-        logger.info(f"Parsed end date: {parsed_end}")
+        offer_dict['tentative_end_date'] = offer_dict['asset_expiration_date']
     
     offer_request = OfferRequest(
         **offer_dict,
