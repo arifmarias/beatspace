@@ -1206,7 +1206,7 @@ const MarketplacePage = () => {
                           <label className="block text-sm font-semibold mb-2">Asset Expiration Date</label>
                           <div className="p-3 bg-gray-50 rounded-lg border">
                             <p className="text-sm font-medium text-gray-900">
-                              {offerDetails.assetExpirationDate.toLocaleDateString()}
+                              {new Date(offerDetails.assetExpirationDate.getTime() - offerDetails.assetExpirationDate.getTimezoneOffset() * 60000).toLocaleDateString()}
                             </p>
                             <p className="text-xs text-gray-600 mt-1">
                               {offerDetails.contractDuration === 'custom' 
