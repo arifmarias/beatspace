@@ -2559,10 +2559,9 @@ async def get_assets(
         for asset in assets:
             asset_dict = dict(asset)
             
-            # Find the latest offer request for this asset with PO Uploaded status
+            # Find any offer request for this asset with PO Uploaded status (not just latest)
             po_uploaded_offer = await db.offer_requests.find_one(
-                {"asset_id": asset["id"], "status": "PO Uploaded"},
-                sort=[("created_at", -1)]
+                {"asset_id": asset["id"], "status": "PO Uploaded"}
             )
             
             # Add flag to indicate if asset is waiting for go live
