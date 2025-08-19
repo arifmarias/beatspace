@@ -3227,9 +3227,10 @@ const BuyerDashboard = () => {
                                 </DropdownMenuItem>
                                 
                                 <DropdownMenuItem
-                                  onClick={async () => {
+                                  onClick={() => {
                                     setSelectedCampaign(campaign);
-                                    await fetchCampaignAssets(campaign);
+                                    // Load assets in background without blocking UI
+                                    fetchCampaignAssets(campaign);
                                   }}
                                   className="cursor-pointer"
                                 >
