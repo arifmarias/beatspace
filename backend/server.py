@@ -1901,20 +1901,12 @@ async def respond_to_offer(
                     {"id": campaign_id},
                     {
                         "$addToSet": {"campaign_assets": campaign_asset},
-                        "$set": {"updated_at": datetime.utcnow()}
+                        "$set": {"updated_at": datetime.utcnov()}
                     }
                 )
                 logger.info(f"Added asset {request['asset_id']} to campaign {campaign_id}")
                 
-                # Check if campaign should be marked as Live
-                campaign = await db.campaigns.find_one({"id": campaign_id})
-                if campaign and campaign.get("status") == "Draft":
-                    # If campaign has at least one booked asset, mark as Live
-                    await db.campaigns.update_one(
-                        {"id": campaign_id},
-                        {"$set": {"status": "Live", "updated_at": datetime.utcnow()}}
-                    )
-                    logger.info(f"Campaign {campaign_id} status updated to Live")
+                # Note: Campaign will be made Live only when admin clicks "Make it Live"
         
         logger.info(f"Offer accepted: {request_id}")
         
