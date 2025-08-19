@@ -3585,17 +3585,6 @@ const BuyerDashboard = () => {
                               
                               {/* Action buttons */}
                               <div className="flex space-x-2">
-                                {selectedCampaign.status === 'Draft' && !asset.isRequested && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => removeAssetFromCampaign(asset.id)}
-                                    className="text-red-600 hover:text-red-800"
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
-                                )}
-                                
                                 {asset.isRequested && (
                                   <Button
                                     variant="outline"
