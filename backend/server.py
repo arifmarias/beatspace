@@ -2271,6 +2271,133 @@ async def get_public_assets():
         logger.error(f"Error fetching public assets: {e}")
         return []
 
+# Campaign Assets Endpoint - NEW OPTIMIZED ENDPOINT
+@api_router.get("/campaigns/{campaign_id}/assets")
+async def get_campaign_assets(campaign_id: str, current_user: User = Depends(get_current_user)):
+    """Get assets for a specific campaign - OPTIMIZED for performance"""
+    try:
+        # Get campaign details first
+        campaign = await db.campaigns.find_one({"id": campaign_id})
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        
+        # Check if user has access to this campaign
+        if campaign.get("buyer_id") != current_user.id and current_user.role != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Use aggregation pipeline to get campaign assets and related offer requests efficiently
+        pipeline = [
+            # Step 1: Get all public assets first (for potential matching)
+            {"$match": {
+                "$and": [
+                    {"category": {"$ne": "Private Asset"}},
+                    {"$or": [
+                        {"$or": [
+                            {"category": "Public"},
+                            {"category": {"$exists": False}},
+                            {"category": None},
+                            {"category": ""}
+                        ]},
+                        {"$and": [
+                            {"category": "Existing Asset"},
+                            {"show_in_marketplace": True},
+                            {"$or": [
+                                {"status": "Live"},
+                                {"status": "Available"},
+                                {"status": "Pending Offer"}
+                            ]}
+                        ]}
+                    ]}
+                ]
+            }},
+            # Step 2: Add campaign asset info if asset is in campaign_assets
+            {"$addFields": {
+                "campaign_asset_info": {
+                    "$arrayElemAt": [
+                        {"$filter": {
+                            "input": campaign.get("campaign_assets", []),
+                            "cond": {"$eq": ["$$this.asset_id", "$id"]}
+                        }},
+                        0
+                    ]
+                }
+            }},
+            # Step 3: Join with offer requests for this campaign
+            {"$lookup": {
+                "from": "offer_requests",
+                "let": {"asset_id": "$id"},
+                "pipeline": [
+                    {"$match": {
+                        "$expr": {"$and": [
+                            {"$eq": ["$asset_id", "$$asset_id"]},
+                            {"$or": [
+                                {"$eq": ["$existing_campaign_id", campaign_id]},
+                                {"$eq": ["$campaign_name", campaign.get("name", "")]}
+                            ]},
+                            {"$in": ["$status", ["Pending", "Processing", "In Process", "Quoted", "Accepted", "Approved"]]}
+                        ]}
+                    }}
+                ],
+                "as": "campaign_offers"
+            }},
+            # Step 4: Filter to only include assets that are either in campaign_assets OR have offers for this campaign
+            {"$match": {
+                "$or": [
+                    {"campaign_asset_info": {"$ne": None}},
+                    {"campaign_offers": {"$not": {"$size": 0}}}
+                ]
+            }},
+            # Step 5: Add computed fields
+            {"$addFields": {
+                "isInCampaign": {"$ne": ["$campaign_asset_info", None]},
+                "isRequested": {"$gt": [{"$size": "$campaign_offers"}, 0]},
+                "offerStatus": {"$arrayElemAt": ["$campaign_offers.status", 0]},
+                "offerId": {"$arrayElemAt": ["$campaign_offers.id", 0]},
+                "asset_start_date": "$campaign_asset_info.asset_start_date",
+                "asset_expiration_date": "$campaign_asset_info.asset_expiration_date"
+            }},
+            # Step 6: Clean up fields
+            {"$project": {
+                "campaign_asset_info": 0,
+                "campaign_offers": 0
+            }}
+        ]
+        
+        assets_cursor = db.assets.aggregate(pipeline)
+        campaign_assets = await assets_cursor.to_list(1000)
+        
+        # Convert to proper format
+        formatted_assets = []
+        for asset in campaign_assets:
+            try:
+                asset_obj = Asset(**asset)
+                asset_dict = asset_obj.dict()
+                
+                # Add the computed fields
+                asset_dict["isInCampaign"] = asset.get("isInCampaign", False)
+                asset_dict["isRequested"] = asset.get("isRequested", False)
+                asset_dict["offerStatus"] = asset.get("offerStatus")
+                asset_dict["offerId"] = asset.get("offerId")
+                
+                if asset.get("asset_start_date"):
+                    asset_dict["asset_start_date"] = asset.get("asset_start_date")
+                if asset.get("asset_expiration_date"):
+                    asset_dict["asset_expiration_date"] = asset.get("asset_expiration_date")
+                
+                formatted_assets.append(asset_dict)
+            except Exception as asset_error:
+                logger.warning(f"Error processing campaign asset {asset.get('id', 'unknown')}: {asset_error}")
+                continue
+        
+        logger.info(f"Fetched {len(formatted_assets)} assets for campaign {campaign_id} (optimized)")
+        return formatted_assets
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching campaign assets: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching campaign assets")
+
 @api_router.post("/admin/refresh-data")
 async def refresh_application_data(current_user: User = Depends(require_admin)):
     """Refresh all application data with fresh sample data - Admin only"""
