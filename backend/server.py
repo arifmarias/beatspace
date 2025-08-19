@@ -45,14 +45,22 @@ def parse_date_string(date_str):
     if not date_str:
         return None
     try:
+        # Convert to string if it's not already
+        date_str = str(date_str)
+        
         # Parse date string and set it to start of day in Dhaka timezone
         if 'T' in date_str:
+            # ISO format with time
             dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            return convert_to_dhaka(dt)
         else:
+            # Just date format like "2025-08-20"
             dt = datetime.strptime(date_str, '%Y-%m-%d')
+            # Localize to Dhaka timezone (assume it's already in local time)
             dt = DHAKA_TZ.localize(dt)
-        return convert_to_dhaka(dt)
-    except Exception:
+            return dt
+    except Exception as e:
+        logger.error(f"Error parsing date string '{date_str}': {e}")
         return None
 
 ROOT_DIR = Path(__file__).parent
