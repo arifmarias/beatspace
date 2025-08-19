@@ -2525,7 +2525,12 @@ async def get_assets(
                 {"$and": [
                     {"category": "Existing Asset"},
                     {"show_in_marketplace": True},
-                    {"status": "Live"}
+                    {"$or": [
+                        {"status": "Live"},
+                        {"status": "PO Uploaded"},
+                        {"status": "Available"},
+                        {"status": "Pending Offer"}
+                    ]}
                 ]}
             ]}
         ]
