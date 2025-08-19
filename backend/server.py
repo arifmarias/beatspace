@@ -2168,7 +2168,9 @@ async def get_public_assets():
         # Enhance assets with offer request status information for marketplace
         enhanced_assets = []
         for asset in assets:
-            asset_dict = dict(asset)
+            # First create Asset object to ensure proper serialization
+            asset_obj = Asset(**asset)
+            asset_dict = asset_obj.dict()
             
             # Find any offer request for this asset with PO Uploaded status
             po_uploaded_offer = await db.offer_requests.find_one(
