@@ -1161,8 +1161,8 @@ const MarketplacePage = () => {
                                 setOfferDetails(updatedDetails);
                               }}
                               disabled={(date) => {
-                                // For live assets with expiry date, disable dates before expiry date + 1 day
-                                if (selectedAssetForOffer && selectedAssetForOffer.status === 'Live' && 
+                                // For live assets or assets with PO uploaded (waiting for live) with expiry date, disable dates before expiry date + 1 day
+                                if (selectedAssetForOffer && (selectedAssetForOffer.status === 'Live' || selectedAssetForOffer.status === 'PO Uploaded') && 
                                     (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date)) {
                                   const nextAvailableDate = new Date(
                                     selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date
