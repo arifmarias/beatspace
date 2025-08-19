@@ -271,6 +271,14 @@ const AdminDashboard = () => {
   
   // Controlled tab state for auto refresh functionality
   const [activeTab, setActiveTab] = useState('users');
+  
+  // PO Upload states
+  const [showPOUploadDialog, setShowPOUploadDialog] = useState(false);
+  const [poUploadForm, setPOUploadForm] = useState({
+    offerId: '',
+    uploaderType: 'admin'  // 'buyer' or 'admin'
+  });
+  const [poUploading, setPOUploading] = useState(false);
 
   // Bangladesh location data structure (Division -> District -> Area)
   const [locationData] = useState({
