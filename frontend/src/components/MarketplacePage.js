@@ -2029,10 +2029,13 @@ const MarketplacePage = () => {
                       className={
                         selectedAsset.status === 'Available' || selectedAsset.status === 'Pending Offer' ? 'bg-green-100 text-green-800' :
                         selectedAsset.status === 'Booked' || selectedAsset.status === 'Live' ? 'bg-red-100 text-red-800' :
+                        selectedAsset.waiting_for_go_live ? 'bg-orange-100 text-orange-800' :
                         'bg-gray-100 text-gray-800'
                       }
                     >
-                      {selectedAsset.status === 'Pending Offer' ? 'Available' : selectedAsset.status}
+                      {selectedAsset.status === 'Pending Offer' ? 'Available' : 
+                       selectedAsset.waiting_for_go_live ? 'Waiting for Go Live' : 
+                       selectedAsset.status}
                     </Badge>
                   </div>
                   
