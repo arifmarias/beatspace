@@ -2172,7 +2172,7 @@ async def get_public_stats():
 # Public Assets Route
 @api_router.get("/assets/public")
 async def get_public_assets():
-    """Get all public assets for marketplace display with proper filtering"""
+    """Get all public assets for marketplace display with proper filtering - OPTIMIZED"""
     try:
         # Apply same marketplace filtering logic as the main assets endpoint
         query = {}
@@ -2210,34 +2210,62 @@ async def get_public_assets():
             ]}
         ]
         
-        assets = await db.assets.find(query).to_list(1000)
+        # OPTIMIZATION: Use aggregation pipeline to join assets with offer_requests in one query
+        # This eliminates the N+1 query problem
+        pipeline = [
+            {"$match": query},
+            {"$lookup": {
+                "from": "offer_requests",
+                "let": {"asset_id": "$id"},
+                "pipeline": [
+                    {"$match": {
+                        "$expr": {"$eq": ["$asset_id", "$$asset_id"]},
+                        "status": "PO Uploaded"
+                    }},
+                    {"$limit": 1}  # We only need to know if one exists
+                ],
+                "as": "po_uploaded_offers"
+            }},
+            {"$addFields": {
+                "waiting_for_go_live": {"$gt": [{"$size": "$po_uploaded_offers"}, 0]},
+                "asset_expiry_date": {
+                    "$cond": {
+                        "if": {"$gt": [{"$size": "$po_uploaded_offers"}, 0]},
+                        "then": {
+                            "$ifNull": [
+                                {"$arrayElemAt": ["$po_uploaded_offers.confirmed_end_date", 0]},
+                                {"$arrayElemAt": ["$po_uploaded_offers.tentative_end_date", 0]}
+                            ]
+                        },
+                        "else": "$asset_expiry_date"
+                    }
+                }
+            }},
+            {"$project": {"po_uploaded_offers": 0}}  # Remove the joined field
+        ]
         
-        # Enhance assets with offer request status information for marketplace
+        assets_cursor = db.assets.aggregate(pipeline)
+        assets = await assets_cursor.to_list(1000)
+        
+        # Convert to proper format and validate with Pydantic
         enhanced_assets = []
         for asset in assets:
-            # First create Asset object to ensure proper serialization
-            asset_obj = Asset(**asset)
-            asset_dict = asset_obj.dict()
-            
-            # Find any offer request for this asset with PO Uploaded status
-            po_uploaded_offer = await db.offer_requests.find_one(
-                {"asset_id": asset["id"], "status": "PO Uploaded"}
-            )
-            
-            # Add flag to indicate if asset is waiting for go live
-            asset_dict["waiting_for_go_live"] = po_uploaded_offer is not None
-            if po_uploaded_offer:
-                # Override asset expiry date with the date from the offer request for existing PO Uploaded assets
-                asset_expiry_from_request = (
-                    po_uploaded_offer.get("confirmed_end_date") or 
-                    po_uploaded_offer.get("tentative_end_date")
-                )
-                if asset_expiry_from_request:
-                    # Override the original asset_expiry_date with the one from offer request
-                    asset_dict["asset_expiry_date"] = asset_expiry_from_request
-            
-            enhanced_assets.append(asset_dict)
+            try:
+                # Create Asset object to ensure proper serialization
+                asset_obj = Asset(**asset)
+                asset_dict = asset_obj.dict()
+                
+                # Add the computed fields from aggregation
+                asset_dict["waiting_for_go_live"] = asset.get("waiting_for_go_live", False)
+                if asset.get("asset_expiry_date"):
+                    asset_dict["asset_expiry_date"] = asset.get("asset_expiry_date")
+                
+                enhanced_assets.append(asset_dict)
+            except Exception as asset_error:
+                logger.warning(f"Error processing asset {asset.get('id', 'unknown')}: {asset_error}")
+                continue
         
+        logger.info(f"Fetched {len(enhanced_assets)} public assets (optimized)")
         return enhanced_assets
     except Exception as e:
         logger.error(f"Error fetching public assets: {e}")
