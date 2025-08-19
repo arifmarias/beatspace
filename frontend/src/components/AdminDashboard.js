@@ -226,6 +226,8 @@ const AdminDashboard = () => {
   const websocketUserId = currentUser.id || currentUser.email || 'admin'; // Use actual user ID for WebSocket connection
   const { isConnected, connectionCount, sendMessage, userInfo, error } = useWebSocket(websocketUserId, handleWebSocketMessage);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [campaignAssetDetails, setCampaignAssetDetails] = useState([]);
+  const [loadingCampaignAssets, setLoadingCampaignAssets] = useState(false);
   const [showAddAsset, setShowAddAsset] = useState(false);
   const [showEditAsset, setShowEditAsset] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
