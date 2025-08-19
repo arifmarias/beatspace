@@ -358,10 +358,11 @@ frontend:
 
 test_plan:
   current_focus:
-    - "AdminDashboard Error Resolution Verification Complete"
+    - "Optimize assets/public endpoint performance"
+    - "Create optimized campaign assets endpoint"
   stuck_tasks: []
   test_all: false
-  test_priority: "error_resolution_verified"
+  test_priority: "performance_optimization"
 
 backend:
   - task: "Operator Dashboard Backend Support & User Management"
