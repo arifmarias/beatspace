@@ -815,6 +815,11 @@ const AdminDashboard = () => {
       return 'Offer Rejected';
     }
     
+    // Check if offer needs PO upload
+    if (offer.status === 'PO Required') {
+      return 'Waiting for PO';
+    }
+    
     // Check if buyer approved the offer (accepted status from backend)
     if (offer.status === 'Approved' || offer.status === 'Accepted') {
       return 'Buyer Approved';
