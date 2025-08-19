@@ -244,6 +244,10 @@ class OfferRequest(BaseModel):
     # Asset dates from Request Best Offer form
     asset_start_date: Optional[datetime] = None
     asset_expiration_date: Optional[datetime] = None
+    # PO Upload fields
+    po_document_url: Optional[str] = None
+    po_uploaded_by: Optional[str] = None  # 'buyer' or 'admin'
+    po_uploaded_at: Optional[datetime] = None
 
 class OfferRequestCreate(BaseModel):
     asset_id: str
