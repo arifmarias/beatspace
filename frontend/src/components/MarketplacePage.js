@@ -1183,7 +1183,7 @@ const MarketplacePage = () => {
                           </PopoverContent>
                         </Popover>
                         
-                        {/* Show notice for live assets or assets waiting for go live with restricted dates */}
+                        {/* Show notice for live assets or assets awaiting go live with restricted dates */}
                         {selectedAssetForOffer && (selectedAssetForOffer.status === 'Live' || selectedAssetForOffer.waiting_for_go_live) && 
                          (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date) && (
                           <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
@@ -1191,7 +1191,7 @@ const MarketplacePage = () => {
                               <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                               <div className="text-sm text-amber-800">
                                 <p className="font-medium">Asset Availability Notice</p>
-                                <p>This asset is {selectedAssetForOffer.waiting_for_go_live ? 'waiting for go live and will be' : 'currently'} occupied until {new Date(
+                                <p>This asset is currently occupied until {new Date(
                                   selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date
                                 ).toLocaleDateString()}. You can only select dates from {new Date(
                                   new Date(selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date).getTime() + 24 * 60 * 60 * 1000
