@@ -2223,6 +2223,24 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
             # Get campaign details from the corresponding offer
             offer = offers_by_asset.get(asset["id"])
             
+            # Get actual campaign name from campaigns collection
+            campaign_name = "Unknown Campaign"
+            if offer:
+                campaign_id = offer.get("existing_campaign_id") or offer.get("campaign_id")
+                if campaign_id:
+                    campaign = await db.campaigns.find_one({"id": campaign_id})
+                    if campaign:
+                        campaign_name = campaign.get("name", "Unknown Campaign")
+                elif offer.get("campaign_name"):
+                    campaign_name = offer.get("campaign_name")
+            
+            # Handle category-specific campaign display
+            asset_category = asset.get("category", "Public")
+            if asset_category == "Private Asset":
+                campaign_name = "Private Asset"
+            elif asset_category == "Existing Asset":
+                campaign_name = "Existing Asset"
+            
             # Get monitoring data for inspection dates (optional, non-blocking)
             last_inspection_date = None
             try:
