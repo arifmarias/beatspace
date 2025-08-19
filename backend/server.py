@@ -2220,28 +2220,38 @@ async def get_public_assets():
                 "pipeline": [
                     {"$match": {
                         "$expr": {"$eq": ["$asset_id", "$$asset_id"]},
-                        "status": "PO Uploaded"
+                        "status": {"$in": ["PO Uploaded", "Live"]}  # Include both PO Uploaded and Live offers
                     }},
-                    {"$limit": 1}  # We only need to know if one exists
+                    {"$sort": {"created_at": -1}},  # Get the most recent offer
+                    {"$limit": 1}
                 ],
-                "as": "po_uploaded_offers"
+                "as": "active_offers"
             }},
             {"$addFields": {
-                "waiting_for_go_live": {"$gt": [{"$size": "$po_uploaded_offers"}, 0]},
+                "waiting_for_go_live": {
+                    "$gt": [{
+                        "$size": {
+                            "$filter": {
+                                "input": "$active_offers",
+                                "cond": {"$eq": ["$$this.status", "PO Uploaded"]}
+                            }
+                        }
+                    }, 0]
+                },
                 "asset_expiry_date": {
                     "$cond": {
-                        "if": {"$gt": [{"$size": "$po_uploaded_offers"}, 0]},
+                        "if": {"$gt": [{"$size": "$active_offers"}, 0]},
                         "then": {
                             "$ifNull": [
-                                {"$arrayElemAt": ["$po_uploaded_offers.confirmed_end_date", 0]},
-                                {"$arrayElemAt": ["$po_uploaded_offers.tentative_end_date", 0]}
+                                {"$arrayElemAt": ["$active_offers.confirmed_end_date", 0]},
+                                {"$arrayElemAt": ["$active_offers.tentative_end_date", 0]}
                             ]
                         },
                         "else": "$asset_expiry_date"
                     }
                 }
             }},
-            {"$project": {"po_uploaded_offers": 0}}  # Remove the joined field
+            {"$project": {"active_offers": 0}}  # Remove the joined field
         ]
         
         assets_cursor = db.assets.aggregate(pipeline)
