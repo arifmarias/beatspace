@@ -1183,18 +1183,18 @@ const MarketplacePage = () => {
                           </PopoverContent>
                         </Popover>
                         
-                        {/* Show notice for live assets or assets awaiting go live with restricted dates */}
+                        {/* Show notice for live assets or assets awaiting go live with asset expiry date */}
                         {selectedAssetForOffer && (selectedAssetForOffer.status === 'Live' || selectedAssetForOffer.waiting_for_go_live) && 
-                         (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date) && (
+                         selectedAssetForOffer.asset_expiry_date && (
                           <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                             <div className="flex items-start space-x-2">
                               <Clock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                               <div className="text-sm text-amber-800">
                                 <p className="font-medium">Asset Availability Notice</p>
                                 <p>This asset is currently occupied until {new Date(
-                                  selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date
+                                  selectedAssetForOffer.asset_expiry_date
                                 ).toLocaleDateString()}. You can only select dates from {new Date(
-                                  new Date(selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date).getTime() + 24 * 60 * 60 * 1000
+                                  new Date(selectedAssetForOffer.asset_expiry_date).getTime() + 24 * 60 * 60 * 1000
                                 ).toLocaleDateString()} onwards.</p>
                               </div>
                             </div>
