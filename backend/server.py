@@ -1872,11 +1872,10 @@ async def respond_to_offer(
             }}
         )
         
-        # Update asset status to Booked and set buyer information + next_available_date
+        # Update asset with buyer information and next_available_date, but keep original status
         await db.assets.update_one(
             {"id": request["asset_id"]},
             {"$set": {
-                "status": AssetStatus.LIVE,
                 "buyer_id": current_user.id,
                 "buyer_name": current_user.company_name,
                 "next_available_date": tentative_end,  # Asset becomes available after booking ends
