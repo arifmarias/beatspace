@@ -821,7 +821,7 @@ const AdminDashboard = () => {
     }
     
     // Check if buyer requested revision
-    if (offer.revision_requested || offer.status === 'Revision Requested') {
+    if (offer.revision_requested || offer.status === 'Revision Requested' || offer.status === 'Revise Request') {
       return 'Request for Revised';
     }
     
