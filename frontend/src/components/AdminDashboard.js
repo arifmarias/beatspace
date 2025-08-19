@@ -4301,7 +4301,7 @@ const AdminDashboard = () => {
         </Dialog>
 
         {/* Campaign Details Dialog */}
-        <Dialog open={!!selectedCampaign} onOpenChange={() => setSelectedCampaign(null)}>
+        <Dialog open={!!selectedCampaign} onOpenChange={() => handleCampaignSelect(null)}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>Campaign Details</DialogTitle>
