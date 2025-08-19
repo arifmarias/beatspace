@@ -1235,7 +1235,7 @@ const MarketplacePage = () => {
                           <label className="block text-sm font-semibold mb-2">Asset Expiration Date</label>
                           <div className="p-3 bg-gray-50 rounded-lg border">
                             <p className="text-sm font-medium text-gray-900">
-                              {formatDateForDhaka(offerDetails.assetExpirationDate)}
+                              {offerDetails.assetExpirationDate.toLocaleDateString()}
                             </p>
                             <p className="text-xs text-gray-600 mt-1">
                               {offerDetails.contractDuration === 'custom' 
