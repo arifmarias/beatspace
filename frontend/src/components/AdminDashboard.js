@@ -3055,12 +3055,40 @@ const AdminDashboard = () => {
                                               ) : offer.status === 'PO Required' ? (
                                                 <Button
                                                   size="default"
-                                                  onClick={() => alert('PO Upload functionality will be implemented soon')}
+                                                  onClick={() => handlePOUpload(offer.id, 'admin')}
                                                   className="bg-purple-600 hover:bg-purple-700 text-white w-full py-2"
                                                 >
                                                   <Upload className="w-4 h-4 mr-2" />
                                                   Upload PO
                                                 </Button>
+                                              ) : offer.status === 'PO Uploaded' && offer.po_uploaded_by === 'admin' ? (
+                                                <Button
+                                                  size="default"
+                                                  onClick={() => handleMakeLive(offer.id)}
+                                                  className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
+                                                >
+                                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                                  Make it Live
+                                                </Button>
+                                              ) : offer.status === 'PO Uploaded' ? (
+                                                <div className="space-y-2">
+                                                  <Button
+                                                    size="default"
+                                                    onClick={() => window.open(offer.po_document_url, '_blank')}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2"
+                                                  >
+                                                    <FileText className="w-4 h-4 mr-2" />
+                                                    View PO
+                                                  </Button>
+                                                  <Button
+                                                    size="default"
+                                                    onClick={() => handleMakeLive(offer.id)}
+                                                    className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
+                                                  >
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Make it Live
+                                                  </Button>
+                                                </div>
                                               ) : (
                                                 <Badge className="bg-gray-100 text-gray-800 py-2 text-center">
                                                   {offer.status}
