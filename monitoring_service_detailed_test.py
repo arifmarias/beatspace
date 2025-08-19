@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
 class DetailedMonitoringTester:
-    def __init__(self, base_url="https://asset-flow-1.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://asset-manager-33.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.admin_token = None
         self.manager_token = None

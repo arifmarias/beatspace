@@ -5,7 +5,7 @@ Create a test monitoring operator user
 import requests
 import json
 
-API_BASE = "https://asset-flow-1.preview.emergentagent.com/api"
+API_BASE = "https://asset-manager-33.preview.emergentagent.com/api"
 
 def create_test_operator():
     print("🚀 Creating Test Monitoring Operator User")
