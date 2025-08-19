@@ -916,8 +916,8 @@ const MarketplacePage = () => {
       // Clear basket
       setAssetBasket([]);
       
-      // Refresh assets to show updated status
-      fetchAssets();
+      // Refresh assets to show updated status (force refresh to clear cache)
+      fetchAssets(true);
       
       notify.success('All asset requests have been cancelled');
       
