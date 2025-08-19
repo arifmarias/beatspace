@@ -42,6 +42,37 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
+// Timezone utility functions for Dhaka, Bangladesh
+const DHAKA_TIMEZONE = 'Asia/Dhaka';
+
+const formatDateForDhaka = (date) => {
+  if (!date) return '';
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: DHAKA_TIMEZONE,
+    day: '2-digit',
+    month: '2-digit', 
+    year: 'numeric'
+  }).format(date);
+};
+
+const convertToDhakaDate = (date) => {
+  if (!date) return null;
+  // Create a new date in Dhaka timezone
+  const dhakaDate = new Date(date.toLocaleString("en-US", {timeZone: DHAKA_TIMEZONE}));
+  return dhakaDate;
+};
+
+const getDhakaDateString = (date) => {
+  if (!date) return null;
+  // Get date string in YYYY-MM-DD format for Dhaka timezone
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: DHAKA_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(date);
+};
+
 const MarketplacePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
