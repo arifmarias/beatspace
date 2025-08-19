@@ -13,7 +13,7 @@ import os
 class AdminAPITester:
     def __init__(self):
         # Get backend URL from environment
-        self.base_url = os.getenv('REACT_APP_BACKEND_URL', 'https://asset-manager-33.preview.emergentagent.com')
+        self.base_url = os.getenv('REACT_APP_BACKEND_URL', 'https://assetflow-16.preview.emergentagent.com')
         if not self.base_url.endswith('/api'):
             self.base_url += '/api'
         

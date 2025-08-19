@@ -5,7 +5,7 @@ Test script for Operator Dashboard backend endpoints
 import requests
 import json
 
-API_BASE = "https://asset-manager-33.preview.emergentagent.com/api"
+API_BASE = "https://assetflow-16.preview.emergentagent.com/api"
 
 def test_operator_endpoints():
     print("🚀 Operator Dashboard Backend Endpoints Test")
