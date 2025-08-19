@@ -2095,8 +2095,9 @@ const MarketplacePage = () => {
                     </Badge>
                   </div>
                   
-                  {/* Show Next Available Date only for assets with PO Uploaded status (waiting_for_go_live) */}
-                  {selectedAsset.waiting_for_go_live && selectedAsset.asset_expiry_date && (
+                  {/* Show Next Available Date for assets with PO Uploaded status OR Live assets with expiry date */}
+                  {((selectedAsset.waiting_for_go_live && selectedAsset.asset_expiry_date) || 
+                    (selectedAsset.status === 'Live' && selectedAsset.asset_expiry_date)) && (
                     <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded">
                       <Clock className="w-4 h-4 inline mr-1" />
                       Next available: {new Date(selectedAsset.asset_expiry_date).toLocaleDateString()}
