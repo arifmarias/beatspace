@@ -3024,7 +3024,7 @@ const AdminDashboard = () => {
                                                   <DollarSign className="w-4 h-4 mr-2" />
                                                   Quote Price
                                                 </Button>
-                                              ) : offer.status === 'Quoted' || offer.status === 'In Process' || offer.status === 'Revision Requested' ? (
+                                              ) : offer.status === 'Quoted' || offer.status === 'In Process' || offer.status === 'Revision Requested' || offer.status === 'Revise Request' ? (
                                                 <>
                                                   <Button
                                                     size="default"
