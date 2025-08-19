@@ -22,6 +22,38 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import io
 import base64
+import pytz
+
+# Dhaka timezone configuration
+DHAKA_TZ = pytz.timezone('Asia/Dhaka')
+
+def get_dhaka_now():
+    """Get current datetime in Dhaka timezone"""
+    return datetime.now(DHAKA_TZ)
+
+def convert_to_dhaka(dt):
+    """Convert datetime to Dhaka timezone"""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        # If naive datetime, assume it's UTC
+        dt = pytz.UTC.localize(dt)
+    return dt.astimezone(DHAKA_TZ)
+
+def parse_date_string(date_str):
+    """Parse date string and return date in Dhaka timezone"""
+    if not date_str:
+        return None
+    try:
+        # Parse date string and set it to start of day in Dhaka timezone
+        if 'T' in date_str:
+            dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        else:
+            dt = datetime.strptime(date_str, '%Y-%m-%d')
+            dt = DHAKA_TZ.localize(dt)
+        return convert_to_dhaka(dt)
+    except Exception:
+        return None
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
