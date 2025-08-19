@@ -1538,7 +1538,17 @@ const BuyerDashboard = () => {
         action: 'accept'
       }, { headers });
       
-      notify.success(`✅ Offer approved successfully! Asset "${offer.asset_name}" is now booked.`);
+      // Show nice congratulations message
+      alert(`🎉 Congratulations! 
+
+Asset "${offer.asset_name}" is now locked for you!
+
+📋 Next Steps:
+• Please send the Purchase Order (PO) within 7 days
+• Our admin team will review and finalize your booking
+• You'll receive confirmation once PO is processed
+
+Thank you for choosing our platform! 🚀`);
       
       // Immediate refresh for real-time updates
       await fetchBuyerData();
