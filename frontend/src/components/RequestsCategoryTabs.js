@@ -347,10 +347,23 @@ const RequestsCategoryTabs = ({
                 </div>
               )}
               {request.status === 'PO Uploaded' && (
-                <Button size="sm" variant="outline" className="text-orange-600 border-orange-300" disabled>
-                  <Clock className="w-4 h-4 mr-1" />
-                  Pending Activation
-                </Button>
+                <div className="flex items-center space-x-2">
+                  {request.po_document_url && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-blue-600 border-blue-300"
+                      onClick={() => window.open(request.po_document_url, '_blank')}
+                    >
+                      <Eye className="w-4 h-4 mr-1" />
+                      View PO
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline" className="text-orange-600 border-orange-300" disabled>
+                    <Clock className="w-4 h-4 mr-1" />
+                    Pending Activation
+                  </Button>
+                </div>
               )}
               {request.status === 'Approved' && (
                 <Button size="sm" variant="outline" className="text-green-600 border-green-300" disabled>
