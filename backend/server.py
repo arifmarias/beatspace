@@ -1246,6 +1246,16 @@ async def update_offer_request_status_admin(
             }}
         )
     
+    # For all other statuses (Pending, In Process), just update the offer request status
+    else:
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {
+                "status": new_status,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+    
     return {"message": f"Offer request status updated to {new_status}"}
 
 @api_router.post("/admin/submit-final-offer")
