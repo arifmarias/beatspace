@@ -1158,7 +1158,7 @@ async def update_offer_request_status_admin(
         raise HTTPException(status_code=404, detail="Offer request not found")
     
     new_status = status_data.get("status")
-    valid_statuses = ["Pending", "In Process", "On Hold", "Approved", "Rejected"]
+    valid_statuses = ["Pending", "In Process", "On Hold", "Approved", "Rejected", "PO Required"]
     
     if new_status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Valid statuses: {valid_statuses}")
@@ -1222,6 +1222,16 @@ async def update_offer_request_status_admin(
                     {"id": campaign_id},
                     {"$set": {"status": "Live", "updated_at": datetime.utcnow()}}
                 )
+    
+    # If PO Required, just update the offer request status without making asset live
+    elif new_status == "PO Required":
+        await db.offer_requests.update_one(
+            {"id": request_id},
+            {"$set": {
+                "status": new_status,
+                "updated_at": datetime.utcnow()
+            }}
+        )
     
     # If rejected or on hold, make asset available again and clear buyer information
     elif new_status in ["Rejected", "On Hold"]:
