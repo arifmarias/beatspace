@@ -3514,8 +3514,8 @@ async def create_monitoring_service_request(
             "request_type": "monitoring_service",
             "service_details": service_data.dict(),
             "status": "Pending",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": get_dhaka_now(),
+            "updated_at": get_dhaka_now()
         }
         
         await db.offer_requests.insert_one(offer_request)
