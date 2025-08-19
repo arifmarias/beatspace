@@ -2371,11 +2371,10 @@ async def upload_po(
             {"$set": update_data}
         )
         
-        # Update asset status to PO Uploaded and set next_available_date
+        # Update asset next_available_date for calendar blocking, but keep original status
         await db.assets.update_one(
             {"id": offer_request["asset_id"]},
             {"$set": {
-                "status": "PO Uploaded",
                 "buyer_id": offer_request["buyer_id"],
                 "buyer_name": offer_request["buyer_name"],
                 "next_available_date": tentative_end,  # Set next available date for calendar blocking
