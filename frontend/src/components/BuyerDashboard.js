@@ -168,6 +168,44 @@ const BuyerDashboard = () => {
     warning: notifyWarning
   };
 
+  // Handle PO upload for buyers
+  const handlePOUpload = async (offerId, file) => {
+    try {
+      if (!file || file.type !== 'application/pdf') {
+        notify.error('Please select a PDF file');
+        return;
+      }
+
+      const headers = getAuthHeaders();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploaded_by', 'buyer');
+
+      await axios.post(
+        `${API}/offers/${offerId}/upload-po`,
+        formData,
+        {
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      notify.success('PO uploaded successfully! Waiting for admin approval.');
+      
+      // Refresh buyer data
+      await fetchBuyerData();
+      if (activeTab === 'requested-offers') {
+        fetchRequestedOffers();
+      }
+
+    } catch (error) {
+      console.error('Error uploading PO:', error);
+      notify.error('Failed to upload PO: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   // WebSocket connection for real-time updates with enhanced notifications
   const handleWebSocketMessage = (message) => {
     console.log('🔔 Buyer Dashboard: Received real-time update:', message);
