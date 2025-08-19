@@ -703,74 +703,91 @@ const BuyerDashboard = () => {
 
   const fetchCampaignAssets = async (campaign) => {
     try {
-      console.log('🚨 Fetching assets for campaign:', campaign.name, 'ID:', campaign.id);
+      console.log('🚀 OPTIMIZED: Fetching assets for campaign:', campaign.name, 'ID:', campaign.id);
       
-      // Fetch all public assets
-      const assetsResponse = await axios.get(`${API}/assets/public`);
-      const allAssets = assetsResponse.data || [];
+      const headers = getAuthHeaders();
       
-      // Start with assets that are in the campaign_assets array (new structure)
-      let campaignAssetsList = [];
+      // Use the new optimized campaign assets endpoint
+      const response = await axios.get(`${API}/campaigns/${campaign.id}/assets`, { headers });
+      const campaignAssetsList = response.data || [];
       
-      // Check for new campaign_assets structure first
-      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
-        campaignAssetsList = campaign.campaign_assets.map(campaignAsset => {
-          const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
-          if (asset) {
-            return {
-              ...asset,
-              asset_start_date: campaignAsset.asset_start_date,
-              asset_expiration_date: campaignAsset.asset_expiration_date,
-              isInCampaign: true
-            };
-          }
-          return null;
-        }).filter(Boolean);
-      }
-      // Fallback to old assets array structure
-      else if (campaign.assets && campaign.assets.length > 0) {
-        campaignAssetsList = allAssets.filter(asset => 
-          campaign.assets.includes(asset.id)
-        );
-      }
-      
-      console.log('🚨 Direct campaign assets:', campaignAssetsList.length);
-      
-      // For both Draft AND Live campaigns, include assets that have pending offer requests
-      if (campaign.status === 'Draft' || campaign.status === 'Live') {
-        const headers = getAuthHeaders();
-        const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
-        const allOfferRequests = offersResponse.data || [];
-        
-        // Find offer requests for this campaign (include all active statuses)
-        // Match by either campaign ID or campaign name (for backward compatibility)
-        const campaignOfferRequests = allOfferRequests.filter(offer => 
-          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) && 
-          (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
-           offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
-        );
-        
-        console.log('🚨 Found offer requests for campaign:', campaignOfferRequests.length);
-        
-        // Add assets from offer requests that aren't already in the campaign
-        campaignOfferRequests.forEach(offer => {
-          const requestedAsset = allAssets.find(asset => asset.id === offer.asset_id);
-          if (requestedAsset && !campaignAssetsList.find(existing => existing.id === requestedAsset.id)) {
-            // Mark this asset as "requested" so we can display it differently
-            requestedAsset.isRequested = true;
-            requestedAsset.offerStatus = offer.status;
-            requestedAsset.offerId = offer.id;
-            campaignAssetsList.push(requestedAsset);
-          }
-        });
-      }
-      
-      console.log('🚨 Total campaign assets (including requested):', campaignAssetsList.length);
+      console.log('✅ OPTIMIZED: Fetched campaign assets directly:', campaignAssetsList.length);
       setCampaignAssets(campaignAssetsList);
       
     } catch (error) {
-      console.error('Error fetching campaign assets:', error);
-      setCampaignAssets([]);
+      console.error('❌ Error fetching campaign assets:', error);
+      
+      // Fallback to the old method if the new endpoint fails
+      console.log('⚠️ Falling back to old method...');
+      
+      try {
+        // Fetch all public assets (fallback)
+        const assetsResponse = await axios.get(`${API}/assets/public`);
+        const allAssets = assetsResponse.data || [];
+        
+        // Start with assets that are in the campaign_assets array (new structure)
+        let campaignAssetsList = [];
+        
+        // Check for new campaign_assets structure first
+        if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+          campaignAssetsList = campaign.campaign_assets.map(campaignAsset => {
+            const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+            if (asset) {
+              return {
+                ...asset,
+                asset_start_date: campaignAsset.asset_start_date,
+                asset_expiration_date: campaignAsset.asset_expiration_date,
+                isInCampaign: true
+              };
+            }
+            return null;
+          }).filter(Boolean);
+        }
+        // Fallback to old assets array structure
+        else if (campaign.assets && campaign.assets.length > 0) {
+          campaignAssetsList = allAssets.filter(asset => 
+            campaign.assets.includes(asset.id)
+          );
+        }
+        
+        console.log('🚨 Direct campaign assets (fallback):', campaignAssetsList.length);
+        
+        // For both Draft AND Live campaigns, include assets that have pending offer requests
+        if (campaign.status === 'Draft' || campaign.status === 'Live') {
+          const headers = getAuthHeaders();
+          const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+          const allOfferRequests = offersResponse.data || [];
+          
+          // Find offer requests for this campaign (include all active statuses)
+          // Match by either campaign ID or campaign name (for backward compatibility)
+          const campaignOfferRequests = allOfferRequests.filter(offer => 
+            (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) && 
+            (offer.status === 'Pending' || offer.status === 'Processing' || offer.status === 'In Process' || 
+             offer.status === 'Quoted' || offer.status === 'Accepted' || offer.status === 'Approved')
+          );
+          
+          console.log('🚨 Found offer requests for campaign (fallback):', campaignOfferRequests.length);
+          
+          // Add assets from offer requests that aren't already in the campaign
+          campaignOfferRequests.forEach(offer => {
+            const requestedAsset = allAssets.find(asset => asset.id === offer.asset_id);
+            if (requestedAsset && !campaignAssetsList.find(existing => existing.id === requestedAsset.id)) {
+              // Mark this asset as "requested" so we can display it differently
+              requestedAsset.isRequested = true;
+              requestedAsset.offerStatus = offer.status;
+              requestedAsset.offerId = offer.id;
+              campaignAssetsList.push(requestedAsset);
+            }
+          });
+        }
+        
+        console.log('🚨 Total campaign assets (including requested - fallback):', campaignAssetsList.length);
+        setCampaignAssets(campaignAssetsList);
+        
+      } catch (fallbackError) {
+        console.error('❌ Fallback method also failed:', fallbackError);
+        setCampaignAssets([]);
+      }
     }
   };
 
