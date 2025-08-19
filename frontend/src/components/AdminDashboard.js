@@ -3058,8 +3058,24 @@ const AdminDashboard = () => {
                                             <div>
                                               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Requested Dates</label>
                                               <div className="mt-1 text-sm text-gray-900">
-                                                <div>Start: {offer.asset_start_date || offer.tentative_start_date ? new Date(offer.asset_start_date || offer.tentative_start_date).toLocaleDateString() : 'N/A'}</div>
-                                                <div>End: {offer.asset_expiration_date || offer.tentative_end_date ? new Date(offer.asset_expiration_date || offer.tentative_end_date).toLocaleDateString() : 'N/A'}</div>
+                                                <div>Start: {(() => {
+                                                  const startDate = offer.asset_start_date || offer.tentative_start_date;
+                                                  if (!startDate) return 'N/A';
+                                                  try {
+                                                    return new Date(startDate).toLocaleDateString();
+                                                  } catch {
+                                                    return startDate;
+                                                  }
+                                                })()}</div>
+                                                <div>End: {(() => {
+                                                  const endDate = offer.asset_expiration_date || offer.tentative_end_date;
+                                                  if (!endDate) return 'N/A';
+                                                  try {
+                                                    return new Date(endDate).toLocaleDateString();
+                                                  } catch {
+                                                    return endDate;
+                                                  }
+                                                })()}</div>
                                               </div>
                                             </div>
                                             <div>
