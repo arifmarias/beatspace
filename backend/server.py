@@ -2330,6 +2330,28 @@ async def upload_po(
         # Determine new status based on uploader
         new_status = "PO Uploaded"
         
+        # Calculate tentative end date for next_available_date
+        tentative_start = offer_request.get("tentative_start_date")
+        tentative_end = offer_request.get("tentative_end_date")
+        
+        # If no tentative dates, calculate from current date + contract duration
+        if not tentative_start:
+            tentative_start = datetime.utcnow()
+        
+        if not tentative_end:
+            # Calculate end date based on contract duration
+            contract_duration = offer_request.get("contract_duration", "1_month")
+            if contract_duration == "1_month":
+                tentative_end = tentative_start + timedelta(days=30)
+            elif contract_duration == "3_months":
+                tentative_end = tentative_start + timedelta(days=90)
+            elif contract_duration == "6_months":
+                tentative_end = tentative_start + timedelta(days=180)
+            elif contract_duration == "12_months":
+                tentative_end = tentative_start + timedelta(days=365)
+            else:
+                tentative_end = tentative_start + timedelta(days=30)  # Default to 1 month
+        
         # Update offer request with PO info
         update_data = {
             "po_document_url": upload_result["secure_url"],
@@ -2342,6 +2364,18 @@ async def upload_po(
         await db.offer_requests.update_one(
             {"id": request_id},
             {"$set": update_data}
+        )
+        
+        # Update asset status to PO Uploaded and set next_available_date
+        await db.assets.update_one(
+            {"id": offer_request["asset_id"]},
+            {"$set": {
+                "status": "PO Uploaded",
+                "buyer_id": offer_request["buyer_id"],
+                "buyer_name": offer_request["buyer_name"],
+                "next_available_date": tentative_end,  # Set next available date for calendar blocking
+                "updated_at": datetime.utcnow()
+            }}
         )
         
         return {
