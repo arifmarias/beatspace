@@ -1141,7 +1141,7 @@ const MarketplacePage = () => {
                             >
                               <Calendar className="mr-2 h-4 w-4" />
                               {offerDetails.tentativeStartDate 
-                                ? offerDetails.tentativeStartDate.toLocaleDateString()
+                                ? new Date(offerDetails.tentativeStartDate.getTime() - offerDetails.tentativeStartDate.getTimezoneOffset() * 60000).toLocaleDateString()
                                 : "Select asset start date"
                               }
                             </Button>
