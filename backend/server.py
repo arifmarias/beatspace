@@ -1586,6 +1586,8 @@ async def get_offer_requests(current_user: User = Depends(get_current_user)):
     
     if current_user.role == UserRole.BUYER:
         query["buyer_id"] = current_user.id
+        # Exclude Live status offers from requested offers (they should appear in My Assets instead)
+        query["status"] = {"$ne": "Live"}
     elif current_user.role == UserRole.ADMIN:
         # Admin can see all requests
         pass
