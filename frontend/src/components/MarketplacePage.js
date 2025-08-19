@@ -1163,9 +1163,9 @@ const MarketplacePage = () => {
                               disabled={(date) => {
                                 // For live assets or assets waiting for go live with expiry date, disable dates before expiry date + 1 day
                                 if (selectedAssetForOffer && (selectedAssetForOffer.status === 'Live' || selectedAssetForOffer.waiting_for_go_live) && 
-                                    (selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date)) {
+                                    (selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date)) {
                                   const nextAvailableDate = new Date(
-                                    selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date
+                                    selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date
                                   );
                                   // Add 1 day to get the first available date
                                   const firstAvailableDate = new Date(nextAvailableDate);
