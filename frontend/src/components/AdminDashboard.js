@@ -2835,7 +2835,7 @@ const AdminDashboard = () => {
                         <TableRow 
                           key={campaign.id}
                           className="cursor-pointer hover:bg-gray-50"
-                          onClick={() => setSelectedCampaign(campaign)}
+                          onClick={() => handleCampaignSelect(campaign)}
                         >
                           <TableCell>
                             <div>
