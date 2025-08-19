@@ -6139,6 +6139,59 @@ const AdminDashboard = () => {
           </DialogContent>
         </Dialog>
 
+        {/* PO Upload Dialog */}
+        <Dialog open={showPOUploadDialog} onOpenChange={setShowPOUploadDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Upload className="w-5 h-5" />
+                <span>Upload PO Document</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Instructions:</strong> Please upload the Purchase Order document in PDF format. 
+                  This will update the offer status and make it ready for processing.
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select PO Document (PDF only)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePOFileUpload}
+                  disabled={poUploading}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                />
+              </div>
+              
+              {poUploading && (
+                <div className="text-center py-4">
+                  <div className="inline-flex items-center space-x-3">
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span className="text-sm text-gray-600">Uploading PO document...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPOUploadDialog(false)}
+                disabled={poUploading}
+              >
+                Cancel
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
       </main>
     </div>
   );
