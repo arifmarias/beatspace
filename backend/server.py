@@ -2358,29 +2358,71 @@ async def upload_po(
 @api_router.post("/offers/{request_id}/make-live")
 async def make_offer_live(
     request_id: str,
-    current_user: dict = Depends(get_current_user)
+    admin_user: User = Depends(require_admin)
 ):
     """Make an offer live (admin only)"""
     try:
-        if current_user.get("role") != "admin":
-            raise HTTPException(status_code=403, detail="Only admins can make offers live")
+        # Get offer request details
+        offer_request = await db.offer_requests.find_one({"id": request_id})
+        if not offer_request:
+            raise HTTPException(status_code=404, detail="Offer request not found")
         
-        # Update offer status to Live
+        # Calculate confirmed dates based on tentative dates or contract duration
+        tentative_start = offer_request.get("tentative_start_date")
+        tentative_end = offer_request.get("tentative_end_date")
+        
+        # If no tentative dates, calculate from current date + contract duration
+        if not tentative_start:
+            tentative_start = datetime.utcnow()
+        
+        if not tentative_end:
+            # Calculate end date based on contract duration
+            contract_duration = offer_request.get("contract_duration", "1_month")
+            if contract_duration == "1_month":
+                tentative_end = tentative_start + timedelta(days=30)
+            elif contract_duration == "3_months":
+                tentative_end = tentative_start + timedelta(days=90)
+            elif contract_duration == "6_months":
+                tentative_end = tentative_start + timedelta(days=180)
+            elif contract_duration == "12_months":
+                tentative_end = tentative_start + timedelta(days=365)
+            else:
+                tentative_end = tentative_start + timedelta(days=30)  # Default to 1 month
+        
+        # Update offer status to Live with confirmed dates
         await db.offer_requests.update_one(
             {"id": request_id},
             {"$set": {
                 "status": "Live",
+                "confirmed_start_date": tentative_start,
+                "confirmed_end_date": tentative_end,
                 "updated_at": datetime.utcnow()
             }}
         )
         
-        # Update asset status to Live
-        offer_request = await db.offer_requests.find_one({"id": request_id})
-        if offer_request:
-            await db.assets.update_one(
-                {"id": offer_request["asset_id"]},
-                {"$set": {"status": AssetStatus.LIVE}}
-            )
+        # Update asset status to Live with booking info
+        await db.assets.update_one(
+            {"id": offer_request["asset_id"]},
+            {"$set": {
+                "status": AssetStatus.LIVE,
+                "buyer_id": offer_request["buyer_id"],
+                "buyer_name": offer_request["buyer_name"],
+                "next_available_date": tentative_end,  # Asset becomes available after booking ends
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        
+        # Update campaign status to "Live" if asset gets booked
+        campaign_id = offer_request.get("existing_campaign_id") or offer_request.get("campaign_id")
+        if campaign_id:
+            # Check if campaign should be marked as Live
+            campaign = await db.campaigns.find_one({"id": campaign_id})
+            if campaign and campaign.get("status") in ["Draft", "Ready"]:
+                # If campaign has at least one booked asset, mark as Live
+                await db.campaigns.update_one(
+                    {"id": campaign_id},
+                    {"$set": {"status": "Live", "updated_at": datetime.utcnow()}}
+                )
         
         return {"message": "Offer is now live"}
         
