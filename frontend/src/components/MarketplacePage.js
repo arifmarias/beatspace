@@ -318,16 +318,6 @@ const MarketplacePage = () => {
   const fetchAssets = async () => {
     try {
       const response = await axios.get(`${API}/assets/public`);
-      
-      console.log('🔍 Assets received from backend:', response.data);
-      
-      // Check for waiting_for_go_live flags
-      response.data.forEach(asset => {
-        if (asset.waiting_for_go_live) {
-          console.log(`✅ Asset "${asset.name}" has waiting_for_go_live=true`);
-        }
-      });
-      
       setAssets(response.data);
     } catch (error) {
       console.error('Error fetching assets:', error);
