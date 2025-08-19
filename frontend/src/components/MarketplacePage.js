@@ -1192,9 +1192,9 @@ const MarketplacePage = () => {
                               <div className="text-sm text-amber-800">
                                 <p className="font-medium">Asset Availability Notice</p>
                                 <p>This asset is currently occupied until {new Date(
-                                  selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date
+                                  selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date
                                 ).toLocaleDateString()}. You can only select dates from {new Date(
-                                  new Date(selectedAssetForOffer.asset_expiry_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.po_end_date).getTime() + 24 * 60 * 60 * 1000
+                                  new Date(selectedAssetForOffer.po_end_date || selectedAssetForOffer.next_available_date || selectedAssetForOffer.asset_expiry_date).getTime() + 24 * 60 * 60 * 1000
                                 ).toLocaleDateString()} onwards.</p>
                               </div>
                             </div>
