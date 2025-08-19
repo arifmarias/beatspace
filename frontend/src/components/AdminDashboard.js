@@ -4299,17 +4299,36 @@ const AdminDashboard = () => {
                               </Badge>
                             </div>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            Asset ID: {offer.asset_id}
-                          </div>
                           <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                             <div>
-                              <strong>Request Date:</strong> {offer.created_at ? new Date(offer.created_at).toLocaleDateString() : 'Not set'}
+                              <strong>Asset Start Date:</strong> {offer.asset_start_date ? new Date(offer.asset_start_date).toLocaleDateString() : 'Not set'}
                             </div>
                             <div>
-                              <strong>Duration:</strong> {offer.duration_months ? `${offer.duration_months} months` : 'Not set'}
+                              <strong>Asset Expiry Date:</strong> {offer.asset_expiration_date ? new Date(offer.asset_expiration_date).toLocaleDateString() : 'Not set'}
                             </div>
                           </div>
+                          {offer.asset_start_date && offer.asset_expiration_date && (
+                            <div className="text-xs text-gray-600">
+                              <strong>Duration:</strong> {(() => {
+                                const start = new Date(offer.asset_start_date);
+                                const end = new Date(offer.asset_expiration_date);
+                                const diffTime = Math.abs(end - start);
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                
+                                if (diffDays < 30) {
+                                  return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+                                } else if (diffDays < 365) {
+                                  const months = Math.floor(diffDays / 30);
+                                  const remainingDays = diffDays % 30;
+                                  return `${months} month${months > 1 ? 's' : ''}${remainingDays > 0 ? ` ${remainingDays} day${remainingDays > 1 ? 's' : ''}` : ''}`;
+                                } else {
+                                  const years = Math.floor(diffDays / 365);
+                                  const remainingMonths = Math.floor((diffDays % 365) / 30);
+                                  return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
+                                }
+                              })()}
+                            </div>
+                          )}
                           {offer.admin_quoted_price && (
                             <div className="text-xs">
                               <strong>Quoted Price:</strong> <span className="text-green-600 font-medium">৳{offer.admin_quoted_price.toLocaleString()}</span>
