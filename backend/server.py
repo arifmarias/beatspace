@@ -2208,10 +2208,10 @@ async def get_live_assets(current_user: User = Depends(get_current_user)):
             "buyer_id": current_user.id
         }).to_list(None)
         
-        # Get approved/accepted offers for campaign details
+        # Get approved/accepted/live offers for campaign details
         approved_offers = await db.offer_requests.find({
             "buyer_id": current_user.id,
-            "status": {"$in": ["Approved", "Accepted"]}  # Include both statuses
+            "status": {"$in": ["Approved", "Accepted", "Live"]}  # Include Live status
         }).to_list(None)
         
         # Create lookup for offers by asset_id for campaign details
