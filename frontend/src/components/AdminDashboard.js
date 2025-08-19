@@ -33,6 +33,7 @@ import {
   Globe,
   Calendar,
   Camera,
+  Upload,
   MessageSquare,
   TrendingUp,
   DollarSign,
