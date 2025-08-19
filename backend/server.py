@@ -2603,7 +2603,12 @@ async def get_assets(
             # Add flag to indicate if asset is waiting for go live
             asset_dict["waiting_for_go_live"] = po_uploaded_offer is not None
             if po_uploaded_offer:
-                asset_dict["po_end_date"] = po_uploaded_offer.get("tentative_end_date") or asset.get("next_available_date")
+                # Use confirmed end date first, then tentative end date, then asset next_available_date
+                asset_dict["po_end_date"] = (
+                    po_uploaded_offer.get("confirmed_end_date") or 
+                    po_uploaded_offer.get("tentative_end_date") or 
+                    asset.get("next_available_date")
+                )
             
             enhanced_assets.append(asset_dict)
         
