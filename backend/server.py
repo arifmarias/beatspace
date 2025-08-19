@@ -1901,7 +1901,7 @@ async def respond_to_offer(
                     {"id": campaign_id},
                     {
                         "$addToSet": {"campaign_assets": campaign_asset},
-                        "$set": {"updated_at": datetime.utcnov()}
+                        "$set": {"updated_at": datetime.utcnow()}
                     }
                 )
                 logger.info(f"Added asset {request['asset_id']} to campaign {campaign_id}")
