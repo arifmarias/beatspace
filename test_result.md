@@ -295,27 +295,33 @@ user_problem_statement: "Performance optimization required: 1) Buyer Dashboard c
 backend:
   - task: "Optimize assets/public endpoint performance"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "✅ OPTIMIZED /assets/public ENDPOINT: Replaced N+1 query problem with MongoDB aggregation pipeline. Instead of fetching all assets then making individual queries for PO Uploaded offers, now uses $lookup to join assets with offer_requests in single query. Added proper error handling and Pydantic validation. Expected to significantly reduce response times for marketplace asset loading."
+        - working: true
+          agent: "testing"
+          comment: "✅ PERFORMANCE OPTIMIZATION VERIFIED: Optimized /assets/public endpoint working excellently. Response time: 0.255s for 5 assets. MongoDB aggregation pipeline successfully implemented - no N+1 query issues. Optimization fields 'waiting_for_go_live' and 'asset_expiry_date' present in response. All required asset fields included. Single aggregation query confirmed. Performance improvement achieved."
 
   - task: "Create optimized campaign assets endpoint"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "✅ NEW ENDPOINT: Created GET /campaigns/{campaign_id}/assets endpoint using MongoDB aggregation pipeline. Eliminates need for frontend to fetch ALL assets and ALL offers for single campaign. Pipeline efficiently joins campaign data with assets and offer requests, applies filtering for campaign-specific assets, and returns only relevant data. Includes proper authentication and access control."
+        - working: true
+          agent: "testing"
+          comment: "✅ CAMPAIGN ASSETS ENDPOINT VERIFIED: New GET /campaigns/{campaign_id}/assets endpoint working correctly. Average response time: 0.963s. Proper authentication required (401 for unauthenticated, 404 for invalid campaign IDs). Admin access working. Returns proper JSON structure. Endpoint handles error cases correctly. Performance optimization successful for campaign-specific asset loading."
 
 frontend:
   - task: "Optimize BuyerDashboard campaign asset loading"
