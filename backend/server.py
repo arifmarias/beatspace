@@ -2605,12 +2605,14 @@ async def get_assets(
             # Add flag to indicate if asset is waiting for go live
             asset_dict["waiting_for_go_live"] = po_uploaded_offer is not None
             if po_uploaded_offer:
-                # Use confirmed end date first, then tentative end date, then asset next_available_date
-                asset_dict["po_end_date"] = (
+                # Override asset expiry date with the date from the offer request for existing PO Uploaded assets
+                asset_expiry_from_request = (
                     po_uploaded_offer.get("confirmed_end_date") or 
-                    po_uploaded_offer.get("tentative_end_date") or 
-                    asset.get("next_available_date")
+                    po_uploaded_offer.get("tentative_end_date")
                 )
+                if asset_expiry_from_request:
+                    # Override the original asset_expiry_date with the one from offer request
+                    asset_dict["asset_expiry_date"] = asset_expiry_from_request
             
             enhanced_assets.append(asset_dict)
         
