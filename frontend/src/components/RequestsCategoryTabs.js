@@ -243,10 +243,19 @@ const RequestsCategoryTabs = ({
               </>
             )}
             {request.status === 'PO Required' && (
-              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
-                <Upload className="w-4 h-4 mr-1" />
-                Upload PO
-              </Button>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => handlePOFileUpload(request.id, e)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id={`po-upload-${request.id}`}
+                />
+                <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Upload className="w-4 h-4 mr-1" />
+                  Upload PO
+                </Button>
+              </div>
             )}
             {request.status === 'Revise Request' && (
               <Button size="sm" variant="outline" className="text-orange-600 border-orange-300" disabled>
