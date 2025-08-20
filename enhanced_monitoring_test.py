@@ -95,15 +95,24 @@ class EnhancedMonitoringServiceTester:
 
     def test_buyer_login(self):
         """Test buyer login"""
-        login_data = {
-            "email": "buyer@beatspace.com",
-            "password": "buyer123"
-        }
-        success, response = self.run_test("Buyer Login", "POST", "auth/login", 200, data=login_data)
-        if success and 'access_token' in response:
-            self.buyer_token = response['access_token']
-            print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
-        return success, response
+        # Try different existing buyers
+        buyer_credentials = [
+            ("buy@demo.com", "buyer123"),
+            ("testbuyer@performance.com", "buyer123"),
+            ("buyer@beatspace.com", "buyer123")
+        ]
+        
+        for email, password in buyer_credentials:
+            login_data = {"email": email, "password": password}
+            success, response = self.run_test(f"Buyer Login ({email})", "POST", "auth/login", 200, data=login_data)
+            if success and 'access_token' in response:
+                self.buyer_token = response['access_token']
+                print(f"   ✅ Buyer authenticated: {email}")
+                print(f"   Buyer token obtained: {self.buyer_token[:20]}...")
+                return True, response
+        
+        print("   ❌ All buyer login attempts failed")
+        return False, {}
 
     def create_test_data(self):
         """Create test data for monitoring service testing"""
