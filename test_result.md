@@ -604,6 +604,54 @@ backend:
      - agent: "testing"
        message: "🎉 ASSET CATEGORIES FUNCTIONALITY COMPREHENSIVE TESTING COMPLETE - UI/UX FULLY VERIFIED! Conducted extensive testing of the Asset Categories functionality in AdminDashboard as specifically requested in the review. RESULTS: 100% UI/UX success rate with all critical functionality verified. ✅ ADMIN ACCESS & NAVIGATION: Admin login successful (admin@beatspace.com/admin123) with proper redirect to /admin/dashboard, AdminDashboard loads correctly with all navigation tabs visible, Assets tab accessible and functional, Add Asset button opens asset creation form correctly. ✅ ASSET CATEGORY IMPLEMENTATION VERIFIED: Asset Category dropdown properly implemented with three options: 🌐 Public (Show in Marketplace), 📋 Existing Asset (Not in Marketplace), 🔒 Private Asset (Not in Marketplace). Category selection working correctly with proper helper text display. ✅ CONDITIONAL FIELDS FUNCTIONALITY: All conditional fields render correctly based on category selection: 1) Existing Asset category shows Asset Expiry Date and Buyer Name fields, 2) Private Asset category shows One-off Investment and Buyer Name fields, 3) Public category shows standard fields only. ✅ CONDITIONAL PRICING & SELLER: Pricing section properly hidden for Private assets (conditional rendering working), Seller field marked as optional for Private assets and required for Public/Existing assets. ✅ FORM VALIDATION UI: Required field indicators (*) display correctly, Category-specific validation implemented, Helper text provides clear guidance for each category. ✅ UI/UX VERIFICATION COMPLETE: The Asset Categories functionality is fully implemented and accessible through AdminDashboard. All requested features from the review are working correctly: category selection dropdown, conditional field rendering, form validation, helper text, and proper UI/UX flow. BACKEND INTEGRATION READY: The frontend implementation is complete and ready for backend integration testing. The known backend issues (seller_id validation errors for Public/Existing assets) are separate from the UI implementation which is working correctly."
 
+  - task: "Enhanced Monitoring Service with Campaign ID Assignment"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🎯 ENHANCED MONITORING SERVICE WITH CAMPAIGN ID ASSIGNMENT TESTING COMPLETE - MIXED RESULTS WITH CRITICAL ISSUES IDENTIFIED. Conducted comprehensive testing of enhanced monitoring service functionality with campaign ID assignment as specifically requested in the review. RESULTS: 25% success rate (1/4 tests passed) with significant backend issues identified. ✅ ADMIN OFFER MEDIATION VISIBILITY: Working correctly - GET /api/admin/offer-requests returns 3 monitoring service requests for admin workflow, all required admin workflow fields present (id, buyer_name, asset_name, campaign_name, monitoring_service_level, status, created_at), proper visibility for admin quotation workflow confirmed. ❌ CRITICAL ISSUES IDENTIFIED: 1) ENHANCED MONITORING SERVICE CREATION: All 4 campaign ID assignment test cases failed with 500 errors - 'Campaign not found or access denied' and 'Asset not found or access denied' errors indicate backend validation issues with campaign ownership and asset access permissions. 2) OFFER REQUEST INTEGRATION: Offer request creation with monitoring service bundle successful, but missing 'campaign_id' field in response data structure - monitoring service requests appear in buyer requested offers but lack proper campaign ID tracking. 3) STATUS DISPLAY ENHANCEMENT: No Live monitoring services found for status testing - indicates monitoring services are not progressing to Live status properly, preventing frequency display testing. ✅ AUTHENTICATION SETUP: Admin and buyer authentication working correctly (admin@beatspace.com/admin123, testbuyer@performance.com/buyer123). ✅ TEST DATA CREATION: Successfully created 3 test assets for monitoring service testing. CONCLUSION: The enhanced monitoring service functionality has significant backend issues that prevent proper campaign ID assignment and service creation. While admin visibility is working, the core monitoring service creation workflow with campaign ID assignment is failing due to validation and permission issues. Backend fixes required for campaign ownership validation and asset access permissions."
+
+  - task: "Monitoring Service Campaign ID Assignment Logic"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ MONITORING SERVICE CAMPAIGN ID ASSIGNMENT LOGIC FAILING: All 4 test cases for campaign ID assignment failed with backend validation errors. SPECIFIC FAILURES: 1) Existing Asset -> campaign_id: 'Existing' - Failed with 'Campaign not found or access denied', 2) Private Asset -> campaign_id: 'Private' - Failed with 'Campaign not found or access denied', 3) Public Asset with campaign -> actual campaign_id - Failed with 'Asset not found or access denied', 4) Individual asset -> campaign_id: 'Individual' - Failed with 'Campaign not found or access denied'. ROOT CAUSE: Backend validation logic is treating special campaign IDs ('Existing', 'Private', 'Individual') as actual campaign IDs and attempting to validate them against the campaigns collection, causing validation failures. REQUIRED FIX: Backend needs to handle special campaign ID values ('Existing', 'Private', 'Individual') without campaign validation, only validate actual campaign IDs against campaigns collection."
+
+  - task: "Monitoring Service Offer Request Integration"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ MONITORING SERVICE OFFER REQUEST INTEGRATION PARTIALLY WORKING: Offer request creation with monitoring service bundle successful, but missing critical campaign_id field in response data structure. ISSUE: GET /api/offers/requests returns monitoring service requests but lacks 'campaign_id' field at top level as required for proper campaign tracking. Found 1 offer request with monitoring service but missing required fields: ['campaign_id']. IMPACT: Monitoring service requests appear in buyer requested offers tab but cannot be properly tracked by campaign ID, breaking the enhanced monitoring service workflow integration. REQUIRED FIX: Ensure campaign_id, frequency, and service_level fields are included at top level of offer request response for monitoring service requests."
+
+  - task: "Monitoring Service Status Display Enhancement"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ MONITORING SERVICE STATUS DISPLAY ENHANCEMENT CANNOT BE TESTED: No Live monitoring services found for status testing, preventing verification of frequency display in status text. ISSUE: Monitoring services are not progressing to Live status properly, indicating issues in the monitoring service lifecycle workflow. Found 0 Live monitoring services out of existing monitoring services. IMPACT: Cannot verify that Live monitoring services show frequency in status text ('Subscribed (Daily/Weekly/Monthly)') as required. REQUIRED FIX: Investigate monitoring service status progression workflow to ensure services can reach Live status for proper status display testing."
+
   - task: "Complete Monitoring Service Workflow Implementation"
     implemented: true
     working: true
