@@ -1076,7 +1076,9 @@ const BuyerDashboard = () => {
           statusText = 'Monitoring - Awaiting Go Live';
           break;
         case 'Live':
-          statusText = 'Monitoring Active';
+          // For live monitoring, show subscribed status with frequency
+          const frequency = offerWithMonitoring.monitoring_frequency || 'monthly';
+          statusText = `Subscribed (${frequency.charAt(0).toUpperCase() + frequency.slice(1)})`;
           break;
         default:
           statusText = 'Monitoring Under Review';
