@@ -2718,6 +2718,40 @@ async def make_offer_live(
                     {"$set": {"status": "Live", "updated_at": datetime.utcnow()}}
                 )
         
+        # Handle monitoring service bundle if included in the offer
+        service_bundles = offer_request.get("service_bundles", {})
+        if service_bundles.get("monitoring", False):
+            try:
+                # Create monitoring subscription
+                monitoring_subscription = {
+                    "id": str(uuid.uuid4()),
+                    "buyer_id": offer_request["buyer_id"],
+                    "asset_ids": [offer_request["asset_id"]],
+                    "frequency": service_bundles.get("monitoring_frequency", "monthly"),  # Default to monthly
+                    "service_level": service_bundles.get("monitoring_service_level", "basic"),  # Default to basic
+                    "start_date": tentative_start,
+                    "end_date": tentative_end,
+                    "status": "active",
+                    "created_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow(),
+                    "notification_preferences": {
+                        "email": True,
+                        "in_app": True,
+                        "sms": False
+                    },
+                    "offer_request_id": request_id  # Link to the original offer request
+                }
+                
+                await db.monitoring_subscriptions.insert_one(monitoring_subscription)
+                logger.info(f"Created monitoring subscription {monitoring_subscription['id']} for asset {offer_request['asset_id']}")
+                
+                # Generate initial monitoring tasks
+                await generate_monitoring_tasks(monitoring_subscription["id"], MonitoringServiceSubscription(**monitoring_subscription))
+                
+            except Exception as monitoring_error:
+                logger.error(f"Error creating monitoring subscription for offer {request_id}: {monitoring_error}")
+                # Don't fail the entire operation if monitoring creation fails
+        
         return {"message": "Offer is now live"}
         
     except Exception as e:
