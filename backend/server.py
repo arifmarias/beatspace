@@ -3751,7 +3751,7 @@ async def create_monitoring_service_request(
         offer_request = {
             "id": str(uuid.uuid4()),
             "buyer_id": current_user.id,
-            "buyer_name": current_user.name,
+            "buyer_name": current_user.contact_name,  # Use contact_name from User model
             "buyer_email": current_user.email,
             "request_type": "monitoring_service",
             "service_details": service_data.dict(),
