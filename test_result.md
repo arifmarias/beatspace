@@ -332,6 +332,18 @@ backend:
           comment: "🎉 CAMPAIGN ASSETS PERFORMANCE OPTIMIZATION VERIFIED - EXCELLENT RESULTS! Conducted comprehensive testing of the new optimized GET /campaigns/{campaign_id}/assets endpoint as specifically requested in the review. RESULTS: ✅ PERFORMANCE EXCELLENCE: Response time 1.048s for campaign asset loading - well under 2 second benchmark for excellent performance. Campaign asset loading lag has been eliminated. ✅ ENDPOINT FUNCTIONALITY: Proper authentication required, returns campaign-specific asset data, eliminates need to fetch ALL assets and offers. Tested with campaign 'ABC' containing 1 asset. ✅ DATA STRUCTURE: Returns proper JSON structure with campaign assets, handles error cases correctly. ✅ OPTIMIZATION IMPACT: Significant improvement over previous all-assets fetching approach. Performance benchmark: Excellent (< 2s). The buyer dashboard campaign assets loading performance improvement is working correctly and addresses the user-reported lag issues."
 
 frontend:
+  - task: "Updated monitoring button logic for service bundle tracking"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/BuyerDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "✅ ENHANCED getMonitoringButtonInfo FUNCTION: Updated logic to check for monitoring service included in offer requests (service_bundles.monitoring = true). Now tracks monitoring status across all offer stages (Pending, Quoted, Approved, PO Required, PO Uploaded, Live). Shows appropriate status text ('Monitoring Requested', 'Monitoring Active', etc.) and disables button when monitoring is already included. Maintains backward compatibility with existing monitoring subscription logic."
+
   - task: "Optimize BuyerDashboard campaign asset loading"
     implemented: true
     working: true
