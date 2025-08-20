@@ -3732,11 +3732,18 @@ async def create_monitoring_service_request(
         offer_request = {
             "id": str(uuid.uuid4()),
             "buyer_id": current_user.id,
+            "buyer_name": current_user.name,
+            "buyer_email": current_user.email,
             "request_type": "monitoring_service",
             "service_details": service_data.dict(),
             "status": "Pending",
+            "campaign_id": service_data.campaign_id,  # Include campaign_id at top level for filtering
+            "asset_id": service_data.asset_ids[0] if service_data.asset_ids else None,  # Primary asset for display
             "created_at": get_dhaka_now(),
-            "updated_at": get_dhaka_now()
+            "updated_at": get_dhaka_now(),
+            "frequency": service_data.frequency,  # Include frequency at top level for easy access
+            "service_level": service_data.service_level,  # Include service level at top level
+            "description": f"Monitoring service request for {len(service_data.asset_ids)} asset(s) - {service_data.frequency} frequency"
         }
         
         await db.offer_requests.insert_one(offer_request)
