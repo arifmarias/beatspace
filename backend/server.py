@@ -3717,16 +3717,35 @@ async def create_monitoring_service_request(
     try:
         # Handle campaign-based monitoring
         if service_data.campaign_id:
-            # Verify the user owns the campaign
-            campaign = await db.campaigns.find_one({"id": service_data.campaign_id, "buyer_id": current_user.id})
-            if not campaign:
-                raise HTTPException(status_code=404, detail="Campaign not found or access denied")
+            # Skip validation for special campaign IDs
+            special_campaign_ids = ["Existing", "Private", "Individual"]
+            
+            if service_data.campaign_id not in special_campaign_ids:
+                # Only validate actual campaign IDs, not special ones
+                campaign = await db.campaigns.find_one({"id": service_data.campaign_id, "buyer_id": current_user.id})
+                if not campaign:
+                    raise HTTPException(status_code=404, detail="Campaign not found or access denied")
         else:
-            # Handle individual asset monitoring - verify user owns all assets
+            # Handle individual asset monitoring - verify user has access to assets (not ownership)
             for asset_id in service_data.asset_ids:
-                asset = await db.assets.find_one({"id": asset_id, "buyer_id": current_user.id})
+                # Check if user owns the asset OR has an active offer for it
+                asset_query = {
+                    "$or": [
+                        {"id": asset_id, "buyer_id": current_user.id},  # User owns the asset
+                        {"id": asset_id, "status": "Live"}  # Asset is live (user can request monitoring)
+                    ]
+                }
+                asset = await db.assets.find_one(asset_query)
                 if not asset:
-                    raise HTTPException(status_code=404, detail=f"Asset {asset_id} not found or access denied")
+                    # Check if user has an active offer for this asset
+                    active_offer = await db.offer_requests.find_one({
+                        "asset_id": asset_id,
+                        "buyer_id": current_user.id,
+                        "status": {"$in": ["Live", "Approved", "Accepted"]}
+                    })
+                    if not active_offer:
+                        raise HTTPException(status_code=404, detail=f"Asset {asset_id} not accessible for monitoring")
+        
         
         # Create monitoring service request as offer request
         offer_request = {
