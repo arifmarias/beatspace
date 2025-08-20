@@ -361,6 +361,18 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ MARKETPLACE ASSET LOADING OPTIMIZATION VERIFIED: Backend testing confirms the marketplace optimization is working excellently. The /assets/public endpoint that MarketplacePage.js uses is performing with 0.284s response time (< 1s benchmark - Excellent performance). The MongoDB aggregation pipeline optimization eliminates N+1 query issues. With the frontend 2-minute caching and reduced refresh frequency (30s → 5min), marketplace loading performance should be significantly improved and server load reduced. The slow asset loading when clicking 'explore marketplace' issue has been resolved."
+
+  - task: "Enhanced make_offer_live endpoint for monitoring service bundles"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "✅ ENHANCED MAKE_OFFER_LIVE ENDPOINT: Updated /offers/{request_id}/make-live to automatically create monitoring subscriptions when service_bundles.monitoring is true. When an offer goes live with monitoring included, it creates active monitoring subscription with asset_ids, frequency, service_level, dates, and generates initial monitoring tasks. Links to original offer request and handles errors gracefully without failing the entire operation."
   - task: "Manager Dashboard Route Assignment map stabilization (no flicker, multi-select, loader)"
     implemented: true
     working: false
