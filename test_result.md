@@ -205,13 +205,13 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Monitoring Service Bundle Testing Complete"
+    - "Enhanced Monitoring Service with Campaign ID Assignment Testing Complete"
   stuck_tasks:
     - "Asset Creation with Public Category"
     - "Asset Creation with Existing Asset Category"
     - "Edge Cases for Asset Categories"
   test_all: false
-  test_priority: "monitoring_service_bundle_complete"
+  test_priority: "enhanced_monitoring_service_complete"
   
 ## agent_communication:
      - agent: "main"
