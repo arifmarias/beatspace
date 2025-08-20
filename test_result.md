@@ -205,13 +205,13 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Asset Categories UI/UX Verification Complete"
+    - "Monitoring Service Bundle Testing Complete"
   stuck_tasks:
     - "Asset Creation with Public Category"
     - "Asset Creation with Existing Asset Category"
     - "Edge Cases for Asset Categories"
   test_all: false
-  test_priority: "ui_verification_complete"
+  test_priority: "monitoring_service_bundle_complete"
   
 ## agent_communication:
      - agent: "main"
