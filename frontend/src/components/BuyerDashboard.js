@@ -1047,7 +1047,53 @@ const BuyerDashboard = () => {
       };
     }
 
-    // Check for pending monitoring service request
+    // Check for monitoring service included in offer requests (service_bundle.monitoring = true)
+    const offerWithMonitoring = requestedOffers.find(offer => 
+      offer.asset_id === assetId && 
+      offer.service_bundles?.monitoring === true &&
+      ['Pending', 'Processing', 'In Process', 'Quoted', 'Accepted', 'Approved', 'PO Required', 'PO Uploaded', 'Live'].includes(offer.status)
+    );
+
+    if (offerWithMonitoring) {
+      let statusText = '';
+      switch (offerWithMonitoring.status) {
+        case 'Pending':
+        case 'Processing':
+        case 'In Process':
+          statusText = 'Monitoring Requested';
+          break;
+        case 'Quoted':
+          statusText = 'Monitoring Quoted';
+          break;
+        case 'Accepted':
+        case 'Approved':
+          statusText = 'Monitoring Approved';
+          break;
+        case 'PO Required':
+          statusText = 'Monitoring - PO Required';
+          break;
+        case 'PO Uploaded':
+          statusText = 'Monitoring - Awaiting Go Live';
+          break;
+        case 'Live':
+          statusText = 'Monitoring Active';
+          break;
+        default:
+          statusText = 'Monitoring Under Review';
+      }
+      
+      return {
+        text: statusText,
+        subscribed: offerWithMonitoring.status === 'Live',
+        disabled: true,
+        variant: 'outline',
+        className: offerWithMonitoring.status === 'Live' ? 
+          'text-green-600 border-green-300 bg-green-50 cursor-not-allowed opacity-75' :
+          'text-orange-600 border-orange-300 bg-orange-50 cursor-not-allowed opacity-75'
+      };
+    }
+
+    // Check for pending monitoring service request (standalone monitoring requests)
     const monitoringRequest = requestedOffers.find(offer => 
       offer.request_type === 'monitoring_service' && 
       offer.service_details?.asset_ids?.includes(assetId) &&
