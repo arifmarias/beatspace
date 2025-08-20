@@ -124,7 +124,7 @@ class EnhancedMonitoringServiceTester:
         
         # Create test buyer if doesn't exist
         buyer_data = {
-            "email": "buyer@beatspace.com",
+            "email": "buy@demo.com",
             "password": "buyer123",
             "company_name": "Test Buyer Company",
             "contact_name": "Test Buyer",
