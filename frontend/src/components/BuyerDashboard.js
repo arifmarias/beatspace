@@ -1940,10 +1940,44 @@ const BuyerDashboard = () => {
       try {
         setMonitoringSubmitting(true);
         
-        // Get the selected asset to use its expiry date
+        // Get the selected asset to use its expiry date and determine campaign_id
         const selectedAsset = liveAssets.find(asset => 
           monitoringFormData.selectedAssets.includes(asset.id)
         );
+        
+        // Determine campaign_id based on asset category or existing campaign association
+        let campaign_id = null;
+        if (selectedAsset) {
+          // Check if asset has an existing campaign association
+          if (selectedAsset.campaignId) {
+            campaign_id = selectedAsset.campaignId;
+          } else {
+            // For assets without campaign association, use category-based campaign_id
+            switch (selectedAsset.category) {
+              case 'Existing Asset':
+                campaign_id = 'Existing';
+                break;
+              case 'Private Asset':
+                campaign_id = 'Private';
+                break;
+              case 'Public':
+              default:
+                // For public assets or assets without category, find associated campaign from offer requests
+                const assetOffer = requestedOffers.find(offer => 
+                  offer.asset_id === selectedAsset.id && 
+                  offer.status === 'Live' &&
+                  (offer.existing_campaign_id || offer.campaign_name)
+                );
+                
+                if (assetOffer) {
+                  campaign_id = assetOffer.existing_campaign_id || assetOffer.campaign_name;
+                } else {
+                  campaign_id = 'Individual'; // Standalone asset monitoring
+                }
+                break;
+            }
+          }
+        }
         
         // Use asset expiry date or default to 30 days from now
         let endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default fallback
@@ -1957,8 +1991,8 @@ const BuyerDashboard = () => {
           service_level: monitoringFormData.serviceLevel,
           notification_preferences: monitoringFormData.notificationPreferences,
           start_date: new Date().toISOString(),
-          end_date: endDate.toISOString()
-          // Note: campaign_id is intentionally omitted for individual asset monitoring
+          end_date: endDate.toISOString(),
+          campaign_id: campaign_id // Include campaign_id for proper categorization
         };
 
         console.log('📝 Creating monitoring service request:', subscriptionData);
