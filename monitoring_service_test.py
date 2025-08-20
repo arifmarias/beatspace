@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-BeatSpace Monitoring Service API Testing Suite
-Comprehensive backend testing for monitoring service APIs after dashboard access fixes
+Enhanced Monitoring Service API Testing Suite
+Testing enhanced monitoring service functionality with campaign ID assignment
+Focus: Campaign ID assignment, offer integration, admin workflow, status display
 """
 
 import requests
@@ -16,15 +17,13 @@ class MonitoringServiceTester:
         self.tests_run = 0
         self.tests_passed = 0
         self.admin_token = None
-        self.manager_token = None
-        self.operator_token = None
         self.buyer_token = None
         self.test_results = {}
         
         # Test data storage
         self.test_campaign_id = None
-        self.test_subscription_id = None
-        self.test_task_id = None
+        self.created_monitoring_service_id = None
+        self.created_offer_request_id = None
         self.test_asset_ids = []
 
     def log_test(self, name: str, success: bool, details: str = ""):
