@@ -292,7 +292,7 @@ test_plan:
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Performance optimization required: 1) Buyer Dashboard campaign asset loading lag when clicking campaign rows to open details dialog, 2) Marketplace slow asset loading when clicking 'explore marketplace' (both map and list views). These performance issues appeared after recent campaign asset count fixes and need immediate optimization."
+user_problem_statement: "Buyer asset list view monitoring subscription status issue: Some assets already subscribe to monitoring service when buyer requested for best offer (info from offer_request collection where service_bundle.monitoring is true). Also monitoring_subscription data has frequency. If user already subscribed for monitoring service, the 'Subscribe to monitoring' button should reflect that status. Also needs to create monitoring service in manager end when offer goes live."
 
 backend:
   - task: "Optimize assets/public endpoint performance"
