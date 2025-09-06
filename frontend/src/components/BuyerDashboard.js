@@ -3513,98 +3513,65 @@ const BuyerDashboard = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Campaign Details Dialog */}
+        {/* Campaign Details Dialog - Admin Style */}
         {selectedCampaign && (
           <Dialog open={!!selectedCampaign} onOpenChange={() => setSelectedCampaign(null)}>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Campaign Details: {selectedCampaign.name}</DialogTitle>
+                <DialogTitle>Campaign Details</DialogTitle>
               </DialogHeader>
               
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Status</label>
-                    <Badge className={getStatusColor(selectedCampaign.status)}>
-                      {selectedCampaign.status}
-                    </Badge>
+                    <h4 className="font-semibold mb-3">Campaign Information</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Name:</strong> {selectedCampaign.name}</p>
+                      <p><strong>Description:</strong> {selectedCampaign.description || 'No description'}</p>
+                      <p><strong>Budget:</strong> {selectedCampaign.budget ? `৳${selectedCampaign.budget.toLocaleString()}` : 'Not specified'}</p>
+                      <p><strong>Status:</strong> 
+                        <Badge className={`ml-2 ${getStatusColor(selectedCampaign.status)}`}>
+                          {selectedCampaign.status}
+                        </Badge>
+                      </p>
+                      {selectedCampaign.notes && (
+                        <p><strong>Notes:</strong> {selectedCampaign.notes}</p>
+                      )}
+                    </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Budget</label>
-                    <p className="text-lg font-semibold">৳{selectedCampaign.budget?.toLocaleString()}</p>
+                    <h4 className="font-semibold mb-3">Timeline</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Start Date:</strong> {selectedCampaign.start_date ? new Date(selectedCampaign.start_date).toLocaleDateString() : 'Not set'}</p>
+                      <p><strong>End Date:</strong> {selectedCampaign.end_date ? new Date(selectedCampaign.end_date).toLocaleDateString() : 'Not set'}</p>
+                      {selectedCampaign.start_date && selectedCampaign.end_date && (
+                        <p><strong>Duration:</strong> {calculateDuration(selectedCampaign.start_date, selectedCampaign.end_date)}</p>
+                      )}
+                      <p><strong>Created:</strong> {selectedCampaign.created_at ? new Date(selectedCampaign.created_at).toLocaleString() : 'Not available'}</p>
+                      {selectedCampaign.updated_at && (
+                        <p><strong>Last Updated:</strong> {new Date(selectedCampaign.updated_at).toLocaleString()}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Campaign Dates */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Start Date</label>
-                    <p className="text-gray-900">
-                      {selectedCampaign.start_date 
-                        ? new Date(selectedCampaign.start_date).toLocaleDateString() 
-                        : 'Not set'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">End Date</label>
-                    <p className="text-gray-900">
-                      {selectedCampaign.end_date 
-                        ? new Date(selectedCampaign.end_date).toLocaleDateString() 
-                        : 'Not set'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Campaign Duration */}
-                {selectedCampaign.start_date && selectedCampaign.end_date && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Duration</label>
-                    <p className="text-gray-900">
-                      {calculateDuration(selectedCampaign.start_date, selectedCampaign.end_date)}
-                    </p>
-                  </div>
-                )}
-
-                {/* Campaign Created Date */}
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Request Date</label>
-                  <p className="text-gray-900">
-                    {selectedCampaign.created_at 
-                      ? new Date(selectedCampaign.created_at).toLocaleDateString() 
-                      : 'Not available'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Description</label>
-                  <p className="text-gray-900">{selectedCampaign.description}</p>
-                </div>
-
-                {selectedCampaign.notes && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Notes</label>
-                    <p className="text-gray-900">{selectedCampaign.notes}</p>
-                  </div>
-                )}
-
+                {/* Campaign Assets Section */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-medium text-gray-500">Campaign Assets</label>
+                    <h4 className="font-semibold">Campaign Assets ({(campaignAssets || []).length})</h4>
                     {(selectedCampaign.status === 'Draft' || selectedCampaign.status === 'Live') && (
                       <Button 
                         size="sm" 
                         onClick={() => {
-                          // Store campaign context more reliably using sessionStorage
                           sessionStorage.setItem('selectedCampaignForOffer', JSON.stringify({
                             id: selectedCampaign.id,
                             name: selectedCampaign.name,
                             end_date: selectedCampaign.end_date
                           }));
-                          // Close current dialog and navigate to marketplace with campaign context
                           setSelectedCampaign(null);
-                          navigate(`/marketplace?campaign=${selectedCampaign.id}`);
+                          navigate('/marketplace');
                         }}
-                        className="bg-orange-600 hover:bg-orange-700"
+                        className="bg-blue-600 hover:bg-blue-700"
                       >
                         <Plus className="w-4 h-4 mr-1" />
                         Add Asset
@@ -3620,17 +3587,15 @@ const BuyerDashboard = () => {
                         <Button 
                           size="sm"
                           onClick={() => {
-                            // Store campaign context more reliably using sessionStorage
                             sessionStorage.setItem('selectedCampaignForOffer', JSON.stringify({
                               id: selectedCampaign.id,
                               name: selectedCampaign.name,
                               end_date: selectedCampaign.end_date
                             }));
-                            // Close current dialog and navigate to marketplace with campaign context
                             setSelectedCampaign(null);
-                            navigate(`/marketplace?campaign=${selectedCampaign.id}`);
+                            navigate('/marketplace');
                           }}
-                          className="bg-orange-600 hover:bg-orange-700"
+                          className="bg-blue-600 hover:bg-blue-700"
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add Your First Asset
@@ -3638,116 +3603,142 @@ const BuyerDashboard = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {(campaignAssets || []).map((asset) => (
-                        <Card key={asset.id} className={`border ${asset.isRequested ? 'border-orange-200 bg-orange-50' : ''}`}>
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <h4 className="font-medium text-gray-900">{asset.name}</h4>
-                                  {asset.isRequested && (
-                                    <Badge 
-                                      variant="outline" 
-                                      className={
-                                        asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' 
-                                          ? "text-green-600 border-green-300 bg-green-50" 
-                                          : "text-orange-600 border-orange-300"
-                                      }
-                                    >
-                                      {asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? 'Booked' : 'Requested'}
-                                    </Badge>
-                                  )}
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">{asset.address}</p>
-                                <div className="flex items-center space-x-4">
-                                  <Badge variant="outline">{asset.type}</Badge>
-                                  
-                                  {asset.isRequested ? (
-                                    <Badge className="bg-orange-100 text-orange-800">
-                                      {asset.offerStatus}
-                                    </Badge>
-                                  ) : (
-                                    <Badge className={getStatusColor(asset.offerStatus || asset.status)}>
-                                      {asset.offerStatus || asset.status}
-                                    </Badge>
-                                  )}
-                                </div>
-                                
-                                {/* Show Asset Expiry Date for Live Campaign assets (non-requested) only when PO Uploaded */}
-                                {selectedCampaign.status === 'Live' && !asset.isRequested && asset.waiting_for_go_live && asset.asset_expiry_date && (
-                                  <div className="mt-2 space-y-1">
-                                    <p className="text-xs text-blue-600 font-medium">
-                                      🗓️ Asset Expiry: {new Date(asset.asset_expiry_date).toLocaleDateString()}
-                                    </p>
-                                    {selectedCampaign.end_date && (
-                                      <p className="text-xs text-gray-500">
-                                        Campaign End: {new Date(selectedCampaign.end_date).toLocaleDateString()}
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-                                
-                                {/* For requested assets, show different info based on status */}
-                                {asset.isRequested && (
-                                  <div className="mt-2">
-                                    {asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? (
-                                      <p className="text-xs text-green-600">
-                                        ✅ {asset.offerStatus}
-                                      </p>
-                                    ) : asset.offerStatus === 'Quoted' ? (
-                                      <p className="text-xs text-blue-600">
-                                        💰 Price quoted - Check Requested Offers tab
-                                      </p>
-                                    ) : (
-                                      <p className="text-xs text-amber-600">
-                                        ⏳ {asset.offerStatus}
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-                                
-                                {/* For Draft campaigns, show availability info only when PO Uploaded */}
-                                {selectedCampaign.status === 'Draft' && !asset.isRequested && asset.waiting_for_go_live && asset.asset_expiry_date && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    Available after: {new Date(asset.asset_expiry_date).toLocaleDateString()}
-                                  </p>
-                                )}
-                              </div>
-                              
-                              {/* Action buttons */}
-                              <div className="flex space-x-2">
-                                {asset.isRequested && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      // Find and edit the offer request
-                                      const offerToEdit = requestedOffers.find(offer => offer.id === asset.offerId);
-                                      if (offerToEdit) {
-                                        setSelectedCampaign(null); // Close campaign dialog
-                                        editOfferRequest(offerToEdit); // Open edit dialog
-                                      }
-                                    }}
-                                    className="text-blue-600 hover:text-blue-800"
-                                  >
-                                    <Edit className="w-4 h-4" />
-                                  </Button>
-                                )}
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {(campaignAssets || []).map((asset, index) => (
+                        <div key={asset.id || index} className="border rounded-lg p-3 space-y-2">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <h5 className="font-medium text-sm">{asset.name}</h5>
+                                <Badge className={getStatusColor(asset.offerStatus || asset.status)}>
+                                  {asset.offerStatus || asset.status}
+                                </Badge>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
+                            
+                            {/* Action buttons */}
+                            <div className="flex space-x-2">
+                              {asset.isRequested && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const offerToEdit = requestedOffers.find(offer => offer.id === asset.offerId);
+                                    if (offerToEdit) {
+                                      setSelectedCampaign(null);
+                                      editOfferRequest(offerToEdit);
+                                    }
+                                  }}
+                                  className="text-blue-600 hover:text-blue-800"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Asset Address */}
+                          {asset.address && (
+                            <div className="text-xs text-gray-600">
+                              <strong>Asset Address:</strong> {asset.address}
+                            </div>
+                          )}
+                          
+                          {/* Asset dates */}
+                          <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
+                            <div>
+                              <strong>Asset Start Date:</strong> {
+                                asset.asset_start_date ? 
+                                new Date(asset.asset_start_date).toLocaleDateString() : 
+                                'Not set'
+                              }
+                            </div>
+                            <div>
+                              <strong>Asset Expiry Date:</strong> {
+                                asset.asset_expiration_date ? 
+                                new Date(asset.asset_expiration_date).toLocaleDateString() : 
+                                'Not set'
+                              }
+                            </div>
+                          </div>
+                          
+                          {/* Duration calculation */}
+                          {asset.asset_start_date && asset.asset_expiration_date && (
+                            <div className="text-xs text-gray-600">
+                              <strong>Duration:</strong> {(() => {
+                                const start = new Date(asset.asset_start_date);
+                                const end = new Date(asset.asset_expiration_date);
+                                const diffTime = Math.abs(end - start);
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                
+                                if (diffDays < 30) {
+                                  return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+                                } else if (diffDays < 365) {
+                                  const months = Math.floor(diffDays / 30);
+                                  const remainingDays = diffDays % 30;
+                                  return `${months} month${months > 1 ? 's' : ''}${remainingDays > 0 ? ` ${remainingDays} day${remainingDays > 1 ? 's' : ''}` : ''}`;
+                                } else {
+                                  const years = Math.floor(diffDays / 365);
+                                  const remainingMonths = Math.floor((diffDays % 365) / 30);
+                                  return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
+                                }
+                              })()}
+                            </div>
+                          )}
+                          
+                          {/* Asset type and pricing */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline" className="text-xs">{asset.type || 'Unknown Type'}</Badge>
+                              {asset.dimensions && (
+                                <span className="text-xs text-gray-500">{asset.dimensions}</span>
+                              )}
+                            </div>
+                            
+                            {/* Show pricing if available */}
+                            <div className="text-right text-xs">
+                              {requestedOffers.find(offer => offer.asset_id === asset.id)?.admin_quoted_price && (
+                                <div>
+                                  <div className="text-green-600 font-medium">
+                                    ৳{requestedOffers.find(offer => offer.asset_id === asset.id).admin_quoted_price.toLocaleString()}
+                                  </div>
+                                  <div className="text-gray-500">Quoted Price</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Status-specific information */}
+                          {asset.isRequested && (
+                            <div className="mt-2">
+                              {asset.offerStatus === 'Live' ? (
+                                <p className="text-xs text-green-600 font-medium">
+                                  🟢 Asset is now live and active
+                                </p>
+                              ) : asset.offerStatus === 'PO Uploaded' ? (
+                                <p className="text-xs text-orange-600">
+                                  📄 PO uploaded - Awaiting admin approval to go live
+                                </p>
+                              ) : asset.offerStatus === 'Quoted' ? (
+                                <p className="text-xs text-blue-600">
+                                  💰 Price quoted - Check Requested Offers tab for details
+                                </p>
+                              ) : asset.offerStatus === 'Approved' || asset.offerStatus === 'Accepted' ? (
+                                <p className="text-xs text-green-600">
+                                  ✅ {asset.offerStatus} - Ready for next steps
+                                </p>
+                              ) : (
+                                <p className="text-xs text-amber-600">
+                                  ⏳ {asset.offerStatus} - Processing your request
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
                 </div>
-              </div>
-              
-              <div className="flex justify-end pt-4">
-                <Button variant="outline" onClick={() => setSelectedCampaign(null)}>
-                  Close
-                </Button>
               </div>
             </DialogContent>
           </Dialog>
