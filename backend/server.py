@@ -3489,9 +3489,26 @@ async def get_campaigns(current_user: User = Depends(get_current_user)):
     
     campaigns = await db.campaigns.find(query).to_list(1000)
     
+    # Debug logging to identify duplicate campaigns
+    campaign_names = [c.get("name") for c in campaigns]
+    unique_names = set(campaign_names)
+    if len(campaign_names) != len(unique_names):
+        logger.warning(f"Found duplicate campaigns: {len(campaign_names)} total, {len(unique_names)} unique")
+        for name in unique_names:
+            count = campaign_names.count(name)
+            if count > 1:
+                logger.warning(f"Campaign '{name}' appears {count} times")
+    
+    # Group campaigns by ID to avoid duplicates (should not happen but safety check)
+    campaigns_by_id = {}
+    for campaign in campaigns:
+        campaign_id = campaign.get("id")
+        if campaign_id not in campaigns_by_id:
+            campaigns_by_id[campaign_id] = campaign
+    
     # Enhance campaigns with asset count information
     enhanced_campaigns = []
-    for campaign in campaigns:
+    for campaign in campaigns_by_id.values():  # Use deduplicated campaigns
         campaign_dict = Campaign(**campaign).dict()
         
         # Get offer requests for this campaign
@@ -3516,6 +3533,7 @@ async def get_campaigns(current_user: User = Depends(get_current_user)):
         
         enhanced_campaigns.append(campaign_dict)
     
+    logger.info(f"Returning {len(enhanced_campaigns)} campaigns for user {current_user.id}")
     return enhanced_campaigns
 
 @api_router.post("/campaigns", response_model=Campaign)
