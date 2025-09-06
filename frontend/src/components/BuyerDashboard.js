@@ -1631,20 +1631,27 @@ const BuyerDashboard = () => {
 
   const handleApproveOffer = async (offer) => {
     try {
+      console.log('🚨 APPROVING OFFER - Full offer object:', offer);
+      console.log('🚨 APPROVING OFFER - Offer ID:', offer.id);
+      console.log('🚨 APPROVING OFFER - API URL:', `${API}/offers/${offer.id}/respond`);
+      
       const confirmMessage = `Are you sure you want to approve the offer for "${offer.asset_name}" at ৳${offer.admin_quoted_price?.toLocaleString()}?`;
       
       if (!window.confirm(confirmMessage)) {
         return;
       }
 
-      console.log('🚨 APPROVING OFFER:', offer.id);
+      console.log('🚨 APPROVING OFFER - User confirmed');
       
       const headers = getAuthHeaders();
+      console.log('🚨 APPROVING OFFER - Headers:', headers);
       
       // Call backend endpoint to approve offer
-      await axios.put(`${API}/offers/${offer.id}/respond`, {
+      const response = await axios.put(`${API}/offers/${offer.id}/respond`, {
         action: 'accept'
       }, { headers });
+      
+      console.log('🚨 APPROVING OFFER - Backend response:', response.data);
       
       // Show custom congratulations modal
       setCongratulationsData({
@@ -1652,6 +1659,8 @@ const BuyerDashboard = () => {
         quotedPrice: offer.admin_quoted_price
       });
       setShowCongratulationsModal(true);
+      
+      console.log('🚨 APPROVING OFFER - Refreshing data...');
       
       // Immediate refresh for real-time updates
       await fetchBuyerData();
@@ -1663,6 +1672,8 @@ const BuyerDashboard = () => {
       
     } catch (error) {
       console.error('🚨 Error approving offer:', error);
+      console.error('🚨 Error response:', error.response);
+      console.error('🚨 Error data:', error.response?.data);
       notify.error('Failed to approve offer: ' + (error.response?.data?.detail || error.message));
     }
   };
