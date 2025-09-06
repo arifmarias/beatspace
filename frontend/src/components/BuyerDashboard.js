@@ -705,39 +705,69 @@ const BuyerDashboard = () => {
   const enrichCampaignAssetsWithOfferData = (assets, offers) => {
     console.log('🔍 ENRICHING ASSETS - Input assets:', assets.length);
     console.log('🔍 ENRICHING ASSETS - Input offers:', offers.length);
+    console.log('🔍 CAMPAIGN INFO:', { id: selectedCampaign?.id, name: selectedCampaign?.name });
     
     return assets.map((asset, index) => {
       console.log(`🔍 ASSET ${index + 1}: ${asset.name} (ID: ${asset.id})`);
       
-      // Find the related offer request for this asset
-      const relatedOffer = offers.find(offer => 
+      // Try multiple matching strategies to find the related offer
+      let relatedOffer = null;
+      
+      // Strategy 1: Match by asset_id and campaign_id
+      relatedOffer = offers.find(offer => 
         offer.asset_id === asset.id && 
-        (offer.existing_campaign_id === selectedCampaign?.id || offer.campaign_name === selectedCampaign?.name)
+        offer.existing_campaign_id === selectedCampaign?.id
       );
+      
+      if (!relatedOffer) {
+        // Strategy 2: Match by asset_id and campaign_name
+        relatedOffer = offers.find(offer => 
+          offer.asset_id === asset.id && 
+          offer.campaign_name === selectedCampaign?.name
+        );
+      }
+      
+      if (!relatedOffer) {
+        // Strategy 3: Match by asset_name (fallback)
+        relatedOffer = offers.find(offer => 
+          offer.asset_name === asset.name
+        );
+      }
+      
+      if (!relatedOffer) {
+        // Strategy 4: Match by asset_id only (for this campaign's buyer)
+        relatedOffer = offers.find(offer => 
+          offer.asset_id === asset.id
+        );
+      }
       
       console.log(`🔍 RELATED OFFER for ${asset.name}:`, relatedOffer);
       
       if (relatedOffer) {
         console.log(`✅ OFFER FOUND - Asset dates:`, {
           asset_start_date: relatedOffer.asset_start_date,
-          tentative_start_date: relatedOffer.tentative_start_date,
           asset_expiration_date: relatedOffer.asset_expiration_date,
-          tentative_end_date: relatedOffer.tentative_end_date
+          tentative_start_date: relatedOffer.tentative_start_date,
+          tentative_end_date: relatedOffer.tentative_end_date,
+          offer_status: relatedOffer.status,
+          offer_id: relatedOffer.id
         });
       } else {
-        console.log(`❌ NO OFFER FOUND for ${asset.name} - searching by name fallback`);
-        // Try to find by asset name or other criteria
-        const fallbackOffer = offers.find(offer => 
-          offer.asset_name === asset.name
-        );
-        console.log(`🔍 FALLBACK OFFER:`, fallbackOffer);
+        console.log(`❌ NO OFFER FOUND for ${asset.name}`);
+        console.log('Available offers for debugging:', offers.map(o => ({ 
+          id: o.id, 
+          asset_id: o.asset_id, 
+          asset_name: o.asset_name, 
+          campaign_id: o.existing_campaign_id,
+          campaign_name: o.campaign_name 
+        })));
       }
       
       const enrichedAsset = {
         ...asset,
         // Add offer details for dates and pricing
         offerDetails: relatedOffer || {},
-        // Ensure we have the correct dates from offer requests
+        // Prioritize asset_start_date and asset_expiration_date from offer_requests
         asset_start_date: relatedOffer?.asset_start_date || relatedOffer?.tentative_start_date || asset.asset_start_date,
         asset_expiration_date: relatedOffer?.asset_expiration_date || relatedOffer?.tentative_end_date || asset.asset_expiration_date,
         // Add pricing information
@@ -751,8 +781,10 @@ const BuyerDashboard = () => {
       console.log(`✅ ENRICHED ASSET ${asset.name}:`, {
         original_start: asset.asset_start_date,
         original_end: asset.asset_expiration_date,
-        enriched_start: enrichedAsset.asset_start_date,
-        enriched_end: enrichedAsset.asset_expiration_date,
+        offer_start: relatedOffer?.asset_start_date,
+        offer_end: relatedOffer?.asset_expiration_date,
+        final_start: enrichedAsset.asset_start_date,
+        final_end: enrichedAsset.asset_expiration_date,
         offer_id: relatedOffer?.id
       });
       
