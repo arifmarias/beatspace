@@ -701,95 +701,76 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Enrich campaign assets with offer request data (similar to admin)
-  const enrichCampaignAssetsWithOfferData = (assets, offers) => {
-    console.log('🔍 ENRICHING ASSETS - Input assets:', assets.length);
-    console.log('🔍 ENRICHING ASSETS - Input offers:', offers.length);
-    console.log('🔍 CAMPAIGN INFO:', { id: selectedCampaign?.id, name: selectedCampaign?.name });
-    
-    return assets.map((asset, index) => {
-      console.log(`🔍 ASSET ${index + 1}: ${asset.name} (ID: ${asset.id})`);
+  // Use the EXACT same logic as admin for campaign asset details
+  const fetchCampaignAssetDetails = async (campaign) => {
+    if (!campaign || !campaign.campaign_assets || campaign.campaign_assets.length === 0) {
+      setCampaignAssets([]);
+      return;
+    }
+
+    console.log('🚀 BUYER: Starting fetchCampaignAssetDetails for:', campaign.name);
+    try {
+      const headers = getAuthHeaders();
       
-      // Try multiple matching strategies to find the related offer
-      let relatedOffer = null;
+      // Fetch all assets and offer requests in parallel (SAME AS ADMIN)
+      const [assetsResponse, offersResponse] = await Promise.all([
+        axios.get(`${API}/assets/public`), // Use public for buyer
+        axios.get(`${API}/offers/requests`, { headers }) // Use buyer endpoint
+      ]);
       
-      // Strategy 1: Match by asset_id and campaign_id
-      relatedOffer = offers.find(offer => 
-        offer.asset_id === asset.id && 
-        offer.existing_campaign_id === selectedCampaign?.id
-      );
+      const allAssets = assetsResponse.data || [];
+      const allOffers = offersResponse.data || [];
       
-      if (!relatedOffer) {
-        // Strategy 2: Match by asset_id and campaign_name
-        relatedOffer = offers.find(offer => 
-          offer.asset_id === asset.id && 
-          offer.campaign_name === selectedCampaign?.name
+      console.log('📦 BUYER: Fetched assets:', allAssets.length);
+      console.log('📦 BUYER: Fetched offers:', allOffers.length);
+      
+      // Create detailed asset information (EXACT SAME LOGIC AS ADMIN)
+      const detailedAssets = campaign.campaign_assets.map(campaignAsset => {
+        console.log('🔍 BUYER: Processing campaign asset:', campaignAsset);
+        
+        // Find the actual asset
+        const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
+        
+        // Find the related offer request
+        const offerRequest = allOffers.find(offer => 
+          offer.asset_id === campaignAsset.asset_id && 
+          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name)
         );
-      }
-      
-      if (!relatedOffer) {
-        // Strategy 3: Match by asset_name (fallback)
-        relatedOffer = offers.find(offer => 
-          offer.asset_name === asset.name
-        );
-      }
-      
-      if (!relatedOffer) {
-        // Strategy 4: Match by asset_id only (for this campaign's buyer)
-        relatedOffer = offers.find(offer => 
-          offer.asset_id === asset.id
-        );
-      }
-      
-      console.log(`🔍 RELATED OFFER for ${asset.name}:`, relatedOffer);
-      
-      if (relatedOffer) {
-        console.log(`✅ OFFER FOUND - Asset dates:`, {
-          asset_start_date: relatedOffer.asset_start_date,
-          asset_expiration_date: relatedOffer.asset_expiration_date,
-          tentative_start_date: relatedOffer.tentative_start_date,
-          tentative_end_date: relatedOffer.tentative_end_date,
-          offer_status: relatedOffer.status,
-          offer_id: relatedOffer.id
+        
+        console.log('✅ BUYER: Found asset:', asset?.name);
+        console.log('✅ BUYER: Found offer:', offerRequest?.id, 'with dates:', {
+          asset_start_date: offerRequest?.asset_start_date,
+          asset_expiration_date: offerRequest?.asset_expiration_date
         });
-      } else {
-        console.log(`❌ NO OFFER FOUND for ${asset.name}`);
-        console.log('Available offers for debugging:', offers.map(o => ({ 
-          id: o.id, 
-          asset_id: o.asset_id, 
-          asset_name: o.asset_name, 
-          campaign_id: o.existing_campaign_id,
-          campaign_name: o.campaign_name 
-        })));
-      }
-      
-      const enrichedAsset = {
-        ...asset,
-        // Add offer details for dates and pricing
-        offerDetails: relatedOffer || {},
-        // Prioritize asset_start_date and asset_expiration_date from offer_requests
-        asset_start_date: relatedOffer?.asset_start_date || relatedOffer?.tentative_start_date || asset.asset_start_date,
-        asset_expiration_date: relatedOffer?.asset_expiration_date || relatedOffer?.tentative_end_date || asset.asset_expiration_date,
-        // Add pricing information
-        admin_quoted_price: relatedOffer?.admin_quoted_price || asset.admin_quoted_price,
-        buyer_budget: relatedOffer?.buyer_budget || asset.buyer_budget,
-        // Update status information
-        offerStatus: relatedOffer?.status || asset.offerStatus || asset.status,
-        isRequested: !!relatedOffer
-      };
-      
-      console.log(`✅ ENRICHED ASSET ${asset.name}:`, {
-        original_start: asset.asset_start_date,
-        original_end: asset.asset_expiration_date,
-        offer_start: relatedOffer?.asset_start_date,
-        offer_end: relatedOffer?.asset_expiration_date,
-        final_start: enrichedAsset.asset_start_date,
-        final_end: enrichedAsset.asset_expiration_date,
-        offer_id: relatedOffer?.id
+        
+        return {
+          ...campaignAsset,
+          assetDetails: asset || {},
+          offerDetails: offerRequest || {},
+          // Add computed fields for easier access
+          id: asset?.id || campaignAsset.asset_id,
+          name: asset?.name || campaignAsset.asset_name,
+          address: asset?.address,
+          type: asset?.type,
+          dimensions: asset?.dimensions,
+          status: asset?.status,
+          // Use offer request dates (exactly like admin)
+          asset_start_date: offerRequest?.asset_start_date || campaignAsset.asset_start_date,
+          asset_expiration_date: offerRequest?.asset_expiration_date || campaignAsset.asset_expiration_date,
+          admin_quoted_price: offerRequest?.admin_quoted_price,
+          buyer_budget: offerRequest?.buyer_budget,
+          offerStatus: offerRequest?.status,
+          isRequested: !!offerRequest
+        };
       });
       
-      return enrichedAsset;
-    });
+      console.log('✅ BUYER: Final detailed assets:', detailedAssets);
+      setCampaignAssets(detailedAssets);
+      
+    } catch (error) {
+      console.error('❌ BUYER: Error fetching campaign asset details:', error);
+      setCampaignAssets([]);
+    }
   };
 
   const fetchCampaignAssets = async (campaign) => {
