@@ -2592,6 +2592,23 @@ async def upload_po(
             invalidate=True  # Clear any cached versions
         )
         
+        # Generate a signed URL for better access
+        import cloudinary.utils
+        try:
+            signed_url = cloudinary.utils.cloudinary_url(
+                upload_result["public_id"],
+                resource_type="image",
+                format="pdf",
+                secure=True,
+                sign_url=True,
+                type="upload"
+            )[0]
+            # Use signed URL if available, otherwise use secure_url
+            po_document_url = signed_url if signed_url else upload_result["secure_url"]
+        except Exception as url_error:
+            logger.warning(f"Failed to generate signed URL, using secure_url: {url_error}")
+            po_document_url = upload_result["secure_url"]
+        
         # Determine new status based on uploader
         new_status = "PO Uploaded"
         
