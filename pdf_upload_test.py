@@ -99,9 +99,9 @@ class PDFUploadTester:
         """Test buyer login"""
         # Try different existing buyers
         buyer_credentials = [
+            ("pdftest@buyer.com", "pdftest123"),
             ("buy@demo.com", "buyer123"),
-            ("testbuyer@performance.com", "buyer123"),
-            ("marketing@grameenphone.com", "buyer123")
+            ("testbuyer@performance.com", "buyer123")
         ]
         
         for email, password in buyer_credentials:
