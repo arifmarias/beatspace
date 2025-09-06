@@ -2344,7 +2344,7 @@ async def get_campaign_assets(campaign_id: str, current_user: User = Depends(get
                                 {"$eq": ["$existing_campaign_id", campaign_id]},
                                 {"$eq": ["$campaign_name", campaign.get("name", "")]}
                             ]},
-                            {"$in": ["$status", ["Pending", "Processing", "In Process", "Quoted", "Accepted", "Approved"]]}
+                            {"$in": ["$status", ["Pending", "Processing", "In Process", "Quoted", "Accepted", "Approved", "PO Required", "PO Uploaded", "Live"]]}
                         ]}
                     }}
                 ],
