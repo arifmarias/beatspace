@@ -2581,15 +2581,12 @@ async def upload_po(
         
         upload_result = cloudinary.uploader.upload(
             data_uri,
-            resource_type="auto",  # Let Cloudinary auto-detect the resource type
+            resource_type="raw",  # Use raw resource type for public PDF access
             folder="purchase_orders",
-            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",  # Remove .pdf - format will add it
+            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}.pdf",  # Include .pdf in public_id
             use_filename=False,
             unique_filename=False,
-            format="pdf",  # This will automatically add .pdf extension
-            type="upload",
-            overwrite=True,  # Allow overwriting
-            delivery_type="upload"  # Ensure proper delivery type for public access
+            overwrite=True  # Allow overwriting
         )
         
         # Use the direct secure_url without signing for now
