@@ -701,6 +701,32 @@ const BuyerDashboard = () => {
     }
   };
 
+  // Enrich campaign assets with offer request data (similar to admin)
+  const enrichCampaignAssetsWithOfferData = (assets, offers) => {
+    return assets.map(asset => {
+      // Find the related offer request for this asset
+      const relatedOffer = offers.find(offer => 
+        offer.asset_id === asset.id && 
+        (offer.existing_campaign_id === selectedCampaign?.id || offer.campaign_name === selectedCampaign?.name)
+      );
+      
+      return {
+        ...asset,
+        // Add offer details for dates and pricing
+        offerDetails: relatedOffer || {},
+        // Ensure we have the correct dates from offer requests
+        asset_start_date: relatedOffer?.asset_start_date || relatedOffer?.tentative_start_date || asset.asset_start_date,
+        asset_expiration_date: relatedOffer?.asset_expiration_date || relatedOffer?.tentative_end_date || asset.asset_expiration_date,
+        // Add pricing information
+        admin_quoted_price: relatedOffer?.admin_quoted_price || asset.admin_quoted_price,
+        buyer_budget: relatedOffer?.buyer_budget || asset.buyer_budget,
+        // Update status information
+        offerStatus: relatedOffer?.status || asset.offerStatus || asset.status,
+        isRequested: !!relatedOffer
+      };
+    });
+  };
+
   const fetchCampaignAssets = async (campaign) => {
     try {
       console.log('🚀 FETCHING ASSETS: Starting for campaign:', campaign.name, 'ID:', campaign.id);
