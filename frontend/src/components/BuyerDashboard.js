@@ -1630,36 +1630,45 @@ const BuyerDashboard = () => {
   };
 
   const handleApproveOffer = async (offer) => {
-    try {
-      console.log('🚨 APPROVING OFFER - Full offer object:', offer);
-      console.log('🚨 APPROVING OFFER - Offer ID:', offer.id);
-      console.log('🚨 APPROVING OFFER - API URL:', `${API}/offers/${offer.id}/respond`);
-      
-      const confirmMessage = `Are you sure you want to approve the offer for "${offer.asset_name}" at ৳${offer.admin_quoted_price?.toLocaleString()}?`;
-      
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
+    console.log('🚨 APPROVING OFFER - Starting approval process');
+    console.log('🚨 APPROVING OFFER - Full offer object:', offer);
+    console.log('🚨 APPROVING OFFER - Offer ID:', offer.id);
+    console.log('🚨 APPROVING OFFER - Asset name:', offer.asset_name);
+    console.log('🚨 APPROVING OFFER - Quoted price:', offer.admin_quoted_price);
+    
+    const confirmMessage = `Are you sure you want to approve the offer for "${offer.asset_name}" at ৳${offer.admin_quoted_price?.toLocaleString()}?`;
+    
+    if (!window.confirm(confirmMessage)) {
+      console.log('🚨 APPROVING OFFER - User cancelled');
+      return;
+    }
 
-      console.log('🚨 APPROVING OFFER - User confirmed');
-      
+    console.log('🚨 APPROVING OFFER - User confirmed, proceeding...');
+    
+    try {
       const headers = getAuthHeaders();
       console.log('🚨 APPROVING OFFER - Headers:', headers);
+      console.log('🚨 APPROVING OFFER - API URL:', `${API}/offers/${offer.id}/respond`);
       
       // Call backend endpoint to approve offer
       const response = await axios.put(`${API}/offers/${offer.id}/respond`, {
         action: 'accept'
       }, { headers });
       
-      console.log('🚨 APPROVING OFFER - Backend response:', response.data);
+      console.log('🚨 APPROVING OFFER - SUCCESS! Backend response:', response.data);
+      console.log('🚨 APPROVING OFFER - Response status:', response.status);
       
       // Show custom congratulations modal
+      console.log('🚨 APPROVING OFFER - Setting congratulations data...');
       setCongratulationsData({
         assetName: offer.asset_name,
         quotedPrice: offer.admin_quoted_price
       });
+      
+      console.log('🚨 APPROVING OFFER - Showing congratulations modal...');
       setShowCongratulationsModal(true);
       
+      console.log('🚨 APPROVING OFFER - Modal should be visible now');
       console.log('🚨 APPROVING OFFER - Refreshing data...');
       
       // Immediate refresh for real-time updates
@@ -1668,13 +1677,21 @@ const BuyerDashboard = () => {
       if (activeTab === 'requested-offers') {
         fetchRequestedOffers();
       }
-      console.log('✅ Data refreshed after offer approval');
+      console.log('✅ APPROVING OFFER - Complete! Data refreshed after offer approval');
       
     } catch (error) {
-      console.error('🚨 Error approving offer:', error);
-      console.error('🚨 Error response:', error.response);
-      console.error('🚨 Error data:', error.response?.data);
-      notify.error('Failed to approve offer: ' + (error.response?.data?.detail || error.message));
+      console.error('🚨 APPROVING OFFER - ERROR occurred:', error);
+      console.error('🚨 APPROVING OFFER - Error response:', error.response);
+      console.error('🚨 APPROVING OFFER - Error status:', error.response?.status);
+      console.error('🚨 APPROVING OFFER - Error data:', error.response?.data);
+      console.error('🚨 APPROVING OFFER - Error message:', error.message);
+      
+      // Show error notification
+      const errorMessage = error.response?.data?.detail || error.message || 'Unknown error occurred';
+      notify.error('Failed to approve offer: ' + errorMessage);
+      
+      // Don't show congratulations modal on error
+      console.log('🚨 APPROVING OFFER - Not showing congratulations due to error');
     }
   };
 
