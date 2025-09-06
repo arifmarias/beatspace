@@ -831,7 +831,21 @@ const BuyerDashboard = () => {
       }
       
       console.log('✅ FINAL CAMPAIGN ASSETS:', campaignAssetsList.length);
-      setCampaignAssets(campaignAssetsList);
+      
+      // Enrich assets with offer request data for proper date and pricing display
+      const headers = getAuthHeaders();
+      try {
+        const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+        const allOffers = offersResponse.data || [];
+        
+        const enrichedAssets = enrichCampaignAssetsWithOfferData(campaignAssetsList, allOffers);
+        console.log('✅ ENRICHED ASSETS WITH OFFER DATA:', enrichedAssets.length);
+        
+        setCampaignAssets(enrichedAssets);
+      } catch (enrichError) {
+        console.log('⚠️ Failed to enrich with offer data, using basic assets:', enrichError.message);
+        setCampaignAssets(campaignAssetsList);
+      }
       
     } catch (error) {
       console.error('❌ COMPLETE ERROR in fetchCampaignAssets:', error);
