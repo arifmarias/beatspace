@@ -5,6 +5,10 @@ import websocket
 import threading
 import time
 from datetime import datetime
+import io
+import tempfile
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
 class BeatSpaceAPITester:
     def __init__(self, base_url="https://14fadd12-5d6c-411c-9b85-5761bf6e539f.preview.emergentagent.com/api"):
