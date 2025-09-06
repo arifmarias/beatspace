@@ -3688,26 +3688,30 @@ const BuyerDashboard = () => {
                           <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                             <div>
                               <strong>Asset Start Date:</strong> {
-                                asset.asset_start_date ? 
-                                new Date(asset.asset_start_date).toLocaleDateString() : 
-                                'Not set'
+                                asset.offerDetails?.asset_start_date ? 
+                                new Date(asset.offerDetails.asset_start_date).toLocaleDateString() : 
+                                (asset.asset_start_date ? new Date(asset.asset_start_date).toLocaleDateString() : 'Not set')
                               }
                             </div>
                             <div>
                               <strong>Asset Expiry Date:</strong> {
-                                asset.asset_expiration_date ? 
-                                new Date(asset.asset_expiration_date).toLocaleDateString() : 
-                                'Not set'
+                                asset.offerDetails?.asset_expiration_date ? 
+                                new Date(asset.offerDetails.asset_expiration_date).toLocaleDateString() : 
+                                (asset.asset_expiration_date ? new Date(asset.asset_expiration_date).toLocaleDateString() : 'Not set')
                               }
                             </div>
                           </div>
                           
                           {/* Duration calculation */}
-                          {asset.asset_start_date && asset.asset_expiration_date && (
+                          {((asset.offerDetails?.asset_start_date && asset.offerDetails?.asset_expiration_date) || 
+                            (asset.asset_start_date && asset.asset_expiration_date)) && (
                             <div className="text-xs text-gray-600">
                               <strong>Duration:</strong> {(() => {
-                                const start = new Date(asset.asset_start_date);
-                                const end = new Date(asset.asset_expiration_date);
+                                const startDate = asset.offerDetails?.asset_start_date || asset.asset_start_date;
+                                const endDate = asset.offerDetails?.asset_expiration_date || asset.asset_expiration_date;
+                                
+                                const start = new Date(startDate);
+                                const end = new Date(endDate);
                                 const diffTime = Math.abs(end - start);
                                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                                 
