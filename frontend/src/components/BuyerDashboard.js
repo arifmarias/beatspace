@@ -1629,17 +1629,6 @@ const BuyerDashboard = () => {
     }
   };
 
-  // Test function to check if congratulations modal works
-  const testCongratulationsModal = () => {
-    console.log('🧪 TESTING CONGRATULATIONS MODAL');
-    setCongratulationsData({
-      assetName: 'Test Asset Name',
-      quotedPrice: 50000
-    });
-    setShowCongratulationsModal(true);
-    console.log('🧪 MODAL STATE SET - Should be visible now');
-  };
-
   const handleApproveOffer = async (offer) => {
     console.log('🚨 APPROVING OFFER - Starting approval process');
     console.log('🚨 APPROVING OFFER - Full offer object:', offer);
