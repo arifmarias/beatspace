@@ -100,7 +100,7 @@ class PDFUploadTester:
         # Try different existing buyers
         buyer_credentials = [
             ("buy@demo.com", "buyer123"),
-            ("testbuyer@beatspace.com", "buyer123"),
+            ("testbuyer@performance.com", "buyer123"),
             ("marketing@grameenphone.com", "buyer123")
         ]
         
