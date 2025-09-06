@@ -786,8 +786,12 @@ const MarketplacePage = () => {
         service_bundles: offerDetails.serviceBundles,
         monitoring_service_level: offerDetails.serviceBundles.monitoring ? offerDetails.monitoringServiceLevel : null, // Include monitoring service level if monitoring is selected
         timeline: offerDetails.timeline,
-        asset_start_date: offerDetails.tentativeStartDate ? offerDetails.tentativeStartDate.toISOString().split('T')[0] : null,
-        asset_expiration_date: offerDetails.assetExpirationDate ? offerDetails.assetExpirationDate.toISOString().split('T')[0] : null,
+        asset_start_date: offerDetails.tentativeStartDate ? 
+          `${offerDetails.tentativeStartDate.getFullYear()}-${String(offerDetails.tentativeStartDate.getMonth() + 1).padStart(2, '0')}-${String(offerDetails.tentativeStartDate.getDate()).padStart(2, '0')}` 
+          : null,
+        asset_expiration_date: offerDetails.assetExpirationDate ? 
+          `${offerDetails.assetExpirationDate.getFullYear()}-${String(offerDetails.assetExpirationDate.getMonth() + 1).padStart(2, '0')}-${String(offerDetails.assetExpirationDate.getDate()).padStart(2, '0')}` 
+          : null,
         special_requirements: offerDetails.specialRequirements,
         notes: offerDetails.notes
       };
