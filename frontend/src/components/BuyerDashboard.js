@@ -3741,10 +3741,10 @@ const BuyerDashboard = () => {
                             
                             {/* Show pricing if available */}
                             <div className="text-right text-xs">
-                              {requestedOffers.find(offer => offer.asset_id === asset.id)?.admin_quoted_price && (
+                              {(asset.offerDetails?.admin_quoted_price || asset.admin_quoted_price) && (
                                 <div>
                                   <div className="text-green-600 font-medium">
-                                    ৳{requestedOffers.find(offer => offer.asset_id === asset.id).admin_quoted_price.toLocaleString()}
+                                    ৳{(asset.offerDetails?.admin_quoted_price || asset.admin_quoted_price).toLocaleString()}
                                   </div>
                                   <div className="text-gray-500">Quoted Price</div>
                                 </div>
