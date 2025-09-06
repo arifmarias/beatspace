@@ -2581,33 +2581,19 @@ async def upload_po(
         
         upload_result = cloudinary.uploader.upload(
             data_uri,
-            resource_type="image",  # Changed from "raw" to "image" for better access
+            resource_type="auto",  # Let Cloudinary auto-detect the resource type
             folder="purchase_orders",
-            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}.pdf",  # Ensure .pdf extension
-            use_filename=False,  # Don't use original filename since we're setting custom public_id
-            unique_filename=False,  # Don't append random chars since we have timestamp
-            format="pdf",  # Explicitly specify PDF format
-            access_mode="public",  # Ensure the file is publicly accessible
-            type="upload",  # Explicit upload type
-            invalidate=True  # Clear any cached versions
+            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",  # Remove .pdf - format will add it
+            use_filename=False,
+            unique_filename=False,
+            format="pdf",  # This will automatically add .pdf extension
+            type="upload",
+            overwrite=True,  # Allow overwriting
+            delivery_type="upload"  # Ensure proper delivery type for public access
         )
         
-        # Generate a signed URL for better access
-        import cloudinary.utils
-        try:
-            signed_url = cloudinary.utils.cloudinary_url(
-                upload_result["public_id"],
-                resource_type="image",
-                format="pdf",
-                secure=True,
-                sign_url=True,
-                type="upload"
-            )[0]
-            # Use signed URL if available, otherwise use secure_url
-            po_document_url = signed_url if signed_url else upload_result["secure_url"]
-        except Exception as url_error:
-            logger.warning(f"Failed to generate signed URL, using secure_url: {url_error}")
-            po_document_url = upload_result["secure_url"]
+        # Use the direct secure_url without signing for now
+        po_document_url = upload_result["secure_url"]
         
         # Determine new status based on uploader
         new_status = "PO Uploaded"
