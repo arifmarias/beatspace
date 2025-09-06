@@ -703,14 +703,37 @@ const BuyerDashboard = () => {
 
   // Enrich campaign assets with offer request data (similar to admin)
   const enrichCampaignAssetsWithOfferData = (assets, offers) => {
-    return assets.map(asset => {
+    console.log('🔍 ENRICHING ASSETS - Input assets:', assets.length);
+    console.log('🔍 ENRICHING ASSETS - Input offers:', offers.length);
+    
+    return assets.map((asset, index) => {
+      console.log(`🔍 ASSET ${index + 1}: ${asset.name} (ID: ${asset.id})`);
+      
       // Find the related offer request for this asset
       const relatedOffer = offers.find(offer => 
         offer.asset_id === asset.id && 
         (offer.existing_campaign_id === selectedCampaign?.id || offer.campaign_name === selectedCampaign?.name)
       );
       
-      return {
+      console.log(`🔍 RELATED OFFER for ${asset.name}:`, relatedOffer);
+      
+      if (relatedOffer) {
+        console.log(`✅ OFFER FOUND - Asset dates:`, {
+          asset_start_date: relatedOffer.asset_start_date,
+          tentative_start_date: relatedOffer.tentative_start_date,
+          asset_expiration_date: relatedOffer.asset_expiration_date,
+          tentative_end_date: relatedOffer.tentative_end_date
+        });
+      } else {
+        console.log(`❌ NO OFFER FOUND for ${asset.name} - searching by name fallback`);
+        // Try to find by asset name or other criteria
+        const fallbackOffer = offers.find(offer => 
+          offer.asset_name === asset.name
+        );
+        console.log(`🔍 FALLBACK OFFER:`, fallbackOffer);
+      }
+      
+      const enrichedAsset = {
         ...asset,
         // Add offer details for dates and pricing
         offerDetails: relatedOffer || {},
@@ -724,6 +747,16 @@ const BuyerDashboard = () => {
         offerStatus: relatedOffer?.status || asset.offerStatus || asset.status,
         isRequested: !!relatedOffer
       };
+      
+      console.log(`✅ ENRICHED ASSET ${asset.name}:`, {
+        original_start: asset.asset_start_date,
+        original_end: asset.asset_expiration_date,
+        enriched_start: enrichedAsset.asset_start_date,
+        enriched_end: enrichedAsset.asset_expiration_date,
+        offer_id: relatedOffer?.id
+      });
+      
+      return enrichedAsset;
     });
   };
 
