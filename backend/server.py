@@ -2581,13 +2581,15 @@ async def upload_po(
         
         upload_result = cloudinary.uploader.upload(
             data_uri,
-            resource_type="raw",
+            resource_type="image",  # Changed from "raw" to "image" for better access
             folder="purchase_orders",
             public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}.pdf",  # Ensure .pdf extension
             use_filename=False,  # Don't use original filename since we're setting custom public_id
             unique_filename=False,  # Don't append random chars since we have timestamp
             format="pdf",  # Explicitly specify PDF format
-            access_mode="public"  # Ensure the file is publicly accessible
+            access_mode="public",  # Ensure the file is publicly accessible
+            type="upload",  # Explicit upload type
+            invalidate=True  # Clear any cached versions
         )
         
         # Determine new status based on uploader
