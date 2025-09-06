@@ -775,123 +775,48 @@ const BuyerDashboard = () => {
 
   const fetchCampaignAssets = async (campaign) => {
     try {
-      console.log('🚀 FETCHING ASSETS: Starting for campaign:', campaign.name, 'ID:', campaign.id);
-      console.log('🚀 CAMPAIGN DATA:', campaign);
+      console.log('🚀 BUYER: Fetching assets for campaign:', campaign.name, 'ID:', campaign.id);
+      
+      // If campaign has campaign_assets structure, use the admin-style detailed approach
+      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
+        console.log('🎯 BUYER: Using detailed approach (like admin)');
+        return await fetchCampaignAssetDetails(campaign);
+      }
+      
+      // Otherwise use the existing fallback logic
+      console.log('⚠️ BUYER: Using fallback approach');
       
       const headers = getAuthHeaders();
       
-      // Try the new optimized campaign assets endpoint first
+      // Use the new optimized campaign assets endpoint
       try {
-        console.log('🚀 TRYING OPTIMIZED ENDPOINT...');
         const response = await axios.get(`${API}/campaigns/${campaign.id}/assets`, { headers });
         const campaignAssetsList = response.data || [];
         
-        console.log('✅ OPTIMIZED ENDPOINT SUCCESS:', campaignAssetsList.length, 'assets found');
-        console.log('✅ OPTIMIZED ASSETS:', campaignAssetsList);
+        console.log('✅ OPTIMIZED: Fetched campaign assets directly:', campaignAssetsList.length);
         
         if (campaignAssetsList.length > 0) {
           setCampaignAssets(campaignAssetsList);
           return;
-        } else {
-          console.log('⚠️ OPTIMIZED ENDPOINT RETURNED EMPTY, TRYING FALLBACK...');
         }
       } catch (optimizedError) {
-        console.log('⚠️ OPTIMIZED ENDPOINT FAILED, TRYING FALLBACK:', optimizedError.message);
+        console.log('⚠️ Optimized endpoint failed:', optimizedError.message);
       }
       
-      // Fallback method: Use campaign data and fetch all assets
-      console.log('🔄 FALLBACK: Fetching all public assets...');
+      // Final fallback: fetch all assets and filter
       const assetsResponse = await axios.get(`${API}/assets/public`);
       const allAssets = assetsResponse.data || [];
-      console.log('📦 ALL ASSETS FETCHED:', allAssets.length);
       
       let campaignAssetsList = [];
       
-      // Check for campaign_assets structure (from /campaigns endpoint)
-      if (campaign.campaign_assets && campaign.campaign_assets.length > 0) {
-        console.log('📋 USING campaign_assets structure:', campaign.campaign_assets.length, 'entries');
-        
-        campaignAssetsList = campaign.campaign_assets.map(campaignAsset => {
-          console.log('🔍 LOOKING FOR ASSET:', campaignAsset.asset_id, 'NAME:', campaignAsset.asset_name);
-          
-          const asset = allAssets.find(a => a.id === campaignAsset.asset_id);
-          if (asset) {
-            console.log('✅ FOUND ASSET:', asset.name);
-            return {
-              ...asset,
-              asset_start_date: campaignAsset.asset_start_date,
-              asset_expiration_date: campaignAsset.asset_expiration_date,
-              isInCampaign: true,
-              offerStatus: campaignAsset.status
-            };
-          } else {
-            console.log('❌ ASSET NOT FOUND IN PUBLIC ASSETS:', campaignAsset.asset_id);
-            return null;
-          }
-        }).filter(Boolean);
-        
-        console.log('📋 MAPPED CAMPAIGN ASSETS:', campaignAssetsList.length);
-      }
-      // Fallback to old assets array structure
-      else if (campaign.assets && campaign.assets.length > 0) {
-        console.log('📋 USING old assets array structure:', campaign.assets.length, 'asset IDs');
-        
+      if (campaign.assets && campaign.assets.length > 0) {
         campaignAssetsList = allAssets.filter(asset => 
           campaign.assets.includes(asset.id)
         );
-        
-        console.log('📋 FILTERED ASSETS:', campaignAssetsList.length);
-      }
-      // Try to find assets by matching campaign name or ID in offers
-      else {
-        console.log('🔍 SEARCHING ASSETS BY CAMPAIGN ASSOCIATION...');
-        
-        // Fetch offer requests to find assets associated with this campaign
-        const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
-        const allOffers = offersResponse.data || [];
-        
-        console.log('📦 ALL OFFERS FETCHED:', allOffers.length);
-        
-        // Find offers for this campaign
-        const campaignOffers = allOffers.filter(offer => 
-          (offer.existing_campaign_id === campaign.id || offer.campaign_name === campaign.name) && 
-          ['Live', 'Approved', 'Accepted', 'PO Uploaded', 'PO Required'].includes(offer.status)
-        );
-        
-        console.log('🎯 CAMPAIGN OFFERS FOUND:', campaignOffers.length);
-        
-        campaignAssetsList = campaignOffers.map(offer => {
-          const asset = allAssets.find(a => a.id === offer.asset_id);
-          if (asset) {
-            return {
-              ...asset,
-              isRequested: true,
-              offerStatus: offer.status,
-              offerId: offer.id
-            };
-          }
-          return null;
-        }).filter(Boolean);
-        
-        console.log('🎯 ASSETS FROM OFFERS:', campaignAssetsList.length);
       }
       
       console.log('✅ FINAL CAMPAIGN ASSETS:', campaignAssetsList.length);
-      
-      // Enrich assets with offer request data for proper date and pricing display
-      const authHeaders = getAuthHeaders();
-      try {
-        const offersResponse = await axios.get(`${API}/offers/requests`, { headers: authHeaders });
-        const allOffers = offersResponse.data || [];
-        
-        const enrichedAssets = enrichCampaignAssetsWithOfferData(campaignAssetsList, allOffers);
-        console.log('✅ ENRICHED ASSETS WITH OFFER DATA:', enrichedAssets.length);
-        
-        setCampaignAssets(enrichedAssets);
-      } catch (enrichError) {
-        console.log('⚠️ Failed to enrich with offer data, using basic assets:', enrichError.message);
-        setCampaignAssets(campaignAssetsList);
-      }
+      setCampaignAssets(campaignAssetsList);
       
     } catch (error) {
       console.error('❌ COMPLETE ERROR in fetchCampaignAssets:', error);
