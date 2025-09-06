@@ -3668,8 +3668,8 @@ const BuyerDashboard = () => {
                                       {asset.offerStatus}
                                     </Badge>
                                   ) : (
-                                    <Badge className={getStatusColor(asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status)}>
-                                      {asset.status === 'Available' && selectedCampaign.status === 'Live' ? 'Live' : asset.status}
+                                    <Badge className={getStatusColor(asset.offerStatus || asset.status)}>
+                                      {asset.offerStatus || asset.status}
                                     </Badge>
                                   )}
                                 </div>
