@@ -3438,6 +3438,18 @@ const BuyerDashboard = () => {
 
           {/* Enhanced Requested Offers Tab with Categorization */}
           <TabsContent value="requested-offers" className="space-y-6">
+            {/* Test Button for Congratulations Modal - REMOVE AFTER TESTING */}
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+              <p className="text-sm text-yellow-800 mb-2">🧪 Debug Test:</p>
+              <Button 
+                onClick={testCongratulationsModal}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                size="sm"
+              >
+                Test Congratulations Modal
+              </Button>
+            </div>
+            
             <RequestsCategoryTabs 
               requestedOffers={requestedOffers}
               requestedOffersLoading={requestedOffersLoading}
