@@ -2636,7 +2636,7 @@ async def upload_po(
         
         # Update offer request with PO info
         update_data = {
-            "po_document_url": upload_result["secure_url"],
+            "po_document_url": po_document_url,  # Use the generated signed URL or secure_url
             "po_uploaded_by": uploaded_by,
             "po_uploaded_at": datetime.utcnow(),
             "status": new_status,
