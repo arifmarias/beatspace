@@ -2583,7 +2583,7 @@ async def upload_po(
             data_uri,
             resource_type="raw",  # Use raw resource type for public PDF access
             folder="purchase_orders",
-            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}.pdf",  # Include .pdf in public_id
+            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",  # No .pdf extension in public_id
             use_filename=False,
             unique_filename=False,
             overwrite=True  # Allow overwriting
