@@ -3749,20 +3749,35 @@ const BuyerDashboard = () => {
                             </div>
                           )}
                           
+                          {/* DEBUG: Show what data we have for this asset */}
+                          {console.log(`🎯 RENDER DEBUG for ${asset.name}:`, {
+                            asset_start_date: asset.asset_start_date,
+                            asset_expiration_date: asset.asset_expiration_date,
+                            offerDetails_start: asset.offerDetails?.asset_start_date,
+                            offerDetails_end: asset.offerDetails?.asset_expiration_date,
+                            isRequested: asset.isRequested,
+                            offerStatus: asset.offerStatus,
+                            fullAssetObject: asset
+                          })}
+                          
                           {/* Asset dates */}
                           <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
                             <div>
                               <strong>Asset Start Date:</strong> {
-                                asset.offerDetails?.asset_start_date ? 
-                                new Date(asset.offerDetails.asset_start_date).toLocaleDateString() : 
-                                (asset.asset_start_date ? new Date(asset.asset_start_date).toLocaleDateString() : 'Not set')
+                                (() => {
+                                  const startDate = asset.offerDetails?.asset_start_date || asset.asset_start_date;
+                                  console.log(`🗓️ START DATE for ${asset.name}:`, startDate);
+                                  return startDate ? new Date(startDate).toLocaleDateString() : 'Not set';
+                                })()
                               }
                             </div>
                             <div>
                               <strong>Asset Expiry Date:</strong> {
-                                asset.offerDetails?.asset_expiration_date ? 
-                                new Date(asset.offerDetails.asset_expiration_date).toLocaleDateString() : 
-                                (asset.asset_expiration_date ? new Date(asset.asset_expiration_date).toLocaleDateString() : 'Not set')
+                                (() => {
+                                  const endDate = asset.offerDetails?.asset_expiration_date || asset.asset_expiration_date;
+                                  console.log(`🗓️ END DATE for ${asset.name}:`, endDate);
+                                  return endDate ? new Date(endDate).toLocaleDateString() : 'Not set';
+                                })()
                               }
                             </div>
                           </div>
