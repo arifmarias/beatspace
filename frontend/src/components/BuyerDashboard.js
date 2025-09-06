@@ -833,9 +833,9 @@ const BuyerDashboard = () => {
       console.log('✅ FINAL CAMPAIGN ASSETS:', campaignAssetsList.length);
       
       // Enrich assets with offer request data for proper date and pricing display
-      const headers = getAuthHeaders();
+      const authHeaders = getAuthHeaders();
       try {
-        const offersResponse = await axios.get(`${API}/offers/requests`, { headers });
+        const offersResponse = await axios.get(`${API}/offers/requests`, { headers: authHeaders });
         const allOffers = offersResponse.data || [];
         
         const enrichedAssets = enrichCampaignAssetsWithOfferData(campaignAssetsList, allOffers);
