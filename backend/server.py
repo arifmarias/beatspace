@@ -2583,9 +2583,10 @@ async def upload_po(
             data_uri,
             resource_type="raw",
             folder="purchase_orders",
-            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}",
-            use_filename=True,
-            unique_filename=True
+            public_id=f"po_{request_id}_{int(datetime.utcnow().timestamp())}.pdf",  # Ensure .pdf extension
+            use_filename=False,  # Don't use original filename since we're setting custom public_id
+            unique_filename=False,  # Don't append random chars since we have timestamp
+            format="pdf"  # Explicitly specify PDF format
         )
         
         # Determine new status based on uploader
